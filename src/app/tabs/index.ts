@@ -9,6 +9,7 @@ import { computeAllLayouts } from '@open-pencil/core/layout'
 import type { SceneGraph } from '@open-pencil/scene-graph'
 
 import { setOpenPencilStore } from '@/app/browser-bridge'
+import { getCloudDocumentAccess } from '@/app/collab/cloud-sharing'
 import { describeDiagnosticError, recordStorageFailure } from '@/app/diagnostics'
 import { readFigDocument } from '@/app/document/io/fig'
 import { applyImportedDocument } from '@/app/document/io/imported-document'
@@ -354,7 +355,15 @@ export async function openStorageDocumentInNewTab(document: StorageDocument): Pr
     await showImportedGraph(
       store,
       imported,
-      () => store.setStorageDocumentSource({ providerId, documentId: document.id }, document.name),
+      async () => {
+        store.setStorageDocumentSource({ providerId, documentId: document.id }, document.name)
+        if (providerId === 'openpencil-cloud') {
+          const access = await getCloudDocumentAccess(store)
+          store.setAccessMode(access.sources.includes('owner') ? 'owner' : access.permission)
+        } else {
+          store.setAccessMode('owner')
+        }
+      },
       load
     )
     rememberRecentStorageDocument(providerId, document.id, document.name)

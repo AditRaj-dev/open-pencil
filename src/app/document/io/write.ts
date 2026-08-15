@@ -44,6 +44,7 @@ export function createDocumentWriter({
     try {
       const storage = getStorageBinding()
       if (storage) {
+        if (state.accessMode === 'view') return false
         await persistStorageCanvasLocally({
           providerId: storage.providerId,
           canvasId: storage.documentId,
