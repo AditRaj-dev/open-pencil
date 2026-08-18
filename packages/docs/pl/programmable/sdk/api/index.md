@@ -8,7 +8,7 @@ description: Komponenty, composables i niskopoziomowe API pakietu @open-pencil/v
 Dokumentacja Vue SDK składa się z trzech sekcji.
 
 <SdkCardGroup>
-  <SdkCard title="Komponenty" to="/programmable/sdk/api/components/" description="Strukturalne komponenty headless, takie jak CanvasRoot, ToolbarRoot, FontPickerRoot i NumberFieldRoot." />
+  <SdkCard title="Komponenty" to="/programmable/sdk/api/components/" description="Strukturalne komponenty bez narzuconego wyglądu, takie jak CanvasRoot, ToolbarRoot, FontPickerRoot i NumberFieldRoot." />
   <SdkCard title="Composables" to="/programmable/sdk/api/composables/" description="Composables zapewniające dostęp do edytora, obszaru roboczego, zaznaczenia, poleceń i paneli właściwości." />
   <SdkCard title="Niskopoziomowe API" to="/programmable/sdk/api/advanced/" description="Funkcje pomocnicze, konteksty komponentów i wyspecjalizowane API do niestandardowych integracji." />
 </SdkCardGroup>

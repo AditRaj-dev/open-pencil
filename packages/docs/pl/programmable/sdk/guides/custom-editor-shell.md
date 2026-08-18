@@ -8,7 +8,7 @@ description: Tworzenie własnego interfejsu edytora za pomocą provideEditor, Ca
 Typowa aplikacja OpenPencil oparta na Vue składa się z trzech warstw:
 
 1. `@open-pencil/core` tworzy edytor;
-2. `@open-pencil/vue` łączy go z composables i komponentami headless dla Vue;
+2. `@open-pencil/vue` łączy go z composables i komponentami Vue bez narzuconego wyglądu;
 3. aplikacja określa układ, wygląd i zachowanie właściwe dla produktu.
 
 ## Dlaczego warto rozdzielić te warstwy
@@ -90,9 +90,9 @@ provideEditor(editor)
 
 ## Odpowiedzialność SDK i aplikacji
 
-- SDK odpowiada za integrację z edytorem i logikę headless przeznaczoną do ponownego użycia.
+- SDK odpowiada za integrację z edytorem i logikę niezależną od wyglądu, przeznaczoną do ponownego użycia.
 - Aplikacja odpowiada za układ, wygląd i operacje właściwe dla konkretnego produktu.
-- Composables pozwalają podłączać menu i panele bez zbędnych wrapper components.
+- Composables pozwalają podłączać menu i panele bez zbędnych komponentów opakowujących.
 
 ## Zobacz też
 

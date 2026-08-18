@@ -10,7 +10,7 @@ Panele boczne OpenPencil zwykle zawierają:
 - listę stron;
 - drzewo warstw.
 
-Vue SDK udostępnia komponenty headless dla obu zastosowań.
+Vue SDK udostępnia komponenty bez narzuconego wyglądu dla obu zastosowań.
 
 ## Strony
 

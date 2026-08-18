@@ -11,7 +11,7 @@ Model edytora nadal znajduje się w core. Ten pakiet dodaje:
 
 - dependency injection za pomocą Vue;
 - reaktywne composables;
-- strukturalne komponenty headless;
+- strukturalne komponenty bez narzuconego wyglądu;
 - podłączenie obszaru roboczego i obsługę danych wejściowych.
 
 ## Struktura pakietu
@@ -33,7 +33,7 @@ Kod jest podzielony według obszarów funkcjonalnych.
 - `NumberField/`
 - `Toolbar/`
 
-W tych katalogach znajdują się strukturalne komponenty headless oraz funkcje pomocnicze używane w danym obszarze.
+W tych katalogach znajdują się strukturalne komponenty bez narzuconego wyglądu oraz funkcje pomocnicze danego obszaru.
 
 ### Controls
 
@@ -56,13 +56,13 @@ W `controls/` znajdują się composables dla paneli właściwości i elementów 
 
 `VariablesEditor/` zawiera composables i kod łączący stan edytora zmiennych z Vue.
 
-### Selection
+### Zaznaczenie
 
 `selection/` zawiera stan obliczany na podstawie zaznaczenia oraz informacje o dostępnych operacjach.
 
-### Context
+### Kontekst
 
-`context/` zawiera klucz i funkcje służące do przekazywania edytora przez dependency injection w Vue:
+`context/` zawiera klucz i funkcje przekazujące edytor przez mechanizm wstrzykiwania zależności Vue:
 
 - `EDITOR_KEY`
 - `provideEditor`
@@ -70,7 +70,7 @@ W `controls/` znajdują się composables dla paneli właściwości i elementów 
 
 ### Internal
 
-`internal/` zawiera wspólne funkcje pomocnicze, które nie należą do podstawowych komponentów headless pakietu.
+`internal/` zawiera wspólne funkcje pomocnicze, które nie należą do podstawowych komponentów pakietu.
 
 ## Zasady publicznego API
 
@@ -78,7 +78,7 @@ W `controls/` znajdują się composables dla paneli właściwości i elementów 
 
 Jeśli kod przede wszystkim oblicza stan, zarządza nim lub wywołuje operacje edytora, udostępnij go jako composable.
 
-### Twórz komponenty headless tylko wtedy, gdy istotna jest struktura
+### Twórz komponenty bez wyglądu tylko wtedy, gdy istotna jest struktura
 
 Komponent główny jest potrzebny, gdy koordynuje strukturę, elementy potomne, slots albo kontekst.
 
@@ -99,7 +99,7 @@ Przekazuj do slot tylko potrzebne props albo użyj composable bezpośrednio. Kom
 ### SDK
 
 - integracja z edytorem;
-- logika headless przeznaczona do ponownego użycia;
+- logika przeznaczona do ponownego użycia, niezależna od wyglądu;
 - struktura interfejsu niezależna od wyglądu;
 - integracja z renderowaniem obszaru roboczego.
 
