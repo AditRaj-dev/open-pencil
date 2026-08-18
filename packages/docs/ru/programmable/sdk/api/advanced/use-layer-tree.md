@@ -1,13 +1,13 @@
 ---
 title: useLayerTree
-description: Доступ к context LayerTreeRoot из дочернего component.
+description: Доступ к контексту LayerTreeRoot из дочернего компонента.
 ---
 
 # useLayerTree
 
-`useLayerTree()` возвращает локальный context дерева, предоставленный ближайшим `LayerTreeRoot`.
+`useLayerTree()` возвращает контекст ближайшего `LayerTreeRoot`.
 
-Используйте composable в собственных дочерних components, которым нужны tree items, selection state, expansion state или row actions.
+Используйте composable в собственных дочерних компонентах, которым нужны элементы дерева, выделение, раскрытые ветви или действия строк.
 
 ## См. также
 

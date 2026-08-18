@@ -1,41 +1,19 @@
 ---
 title: useVariables
-description: Чтение и изменение variable collections, variables и values.
+description: Чтение и изменение коллекций, переменных, режимов и значений.
 ---
 
 # useVariables
 
-`useVariables()` — low-level composable, на котором основаны более высокоуровневые API variables editor.
+`useVariables()` предоставляет низкоуровневое состояние и действия редактора переменных.
 
-Используйте его для прямого управления collections, active modes, filtering и CRUD operations без готовой table или dialog abstraction.
-
-## Использование
+Используйте composable для прямого управления коллекциями, активными режимами, фильтрами и операциями создания, чтения, обновления и удаления без готовых таблицы или диалога.
 
 ```ts
-import { useVariables } from '@open-pencil/vue'
-
 const variables = useVariables()
 ```
 
-## Возвращаемое API
-
-- `collections`
-- `activeCollectionId`
-- `activeCollection`
-- `activeModes`
-- `variables`
-- `searchTerm`
-- `setSearchTerm()`
-- `setActiveCollection()`
-- `addCollection()`
-- `renameCollection()`
-- `addVariable()`
-- `removeVariable()`
-- `renameVariable()`
-- `updateVariableValue()`
-- `formatModeValue()`
-- `parseVariableValue()`
-- `shortName()`
+Среди возвращаемых значений — `collections`, `activeCollection`, `activeModes`, `variables`, `searchTerm` и действия для создания, переименования, удаления и обновления переменных и коллекций.
 
 ## См. также
 

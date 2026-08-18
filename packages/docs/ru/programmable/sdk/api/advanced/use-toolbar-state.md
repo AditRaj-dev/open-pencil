@@ -1,13 +1,13 @@
 ---
 title: useToolbarState
-description: Presentation state toolbar для переключения mobile categories.
+description: Состояние панели инструментов для переключения категорий на небольших экранах.
 ---
 
 # useToolbarState
 
-`useToolbarState()` возвращает paging state mobile categories и functions `goPrev()` и `goNext()` для responsive toolbar shell.
+`useToolbarState()` возвращает текущую категорию и функции `goPrev()` и `goNext()` для перехода между группами инструментов на небольших экранах.
 
-Используйте composable при создании layout toolbar поверх `ToolbarRoot`.
+Используйте composable для адаптивной панели на основе `ToolbarRoot`.
 
 ## См. также
 

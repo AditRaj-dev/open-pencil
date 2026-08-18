@@ -1,23 +1,19 @@
 ---
 title: useVariablesDialogState
-description: Editing state диалога variables поверх useVariables().
+description: Состояние редактирования диалога переменных на основе useVariables().
 ---
 
 # useVariablesDialogState
 
-`useVariablesDialogState()` дополняет `useVariables()` состоянием, необходимым диалогу для rename collections и управления focus.
+`useVariablesDialogState()` дополняет `useVariables()` состоянием для переименования коллекции и управления фокусом в диалоге переменных.
 
-Используйте composable в собственном variables dialog. Если нужен уже объединённый API редактора и таблицы, выберите `useVariablesEditor()`.
-
-## Использование
+Используйте composable для собственного диалога вместо готового объединения `useVariablesEditor()`.
 
 ```ts
-import { useVariablesDialogState } from '@open-pencil/vue'
-
 const variablesDialog = useVariablesDialogState()
 ```
 
-## Дополнительное API
+Дополнительные значения и функции:
 
 - `editingCollectionId`
 - `setCollectionInputRef()`

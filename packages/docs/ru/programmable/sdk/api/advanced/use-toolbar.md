@@ -1,13 +1,13 @@
 ---
 title: useToolbar
-description: Доступ к context ToolbarRoot из дочернего component.
+description: Доступ к контексту ToolbarRoot из дочернего компонента.
 ---
 
 # useToolbar
 
-`useToolbar()` возвращает локальный context ближайшего `ToolbarRoot`.
+`useToolbar()` возвращает контекст ближайшего `ToolbarRoot`.
 
-Используйте composable в дочерних components, которым нужны tools, active state или functions выбора tool.
+Используйте composable в дочерних компонентах, которым нужны инструменты, состояние активности или функция выбора инструмента.
 
 ## См. также
 

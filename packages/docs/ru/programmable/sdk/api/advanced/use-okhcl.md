@@ -1,42 +1,39 @@
 ---
 title: useOkHCL
-description: Сохранение OkHCL intent для fills и strokes выбранных объектов.
+description: Сохранение цветового замысла OkHCL для заливок и обводок выделенных объектов.
 ---
 
 # useOkHCL
 
-`useOkHCL()` — adapter между editor и OkHCL metadata fills и strokes. Он читает сохранённый color intent, обновляет объекты с поддержкой Undo, сообщает gamut preview и запоминает выбранный format для каждого fill или stroke.
+`useOkHCL()` служит адаптером между редактором и метаданными OkHCL заливок и обводок. Он читает сохранённый цветовой замысел, обновляет объекты с поддержкой отмены, сообщает сведения о выходе за цветовой охват и запоминает выбранный формат каждого поля.
 
-Для преобразования colors, изменения channels и отображения sliders без зависимости от editor используйте [`useColorModel()`](/programmable/sdk/api/composables/use-color-model). `useOkHCL()` нужен только там, где результат должен сохраняться в OpenPencil editor.
+Для преобразования цветов, изменения каналов и отображения ползунков без зависимости от редактора используйте [`useColorModel()`](/programmable/sdk/api/composables/use-color-model). `useOkHCL()` нужен только там, где результат должен сохраняться в OpenPencil.
 
 ## Использование
 
 ```ts
-import { useOkHCL } from '@open-pencil/vue'
-
 const okhcl = useOkHCL()
-
 const color = okhcl.getFillOkHCLColor(node, 0)
 okhcl.updateFillOkHCL(node, 0, { c: 0.2 })
 ```
 
-## Format state
+## Формат поля
 
 ```ts
 const format = okhcl.getFieldFormat(node, 0, 'fill')
 okhcl.setFillFieldFormat(node, 0, 'okhcl')
 ```
 
-При выборе `okhcl` intent инициализируется из текущего RGBA color fill или stroke. `fieldOptions` можно использовать для selector формата.
+При выборе `okhcl` замысел инициализируется из текущего цвета RGBA заливки или обводки. `fieldOptions` можно использовать для выбора формата.
 
-## Preview
+## Предварительный просмотр
 
 ```ts
 const preview = okhcl.getFillPreviewInfo(node, 0)
 // { previewColorSpace, clipped }
 ```
 
-Preview учитывает render color space документа и сообщает, потребовал ли сохранённый OkHCL intent gamut mapping.
+Предварительный просмотр учитывает цветовое пространство документа и сообщает, потребовалось ли привести сохранённый цвет OkHCL к доступному охвату.
 
 ## Возвращаемое API
 

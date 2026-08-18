@@ -1,13 +1,13 @@
 ---
 title: useCanvasContext
-description: Доступ к context CanvasRoot из дочернего component.
+description: Доступ к контексту CanvasRoot из дочернего компонента.
 ---
 
 # useCanvasContext
 
-`useCanvasContext()` возвращает локальный canvas context, предоставленный ближайшим `CanvasRoot`.
+`useCanvasContext()` возвращает контекст ближайшего `CanvasRoot`.
 
-Используйте composable внутри `CanvasSurface` или собственного дочернего component холста.
+Используйте composable в `CanvasSurface` или собственных дочерних компонентах, которым нужны ссылки и состояние холста.
 
 ## См. также
 
