@@ -1,93 +1,78 @@
 ---
 title: Kształty
-description: Tworzenie rectangles, ellipses, lines, frames, sections, polygons i stars w OpenPencil.
+description: Tworzenie prostokątów, elips, linii, ramek, sekcji, wielokątów i gwiazd w OpenPencil.
 ---
 
 # Kształty
 
-Dolny toolbar zawiera narzędzia do tworzenia shapes, frames i sections. Wybierz narzędzie, a następnie naciśnij i przeciągnij wskaźnik po obszarze roboczym.
+Dolny pasek narzędzi zawiera narzędzia do tworzenia kształtów, ramek i sekcji. Wybierz narzędzie, a następnie kliknij i przeciągnij wskaźnik po obszarze roboczym.
 
 ## Narzędzia
 
 | Narzędzie | Klawisz | Wynik |
 |-----------|---------|-------|
-| Rectangle | <kbd>R</kbd> | Prostokąt |
-| Ellipse | <kbd>O</kbd> | Elipsa |
-| Line | <kbd>L</kbd> | Linia |
-| Frame | <kbd>F</kbd> | Kontener na inne obiekty |
-| Section | <kbd>S</kbd> | Kontener najwyższego poziomu przejmujący przecinające się obiekty |
+| Prostokąt | <kbd>R</kbd> | Prostokąt |
+| Elipsa | <kbd>O</kbd> | Elipsa |
+| Linia | <kbd>L</kbd> | Linia |
+| Ramka | <kbd>F</kbd> | Kontener na inne obiekty |
+| Sekcja | <kbd>S</kbd> | Kontener najwyższego poziomu przejmujący przecinające się obiekty |
 
-## Dodatkowe shapes
+## Dodatkowe kształty
 
-W rozwijanym menu Shapes dostępne są:
+W rozwijanym menu dostępne są:
 
-- **Polygon:** domyślnie trójkąt o trzech bokach;
-- **Star:** domyślnie gwiazda o pięciu ramionach i inner radius 0,38.
-
-Polygon i Star nie mają osobnych skrótów klawiaturowych.
+- **Wielokąt:** domyślnie trójkąt o trzech bokach;
+- **Gwiazda:** domyślnie pięć ramion i promień wewnętrzny 0,38.
 
 ## Rysowanie z ograniczeniami
 
 Przytrzymaj <kbd>Shift</kbd> podczas przeciągania:
 
-- Rectangle stanie się kwadratem;
-- Ellipse stanie się kołem;
-- Line będzie przyciągana do kątów 0°, 45° i 90°.
+- prostokąt stanie się kwadratem;
+- elipsa stanie się kołem;
+- linia będzie przyciągana do kątów 0°, 45° i 90°.
 
-## Właściwości shape
+## Właściwości kształtu
 
-Zaznacz utworzony obiekt i otwórz kartę Design na panelu właściwości.
+### Zalew
 
-### Fill
+- kolor jednolity wybierany w HSV lub zapisywany szesnastkowo;
+- gradient liniowy, radialny, kątowy lub diamentowy;
+- obraz jako zalew.
 
-- **Solid color:** HSV color picker albo wartość hex;
-- **Gradient:** Linear, Radial, Angular lub Diamond z edytowalnymi stops;
-- **Image:** plik obrazu jako wypełnienie.
+### Obwiednia
 
-### Stroke
+- wspólna grubość albo osobna dla każdego boku;
+- kolor i przezroczystość;
+- wyrównanie wewnątrz, pośrodku lub na zewnątrz;
+- zakończenia, połączenia i kreskowanie.
 
-- **Width:** wspólna grubość albo osobne wartości Top, Right, Bottom i Left;
-- **Color:** kolor z opacity;
-- **Alignment:** Inside, Center albo Outside; clipping odpowiada zachowaniu Figmy;
-- **Cap:** None, Round, Square, Arrow Lines lub Arrow Equilateral dla otwartych paths;
-- **Join:** Miter, Bevel albo Round;
-- **Dash pattern:** długość kreski i odstępu.
+### Promień narożników
 
-### Corner radius
+Promień można ustawić wspólnie lub osobno dla każdego narożnika prostokątów, ramek, komponentów i egzemplarzy.
 
-Corner radius jest dostępny dla rectangles, frames, components i instances. Włącz niezależne narożniki, aby osobno ustawić top-left, top-right, bottom-left i bottom-right.
+### Efekty
 
-### Effects
+- cień zewnętrzny i wewnętrzny;
+- rozmycie warstwy;
+- rozmycie tła;
+- rozmycie pierwszego planu.
 
-- **Drop Shadow:** offset, blur radius, spread i color;
-- **Inner Shadow:** te same parametry, ale efekt znajduje się wewnątrz shape;
-- **Layer Blur:** rozmywa cały obiekt;
-- **Background Blur:** rozmywa zawartość za obiektem;
-- **Foreground Blur:** rozmywa zawartość przed nim.
+## Ramki i sekcje
 
-Naciśnij **+**, aby dodać effect. Wiersz effect można rozwinąć, a ikona oka włącza i wyłącza efekt.
+**Ramka** jest kontenerem. Przeciągnij kształt do ramki, aby zmienić jego obiekt nadrzędny. Ramka może przycinać zawartość, ale ustawienie to jest domyślnie wyłączone. Ramki obsługują także [automatyczny układ](./auto-layout).
 
-## Frames i Sections
+Po wybraniu narzędzia Ramka panel Projekt pokazuje grupy gotowych rozmiarów dla telefonów, tabletów, komputerów, prezentacji, zegarków, papieru i mediów społecznościowych. Wybrany rozmiar tworzy nazwaną ramkę pośrodku widoku.
 
-**Frame** jest kontenerem. Przeciągnij shape do frame, aby zmienić jego parent. Frame może przycinać zawartość, ale Clips content jest domyślnie wyłączone. Frames obsługują również [Auto layout](./auto-layout).
-
-Po wybraniu Frame tool panel Design pokazuje zwijane grupy presets dla telefonów, tabletów, komputerów, prezentacji, zegarków, papieru, mediów społecznościowych, Figma Community assets i starszych urządzeń. Preset tworzy nazwany frame pośrodku viewport, po czym OpenPencil wraca do Select tool. Jeśli frame jest już zaznaczony, dropdown Frame preset zmienia jego rozmiar bez zmiany nazwy.
-
-**Section** jest kontenerem najwyższego poziomu. Podczas rysowania automatycznie przejmuje przecinające się obiekty znajdujące się obok. Sections pomagają dzielić duży obszar roboczy na logiczne części. Etykietę section można przeciągać.
+**Sekcja** jest kontenerem najwyższego poziomu. Podczas rysowania automatycznie przejmuje przecinające się obiekty znajdujące się obok.
 
 ## Skróty klawiaturowe
 
 | Działanie | macOS | Windows / Linux |
 |-----------|-------|-----------------|
-| Rectangle tool | <kbd>R</kbd> | <kbd>R</kbd> |
-| Ellipse tool | <kbd>O</kbd> | <kbd>O</kbd> |
-| Line tool | <kbd>L</kbd> | <kbd>L</kbd> |
-| Frame tool | <kbd>F</kbd> | <kbd>F</kbd> |
-| Section tool | <kbd>S</kbd> | <kbd>S</kbd> |
+| Prostokąt | <kbd>R</kbd> | <kbd>R</kbd> |
+| Elipsa | <kbd>O</kbd> | <kbd>O</kbd> |
+| Linia | <kbd>L</kbd> | <kbd>L</kbd> |
+| Ramka | <kbd>F</kbd> | <kbd>F</kbd> |
+| Sekcja | <kbd>S</kbd> | <kbd>S</kbd> |
 | Kwadrat lub koło | <kbd>Shift</kbd> + przeciąganie | <kbd>Shift</kbd> + przeciąganie |
-
-## Wskazówki
-
-- Section może znajdować się tylko na najwyższym poziomie, a nie wewnątrz frame.
-- Do responsywnych interfejsów używaj frames z [Auto layout](./auto-layout).
-- Pojedyncze shapes i groups można [eksportować](./exporting) przez panel właściwości lub menu kontekstowe.
