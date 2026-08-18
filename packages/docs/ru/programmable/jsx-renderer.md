@@ -1,17 +1,17 @@
 ---
-title: JSX Renderer
-description: Создание дизайна с помощью JSX — синтаксиса, знакомого LLM по миллионам React components.
+title: Рендерер JSX
+description: Декларативное создание дизайна с помощью JSX и обратный экспорт в JSX или HTML с Tailwind.
 ---
 
-# JSX Renderer
+# Рендерер JSX
 
-OpenPencil использует JSX как декларативный язык создания дизайна. LLM уже знакомы с миллионами React components, поэтому структура `<Frame><Text>` не требует отдельного обучения. Компактность особенно важна, когда AI agent выполняет десятки операций.
+OpenPencil использует JSX как декларативный язык создания дизайна. Он подходит для агентов ИИ, сценариев и воспроизводимого построения интерфейсов.
 
-JSX удобно сравнивать. После изменения дизайна AI результат можно представить как обычный JSX diff: его легко прочитать, проверить и сохранить в version control.
+JSX также служит читаемым представлением существующего дизайна. Изменения выглядят как обычная разница в коде, которую удобно проверять и хранить в системе управления версиями.
 
 ## Создание дизайна
 
-Tool `render`, доступный в AI chat, MCP и CLI eval, принимает JSX:
+Инструмент `render`, доступный в чате с ИИ, MCP и `eval` CLI, принимает JSX:
 
 ```jsx
 <Frame name="Card" w={320} h="hug" flex="col" gap={16} p={24} bg="#FFF" rounded={16}>
@@ -20,90 +20,84 @@ Tool `render`, доступный в AI chat, MCP и CLI eval, принимае�
 </Frame>
 ```
 
-В MCP server и AI chat передайте tool `render` строку JSX. Для обратного преобразования через CLI используйте `export` — подробнее в разделе [Экспорт дизайна в JSX](./cli/exporting).
+В MCP и чате с ИИ передайте инструменту `render` строку JSX. Для обратного преобразования используйте команду `export` — подробнее в разделе [Экспорт дизайна в JSX](./cli/exporting).
 
-## Elements
+## Элементы
 
-Типы объектов представлены JSX elements:
+| Элемент | Создаёт | Псевдоним |
+|---------|---------|-----------|
+| `<Frame>` | Фрейм с автоматической компоновкой | `<View>` |
+| `<Rectangle>` | Прямоугольник | `<Rect>` |
+| `<Ellipse>` | Эллипс или круг | |
+| `<Text>` | Текстовый объект; дочерние элементы становятся содержимым | |
+| `<Line>` | Линия | |
+| `<Star>` | Звезда | |
+| `<Polygon>` | Многоугольник | |
+| `<Vector>` | Векторный контур | |
+| `<Group>` | Группа | |
+| `<Section>` | Секция | |
 
-| Element | Создаёт | Alias |
-|---------|---------|-------|
-| `<Frame>` | Frame с поддержкой Auto layout | `<View>` |
-| `<Rectangle>` | Rectangle | `<Rect>` |
-| `<Ellipse>` | Ellipse или circle | |
-| `<Text>` | Text object; children становятся содержимым | |
-| `<Line>` | Line | |
-| `<Star>` | Star | |
-| `<Polygon>` | Polygon | |
-| `<Vector>` | Vector path | |
-| `<Group>` | Group | |
-| `<Section>` | Section | |
+## Свойства оформления
 
-## Style props
+Для краткости свойства используют имена, близкие к Tailwind.
 
-Для краткости props используют имена, близкие к Tailwind.
+### Компоновка
 
-### Layout
-
-| Prop | Назначение |
-|------|------------|
-| `flex` | `"row"` или `"col"`; включает Auto layout |
-| `gap` | Расстояние между children |
-| `wrap` | Перенос children на следующую строку |
-| `rowGap` | Расстояние по поперечной оси при wrap |
+| Свойство | Назначение |
+|----------|------------|
+| `flex` | `"row"` или `"col"`; включает автоматическую компоновку |
+| `gap` | Расстояние между дочерними элементами |
+| `wrap` | Перенос дочерних элементов на следующую строку |
+| `rowGap` | Расстояние между строками при переносе |
 | `justify` | `"start"`, `"end"`, `"center"` или `"between"` |
 | `items` | `"start"`, `"end"`, `"center"` или `"stretch"` |
-| `p`, `px`, `py`, `pt`, `pr`, `pb`, `pl` | Padding |
+| `p`, `px`, `py`, `pt`, `pr`, `pb`, `pl` | Внутренние отступы |
 
 ### Размер и положение
 
-| Prop | Назначение |
-|------|------------|
-| `w`, `h` | Width и height: число, `"fill"` или `"hug"` |
+| Свойство | Назначение |
+|----------|------------|
+| `w`, `h` | Ширина и высота: число, `"fill"` или `"hug"` |
 | `minW`, `maxW`, `minH`, `maxH` | Ограничения размера |
-| `x`, `y` | Position |
+| `x`, `y` | Положение |
 
 ### Внешний вид
 
-| Prop | Назначение |
-|------|------------|
-| `bg` | Background fill в hex format |
-| `fill` | Alias для `bg` |
-| `stroke` | Stroke color |
-| `strokeWidth` | Stroke width; по умолчанию 1 |
-| `rounded` | Corner radius; отдельные углы: `roundedTL`, `roundedTR`, `roundedBL`, `roundedBR` |
-| `cornerSmoothing` | Smooth corners в стиле iOS, от 0 до 1 |
-| `opacity` | От 0 до 1 |
-| `shadow` | Drop shadow, например `"0 4 8 #00000040"` |
-| `blur` | Layer blur radius |
+| Свойство | Назначение |
+|----------|------------|
+| `bg` | Цвет фоновой заливки в шестнадцатеричном формате |
+| `fill` | Псевдоним для `bg` |
+| `stroke` | Цвет обводки |
+| `strokeWidth` | Толщина обводки; по умолчанию 1 |
+| `rounded` | Радиус углов; отдельные углы: `roundedTL`, `roundedTR`, `roundedBL`, `roundedBR` |
+| `cornerSmoothing` | Сглаживание углов от 0 до 1 |
+| `opacity` | Прозрачность от 0 до 1 |
+| `shadow` | Внешняя тень, например `"0 4 8 #00000040"` |
+| `blur` | Радиус размытия слоя |
 | `rotate` | Угол поворота в градусах |
-| `blendMode` | Blend mode |
+| `blendMode` | Режим наложения |
 | `overflow` | `"hidden"` или `"visible"` |
 
-### Typography
+### Типографика
 
-| Prop | Назначение |
-|------|------------|
-| `size` / `fontSize` | Font size |
-| `font` / `fontFamily` | Font family |
+| Свойство | Назначение |
+|----------|------------|
+| `size` / `fontSize` | Размер шрифта |
+| `font` / `fontFamily` | Семейство шрифта |
 | `weight` / `fontWeight` | `"bold"`, `"medium"`, `"normal"` или число |
-| `color` | Text color |
+| `color` | Цвет текста |
 | `textAlign` | `"left"`, `"center"`, `"right"` или `"justified"` |
 
 ## Экспорт в JSX
-
-Существующий дизайн можно преобразовать обратно в JSX:
 
 ```sh
 openpencil export design.fig -f jsx                   # Формат OpenPencil
 openpencil export design.fig -f jsx --style tailwind  # Классы Tailwind
 ```
 
-Преобразование работает в обе стороны: экспортируйте JSX, измените код и снова передайте его renderer.
+Экспортированный дизайн можно изменить как код и снова отрисовать.
 
-## Visual diff
-
-Поскольку дизайн можно представить как JSX, изменения выглядят как code diff:
+## Сравнение изменений
 
 ```diff
  <Frame name="Card" w={320} flex="col" gap={16} p={24} bg="#FFF">
@@ -113,4 +107,4 @@ openpencil export design.fig -f jsx --style tailwind  # Классы Tailwind
  </Frame>
 ```
 
-Такой diff можно проверить в pull request, сохранить в version control и анализировать в CI.
+Такое сравнение можно проверить в запросе на включение изменений, сохранить в системе управления версиями и анализировать в CI.
