@@ -1,6 +1,6 @@
 ---
 title: GradientEditorStop
-description: Accessible component выбранного или перетаскиваемого gradient stop.
+description: Доступный компонент для выбранной или перетаскиваемой точки градиента.
 ---
 
 <script setup lang="ts">
@@ -9,13 +9,13 @@ import { data } from '#docs-api/components/gradient-editor-stop.data'
 
 # GradientEditorStop
 
-`GradientEditorStop` создаёт polymorphic gradient stop и сообщает state selection и dragging. Interactive stop использует ARIA role `slider` и передаёт position в процентах через ARIA attributes.
+`GradientEditorStop` создаёт полиморфную точку градиента и сообщает состояние выбора и перетаскивания. В интерактивном режиме используется роль ARIA `slider`, а положение передаётся в процентах через атрибуты ARIA.
 
-Размещайте interactive stops на gradient bar. Стрелки изменяют position на `positionStep`, а с <kbd>Shift</kbd> — с шагом в 10 раз больше. <kbd>Home</kbd> и <kbd>End</kbd> перемещают stop к границам. <kbd>Delete</kbd> и <kbd>Backspace</kbd> вызывают `remove`, если stop разрешено удалить.
+Размещайте интерактивные точки на полосе градиента. Стрелки изменяют положение на `positionStep`, а с <kbd>Shift</kbd> — с шагом в десять раз больше. <kbd>Home</kbd> и <kbd>End</kbd> перемещают точку к границам. <kbd>Delete</kbd> и <kbd>Backspace</kbd> вызывают `remove`, если точку разрешено удалить.
 
-Обработанные keys не распространяются выше, поэтому editor shortcuts удаления и перемещения не запускаются. <kbd>Tab</kbd> последовательно переводит focus между stops.
+Обработанные клавиши не передаются выше, поэтому сочетания редактора для удаления и перемещения не запускаются. <kbd>Tab</kbd> последовательно переводит фокус между точками.
 
-Установите `interactive="false"`, если component используется как wrapper сложной строки stop. Slot actions и attributes `data-selected` и `data-dragging` сохраняются, но строка не попадает в tab order sliders.
+Установите `interactive="false"`, если компонент служит обёрткой для сложной строки точки. Действия слота и атрибуты `data-selected` и `data-dragging` сохраняются, но строка не попадает в порядок обхода ползунков клавишей Tab.
 
 ```vue twoslash
 <script setup lang="ts">
@@ -33,7 +33,7 @@ const stop: GradientStop = {
     :stop="stop"
     :index="0"
     active
-    label="Средний gradient stop"
+    label="Средняя точка градиента"
     @update-position="(_index, position) => console.log(position)"
   />
 </template>

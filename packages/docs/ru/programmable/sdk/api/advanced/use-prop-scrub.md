@@ -1,13 +1,13 @@
 ---
 title: usePropScrub
-description: Drag-to-scrub properties с commit и Undo.
+description: Предварительное изменение и сохранение числового свойства при перетаскивании.
 ---
 
 # usePropScrub
 
-`usePropScrub(editor)` выполняет live update property во время scrubbing и сохраняет изменение с поддержкой Undo после завершения interaction.
+`usePropScrub(editor)` обновляет свойство во время перетаскивания, а после завершения взаимодействия записывает итоговое изменение в историю отмены.
 
-Используйте composable в numeric controls, которые напрямую изменяют properties выбранных объектов перетаскиванием.
+Используйте composable в числовых элементах управления, которые меняют свойства выделенных объектов перетаскиванием.
 
 ## См. также
 

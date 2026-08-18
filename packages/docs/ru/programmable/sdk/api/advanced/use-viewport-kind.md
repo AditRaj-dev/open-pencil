@@ -1,26 +1,17 @@
 ---
 title: useViewportKind
-description: Mobile и desktop flags для responsive editor shell.
+description: Реактивные признаки мобильной и настольной области просмотра для собственного интерфейса.
 ---
 
 # useViewportKind
 
-`useViewportKind()` возвращает простые responsive flags, используемые интерфейсом OpenPencil.
+`useViewportKind()` возвращает упрощённую классификацию размера области просмотра, используемую адаптивным интерфейсом OpenPencil.
 
-Выберите composable, если shell достаточно небольшой abstraction над breakpoints и прямое подключение `useBreakpoints()` не нужно.
-
-## Использование
+Используйте composable, если достаточно различать мобильный и настольный режимы без прямой настройки `useBreakpoints()`.
 
 ```ts
-import { useViewportKind } from '@open-pencil/vue'
-
 const { isMobile, isDesktop } = useViewportKind()
 ```
-
-## Возвращаемое API
-
-- `isMobile`
-- `isDesktop`
 
 ## См. также
 

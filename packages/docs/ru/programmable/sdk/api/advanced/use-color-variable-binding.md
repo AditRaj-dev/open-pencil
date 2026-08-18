@@ -1,19 +1,15 @@
 ---
 title: useColorVariableBinding
-description: Binding color variables в редакторах fill и stroke.
+description: Привязка цветовых переменных к заливкам и обводкам.
 ---
 
 # useColorVariableBinding
 
-`useColorVariableBinding(kind)` предоставляет search, bind и unbind для color variables, используемых редакторами fills и strokes.
+`useColorVariableBinding(kind)` предоставляет функции поиска, установки и удаления привязки цветовых переменных в заливках или обводках.
 
-Используйте composable, если color UI должен связывать fill или stroke с design variable.
-
-## Использование
+Используйте composable в элементах управления цветом с поддержкой переменных дизайна.
 
 ```ts
-import { useColorVariableBinding } from '@open-pencil/vue'
-
 const fillBinding = useColorVariableBinding('fills')
 const strokeBinding = useColorVariableBinding('strokes')
 ```

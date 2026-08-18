@@ -1,13 +1,13 @@
 ---
 title: useSceneComputed
-description: Computed state, полученный из SceneGraph.
+description: Реактивное вычисляемое значение на основе данных SceneGraph.
 ---
 
 # useSceneComputed
 
-`useSceneComputed(fn)` — небольшой wrapper над `computed`, который явно обозначает зависимость derived state от SceneGraph редактора.
+`useSceneComputed(fn)` — небольшая обёртка над Vue `computed`, которая обозначает зависимость значения от данных SceneGraph редактора.
 
-Используйте его в composables, когда источник computed state важно показать в коде.
+Используйте её в других composables, вычисляющих значения по объектам документа.
 
 ## См. также
 

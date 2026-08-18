@@ -1,11 +1,11 @@
 ---
 title: Низкоуровневые API
-description: Специализированные и low-level API пакета @open-pencil/vue.
+description: Специализированные публичные API пакета @open-pencil/vue.
 ---
 
 # Низкоуровневые API
 
-Эти API входят в публичный package, но предназначены для более узких задач, чем основные components и composables.
+Эти API входят в публичный пакет, но предназначены для более узких задач, чем основные компоненты и composables.
 
 ## Выделение и SceneGraph
 
@@ -13,21 +13,20 @@ description: Специализированные и low-level API пакета 
 - [useSceneComputed](./use-scene-computed)
 - [usePropScrub](./use-prop-scrub)
 
-## Pickers, variables, locale и internals редактора
+## Выбор значений, переменные, язык и состояние редактора
 
 - [useColorVariableBinding](./use-color-variable-binding)
-- [useColorBindingProvider](/programmable/sdk/api/advanced/use-color-binding-provider)
 - [useGradientStops](./use-gradient-stops)
 - [useFontPicker](./use-font-picker)
 - [useOkHCL](./use-okhcl)
 - [useVariables](./use-variables)
 - [useVariablesDialogState](./use-variables-dialog-state)
 - [useVariablesTable](./use-variables-table)
-- [Locale API](./locale-apis)
+- [API языка](./locale-apis)
 - [useToolbarState](./use-toolbar-state)
 - [useNodeFontStatus](./use-node-font-status)
 
-## Собственный интерфейс редактора
+## Собственные интерфейсы редактора
 
 - [useLayerDrag](./use-layer-drag)
 - [useInlineRename](./use-inline-rename)
@@ -36,7 +35,7 @@ description: Специализированные и low-level API пакета 
 - [useViewportKind](./use-viewport-kind)
 - [toolCursor](./tool-cursor)
 
-## Context components
+## Контекст компонентов
 
 - [useCanvasContext](./use-canvas-context)
 - [useLayerTree](./use-layer-tree)

@@ -1,13 +1,13 @@
 ---
 title: useNodeProps
-description: Low-level API selection и mixed values для панелей свойств.
+description: Низкоуровневый API для смешанных значений и изменения свойств выделенных объектов.
 ---
 
 # useNodeProps
 
-`useNodeProps()` лежит в основе более специализированных composables `useAppearance`, `useLayout` и `useTypography`.
+`useNodeProps()` служит основой для `useAppearance`, `useLayout` и `useTypography`.
 
-Используйте его для определения mixed values, обновления multi-selection, изменения items массива и сохранения properties с поддержкой Undo.
+Используйте его, если собственной панели нужно определять смешанные значения, изменять свойство у нескольких объектов, редактировать элементы массива или выполнять предварительное изменение и сохранение с поддержкой отмены.
 
 ## См. также
 

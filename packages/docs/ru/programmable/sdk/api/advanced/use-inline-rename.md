@@ -1,13 +1,13 @@
 ---
 title: useInlineRename
-description: State, focus и keyboard behavior при rename на месте.
+description: Состояние, фокус и клавиатура при переименовании на месте.
 ---
 
 # useInlineRename
 
-`useInlineRename(onCommit)` управляет editing state, focus, нажатием за пределами поля и keyboard behavior при rename непосредственно в списке.
+`useInlineRename(onCommit)` управляет режимом редактирования, фокусом, щелчком за пределами поля, клавишами <kbd>Enter</kbd> и <kbd>Escape</kbd>.
 
-Используйте composable в собственном списке страниц, дереве слоёв или другом интерфейсе с inline rename.
+Используйте composable в списках страниц, деревьях слоёв и других интерфейсах, где имя меняется без отдельного диалога.
 
 ## См. также
 

@@ -1,13 +1,13 @@
 ---
 title: TypographyControlsRoot
-description: Headless root для font, alignment и formatting controls.
+description: Компонент без встроенного оформления для шрифта, выравнивания и форматирования текста.
 ---
 
 # TypographyControlsRoot
 
-`TypographyControlsRoot` предоставляет typography state и handlers из `useTypography()` через структурный component.
+`TypographyControlsRoot` передаёт через слот состояние и действия `useTypography()`.
 
-Используйте его для собственного интерфейса typography controls, когда загрузкой fonts и formatting управляет SDK.
+Используйте его, чтобы создать собственные элементы управления шрифтом, выравниванием и форматированием, сохранив подключение к редактору из SDK.
 
 ## См. также
 
