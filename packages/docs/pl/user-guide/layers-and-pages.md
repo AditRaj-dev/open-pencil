@@ -5,85 +5,58 @@ description: Praca z warstwami, stronami i panelem właściwości w OpenPencil.
 
 # Warstwy i strony
 
-Interfejs edytora składa się z trzech głównych obszarów: warstw po lewej stronie, obszaru roboczego pośrodku i właściwości po prawej. Szerokość paneli bocznych można zmieniać przez przeciąganie separatorów.
+Interfejs edytora składa się z warstw po lewej stronie, obszaru roboczego pośrodku i właściwości po prawej. Szerokość paneli bocznych można zmieniać przez przeciąganie separatorów.
 
 ## Warstwy
 
-Lewy panel przedstawia hierarchy dokumentu jako drzewo.
+Lewy panel przedstawia hierarchię dokumentu jako drzewo.
 
-### Drzewo obiektów
+- Kliknij strzałkę obok ramki, grupy lub komponentu, aby pokazać albo ukryć elementy potomne.
+- Przeciągaj warstwy, aby zmienić kolejność albo obiekt nadrzędny.
+- Kliknij ikonę oka, aby ukryć lub pokazać warstwę.
+- Kliknij nazwę dwukrotnie, aby ją zmienić.
 
-Naciśnij strzałkę obok frame, group lub component, aby pokazać albo ukryć elementy potomne.
-
-### Zmiana kolejności
-
-Przeciągaj warstwy na liście, aby zmienić kolejność nakładania. Obiekty położone wyżej są wyświetlane przed pozostałymi.
-
-### Widoczność
-
-Naciśnij ikonę oka obok warstwy, aby ją ukryć lub pokazać. Ukryty obiekt pozostaje w drzewie.
-
-### Zmiana nazwy
-
-Naciśnij nazwę warstwy dwukrotnie i wpisz nową. <kbd>Enter</kbd> lub naciśnięcie poza polem zapisuje nazwę, a <kbd>Escape</kbd> anuluje zmianę.
-
-### Powiązanie z obszarem roboczym
-
-Wybranie warstwy na liście zaznacza odpowiadający jej obiekt na obszarze roboczym. Zaznaczenie obiektu na obszarze roboczym wskazuje go również w drzewie.
+Wybranie warstwy na liście zaznacza odpowiadający jej obiekt na obszarze roboczym i odwrotnie.
 
 ## Strony
 
-Panel stron zawiera wszystkie strony dokumentu.
+- Kliknij stronę, aby do niej przejść. OpenPencil przywróci zapisane położenie i powiększenie.
+- Użyj przycisku dodawania, aby utworzyć stronę.
+- Usuń bieżącą stronę za pomocą odpowiedniego działania.
+- Kliknij nazwę dwukrotnie, aby ją zmienić.
 
-- **Przejść do strony:** naciśnij jej kartę. OpenPencil przywróci zapisane położenie i powiększenie.
-- **Dodać stronę:** naciśnij przycisk dodawania.
-- **Usunąć stronę:** usuń bieżącą stronę.
-- **Zmienić nazwę:** naciśnij nazwę dwukrotnie. <kbd>Enter</kbd>, <kbd>Escape</kbd> lub naciśnięcie poza polem kończy edycję.
-
-Każda strona ma własny obszar roboczy, położenie widoku i powiększenie.
+Każda strona ma własny kolor tła, położenie widoku i powiększenie.
 
 ## Właściwości
 
-Po prawej stronie znajdują się trzy karty.
-
-### Design
+### Projekt
 
 Karta pokazuje właściwości zaznaczonych obiektów:
 
-- **Appearance:** opacity, wspólny albo niezależny corner radius oraz visibility;
-- **Fill:** solid color, linear, radial, angular i diamond gradient, image oraz variable binding;
-- **Stroke:** color, width, cap, join i dash pattern;
-- **Effects:** drop shadow, inner shadow, layer blur, background blur i foreground blur;
-- **Typography:** font family, size, weight i przyciski B/I/U/S;
-- **Layout:** ustawienia [Auto layout](./auto-layout) dla odpowiednich frames;
-- **Export:** scale, format i przycisk eksportu — więcej na stronie [Eksport](./exporting).
+- **Wygląd:** przezroczystość, wspólny albo niezależny promień narożników i widoczność;
+- **Zalew:** kolor jednolity, gradienty liniowy, radialny, kątowy i diamentowy, obraz oraz powiązanie ze zmienną;
+- **Obwiednia:** kolor, grubość, zakończenia, połączenia i kreskowanie;
+- **Efekty:** cień zewnętrzny i wewnętrzny oraz rozmycie warstwy, tła i pierwszego planu;
+- **Typografia:** rodzina, rozmiar i odmiana czcionki oraz przyciski B/I/U/S;
+- **Układ:** ustawienia [automatycznego układu](./auto-layout);
+- **Eksport:** skala, format i przycisk eksportu.
 
-Jeśli nic nie jest zaznaczone, karta Design pokazuje właściwości strony, w tym kolor tła obszaru roboczego.
+Jeśli nic nie jest zaznaczone, karta pokazuje właściwości strony.
 
-### Code
+### Kod
 
-Zaznaczony obiekt jest prezentowany jako kod z wyróżnianiem składni, numerami wierszy i przyciskiem Copy. Dostępne są dwa formaty:
-
-- **OpenPencil JSX:** drzewo komponentów zgodne z `renderJsx()`;
-- **Tailwind CSS v4:** HTML z utility classes, na przykład `<div className="flex gap-4 p-3">`, gotowy do użycia w React lub Vue.
+Zaznaczony obiekt jest prezentowany jako JSX z wyróżnianiem składni. Dostępny jest także HTML z klasami Tailwind CSS v4.
 
 ### AI
 
-AI chat tworzy i zmienia obiekty na podstawie poleceń w zwykłym języku. Kartę można również otworzyć lub zamknąć skrótem <kbd>⌘</kbd><kbd>J</kbd>. Obsługiwane są różne AI models przez OpenRouter.
-
-## Skrót klawiaturowy
-
-| Działanie | macOS | Windows / Linux |
-|-----------|-------|-----------------|
-| Otworzyć lub zamknąć AI chat | <kbd>⌘</kbd><kbd>J</kbd> | <kbd>Ctrl</kbd> + <kbd>J</kbd> |
+Czat AI tworzy i zmienia obiekty na podstawie poleceń w zwykłym języku. Kartę można otworzyć lub zamknąć skrótem <kbd>⌘</kbd><kbd>J</kbd> albo <kbd>Ctrl</kbd><kbd>J</kbd>.
 
 ## Małe ekrany
 
-Na telefonach i małych ekranach panele boczne zastępuje wysuwany panel dolny. Karty przełączają widoki Layers, Properties, Design i Code. Toolbar zmienia się w kompaktowy poziomy pasek z wyborem kategorii.
+Na telefonach i małych ekranach panele boczne zastępuje wysuwany panel dolny z kartami „Warstwy”, „Właściwości”, „Projekt” i „Kod”. Panel narzędzi staje się zwartym poziomym paskiem.
 
 ## Wskazówki
 
-- Szerokość paneli jest zapisywana i przywracana po ponownym załadowaniu.
-- Drzewo warstw pomaga wybrać zasłonięty obiekt, do którego trudno dotrzeć na obszarze roboczym.
+- Szerokość paneli jest zapisywana po ponownym załadowaniu.
+- Drzewo warstw pomaga wybrać zasłonięty obiekt.
 - Dodatkowe operacje znajdują się w [menu kontekstowym](./context-menu).
-- Skróty do zmiany kolejności, widoczności i blokady opisano na stronie [Zaznaczanie i modyfikowanie](./selection-and-manipulation).

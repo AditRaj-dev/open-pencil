@@ -1,88 +1,65 @@
 ---
 title: Edycja wektorów
-description: Edycja anchors, Bezier handles i segments oraz używanie Pen tool w trybie edycji wektorów.
+description: Edycja punktów, uchwytów Béziera i segmentów oraz używanie Pióra w trybie edycji.
 ---
 
 # Edycja wektorów
 
-Tryb edycji wektorów pozwala zmieniać geometrię ścieżki: położenie anchors, kształt segments i Bezier handles. Zamiast transformować cały obiekt, edytujesz samą ścieżkę.
+Tryb edycji wektorów pozwala zmieniać geometrię ścieżki: położenie punktów, kształt segmentów i uchwyty Béziera. Zamiast transformować cały obiekt, edytujesz samą ścieżkę.
 
 ## Włączanie trybu edycji
 
-1. Wybierz obiekt wektorowy za pomocą Select tool.
+1. Wybierz obiekt wektorowy narzędziem Zaznaczenie.
 2. Kliknij dwukrotnie krzywą.
 
 Aby zakończyć edycję, naciśnij <kbd>Escape</kbd> albo przejdź do innego trybu.
 
 ## Zachowanie interfejsu
 
-W trybie edycji:
-
-- bounding box służący do transformacji obiektu jest ukryty;
-- można wybierać i zmieniać anchors, segments oraz handles;
-- narożniki bounding box nie aktywują resize ani rotation.
+- Ramka transformacji jest ukryta.
+- Można wybierać i zmieniać punkty, segmenty oraz uchwyty.
+- Narożniki ramki nie aktywują zmiany rozmiaru ani obrotu.
 
 ## Podstawowe operacje
 
-### Przesuwanie anchor
+### Przesuwanie punktu
 
-Przeciągnij anchor. Połączone segments i kształt ścieżki zmieniają się podczas przeciągania.
+Przeciągnij punkt. Połączone segmenty i kształt ścieżki zmieniają się podczas przeciągania.
 
-### Edycja Bezier handle
+### Edycja uchwytu Béziera
 
-Przeciągnij handle przy anchor. Domyślne zachowanie zależy od aktualnego handle composition danego anchor.
+Przeciągnij uchwyt przy punkcie. Domyślne zachowanie zależy od aktualnego typu punktu.
 
-## Modyfikatory przeciągania handles
+## Modyfikatory uchwytów
 
 | Operacja | macOS | Windows / Linux |
 |----------|-------|-----------------|
-| Continuous | <kbd>Cmd</kbd> + przeciągnięcie | <kbd>Ctrl</kbd> + przeciągnięcie |
-| Corner, niezależne handles | <kbd>Option</kbd> + przeciągnięcie | <kbd>Alt</kbd> + przeciągnięcie |
-| Zablokowany kierunek, tylko długość | <kbd>Shift</kbd> + przeciągnięcie | <kbd>Shift</kbd> + przeciągnięcie |
+| Ciągły | <kbd>Cmd</kbd> + przeciągnięcie | <kbd>Ctrl</kbd> + przeciągnięcie |
+| Narożny, niezależne uchwyty | <kbd>Option</kbd> + przeciągnięcie | <kbd>Alt</kbd> + przeciągnięcie |
+| Zablokowany kierunek | <kbd>Shift</kbd> + przeciągnięcie | <kbd>Shift</kbd> + przeciągnięcie |
 
-### Continuous
+### Tryb ciągły
 
-Przytrzymaj <kbd>Cmd</kbd> albo <kbd>Ctrl</kbd> podczas przeciągania:
+Aktywny uchwyt pozostaje na jednej linii z drugim, zmienia się tylko jego długość, a krzywa zachowuje płynne przejście.
 
-- active handle pozostaje na jednej linii z drugim handle;
-- zmienia się wyłącznie długość active handle;
-- krzywa zachowuje płynne przejście bez ostrego narożnika.
+### Tryb narożny
 
-### Corner
-
-Przytrzymaj <kbd>Option</kbd> albo <kbd>Alt</kbd>:
-
-- active handle zmienia się niezależnie;
-- drugi handle pozostaje na miejscu;
-- można utworzyć ostre przejście w narożniku.
+Aktywny uchwyt zmienia się niezależnie, a drugi pozostaje na miejscu. Pozwala to utworzyć ostre przejście.
 
 ### Zablokowany kierunek
 
-Dla anchors o composition **Continuous** albo **Symmetric**, przytrzymanie <kbd>Shift</kbd> blokuje kierunek zapisany przed rozpoczęciem bieżącego przeciągania. Zmienia się tylko długość jednego lub obu handles, zależnie od composition.
+Dla punktów typu **Continuous** albo **Symmetric** przytrzymanie <kbd>Shift</kbd> blokuje kierunek zapisany przed rozpoczęciem przeciągania. Zmienia się tylko długość jednego lub obu uchwytów.
 
-## Zmiana wygięcia przez przeciągnięcie anchor
+## Zmiana wygięcia przez przeciągnięcie punktu
 
-Gdy przeciągasz anchor z wciśniętym <kbd>Cmd</kbd> albo <kbd>Ctrl</kbd>, edytor wybiera właściwy handle na podstawie kierunku segment przyłączonego do anchor, a nie odległości od najbliższego sąsiedniego punktu.
+Gdy przeciągasz punkt z wciśniętym <kbd>Cmd</kbd> albo <kbd>Ctrl</kbd>, edytor wybiera właściwy uchwyt na podstawie kierunku dołączonego segmentu, a nie odległości od najbliższego punktu.
 
-Działa to również dla wielogałęziowych anchors w vector network. Po wybraniu target handle nie zmienia się do końca bieżącego przeciągania.
+Działa to również dla rozgałęzionych punktów w sieci wektorowej. Po wybraniu docelowy uchwyt nie zmienia się do końca przeciągania.
 
-## Pen tool w trybie edycji
+## Pióro w trybie edycji
 
-Gdy Pen tool jest aktywne:
+- Kliknij segment, aby dodać punkt i podzielić segment.
+- Kliknij punkt końcowy otwartej ścieżki, aby wznowić rysowanie.
+- Kliknij punkt z wciśniętym <kbd>Option</kbd> albo <kbd>Alt</kbd>, aby go usunąć, jeśli pozwala na to topologia.
 
-- kliknij segment, aby dodać anchor i podzielić segment;
-- kliknij endpoint otwartej ścieżki, aby wznowić rysowanie;
-- kliknij anchor z wciśniętym <kbd>Option</kbd> albo <kbd>Alt</kbd>, aby go usunąć, jeśli pozwala na to topologia.
-
-Tworzenie i zamykanie ścieżek opisano na stronie [Pen tool](./pen-tool.md).
-
-## Przykładowa kolejność pracy
-
-1. Narysuj kształt za pomocą Pen tool.
-2. Kliknij dwukrotnie krzywą, aby rozpocząć edycję wektora.
-3. Przesuń anchors, aby poprawić obrys.
-4. Zmień handles:
-   - <kbd>Cmd</kbd>/<kbd>Ctrl</kbd> zachowuje płynne przejście;
-   - <kbd>Option</kbd>/<kbd>Alt</kbd> rozłącza handles;
-   - <kbd>Shift</kbd> zmienia tylko długość.
-5. Naciśnij <kbd>Escape</kbd>.
+Tworzenie i zamykanie ścieżek opisano na stronie [Narzędzie Pióro](./pen-tool.md).

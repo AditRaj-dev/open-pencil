@@ -1,11 +1,11 @@
 ---
-title: Pen tool
-description: Tworzenie vector paths i krzywych Béziera za pomocą Pen tool.
+title: Narzędzie Pióro
+description: Tworzenie ścieżek wektorowych i krzywych Béziera w OpenPencil.
 ---
 
-# Pen tool
+# Narzędzie Pióro
 
-Pen tool tworzy vector paths w formacie vector network zgodnym z `.fig`.
+Pióro tworzy ścieżki wektorowe na podstawie modelu sieci wektorowej zgodnego z `.fig`.
 
 ## Włączanie
 
@@ -13,33 +13,41 @@ Naciśnij <kbd>P</kbd>.
 
 ## Tworzenie punktów
 
-- Naciśnij raz, aby umieścić corner point i utworzyć prosty segment.
-- Naciśnij i przeciągnij, aby umieścić curve point z tangent handles Béziera. Kierunek i odległość przeciągania określają kształt krzywej.
+- Kliknij raz, aby umieścić punkt narożny i utworzyć prosty segment.
+- Kliknij i przeciągnij, aby umieścić punkt krzywej z uchwytami Béziera. Kierunek i odległość przeciągania określają kształt krzywej.
 - Nie zwalniając przycisku myszy, przytrzymaj <kbd>Space</kbd>, aby przesunąć właśnie tworzony punkt.
 
-Dodawaj kolejne punkty, aby budować path segment po segmencie. Preview line łączy ostatni punkt z bieżącym położeniem wskaźnika.
+Dodawaj kolejne punkty, aby budować ścieżkę segment po segmencie. Linia podglądu łączy ostatni punkt z bieżącym położeniem wskaźnika.
 
-## Zamknięty path
+## Zamknięta ścieżka
 
-Naciśnij pierwszy punkt path, aby go zamknąć. Zamknięty path może mieć fill.
+Kliknij pierwszy punkt ścieżki, aby ją zamknąć. Zamknięta ścieżka może mieć zalew.
 
-## Otwarty path
+## Otwarta ścieżka
 
-Naciśnij <kbd>Escape</kbd>, aby zakończyć path bez zamykania. Otwarty path jest wyświetlany tylko ze stroke i nie otrzymuje fill.
+Naciśnij <kbd>Escape</kbd>, aby zakończyć ścieżkę bez zamykania. Otwarta ścieżka jest wyświetlana tylko z obwiednią.
 
-## Vector networks
+## Sieci wektorowe
 
-Zamiast prostej sekwencji punktów OpenPencil używa vector network. Ten model obsługuje rozgałęzienia i złożoną topology. Figma stosuje ten sam model, dlatego paths są zachowywane podczas importu i eksportu `.fig`.
+Zamiast prostej sekwencji punktów OpenPencil używa sieci wektorowej. Model ten obsługuje rozgałęzienia i złożoną topologię. Figma stosuje ten sam model, dlatego ścieżki są zachowywane podczas importu i eksportu `.fig`.
+
+## Edycja istniejącej ścieżki
+
+Przy aktywnym Piórze:
+
+- kliknij punkt końcowy otwartej ścieżki, aby kontynuować rysowanie;
+- kliknij segment, aby dodać punkt;
+- przytrzymaj <kbd>Option</kbd> albo <kbd>Alt</kbd> i kliknij punkt, aby go usunąć, jeśli pozwala na to topologia.
 
 ## Skróty klawiaturowe
 
 | Działanie | macOS | Windows / Linux |
 |-----------|-------|-----------------|
-| Pen tool | <kbd>P</kbd> | <kbd>P</kbd> |
-| Zakończyć otwarty path | <kbd>Escape</kbd> | <kbd>Escape</kbd> |
+| Pióro | <kbd>P</kbd> | <kbd>P</kbd> |
+| Zakończ otwartą ścieżkę | <kbd>Escape</kbd> | <kbd>Escape</kbd> |
 
 ## Wskazówki
 
-- Preview line zawsze zaczyna się w ostatnim dodanym punkcie i nie przeskakuje do współrzędnych `(0, 0)`.
-- Im dalej przeciągniesz wskaźnik podczas tworzenia curve point, tym dłuższe będą tangent handles i szersze wygięcie.
-- Po utworzeniu path skonfiguruj fill, stroke i effects na panelu właściwości.
+- Linia podglądu zawsze zaczyna się w ostatnim dodanym punkcie.
+- Im dalej przeciągniesz wskaźnik podczas tworzenia punktu krzywej, tym dłuższe będą uchwyty Béziera.
+- Po utworzeniu ścieżki skonfiguruj zalew, obwiednię i efekty na panelu właściwości.
