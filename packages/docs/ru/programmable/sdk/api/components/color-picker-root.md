@@ -1,6 +1,6 @@
 ---
 title: ColorPickerRoot
-description: Headless color picker на основе popover с events жизненного цикла interaction.
+description: Компонент выбора цвета на основе всплывающей панели с событиями жизненного цикла взаимодействия.
 ---
 
 <script setup lang="ts">
@@ -9,9 +9,9 @@ import { data } from '#docs-api/components/color-picker-root.data'
 
 # ColorPickerRoot
 
-`ColorPickerRoot` объединяет trigger с color swatch и surface popover, а сам интерфейс редактирования оставляет slots. Slot `trigger` получает текущий style swatch, slot по умолчанию — текущий `Color` из SceneGraph.
+`ColorPickerRoot` объединяет кнопку с образцом цвета и всплывающую панель, а интерфейс редактирования оставляет слотам. Слот `trigger` получает текущий стиль образца, слот по умолчанию — текущее значение `Color` из SceneGraph.
 
-Event `openChange` сообщает полную границу interaction с picker. `cancel` вызывается перед закрытием по Escape, поэтому пользователь `BindableValue` может одной операцией отменить detach variable и изменение paint. Простое открытие picker или получение focus не вызывает update color.
+Событие `openChange` сообщает начало и завершение взаимодействия с выбором цвета. `cancel` вызывается перед закрытием по <kbd>Escape</kbd>, поэтому компонент, использующий `BindableValue`, может одной операцией отменить удаление привязки и изменение краски. Простое открытие панели или получение фокуса не меняет цвет.
 
 ```vue twoslash
 <script setup lang="ts">

@@ -1,13 +1,13 @@
 ---
 title: useNodeFontStatus
-description: Сведения об отсутствующих fonts в text object.
+description: Сведения об отсутствующих шрифтах в текстовом объекте.
 ---
 
 # useNodeFontStatus
 
-`useNodeFontStatus(node)` возвращает сведения об отсутствующих fonts для getter текстового объекта.
+`useNodeFontStatus(node)` проверяет шрифты указанного текстового объекта и возвращает сведения о семействах и начертаниях, которые не удалось загрузить.
 
-Используйте composable в typography panel или warning, который должен сообщить о недоступном font family.
+Используйте composable на панели типографики или в предупреждении об отсутствующих шрифтах.
 
 ## См. также
 

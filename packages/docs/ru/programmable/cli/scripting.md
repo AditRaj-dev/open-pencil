@@ -145,7 +145,7 @@ API намеренно близок к Figma Plugin API, но работает �
 - `figma.bindVariable(nodeId, field, variableId)`
 - `figma.unbindVariable(nodeId, field)`
 
-### Properties
+### Свойства
 
 Распространённые properties доступны для чтения и записи через proxy:
 

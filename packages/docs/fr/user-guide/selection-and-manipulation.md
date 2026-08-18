@@ -5,62 +5,62 @@ description: Sélectionner, déplacer, redimensionner, faire pivoter, dupliquer 
 
 # Sélectionner et transformer
 
-Les objets sélectionnés peuvent être déplacés, redimensionnés, tournés, dupliqués et réorganisés dans l’ordre des Layers.
+Les objets sélectionnés peuvent être déplacés, redimensionnés, tournés, dupliqués et réorganisés dans l’ordre des calques.
 
-## Selection
+## Sélection
 
-- Click sur un objet remplace la Selection actuelle.
-- <kbd>Shift</kbd> + Click ajoute ou retire un objet.
-- Drag sur une zone libre du canvas crée une Marquee selection et sélectionne les objets qu’elle traverse.
-- <kbd>⌘</kbd><kbd>A</kbd> sélectionne tous les objets de la Page actuelle.
-- Click sur une zone libre annule la Selection.
+- Un clic sur un objet remplace la sélection actuelle.
+- <kbd>Shift</kbd> + clic ajoute ou retire un objet.
+- Un glissement sur une zone libre du canevas crée une sélection rectangulaire et sélectionne les objets qu’elle traverse.
+- <kbd>⌘</kbd><kbd>A</kbd> sélectionne tous les objets de la page actuelle.
+- Un clic sur une zone libre annule la sélection.
 
 ## Déplacer
 
-- Faites un Drag sur un objet sélectionné.
-- Les Arrow keys déplacent de 1 px.
-- <kbd>Shift</kbd> + Arrow keys déplacent de 10 px.
+- Faites glisser un objet sélectionné.
+- Les touches fléchées déplacent de 1 px.
+- <kbd>Shift</kbd> + flèches déplacent de 10 px.
 
-## Resize
+## Redimensionner
 
-La Selection affiche huit Handles : quatre aux coins et quatre au milieu des côtés. Faites un Drag sur l’un d’eux pour modifier Width et Height.
+La sélection affiche huit poignées : quatre aux coins et quatre au milieu des côtés. Faites glisser l’une d’elles pour modifier la largeur et la hauteur.
 
-Maintenez <kbd>Shift</kbd> sur un Corner handle pour conserver les proportions.
+Maintenez <kbd>Shift</kbd> sur une poignée d’angle pour conserver les proportions.
 
-## Rotation
+## Faire pivoter
 
-Placez le Pointer juste à l’extérieur d’un Corner handle jusqu’à l’apparition du Rotation cursor, puis faites un Drag. <kbd>Shift</kbd> aligne la Rotation par pas de 15°.
+Placez le pointeur juste à l’extérieur d’une poignée d’angle jusqu’à l’apparition du curseur de rotation, puis faites glisser. <kbd>Shift</kbd> aligne la rotation par pas de 15°.
 
-## Duplicate
+## Dupliquer
 
-- <kbd>⌥</kbd> ou <kbd>Alt</kbd> pendant le Drag crée et déplace une copie.
+- <kbd>⌥</kbd> ou <kbd>Alt</kbd> pendant le glissement crée et déplace une copie.
 - <kbd>⌘</kbd><kbd>D</kbd> ou <kbd>Ctrl</kbd><kbd>D</kbd> duplique au même emplacement.
 
-## Delete
+## Supprimer
 
-Backspace ou Delete supprime tous les objets sélectionnés.
+Retour arrière ou Suppr supprime tous les objets sélectionnés.
 
 ## Ordre
 
-- **]** place la Selection au premier plan.
+- **]** place la sélection au premier plan.
 - **[** l’envoie à l’arrière-plan.
 
-## Visibility et Lock
+## Visibilité et verrouillage
 
-- <kbd>⇧</kbd><kbd>⌘</kbd><kbd>H</kbd> change Visibility.
-- <kbd>⇧</kbd><kbd>⌘</kbd><kbd>L</kbd> change Lock.
+- <kbd>⇧</kbd><kbd>⌘</kbd><kbd>H</kbd> change la visibilité.
+- <kbd>⇧</kbd><kbd>⌘</kbd><kbd>L</kbd> change le verrouillage.
 
 ## Raccourcis
 
 | Action | macOS | Windows / Linux |
 |--------|-------|-----------------|
 | Tout sélectionner | <kbd>⌘</kbd><kbd>A</kbd> | <kbd>Ctrl</kbd><kbd>A</kbd> |
-| Duplicate | <kbd>⌘</kbd><kbd>D</kbd> | <kbd>Ctrl</kbd><kbd>D</kbd> |
-| Dupliquer et déplacer | <kbd>⌥</kbd> + Drag | <kbd>Alt</kbd> + Drag |
-| Delete | <kbd>⌫</kbd>/<kbd>Suppr</kbd> | Backspace/<kbd>Suppr</kbd> |
-| Déplacer de 1 px | Arrow keys | Arrow keys |
-| Déplacer de 10 px | <kbd>⇧</kbd> + Arrow keys | <kbd>Shift</kbd> + Arrow keys |
+| Dupliquer | <kbd>⌘</kbd><kbd>D</kbd> | <kbd>Ctrl</kbd><kbd>D</kbd> |
+| Dupliquer et déplacer | <kbd>⌥</kbd> + glissement | <kbd>Alt</kbd> + glissement |
+| Supprimer | <kbd>⌫</kbd>/<kbd>Suppr</kbd> | Retour arrière/<kbd>Suppr</kbd> |
+| Déplacer de 1 px | Flèches | Flèches |
+| Déplacer de 10 px | <kbd>⇧</kbd> + flèches | <kbd>Shift</kbd> + flèches |
 | Premier plan | ] | ] |
 | Arrière-plan | [ | [ |
-| Visibility | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>H</kbd> | <kbd>Shift</kbd><kbd>Ctrl</kbd><kbd>H</kbd> |
-| Lock | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>L</kbd> | <kbd>Shift</kbd><kbd>Ctrl</kbd><kbd>L</kbd> |
+| Visibilité | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>H</kbd> | <kbd>Shift</kbd><kbd>Ctrl</kbd><kbd>H</kbd> |
+| Verrouillage | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>L</kbd> | <kbd>Shift</kbd><kbd>Ctrl</kbd><kbd>L</kbd> |

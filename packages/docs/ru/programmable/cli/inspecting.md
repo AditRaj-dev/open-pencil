@@ -111,7 +111,7 @@ openpencil query design.fig "//COMPONENT_SET//INSTANCE"  # Instances внутр�
 [4] [frame] "surprised-emoji  32×32" (0:26)
 ```
 
-## Properties объекта
+## Свойства объекта
 
 ```sh
 openpencil node design.fig --id 1:23

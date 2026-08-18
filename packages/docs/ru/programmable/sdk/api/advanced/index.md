@@ -7,7 +7,7 @@ description: Специализированные и low-level API пакета 
 
 Эти API входят в публичный package, но предназначены для более узких задач, чем основные components и composables.
 
-## Selection и SceneGraph
+## Выделение и SceneGraph
 
 - [useNodeProps](./use-node-props)
 - [useSceneComputed](./use-scene-computed)

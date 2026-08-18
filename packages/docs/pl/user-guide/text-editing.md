@@ -1,23 +1,23 @@
 ---
-title: Tekst
-description: Tworzenie i edytowanie tekstu, rich text, fonts oraz edycja bezpośrednio na obszarze roboczym.
+title: Edycja tekstu
+description: Tworzenie i edytowanie tekstu, formatowanie oraz zarządzanie czcionkami w OpenPencil.
 ---
 
-# Tekst
+# Edycja tekstu
 
-OpenPencil pozwala tworzyć obiekty tekstowe i edytować rich text bezpośrednio na obszarze roboczym.
+OpenPencil pozwala tworzyć obiekty tekstowe i edytować sformatowany tekst bezpośrednio na obszarze roboczym.
 
 ## Tworzenie tekstu
 
-Naciśnij <kbd>T</kbd>, a następnie naciśnij obszar roboczy. Pojawi się pusty obiekt tekstowy z migającym cursor — możesz od razu rozpocząć pisanie.
+Naciśnij <kbd>T</kbd>, a następnie kliknij obszar roboczy. Pojawi się pusty obiekt tekstowy z migającym kursorem — możesz od razu rozpocząć pisanie.
 
 ## Edycja na obszarze roboczym
 
-Naciśnij dwukrotnie istniejący obiekt tekstowy. Niebieska ramka oznacza aktywny tryb edycji. Naciśnij poza obiektem, aby zapisać zmiany i wyjść.
+Kliknij dwukrotnie istniejący obiekt tekstowy. Niebieska ramka oznacza aktywny tryb edycji. Kliknij poza obiektem, aby zastosować zmiany i wyjść.
 
-Tekst jest wyświetlany przez canvas renderer; nad obszarem roboczym nie pojawia się osobny widoczny input.
+Tekst jest wyświetlany bezpośrednio na obszarze roboczym; nie pojawia się osobne widoczne pole wprowadzania.
 
-## Przesuwanie cursor
+## Przesuwanie kursora
 
 | Działanie | macOS | Windows / Linux |
 |-----------|-------|-----------------|
@@ -26,72 +26,70 @@ Tekst jest wyświetlany przez canvas renderer; nad obszarem roboczym nie pojawia
 | Jedno słowo | <kbd>⌥</kbd><kbd>←</kbd> / <kbd>⌥</kbd><kbd>→</kbd> | <kbd>Ctrl</kbd> + <kbd>←</kbd> / <kbd>Ctrl</kbd> + <kbd>→</kbd> |
 | Początek lub koniec wiersza | <kbd>⌘</kbd><kbd>←</kbd> / <kbd>⌘</kbd><kbd>→</kbd> | <kbd>Home</kbd> / <kbd>End</kbd> |
 
-Przytrzymaj <kbd>Shift</kbd> razem z klawiszem ruchu, aby rozszerzyć text selection.
+Przytrzymaj <kbd>Shift</kbd> razem z klawiszem ruchu, aby rozszerzyć zaznaczenie.
 
 ## Zaznaczanie tekstu
 
-- Naciśnij wewnątrz tekstu, aby ustawić cursor.
-- Naciśnij i przeciągnij, aby zaznaczyć zakres.
-- Naciśnij słowo dwukrotnie, aby je zaznaczyć.
-- Naciśnij tekst trzykrotnie, aby zaznaczyć całą zawartość obiektu.
+- Kliknij wewnątrz tekstu, aby ustawić kursor.
+- Kliknij i przeciągnij, aby zaznaczyć zakres.
+- Kliknij słowo dwukrotnie, aby je zaznaczyć.
+- Kliknij tekst trzykrotnie, aby zaznaczyć całą zawartość obiektu.
 
-## Rich text
+## Formatowanie
 
-Formatting jest stosowany do zaznaczonego zakresu. Jeśli nic nie zaznaczono, przycisk zmienia styl całego obiektu tekstowego.
+Formatowanie jest stosowane do zaznaczonego zakresu. Jeśli nic nie zaznaczono, przycisk zmienia styl całego obiektu tekstowego.
 
 | Działanie | macOS | Windows / Linux |
 |-----------|-------|-----------------|
-| Bold | <kbd>⌘</kbd><kbd>B</kbd> | <kbd>Ctrl</kbd> + <kbd>B</kbd> |
-| Italic | <kbd>⌘</kbd><kbd>I</kbd> | <kbd>Ctrl</kbd> + <kbd>I</kbd> |
-| Underline | <kbd>⌘</kbd><kbd>U</kbd> | <kbd>Ctrl</kbd> + <kbd>U</kbd> |
+| Pogrubienie | <kbd>⌘</kbd><kbd>B</kbd> | <kbd>Ctrl</kbd> + <kbd>B</kbd> |
+| Kursywa | <kbd>⌘</kbd><kbd>I</kbd> | <kbd>Ctrl</kbd> + <kbd>I</kbd> |
+| Podkreślenie | <kbd>⌘</kbd><kbd>U</kbd> | <kbd>Ctrl</kbd> + <kbd>U</kbd> |
 
-Strikethrough włącza się przyciskiem **S** w sekcji Typography. Nie ma osobnego skrótu, ponieważ <kbd>⌘</kbd><kbd>S</kbd> służy do Save.
+Przekreślenie włącza się przyciskiem **S** w sekcji „Typografia”. Nie ma osobnego skrótu, ponieważ <kbd>⌘</kbd><kbd>S</kbd> służy do zapisywania.
 
-Styl jest przechowywany dla każdego znaku. Tekst wpisywany między segmentami bold i regular dziedziczy styl poprzedniego segmentu.
-
-Formatting można również zmieniać przyciskami **B / I / U / S** w sekcji Typography.
+Styl jest przechowywany dla każdego znaku. Tekst wpisywany między fragmentami pogrubionymi i zwykłymi dziedziczy styl poprzedniego fragmentu.
 
 ## Operacje edycji
 
 | Działanie | macOS | Windows / Linux |
 |-----------|-------|-----------------|
-| Usunąć poprzednie słowo | <kbd>⌥</kbd><kbd>⌫</kbd> | <kbd>Ctrl</kbd> + <kbd>Backspace</kbd> |
-| Usunąć do początku wiersza | <kbd>⌘</kbd><kbd>⌫</kbd> | — |
-| Cut | <kbd>⌘</kbd><kbd>X</kbd> | <kbd>Ctrl</kbd> + <kbd>X</kbd> |
-| Copy | <kbd>⌘</kbd><kbd>C</kbd> | <kbd>Ctrl</kbd> + <kbd>C</kbd> |
-| Paste | <kbd>⌘</kbd><kbd>V</kbd> | <kbd>Ctrl</kbd> + <kbd>V</kbd> |
+| Usuń poprzednie słowo | <kbd>⌥</kbd><kbd>⌫</kbd> | <kbd>Ctrl</kbd> + <kbd>Backspace</kbd> |
+| Usuń do początku wiersza | <kbd>⌘</kbd><kbd>⌫</kbd> | — |
+| Wytnij | <kbd>⌘</kbd><kbd>X</kbd> | <kbd>Ctrl</kbd> + <kbd>X</kbd> |
+| Kopiuj | <kbd>⌘</kbd><kbd>C</kbd> | <kbd>Ctrl</kbd> + <kbd>C</kbd> |
+| Wklej | <kbd>⌘</kbd><kbd>V</kbd> | <kbd>Ctrl</kbd> + <kbd>V</kbd> |
 
-## Font picker
+## Wybór czcionki
 
-Otwórz Font picker w sekcji Typography, aby wybrać font family.
+Otwórz wybór czcionki w sekcji „Typografia”.
 
-- **Search:** zawęża listę podczas pisania.
-- **Preview:** nazwa każdego font jest pokazana we własnym typeface.
-- **Virtual scroll:** sprawnie obsługuje duże katalogi.
-- **Bieżący font:** po otwarciu picker lista przewija się do wybranego family i go wyróżnia.
+- **Wyszukiwanie** zawęża listę podczas pisania.
+- **Podgląd** pokazuje nazwę każdej czcionki jej własnym krojem.
+- **Wirtualne przewijanie** sprawnie obsługuje duże katalogi.
+- Po otwarciu lista przewija się do bieżącej rodziny i ją wyróżnia.
 
-## Font weight
+## Odmiana czcionki
 
-Dostępne weights zależą od font family, na przykład Regular, Medium, Bold i Black.
+Dostępne odmiany zależą od rodziny, na przykład Regular, Medium, Bold i Black.
 
-## Źródła fonts
+## Źródła czcionek
 
 - **Domyślnie:** Inter jest ładowany automatycznie.
-- **Desktop app:** systemowe fonts i włączone katalogi Google Fonts, Fontsource, Bunny Fonts oraz Fontshare.
-- **Browser:** systemowe fonts są dostępne w Chrome i Edge; online font catalogs wymagają desktop app.
-- **Pobrane fonts:** desktop app zapisuje pobrane faces do ponownego użycia na tym komputerze.
+- **Aplikacja komputerowa:** czcionki systemowe i włączone katalogi Google Fonts, Fontsource, Bunny Fonts oraz Fontshare.
+- **Przeglądarka:** czcionki systemowe są dostępne w Chrome i Edge; katalogi internetowe wymagają aplikacji komputerowej.
+- **Pobrane czcionki:** aplikacja zapisuje pobrane odmiany do ponownego użycia na tym komputerze.
 
-## Brakujące fonts i zamienniki
+## Brakujące czcionki i zamienniki
 
-Jeśli odpowiednie family lub style nie mogą zostać załadowane, OpenPencil pokazuje ostrzeżenie nad edytorem i nie przedstawia fallback rendering jako dokładnej typography.
+Jeśli odpowiednia rodzina lub odmiana nie może zostać załadowana, OpenPencil pokazuje ostrzeżenie nad edytorem i nie przedstawia zastępczego wyglądu jako wiernego projektowi.
 
-Rozwiń ostrzeżenie, aby zobaczyć wszystkie dotknięte faces oraz aktywne substitutes. Przycisk **Select layers** zaznacza odpowiednie obiekty tekstowe. Po zmianie dostępu do sieci, uprawnień do lokalnych fonts lub ustawień providers naciśnij **Retry fonts**.
+Rozwiń ostrzeżenie, aby zobaczyć wszystkie brakujące odmiany i ich zamienniki. Przycisk **Wybierz warstwy** zaznacza odpowiednie obiekty tekstowe. Po zmianie dostępu do sieci, uprawnień do lokalnych czcionek lub ustawień dostawców naciśnij **Ponów ładowanie czcionek**.
 
-Style może zostać utworzony na podstawie innego załadowanego face z tego samego family. Jeśli brakuje całego family, OpenPencil używa Inter, o ile jest dostępny.
+Odmiana może zostać utworzona na podstawie innej załadowanej odmiany tej samej rodziny. Jeśli brakuje całej rodziny, OpenPencil używa Inter, o ile jest dostępny.
 
 ## Wskazówki
 
-- Lista fonts jest ładowana podczas uruchamiania, dlatego picker otwiera się bez opóźnienia.
+- Lista czcionek jest ładowana podczas uruchamiania, dlatego panel otwiera się bez opóźnienia.
 - Obsługiwane jest wprowadzanie przez IME dla języka chińskiego, japońskiego i koreańskiego.
-- Rich text jest zachowywany podczas otwierania i zapisywania `.fig`.
-- Text overrides wewnątrz component instances opisano na stronie [Komponenty](./components).
+- Formatowanie jest zachowywane podczas otwierania i zapisywania `.fig`.
+- Zastępowanie tekstu w egzemplarzach komponentów opisano na stronie [Komponenty](./components).

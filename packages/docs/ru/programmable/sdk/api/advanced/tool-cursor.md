@@ -1,13 +1,13 @@
 ---
 title: toolCursor
-description: Выбор CSS cursor для editor tool.
+description: Выбор CSS-курсора для активного инструмента редактора.
 ---
 
 # toolCursor
 
-`toolCursor(tool, override?)` сопоставляет editor tool с CSS cursor и позволяет явно заменить результат через `override`.
+`toolCursor(tool, override?)` возвращает CSS-курсор для указанного инструмента. Параметр `override` позволяет явно заменить результат.
 
-Используйте function в собственном canvas shell или tool UI для единообразного cursor behavior.
+Используйте функцию в собственной реализации холста или панели инструментов, чтобы курсоры были единообразными.
 
 ## См. также
 

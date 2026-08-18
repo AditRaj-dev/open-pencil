@@ -7,33 +7,33 @@ description: Objekte auswählen, verschieben, skalieren, drehen, duplizieren und
 
 Ausgewählte Objekte können verschoben, skaliert, gedreht, dupliziert und in der Ebenenreihenfolge verändert werden.
 
-## Selection
+## Auswahl
 
-- Click auf ein Objekt ersetzt die aktuelle Selection.
-- <kbd>Shift</kbd> + Click fügt ein Objekt hinzu oder entfernt es.
-- Drag auf einer freien Canvas-Fläche zieht eine Marquee selection auf; alle geschnittenen Objekte werden ausgewählt.
+- Ein Klick auf ein Objekt ersetzt die aktuelle Auswahl.
+- <kbd>Shift</kbd> + Klick fügt ein Objekt hinzu oder entfernt es.
+- Ziehen auf einer freien Fläche erstellt eine Rahmenauswahl; alle geschnittenen Objekte werden ausgewählt.
 - <kbd>⌘</kbd><kbd>A</kbd> wählt alle Objekte der aktuellen Seite.
-- Click auf eine freie Stelle hebt die Selection auf.
+- Ein Klick auf eine freie Stelle hebt die Auswahl auf.
 
 ## Verschieben
 
-- Ausgewähltes Objekt per Drag verschieben.
-- Arrow keys verschieben um 1 px.
-- <kbd>Shift</kbd> + Arrow keys verschieben um 10 px.
+- Ausgewähltes Objekt ziehen.
+- Pfeiltasten verschieben um 1 px.
+- <kbd>Shift</kbd> + Pfeiltasten verschieben um 10 px.
 
-## Resize
+## Größe ändern
 
-Eine Selection zeigt acht Handles an: vier an den Ecken und vier in der Mitte der Kanten. Ein Handle ziehen, um Width und Height zu ändern.
+Eine Auswahl zeigt acht Griffe: vier an den Ecken und vier in der Mitte der Kanten. Ziehen Sie einen Griff, um Breite und Höhe zu ändern.
 
-Mit <kbd>Shift</kbd> beim Ziehen eines Corner handle bleiben die Proportionen erhalten.
+Mit <kbd>Shift</kbd> beim Ziehen eines Eckgriffs bleiben die Proportionen erhalten.
 
-## Rotation
+## Drehen
 
-Pointer knapp außerhalb eines Corner handle bewegen, bis der Rotation cursor erscheint, und anschließend ziehen. Mit <kbd>Shift</kbd> rastet die Rotation in Schritten von 15° ein.
+Bewegen Sie den Mauszeiger knapp außerhalb eines Eckgriffs, bis der Drehcursor erscheint, und ziehen Sie anschließend. Mit <kbd>Shift</kbd> rastet die Drehung in Schritten von 15° ein.
 
 ## Duplizieren
 
-- <kbd>⌥</kbd> beziehungsweise <kbd>Alt</kbd> beim Drag erstellt eine Kopie und verschiebt sie.
+- <kbd>⌥</kbd> beziehungsweise <kbd>Alt</kbd> beim Ziehen erstellt eine Kopie und verschiebt sie.
 - <kbd>⌘</kbd><kbd>D</kbd> beziehungsweise <kbd>Strg</kbd><kbd>D</kbd> dupliziert an derselben Position.
 
 ## Löschen
@@ -42,25 +42,25 @@ Backspace oder Delete entfernt alle ausgewählten Objekte.
 
 ## Reihenfolge
 
-- **]** bringt die Selection nach vorn.
+- **]** bringt die Auswahl nach vorn.
 - **[** sendet sie nach hinten.
 
-## Visibility und Lock
+## Sichtbarkeit und Sperre
 
-- <kbd>⇧</kbd><kbd>⌘</kbd><kbd>H</kbd> schaltet Visibility um.
-- <kbd>⇧</kbd><kbd>⌘</kbd><kbd>L</kbd> schaltet Lock um.
+- <kbd>⇧</kbd><kbd>⌘</kbd><kbd>H</kbd> schaltet die Sichtbarkeit um.
+- <kbd>⇧</kbd><kbd>⌘</kbd><kbd>L</kbd> schaltet die Sperre um.
 
-## Shortcuts
+## Tastenkürzel
 
 | Aktion | macOS | Windows / Linux |
 |--------|-------|-----------------|
 | Alles auswählen | <kbd>⌘</kbd><kbd>A</kbd> | <kbd>Strg</kbd><kbd>A</kbd> |
 | Duplizieren | <kbd>⌘</kbd><kbd>D</kbd> | <kbd>Strg</kbd><kbd>D</kbd> |
-| Duplizieren und verschieben | <kbd>⌥</kbd> + Drag | <kbd>Alt</kbd> + Drag |
+| Duplizieren und verschieben | <kbd>⌥</kbd> + Ziehen | <kbd>Alt</kbd> + Ziehen |
 | Löschen | <kbd>⌫</kbd>/<kbd>Entf</kbd> | Backspace/<kbd>Entf</kbd> |
-| 1 px verschieben | Arrow keys | Arrow keys |
-| 10 px verschieben | <kbd>⇧</kbd> + Arrow keys | <kbd>Shift</kbd> + Arrow keys |
+| 1 px verschieben | Pfeiltasten | Pfeiltasten |
+| 10 px verschieben | <kbd>⇧</kbd> + Pfeiltasten | <kbd>Shift</kbd> + Pfeiltasten |
 | Nach vorn | ] | ] |
 | Nach hinten | [ | [ |
-| Visibility | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>H</kbd> | <kbd>Shift</kbd><kbd>Strg</kbd><kbd>H</kbd> |
-| Lock | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>L</kbd> | <kbd>Shift</kbd><kbd>Strg</kbd><kbd>L</kbd> |
+| Sichtbarkeit | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>H</kbd> | <kbd>Shift</kbd><kbd>Strg</kbd><kbd>H</kbd> |
+| Sperre | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>L</kbd> | <kbd>Shift</kbd><kbd>Strg</kbd><kbd>L</kbd> |
