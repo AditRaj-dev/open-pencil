@@ -1,65 +1,55 @@
 ---
 layout: doc
-title: Automatyzacja
-description: AI chat, CLI, JSX renderer, MCP server i inne narzędzia automatyzacji oparte na silniku OpenPencil.
+title: AI i automatyzacja
+description: Czat AI, CLI, JSX, serwer MCP i inne narzędzia automatyzacji oparte na silniku OpenPencil.
 ---
 
-# Automatyzacja
+# AI i automatyzacja
 
-OpenPencil pozwala traktować pliki projektowe jak dane. Wszystkie operacje edytora — tworzenie kształtów, ustawianie wypełnień, zarządzanie Auto layout i eksport zasobów — są dostępne także z terminala, dla agentów AI i z kodu. Nie trzeba instalować plugins, uzyskiwać API key ani czekać na dostęp.
+OpenPencil pozwala traktować pliki projektowe jak dane. Wszystkie operacje edytora — tworzenie figur, ustawianie zalewów, zarządzanie automatycznym układem i eksport zasobów — są dostępne także z terminala, dla agentów AI i z kodu.
 
-Interfejs edytora i narzędzia automatyzacji korzystają z tego samego silnika. Każdą operację dostępną w interfejsie można wykonać również za pomocą script.
+Interfejs edytora i narzędzia automatyzacji korzystają z tego samego silnika. Każde działanie dostępne w interfejsie można również wykonać ze skryptu.
 
-## Szersza idea
+## Czat AI
 
-OpenPencil nie jest wyłącznie aplikacją do projektowania.
+Wbudowany asystent używa ponad 90 narzędzi. Opisz zadanie zwykłym językiem, na przykład: „dodaj wszystkim przyciskom cień 16 px”, „utwórz komponent karty z wariantem ciemnym” albo „wyeksportuj wszystkie ramki na tej stronie w skali 2×”.
 
-To również toolkit, który można osadzić w innym produkcie, uzupełnić własnym interfejsem i wykorzystać do wyspecjalizowanych procesów edycji. Aplikacja, CLI, AI tools, JSX renderer, MCP server i SDK działają na tym samym silniku edytora.
-
-## AI chat
-
-Wbudowany assistant korzysta z ponad 90 narzędzi obejmujących funkcje edytora. Opisz zadanie zwykłym językiem, na przykład: „dodaj cień 16 px do wszystkich przycisków”, „utwórz komponent karty z wariantem ciemnego motywu” albo „wyeksportuj wszystkie ramki na tej stronie w skali 2×”.
-
-[AI chat →](./ai-chat)
+[Czat AI →](./ai-chat)
 
 ## Współpraca
 
-Kilka osób może jednocześnie edytować dokument przez peer-to-peer WebRTC. Serwer i konto nie są potrzebne: wystarczy wysłać link do pokoju. OpenPencil pokazuje wskaźniki uczestników i pozwala śledzić widok wybranej osoby.
-
-Stan dokumentu jest synchronizowany przez CRDT, dzięki czemu zmiany łączą się automatycznie nawet przy niestabilnym połączeniu.
+Dokument jest synchronizowany bezpośrednio między uczestnikami przez WebRTC. Centralny serwer i konto nie są potrzebne. Kursory uczestników i tryb śledzenia pokazują ich obecność, a Yjs CRDT łączy równoczesne zmiany.
 
 [Współpraca →](./collaboration)
 
 ## Vue SDK
 
-Twórz edytory oparte na OpenPencil za pomocą tego samego Vue SDK, którego używa aplikacja. SDK udostępnia kontekst edytora, podłączenie obszaru roboczego, stan zaznaczenia, modele poleceń, composables dla paneli właściwości i komponenty headless.
+Twórz edytory oparte na OpenPencil za pomocą tego samego Vue SDK, którego używa aplikacja. SDK udostępnia kontekst edytora, podłączenie obszaru roboczego, stan zaznaczenia, modele poleceń, composables dla paneli właściwości i komponenty bez narzuconego wyglądu.
 
 [Vue SDK →](./sdk/)
 
-## JSX renderer
+## JSX
 
-Opisuj interfejs za pomocą JSX — składni znanej modelom LLM z Reacta. Jedno wywołanie może utworzyć drzewo komponentów zawierające ramki, tekst, Auto layout, wypełnienia i obrysy. Taki opis jest zwięzły, deklaratywny i łatwy do porównania między wersjami.
+Opisuj interfejs za pomocą JSX. Jedno wywołanie może utworzyć drzewo komponentów zawierające ramki, tekst, automatyczny układ, zalewy i obwiednie.
 
-Możliwe jest również przekształcenie w drugą stronę: wyeksportuj zaznaczone obiekty do JSX z klasami Tailwind, aby przekazać wynik programistom albo ponownie przetworzyć go za pomocą LLM.
+W drugą stronę OpenPencil eksportuje zaznaczenie jako JSX albo HTML z klasami Tailwind. Wynik może służyć jako podstawa implementacji, przeglądu kodu lub kolejnego kroku z AI.
 
-[JSX renderer →](./jsx-renderer)
+[JSX →](./jsx-renderer)
 
 ## CLI
 
-Przeglądaj, sprawdzaj, eksportuj i analizuj dokumenty bez uruchamiania edytora. CLI pozwala wyświetlić strony, znaleźć obiekty, wyodrębnić design tokens, wykryć problemy z układem i dostępnością oraz wyeksportować PNG. Wszystkie polecenia obsługują JSON output.
+Przeglądaj, eksportuj i analizuj dokumenty bez uruchamiania edytora. CLI pozwala wyświetlać strony, znajdować obiekty, wydobywać tokeny projektu, wykrywać problemy układu i eksportować PNG. Wszystkie polecenia obsługują wyjście JSON.
 
-CLI łączy się także przez RPC z uruchomioną aplikacją desktopową, dlatego można sterować edytorem ze scripts podczas pracy.
+CLI łączy się również przez RPC z uruchomioną aplikacją komputerową i steruje otwartym dokumentem.
 
-[Przeglądanie plików](./cli/inspecting) · [Eksport](./cli/exporting) · [Analiza](./cli/analyzing) · [Scripts](./cli/scripting)
+[Przeglądanie plików](./cli/inspecting) · [Eksport](./cli/exporting) · [Analiza](./cli/analyzing) · [Skrypty](./cli/scripting)
 
-## MCP server
+## Serwer MCP
 
-Połącz Claude Code, Cursor, Windsurf lub innego MCP client z OpenPencil. Server udostępnia 90 narzędzi do odczytywania, tworzenia i zmieniania projektów — tych samych, których używa wbudowany AI chat. Dostępne są transports stdio i HTTP z obsługą sessions.
+Claude Code, Cursor, Windsurf i inni klienci MCP mogą korzystać z tych samych 90 narzędzi co czat AI. Serwer obsługuje stdio i HTTP z sesjami.
 
-[MCP server →](/programmable/mcp-server)
+[Serwer MCP →](/programmable/mcp-server)
 
-## Dlaczego open source
+## Otwarta platforma
 
-Figma jest zamkniętą platformą. Jej MCP server zapewnia tylko odczyt, dostęp przeglądarkowy przez CDP został zamknięty w wersji 126, a pliki są przechowywane w zastrzeżonym formacie na cudzych serwerach. Tworzenie plugins wymaga osobnego runtime z ograniczonym API.
-
-OpenPencil oferuje inne podejście: kod open source na licencji MIT, lokalne przechowywanie danych i programowy dostęp do wszystkich operacji. Możesz przeglądać i przekształcać własne pliki, przetwarzać je w CI albo przekazywać do LLM bez dodatkowej zgody.
+OpenPencil jest udostępniany na licencji MIT, przechowuje dokumenty lokalnie i zapewnia programowy dostęp do operacji. Pliki `.fig` można sprawdzać, przekształcać, przetwarzać w CI i przekazywać modelowi językowemu bez zależności od konkretnego dostawcy hostingu.
