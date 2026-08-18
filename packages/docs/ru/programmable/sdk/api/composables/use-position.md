@@ -1,6 +1,6 @@
 ---
 title: usePosition
-description: Чтение и обновление позиции, размера, поворота, выравнивания и отражения выбранного узла.
+description: Чтение и изменение положения, размера, поворота, выравнивания и отражения выделенного объекта.
 ---
 
 # usePosition
@@ -28,15 +28,15 @@ import { usePosition } from '@open-pencil/vue'
 const position = usePosition()
 ```
 
-## Базовый пример
+## Пример
 
 ```ts
 const { x, y, width, height, rotation, updateProp, commitProp } = usePosition()
 ```
 
-## Практические примеры
+## Примеры
 
-### Выровнять выбранные узлы
+### Выровнять выделенные объекты
 
 ```ts
 position.align('horizontal', 'center')
