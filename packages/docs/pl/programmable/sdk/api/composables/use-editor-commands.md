@@ -11,9 +11,9 @@ Przydaje się podczas tworzenia:
 
 - menu aplikacji;
 - menu kontekstowych;
-- toolbars;
+- pasków narzędzi;
 - obsługi skrótów;
-- submenu Move to page.
+- podmenu przenoszenia na stronę.
 
 ## Użycie
 
@@ -43,7 +43,7 @@ const { runCommand } = useEditorCommands()
 runCommand('selection.duplicate')
 ```
 
-### Submenu Move to page
+### Podmenu przenoszenia na stronę
 
 ```ts
 const { otherPages, moveSelectionToPage } = useEditorCommands()
