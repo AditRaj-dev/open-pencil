@@ -1,17 +1,17 @@
 ---
-title: Properties-Panels
-description: Properties-Panels mit composables und headless list components entwickeln.
+title: Eigenschaften-Panels
+description: Eigenschaften-Panels mit Composables und Komponenten ohne vorgegebenes Erscheinungsbild entwickeln.
 ---
 
-# Properties-Panels
+# Eigenschaften-Panels
 
-`@open-pencil/vue` stellt für Properties-Panels vor allem composables bereit.
+`@open-pencil/vue` stellt für Eigenschaften-Panels vor allem Composables bereit.
 
-Benötigt ein Panel aus der Selection berechnete Values und Actions zur Aktualisierung, ist ein composable die passende Grundlage. Für wiederverwendbare Array- oder List structures eignet sich ein headless component wie `PropertyListRoot`.
+Benötigt ein Panel aus der Auswahl berechnete Werte und Aktionen zur Aktualisierung, ist ein Composable die passende Grundlage. Für wiederverwendbare Listen- oder Tabellenstrukturen eignet sich eine Komponente ohne vorgegebenes Erscheinungsbild wie `PropertyListRoot`.
 
 ## Composables
 
-Für gewöhnliche Properties sections:
+Für gewöhnliche Eigenschaftsbereiche:
 
 - `usePosition()`
 - `useLayout()`
@@ -19,25 +19,25 @@ Für gewöhnliche Properties sections:
 - `useTypography()`
 - `useExport()`
 
-Für Array properties:
+Für Eigenschaften in Listenform:
 
 - `useFillControls()`
 - `useStrokeControls()`
 - `useEffectsControls()`
 
-## Variable bindings
+## Variablenbindungen
 
-Kann ein Feld an eine Variable oder ein externes Design token gebunden werden, sollte es in `BindableValueRoot` liegen.
+Kann ein Feld an eine Variable oder ein externes Designtoken gebunden werden, sollte es in `BindableValueRoot` liegen.
 
-- Im nicht editierten Zustand den Namen der Variable anzeigen; der berechnete Wert kann beispielsweise in einem Tooltip stehen.
-- Focus oder das Öffnen des Variable picker darf ein bestehendes Binding nicht entfernen.
+- Im nicht bearbeiteten Zustand den Namen der Variable anzeigen; der berechnete Wert kann beispielsweise in einem Hinweis erscheinen.
+- Der Fokus oder das Öffnen der Variablenauswahl darf eine bestehende Bindung nicht entfernen.
 - `detach-on-edit`, `readonly-when-bound` oder `edit-variable` erst bei einer tatsächlichen Änderung anwenden.
-- Eine ausdrückliche Action zum Entfernen des Binding gehört besser in den Picker als in einen leicht versehentlich auslösbaren Button neben dem Feld.
-- Binding change, Detach während der Bearbeitung und Multi-selection updates in einer Provider batch operation zusammenfassen.
+- Eine ausdrückliche Aktion zum Entfernen der Bindung gehört besser in die Auswahl als in einen leicht versehentlich auslösbaren Button neben dem Feld.
+- Bindungswechsel, Lösen während der Bearbeitung und Änderungen an mehreren Objekten in einer gemeinsamen Anbieter-Operation zusammenfassen.
 
-Die OpenPencil-App zeigt den Variablennamen im Ruhezustand violett an. Sobald die Bearbeitung beginnt, zeigt `NumberField` den berechneten numerischen Wert. Eine eigene Oberfläche kann denselben headless state anders darstellen.
+Die OpenPencil-App zeigt den Variablennamen im Ruhezustand violett an. Sobald die Bearbeitung beginnt, zeigt `NumberField` den berechneten numerischen Wert. Eine eigene Oberfläche kann denselben Zustand anders darstellen.
 
-## Beispiel: Position und Size
+## Beispiel: Position und Größe
 
 ```vue
 <script setup lang="ts">
@@ -56,7 +56,7 @@ const { x, y, width, height, updateProp, commitProp } = usePosition()
 </template>
 ```
 
-## Beispiel: Fills
+## Beispiel: Füllungen
 
 ```vue
 <script setup lang="ts">
@@ -84,15 +84,15 @@ const fills = useEditorPropertyList('fills')
       <button @click="actions.remove(index)">Entfernen</button>
     </div>
 
-    <button @click="actions.add(fillControls.defaultFill)">Fill hinzufügen</button>
+    <button @click="actions.add(fillControls.defaultFill)">Füllung hinzufügen</button>
   </PropertyListRoot>
 </template>
 ```
 
-## Auswahl des API
+## Wahl der API
 
-- Composables für State und Actions verwenden.
-- Headless structural components einsetzen, wenn die Koordination wiederkehrender Lists, Trees oder Slots im Mittelpunkt steht.
+- Composables für Zustand und Aktionen verwenden.
+- Strukturkomponenten ohne vorgegebenes Erscheinungsbild einsetzen, wenn die Koordination wiederkehrender Listen, Bäume oder Slots im Mittelpunkt steht.
 
 ## Siehe auch
 
