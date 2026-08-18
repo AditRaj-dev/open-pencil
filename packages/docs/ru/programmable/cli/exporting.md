@@ -5,7 +5,7 @@ description: Экспорт содержимого документа в PNG, JP
 
 # Экспорт
 
-CLI экспортирует дизайн в raster images, vector graphics, отдельные документы `.fig`, JSX или HTML.
+CLI экспортирует дизайн в растровые изображения, векторную графику, отдельные документы `.fig`, JSX или HTML.
 
 ## Изображения и .fig
 
@@ -26,37 +26,28 @@ openpencil export design.fig -f html --css tailwind    # фрагмент HTML �
 - `-q` — качество от `0` до `100`, только для JPG и WEBP;
 - `-o` — путь к выходному файлу;
 - `--page` — имя страницы;
-- `--node` — ID объекта.
+- `--node` — идентификатор объекта.
 
 ## JSX
 
-Чтобы получить JSX с utility classes Tailwind:
+Чтобы получить JSX с классами Tailwind:
 
 ```sh
 openpencil export design.fig -f jsx --style tailwind
 ```
 
-Пример результата:
-
-```html
-<div className="flex flex-col gap-4 p-6 bg-white rounded-xl">
-  <p className="text-2xl font-bold text-[#1D1B20]">Card Title</p>
-  <p className="text-sm text-[#49454F]">Description text</p>
-</div>
-```
-
-Параметр `--style openpencil` выбирает собственный формат JSX OpenPencil. Подробнее — в разделе [JSX renderer](../jsx-renderer).
+Параметр `--style openpencil` выбирает собственный формат JSX OpenPencil. Подробнее — в разделе [Рендерер JSX](../jsx-renderer).
 
 ## HTML
 
-По умолчанию команда создаёт фрагмент HTML с inline styles. Вместо них можно использовать utility classes Tailwind:
+По умолчанию команда создаёт фрагмент HTML со встроенными стилями. Вместо них можно использовать классы Tailwind:
 
 ```sh
 openpencil export design.fig -f html
 openpencil export design.fig -f html --css tailwind
 ```
 
-Параметр `--html standalone` создаёт полноценный HTML-документ, который можно открыть в браузере. В него входят reset styles и wrapper страницы. Этот формат предназначен для передачи дизайна и кода, а не для полного pixel-perfect воспроизведения renderer:
+Параметр `--html standalone` создаёт полноценный HTML-документ, который можно открыть в браузере. В него входят стили сброса и обёртка страницы. Этот формат предназначен для передачи дизайна и кода, а не для точного воспроизведения отрисовки до пикселя:
 
 ```sh
 openpencil export design.fig -f html --html standalone --css inline
@@ -64,7 +55,7 @@ openpencil export design.fig -f html --html standalone --css tailwind
 openpencil export design.fig -f html --html standalone --css tailwind --assets external
 ```
 
-При standalone-экспорте Tailwind CSS компилируется сразу, поэтому browser runtime Tailwind не требуется. `--assets external` сохраняет CSS и извлечённые изображения рядом с HTML. В сочетании с ним `--fonts assets` находит шрифты текстовых объектов SceneGraph через настроенные web font providers и создаёт локальные файлы `@font-face`.
+При автономном экспорте Tailwind CSS компилируется сразу, поэтому браузерная среда Tailwind не требуется. `--assets external` сохраняет CSS и извлечённые изображения рядом с HTML. В сочетании с ним `--fonts assets` находит шрифты текстовых объектов SceneGraph через настроенных поставщиков веб-шрифтов и создаёт локальные файлы `@font-face`.
 
 Экспорт HTML доступен при работе с файлом.
 

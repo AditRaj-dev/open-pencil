@@ -1,11 +1,11 @@
 ---
-title: Scripts
+title: Сценарии
 description: Выполнение JavaScript через совместимый с Figma Plugin API для поиска, массового изменения и создания дизайна.
 ---
 
-# Scripts
+# Сценарии
 
-`openpencil eval` выполняет JavaScript для документа OpenPencil и предоставляет глобальный объект `figma`, совместимый с Figma Plugin API. Команда подходит для headless batch edits, проверки документов, подготовки fixtures и другой автоматизации без интерфейса редактора.
+`openpencil eval` выполняет JavaScript для документа OpenPencil и предоставляет глобальный объект `figma`, совместимый с Figma Plugin API. Команда подходит для пакетных изменений, проверки документов, подготовки тестовых данных и другой автоматизации без интерфейса редактора.
 
 ## Первый вызов
 
@@ -13,7 +13,7 @@ description: Выполнение JavaScript через совместимый �
 openpencil eval design.fig -c "return figma.currentPage.children.length"
 ```
 
-Параметр `-c` принимает JavaScript. Если код не начинается с `return`, OpenPencil помещает его в async function и возвращает её результат, когда он есть.
+Параметр `-c` принимает JavaScript. Если код не начинается с `return`, OpenPencil помещает его в асинхронную функцию и возвращает её результат, когда он есть.
 
 ```sh
 openpencil eval design.fig -c "
@@ -43,23 +43,9 @@ openpencil eval design.fig -c "
 
 ## Изменение и сохранение
 
-`--write` или `-w` записывает изменения во входной файл:
+`--write` или `-w` записывает изменения во входной файл. `--output` или `-o` создаёт новый файл.
 
-```sh
-openpencil eval design.fig -c "
-  figma.currentPage.children.forEach((node) => {
-    node.opacity = 0.5
-  })
-" --write
-```
-
-`--output` или `-o` создаёт новый файл:
-
-```sh
-openpencil eval design.fig -c "figma.currentPage.name = 'Updated'" -o updated.fig
-```
-
-## Script из stdin
+## Сценарий из стандартного ввода
 
 ```sh
 cat transform.js | openpencil eval design.fig --stdin --write
@@ -67,27 +53,19 @@ cat transform.js | openpencil eval design.fig --stdin --write
 
 ## Открытое приложение
 
-Не указывайте файл, чтобы выполнить script для текущего документа в desktop app:
+Не указывайте файл, чтобы выполнить сценарий для текущего документа в настольном приложении:
 
 ```sh
 openpencil eval -c "return figma.currentPage.name"
 ```
 
-Приложение должно быть запущено, а документ — открыт.
+## Вывод
 
-## Output
-
-При перенаправлении output по умолчанию используется JSON. Параметр `--json` включает его явно:
-
-```sh
-openpencil eval design.fig -c "return figma.currentPage.children.map((n) => n.name)" --json
-```
-
-`--quiet` или `-q` отключает output, если нужен только изменённый файл.
+При перенаправлении вывода по умолчанию используется JSON. Параметр `--json` включает его явно, а `--quiet` или `-q` отключает вывод.
 
 ## Доступный API
 
-API намеренно близок к Figma Plugin API, но работает с SceneGraph и file formats OpenPencil.
+API намеренно близок к Figma Plugin API, но работает с SceneGraph и форматами OpenPencil.
 
 ### Документ и страницы
 
@@ -125,13 +103,13 @@ API намеренно близок к Figma Plugin API, но работает �
 - `figma.group(nodes, parent)`
 - `figma.ungroup(node)`
 
-### Components
+### Компоненты
 
 - `figma.createComponentFromNode(node)`
 - `component.createInstance()`
 - `instance.mainComponent`
 
-### Variables
+### Переменные
 
 - `figma.getLocalVariables(type?)`
 - `figma.getVariableById(id)`
@@ -147,33 +125,33 @@ API намеренно близок к Figma Plugin API, но работает �
 
 ### Свойства
 
-Распространённые properties доступны для чтения и записи через proxy:
+Распространённые свойства доступны для чтения и записи через прокси:
 
-- Geometry: `x`, `y`, `width`, `height`, `rotation`, `resize(width, height)`;
-- Appearance: `fills`, `strokes`, `effects`, `opacity`, `visible`, `locked`, `blendMode`, `clipsContent`;
-- Radius: `cornerRadius`, `topLeftRadius`, `topRightRadius`, `bottomRightRadius`, `bottomLeftRadius`;
-- Text: `characters`, `fontSize`, `fontName`, `fontWeight`, alignment, line height, letter spacing и functions для style runs;
-- Auto layout: `layoutMode`, `primaryAxisAlignItems`, `counterAxisAlignItems`, `itemSpacing`, padding, sizing и layout positioning;
-- Stroke: `strokeWeight`, `strokeAlign`, `dashPattern`.
+- геометрия: `x`, `y`, `width`, `height`, `rotation`, `resize(width, height)`;
+- внешний вид: `fills`, `strokes`, `effects`, `opacity`, `visible`, `locked`, `blendMode`, `clipsContent`;
+- радиусы: `cornerRadius`, `topLeftRadius`, `topRightRadius`, `bottomRightRadius`, `bottomLeftRadius`;
+- текст: `characters`, `fontSize`, `fontName`, `fontWeight`, выравнивание, интерлиньяж, межбуквенный интервал и функции для диапазонов стилей;
+- автоматическая компоновка: `layoutMode`, `primaryAxisAlignItems`, `counterAxisAlignItems`, `itemSpacing`, отступы, размеры и положение;
+- обводка: `strokeWeight`, `strokeAlign`, `dashPattern`.
 
-### Utilities
+### Служебные возможности
 
 - `figma.mixed`
 - `figma.createImage(data)`
-- `figma.loadFontAsync(fontName)` ничего не делает, поскольку OpenPencil не блокирует изменение текста до plugin font loading
-- `figma.listAvailableFontsAsync()` возвращает fonts, предоставленные host, когда они доступны
-- `figma.notify(message)` записывает warning в headless mode
+- `figma.loadFontAsync(fontName)` ничего не делает, поскольку OpenPencil не блокирует изменение текста до загрузки шрифта плагином
+- `figma.listAvailableFontsAsync()` возвращает доступные системные шрифты
+- `figma.notify(message)` записывает предупреждение в режиме без интерфейса
 - `figma.viewport`
 
 ## Пока не совместимо с Figma
 
-Следующие API пока не предоставляются как совместимые helpers:
+Следующие API пока не предоставляются в совместимом виде:
 
 - `node.exportAsync()`
 - `node.setBoundVariable(field, variable)`
 - `node.detachInstance()`
 - `figma.combineAsVariants(components, parent)`
-- style APIs Figma, например `figma.createPaintStyle()` и `figma.createTextStyle()`
-- полная совместимость vector boolean operations
+- API стилей Figma, например `figma.createPaintStyle()` и `figma.createTextStyle()`
+- полная совместимость логических операций над векторами
 
-Вместо них используйте команды экспорта OpenPencil CLI, core tools или прямые SceneGraph helpers, когда они доступны.
+Вместо них используйте команды экспорта OpenPencil CLI, инструменты основного пакета или прямые вспомогательные функции SceneGraph, когда они доступны.
