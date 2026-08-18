@@ -1,51 +1,64 @@
 ---
-title: Esportazione
-description: Esportare immagini (PNG, JPG, WEBP, SVG) e gestire file .fig in OpenPencil.
+title: Export
+description: Esportare la Selection in PNG, JPG, WEBP o SVG e aprire o salvare file `.fig`.
 ---
-# Esportazione
 
-## Esportazione immagini
+# Export
 
-Seleziona un nodo e usa la sezione Export nel pannello proprietà.
+OpenPencil esporta oggetti come Images o SVG e salva documenti completi nel formato `.fig`.
 
-### Impostazioni di esportazione
+## Images e SVG
 
-- **Scala** — 0,5×, 0,75×, 1×, 1,5×, 2×, 3× o 4× (nascosta per SVG — i vettori sono indipendenti dalla risoluzione)
-- **Formato** — PNG (sfondo trasparente), JPG (sfondo bianco), WEBP (sfondo trasparente), SVG (vettore)
+Seleziona un oggetto e apri la sezione Export del pannello Properties.
 
-### Metodi di esportazione
+### Impostazioni
 
-| Metodo | Mac | Windows / Linux |
-|--------|-----|-----------------|
-| Scorciatoia tastiera | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>E</kbd> | <kbd>Shift</kbd> + <kbd>Ctrl</kbd> + <kbd>E</kbd> |
-| Menu contestuale | Tasto destro <kbd>→</kbd> Esporta… | Tasto destro <kbd>→</kbd> Esporta… |
-| Pannello proprietà | Pulsante "Esporta" | Pulsante "Esporta" |
+- **Scale:** da 0,5× a 4×; nascosta per SVG perché indipendente dalla risoluzione;
+- **Format:** PNG con Background trasparente, JPG con Background bianco, WEBP con Background trasparente oppure SVG;
+- più Export settings per oggetto;
+- Live preview su Checkerboard background.
 
-## Copia come
+### Avviare l’Export
 
-Il menu contestuale **Copia come** offre formati aggiuntivi:
+| Metodo | macOS | Windows / Linux |
+|--------|-------|-----------------|
+| Scorciatoia | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>E</kbd> | <kbd>Shift</kbd><kbd>Ctrl</kbd><kbd>E</kbd> |
+| Menu contestuale | Right-click → Export… | Right-click → Export… |
+| Pannello Properties | Button Export | Button Export |
 
-| Action | Mac | Windows / Linux |
-|--------|-----|-----------------|
-| Copia come testo | — | — |
-| Copia come SVG | — | — |
-| Copia come PNG | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>C</kbd> | <kbd>Shift</kbd> + <kbd>Ctrl</kbd> + <kbd>C</kbd> |
-| Copia come JSX | — | — |
+## Copy as
 
-## Operazioni file .fig
+Il menu contestuale può scrivere la Selection nel Clipboard:
 
-| Action | Mac | Windows / Linux |
-|--------|-----|-----------------|
-| Apri | <kbd>⌘</kbd><kbd>O</kbd> | <kbd>Ctrl</kbd> + <kbd>O</kbd> |
-| Salva | <kbd>⌘</kbd><kbd>S</kbd> | <kbd>Ctrl</kbd> + <kbd>S</kbd> |
-| Salva come | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>S</kbd> | <kbd>Shift</kbd> + <kbd>Ctrl</kbd> + <kbd>S</kbd> |
+| Azione | macOS | Windows / Linux |
+|--------|-------|-----------------|
+| Copy as text | — | — |
+| Copy as SVG | — | — |
+| Copy as PNG | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>C</kbd> | <kbd>Shift</kbd><kbd>Ctrl</kbd><kbd>C</kbd> |
+| Copy as JSX | — | — |
 
-I file salvati sono compressi e includono una miniatura per l'anteprima nel file manager.
+## File `.fig`
 
-Compatibilità round-trip con Figma.
+OpenPencil usa il formato di Figma. I file salvati sono compressi e contengono una Thumbnail.
+
+### Aprire e salvare
+
+| Azione | macOS | Windows / Linux |
+|--------|-------|-----------------|
+| Open file | <kbd>⌘</kbd><kbd>O</kbd> | <kbd>Ctrl</kbd><kbd>O</kbd> |
+| Save | <kbd>⌘</kbd><kbd>S</kbd> | <kbd>Ctrl</kbd><kbd>S</kbd> |
+| Save As | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>S</kbd> | <kbd>Shift</kbd><kbd>Ctrl</kbd><kbd>S</kbd> |
+
+**Save** sovrascrive il file corrente se OpenPencil dispone ancora del permesso di scrittura. **Save As** apre una finestra per scegliere un altro percorso.
+
+Nel Browser, OpenPencil usa File System Access API quando disponibile in Chrome ed Edge. Gli altri Browsers, incluso Safari, scaricano il file.
+
+### Compatibilità
+
+I file `.fig` esportati possono essere riaperti in OpenPencil e Figma. OpenPencil importa anche i file creati da Figma.
 
 ## Suggerimenti
 
-- Usa scala 2× o 3× per schermi ad alta risoluzione.
-- JPG usa sempre sfondo bianco — usa PNG o WEBP per la trasparenza.
-- Usa l'export SVG per la modifica vettoriale in editor di codice o Illustrator.
+- Usa Scale 2× o 3× per gli schermi ad alta risoluzione.
+- JPG usa sempre un Background bianco; scegli PNG o WEBP per mantenere Transparency.
+- SVG è adatto all’editing successivo in Code editors o Vector tools.

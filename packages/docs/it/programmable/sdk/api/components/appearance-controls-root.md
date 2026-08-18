@@ -1,15 +1,21 @@
 ---
 title: AppearanceControlsRoot
-description: Primitiva root headless per i controlli di opacità, visibilità e raggio degli angoli.
+description: Headless component per Opacity, Visibility e Corner radius.
 ---
+
+<script setup lang="ts">
+import { data } from '#docs-api/components/appearance-controls-root.data'
+</script>
 
 # AppearanceControlsRoot
 
-`AppearanceControlsRoot` espone il contratto slot restituito da `useAppearance()` come primitiva strutturale.
+`AppearanceControlsRoot` fornisce tramite Slot l’API restituita da `useAppearance()`.
 
-Usala quando vuoi controlli di aspetto riutilizzabili con presentazione personalizzata.
+Fields personalizzati per Opacity, Visibility e Corner radius possono riutilizzare State e Actions del SDK.
 
-## API correlate
+<SdkComponentAPI :components="data.components" />
+
+## Vedi anche
 
 - [useAppearance](../composables/use-appearance)
-- [Guida Pannelli Proprietà](../../guides/property-panels)
+- [Pannelli Properties](../../guides/property-panels)

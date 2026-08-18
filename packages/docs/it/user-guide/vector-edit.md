@@ -1,92 +1,75 @@
 ---
-title: Modifica oggetti vettoriali
-description: "Come modificare la geometria di un percorso vettoriale: ancoraggi, maniglie di Bézier, modificatori e azioni dello strumento penna in modalità modifica."
+title: Modificare Vectors
+description: Modificare Anchors, Bezier handles e Segments e usare Pen tool in Edit mode.
 ---
 
-# Modifica oggetti vettoriali
+# Modificare Vectors
 
-La modalità di modifica degli oggetti vettoriali consente di cambiare la **geometria** di una curva: posizione degli ancoraggi, forma dei segmenti e maniglie di Bézier.  
-In questa modalità si lavora direttamente sul percorso, non sulle trasformazioni standard dell'oggetto.
+Vector edit mode modifica la geometria di un Path: Position degli Anchors, forma dei Segments e Bezier handles. Non trasforma l’intero oggetto, ma il Path stesso.
 
-## Attivare la modalità
+## Aprire Edit mode
 
-- Seleziona un oggetto vettoriale con lo strumento di selezione.
-- **Fai doppio clic sulla curva**.
+1. Seleziona un Vector object con Select tool.
+2. Fai Double-click sulla Curve.
 
-Questo attiva la modifica della geometria per il vettore selezionato.
+Premi <kbd>Escape</kbd> o cambia contesto per uscire.
 
-## Uscire dalla modalità
+## Comportamento
 
-- Premi <kbd>Escape</kbd>.
-- Oppure passa a un altro contesto di modifica.
+- Il normale Transform bounding box viene nascosto.
+- Anchors, Segments e Handles possono essere selezionati e modificati.
+- Gli angoli del Bounding box non attivano Resize o Rotation.
 
-## Cosa cambia in questa modalità
+## Operazioni di base
 
-- Il riquadro di trasformazione normale è disabilitato per l'oggetto.
-- Diventa possibile modificare ancoraggi, segmenti e maniglie.
-- Il cursore non passa alla modalità ridimensionamento/rotazione agli angoli del riquadro.
+### Spostare un Anchor
 
-## Azioni di base
+Trascina l’Anchor. I Segments collegati e la forma del Path vengono aggiornati durante il Drag.
 
-### Spostare un ancoraggio
+### Modificare un Bezier handle
 
-- Trascina un punto di ancoraggio.
-- I segmenti collegati e la forma del percorso si aggiornano in anteprima in tempo reale.
+Trascina l’Handle di un Anchor. Il comportamento dipende dalla sua Handle composition corrente.
 
-### Modificare una maniglia di Bézier
+## Modifiers
 
-- Trascina una maniglia sull'ancoraggio.
-- Per impostazione predefinita, il comportamento segue la composizione corrente delle maniglie dell'ancoraggio.
+| Comportamento | macOS | Windows / Linux |
+|---------------|-------|-----------------|
+| Continuous | <kbd>Cmd</kbd> + Drag | <kbd>Ctrl</kbd> + Drag |
+| Corner, Handles indipendenti | <kbd>Option</kbd> + Drag | <kbd>Alt</kbd> + Drag |
+| Mantieni Direction, modifica solo Length | <kbd>Shift</kbd> + Drag | <kbd>Shift</kbd> + Drag |
 
-## Modificatori per il trascinamento delle maniglie
+### Continuous
 
-| Azione | Mac | Windows / Linux |
-|--------|-----|-----------------|
-| Continuo (Uniforme / Continuo) | <kbd>Cmd</kbd> + trascina | <kbd>Ctrl</kbd> + trascina |
-| Angolo (maniglie indipendenti) | <kbd>Option</kbd> + trascina | <kbd>Alt</kbd> + trascina |
-| Blocco direzione (solo lunghezza) | <kbd>Shift</kbd> + trascina | <kbd>Shift</kbd> + trascina |
+Con <kbd>Cmd</kbd> o <kbd>Ctrl</kbd>, l’Active handle rimane allineato all’Handle opposto. Cambia solo la sua Length e la Curve mantiene una transizione fluida.
 
-### Continuo: <kbd>Cmd</kbd>/<kbd>Ctrl</kbd> + trascina
+### Corner
 
-- La maniglia attiva è vincolata alla stessa linea della maniglia gemella.
-- Cambia solo la lunghezza della maniglia attiva.
-- Usalo per transizioni fluide senza spezzare la continuità.
+Con <kbd>Option</kbd> o <kbd>Alt</kbd>, l’Active handle viene modificato indipendentemente. L’Handle opposto resta fermo, consentendo un Corner netto.
 
-### Angolo: <kbd>Option</kbd>/<kbd>Alt</kbd> + trascina
+### Mantieni Direction
 
-- La maniglia attiva viene modificata in modo indipendente.
-- La maniglia gemella rimane ferma.
-- Usalo per creare una transizione ad angolo netto.
+Per Anchors con Composition **Continuous** o **Symmetric**, <kbd>Shift</kbd> conserva la Direction presente prima del Drag. Cambia solo la Length di uno o due Handles, in base alla Composition.
 
-### Blocco direzione: <kbd>Shift</kbd> + trascina
+## Bend tramite Drag dell’Anchor
 
-Per ancoraggi con composizione **Continua** o **Simmetrica**:
+Quando un Anchor viene trascinato con <kbd>Cmd</kbd> o <kbd>Ctrl</kbd>, OpenPencil sceglie il Target handle in base alla Direction del Segment collegato, non alla distanza dal punto vicino.
 
-- la direzione della maniglia è bloccata al valore **precedente l'inizio del trascinamento corrente**;
-- il trascinamento modifica solo la lunghezza della maniglia (o delle maniglie, in base alla composizione).
+Questo comportamento funziona anche sugli Anchors ramificati di un Vector network. Dopo la scelta, lo stesso Target handle resta attivo fino alla fine del Drag.
 
-## Override della curvatura tramite trascinamento di un ancoraggio
+## Pen tool in Edit mode
 
-Quando si trascina un ancoraggio tenendo premuto <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>, l'editor seleziona la maniglia di destinazione in base alla **direzione di collegamento al segmento** su quell'ancoraggio (non in base alla distanza dal punto vicino più prossimo).  
-Funziona anche su ancoraggi di vettori con più rami: una volta determinata, la maniglia di destinazione rimane bloccata per tutta la durata del trascinamento.
+Con Pen tool attivo:
 
-## Usare lo strumento penna in modalità modifica
+- Click su un Segment inserisce un Anchor e divide il Segment;
+- Click sull’Endpoint di un Path aperto riprende il disegno;
+- <kbd>Option</kbd>/<kbd>Alt</kbd> + Click elimina un Anchor se la Topology lo consente.
 
-Con lo strumento penna attivo:
+Consulta [Pen tool](./pen-tool) per creare e chiudere Paths.
 
-- **Fai clic su un segmento** per inserire un nuovo ancoraggio (divisione del segmento).
-- **Fai clic sull'estremità di un percorso aperto** per riprendere il disegno da quel punto.
-- **Option/Alt + clic su un ancoraggio** per eliminarlo (quando la topologia lo consente).
+## Esempio
 
-Per la creazione dei percorsi e il comportamento di chiusura, vedi [Strumento penna](./pen-tool.md).
-
-## Flusso di lavoro pratico
-
-1. Disegna una forma con lo strumento penna.
-2. Fai doppio clic sulla curva per entrare in modalità di modifica degli oggetti vettoriali.
-3. Sposta gli ancoraggi per rifinire il profilo.
-4. Trascina le maniglie:
-   - con <kbd>Cmd</kbd>/<kbd>Ctrl</kbd> per transizioni continue e fluide,
-   - con <kbd>Option</kbd>/<kbd>Alt</kbd> per modifiche indipendenti,
-   - con <kbd>Shift</kbd> per modificare solo la lunghezza.
-5. Premi <kbd>Escape</kbd> per uscire.
+1. Disegna uno Shape con Pen tool.
+2. Apri la Curve con Double-click.
+3. Sposta gli Anchors per regolare il profilo.
+4. Modifica gli Handles con <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>, <kbd>Option</kbd>/<kbd>Alt</kbd> o <kbd>Shift</kbd>.
+5. Premi <kbd>Escape</kbd>.

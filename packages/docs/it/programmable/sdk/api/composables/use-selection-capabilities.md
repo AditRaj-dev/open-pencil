@@ -1,61 +1,24 @@
 ---
 title: useSelectionCapabilities
-description: Ricava booleani orientati ai comandi per UI e azioni guidate dalla selezione.
+description: Boolean values reattivi per le Actions disponibili con la Selection corrente.
 ---
 
 # useSelectionCapabilities
 
-`useSelectionCapabilities()` espone booleani reattivi che indicano se le azioni comuni dell'editor sono attualmente consentite.
-
-Usalo quando costruisci:
-
-- menu
-- toolbar
-- scorciatoie da tastiera
-- pulsanti di azione
-- pannelli contestuali
-
-## Utilizzo
+`useSelectionCapabilities()` restituisce Boolean values che indicano se le comuni Editor actions sono disponibili. È adatto a Menu, Toolbars, scorciatoie, Action buttons e pannelli dipendenti dal Context.
 
 ```ts
-import { useSelectionCapabilities } from '@open-pencil/vue'
-
-const caps = useSelectionCapabilities()
+const {
+  canDelete,
+  canDuplicate,
+  canCreateComponent,
+  canMoveToPage,
+  canGoToMainComponent,
+  canZoomToSelection,
+} = useSelectionCapabilities()
 ```
 
-## Esempio base
-
-```vue
-<script setup lang="ts">
-import { useSelectionCapabilities } from '@open-pencil/vue'
-
-const { canDelete, canDuplicate, canCreateComponent } = useSelectionCapabilities()
-</script>
-
-<template>
-  <div class="flex gap-2">
-    <button :disabled="!canDuplicate">Duplica</button>
-    <button :disabled="!canDelete">Elimina</button>
-    <button :disabled="!canCreateComponent">Crea componente</button>
-  </div>
-</template>
-```
-
-## Esempi pratici
-
-### Condiziona le voci di menu
-
-```ts
-const { canMoveToPage, canGoToMainComponent } = useSelectionCapabilities()
-```
-
-### Abilita i comandi di zoom solo quando utile
-
-```ts
-const { canZoomToSelection } = useSelectionCapabilities()
-```
-
-## API correlate
+## Vedi anche
 
 - [useSelectionState](./use-selection-state)
 - [useEditorCommands](./use-editor-commands)

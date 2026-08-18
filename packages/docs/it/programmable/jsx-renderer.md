@@ -1,17 +1,17 @@
 ---
-title: Renderer JSX
-description: Crea design con JSX — la sintassi che gli LLM già conoscono da milioni di componenti React.
+title: JSX renderer
+description: Creare design in modo dichiarativo con JSX ed esportarli come JSX o HTML con Tailwind.
 ---
 
-# Renderer JSX
+# JSX renderer
 
-OpenPencil usa JSX come linguaggio di creazione dei design. Gli LLM hanno visto milioni di componenti React — descrivere un layout come `<Frame><Text>` è naturale, nessun addestramento speciale necessario. Ogni token conta quando un agente IA esegue decine di operazioni, e JSX è la rappresentazione dichiarativa più compatta.
+OpenPencil crea un Design tree da JSX. La sintassi dichiarativa e compatta è adatta ad AI agents, Scripts e generazione ripetibile dei design.
 
-JSX è anche confrontabile con diff. Quando un'IA modifica un design, la modifica è un diff JSX — leggibile, revisionabile, versionabile.
+JSX serve anche come rappresentazione leggibile di un design esistente. Le modifiche appaiono come normali Code diff, facilitando Review e Version control.
 
-## Creazione dei Design
+## Creare un design
 
-Lo strumento `render` (disponibile nella chat IA, MCP e CLI eval) accetta JSX:
+Il Tool `render`, disponibile in AI Chat, MCP e CLI `eval`, accetta JSX:
 
 ```jsx
 <Frame name="Card" w={320} h="hug" flex="col" gap={16} p={24} bg="#FFF" rounded={16}>
@@ -20,90 +20,84 @@ Lo strumento `render` (disponibile nella chat IA, MCP e CLI eval) accetta JSX:
 </Frame>
 ```
 
-Nel server MCP e nella chat IA, lo strumento `render` accetta direttamente stringhe JSX. Nella CLI, usa il comando `export` per andare nella direzione opposta — [esportare design come JSX](./cli/exporting).
+In MCP e AI Chat, la JSX string viene passata direttamente a `render`. Per la direzione opposta, la CLI usa `export`: [Esportare un design in JSX](./cli/exporting).
 
 ## Elementi
 
-Tutti i tipi di nodo sono disponibili come elementi JSX:
+| Elemento | Risultato | Alias |
+|----------|-----------|-------|
+| `<Frame>` | Frame con Auto layout opzionale | `<View>` |
+| `<Rectangle>` | Rectangle | `<Rect>` |
+| `<Ellipse>` | Ellipse o Circle | |
+| `<Text>` | Oggetto di testo; i Children diventano il contenuto | |
+| `<Line>` | Line | |
+| `<Star>` | Star | |
+| `<Polygon>` | Polygon | |
+| `<Vector>` | Vector path | |
+| `<Group>` | Group | |
+| `<Section>` | Section | |
 
-| Elemento | Crea | Alias |
-|----------|------|-------|
-| `<Frame>` | Frame (contenitore, supporta auto-layout) | `<View>` |
-| `<Rectangle>` | Rettangolo | `<Rect>` |
-| `<Ellipse>` | Ellisse / cerchio | |
-| `<Text>` | Nodo di testo (i figli diventano contenuto testuale) | |
-| `<Line>` | Linea | |
-| `<Star>` | Stella | |
-| `<Polygon>` | Poligono | |
-| `<Vector>` | Tracciato vettoriale | |
-| `<Group>` | Gruppo | |
-| `<Section>` | Sezione | |
+## Style props
 
-## Proprietà di Stile
-
-Proprietà abbreviate compatte ispirate alla nomenclatura di Tailwind.
+Le forme abbreviate seguono le convenzioni Tailwind.
 
 ### Layout
 
-| Proprietà | Descrizione |
-|-----------|-------------|
-| `flex` | `"row"` o `"col"` — attiva l'auto-layout |
-| `gap` | Spazio tra i figli |
-| `wrap` | Manda a capo i figli alla riga successiva |
-| `rowGap` | Spaziatura sull'asse trasversale durante il wrapping |
+| Prop | Significato |
+|------|-------------|
+| `flex` | `"row"` o `"col"`; attiva Auto layout |
+| `gap` | Spazio tra Children |
+| `wrap` | Posiziona i Children su altre righe |
+| `rowGap` | Spazio tra righe con Wrap |
 | `justify` | `"start"`, `"end"`, `"center"`, `"between"` |
 | `items` | `"start"`, `"end"`, `"center"`, `"stretch"` |
 | `p`, `px`, `py`, `pt`, `pr`, `pb`, `pl` | Padding |
 
-### Dimensione e Posizione
+### Size e Position
 
-| Proprietà | Descrizione |
-|-----------|-------------|
-| `w`, `h` | Larghezza/altezza — numero, `"fill"` o `"hug"` |
-| `minW`, `maxW`, `minH`, `maxH` | Vincoli di dimensione |
-| `x`, `y` | Posizione |
+| Prop | Significato |
+|------|-------------|
+| `w`, `h` | Width o Height come numero, `"fill"` oppure `"hug"` |
+| `minW`, `maxW`, `minH`, `maxH` | Limiti di dimensione |
+| `x`, `y` | Position |
 
-### Aspetto
+### Appearance
 
-| Proprietà | Descrizione |
-|-----------|-------------|
-| `bg` | Riempimento di sfondo (colore esadecimale) |
-| `fill` | Alias per `bg` |
-| `stroke` | Colore del bordo |
-| `strokeWidth` | Larghezza del bordo (predefinito: 1) |
-| `rounded` | Raggio degli angoli (o `roundedTL`, `roundedTR`, `roundedBL`, `roundedBR`) |
-| `cornerSmoothing` | Angoli arrotondati stile iOS (0–1) |
-| `opacity` | 0–1 |
-| `shadow` | Ombra esterna (es. `"0 4 8 #00000040"`) |
-| `blur` | Raggio sfocatura del livello |
-| `rotate` | Rotazione in gradi |
-| `blendMode` | Metodo di fusione |
-| `overflow` | `"hidden"` o `"visible"` |
+| Prop | Significato |
+|------|-------------|
+| `bg` | Background fill come Hex color |
+| `fill` | Alias di `bg` |
+| `stroke` | Stroke color |
+| `strokeWidth` | Stroke weight, 1 per impostazione predefinita |
+| `rounded` | Corner radius; angoli separati tramite `roundedTL`, `roundedTR`, `roundedBL`, `roundedBR` |
+| `cornerSmoothing` | Continuous corner smoothing da 0 a 1 |
+| `opacity` | Valore da 0 a 1 |
+| `shadow` | Drop shadow, per esempio `"0 4 8 #00000040"` |
+| `blur` | Layer blur radius |
+| `rotate` | Rotation in gradi |
+| `blendMode` | Blend mode |
+| `overflow` | `"hidden"` oppure `"visible"` |
 
-### Tipografia
+### Typography
 
-| Proprietà | Descrizione |
-|-----------|-------------|
-| `size` / `fontSize` | Dimensione del font |
-| `font` / `fontFamily` | Famiglia di font |
-| `weight` / `fontWeight` | `"bold"`, `"medium"`, `"normal"` o numero |
-| `color` | Colore del testo |
+| Prop | Significato |
+|------|-------------|
+| `size` / `fontSize` | Font size |
+| `font` / `fontFamily` | Font family |
+| `weight` / `fontWeight` | `"bold"`, `"medium"`, `"normal"` oppure numero |
+| `color` | Text color |
 | `textAlign` | `"left"`, `"center"`, `"right"`, `"justified"` |
 
-## Esportazione in JSX
-
-Converti design esistenti in JSX:
+## Esportare JSX
 
 ```sh
-openpencil export design.fig -f jsx                   # formato OpenPencil
-openpencil export design.fig -f jsx --style tailwind  # classi Tailwind
+openpencil export design.fig -f jsx                   # JSX OpenPencil
+openpencil export design.fig -f jsx --style tailwind  # HTML con Tailwind classes
 ```
 
-Il ciclo completo funziona: esporta un design come JSX, modifica il codice, renderizzalo di nuovo.
+Il design esportato può essere modificato come Code e renderizzato di nuovo.
 
-## Confronto Visuale con Diff
-
-Poiché i design sono rappresentabili come JSX, le modifiche diventano diff del codice:
+## Diffs
 
 ```diff
  <Frame name="Card" w={320} flex="col" gap={16} p={24} bg="#FFF">
@@ -113,4 +107,4 @@ Poiché i design sono rappresentabili come JSX, le modifiche diventano diff del 
  </Frame>
 ```
 
-Questo rende le modifiche ai design revisionabili nelle pull request, tracciabili nel controllo di versione e verificabili nella CI.
+Questa rappresentazione consente di rivedere le modifiche nelle Pull requests e conservarle in Version control.

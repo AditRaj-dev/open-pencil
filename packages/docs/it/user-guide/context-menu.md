@@ -1,36 +1,73 @@
 ---
 title: Menu contestuale
-description: Azioni del menu contestuale con clic destro in OpenPencil.
+description: Actions per Clipboard, ordine, Groups, Components, Visibility e Pages.
 ---
+
 # Menu contestuale
 
-Fai clic con il pulsante destro sul canvas per aprire il menu contestuale. Se lo fai su un nodo, il nodo viene selezionato prima.
+Right-click sul canvas apre il menu contestuale. Su un oggetto, OpenPencil lo seleziona prima. Su un’area libera, annulla la Selection.
 
-## Copia come
+## Copy as
 
-Il sottomenu **Copia come** offre questi formati:
+Il Submenu **Copy as** scrive la Selection nel Clipboard:
 
-| Azione | Mac | Windows / Linux |
-|--------|-----|-----------------|
-| Copia come testo | — | — |
-| Copia come SVG | — | — |
-| Copia come PNG | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>C</kbd> | <kbd>Shift</kbd> + <kbd>Ctrl</kbd> + <kbd>C</kbd> |
-| Copia come JSX | — | — |
+| Azione | macOS | Windows / Linux |
+|--------|-------|-----------------|
+| Copy as text | — | — |
+| Copy as SVG | — | — |
+| Copy as PNG | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>C</kbd> | <kbd>Shift</kbd><kbd>Ctrl</kbd><kbd>C</kbd> |
+| Copy as JSX | — | — |
 
-## Appunti
-Copia (<kbd>⌘</kbd><kbd>C</kbd>), Taglia (<kbd>⌘</kbd><kbd>X</kbd>), Incolla (<kbd>⌘</kbd><kbd>V</kbd>), Duplica (<kbd>⌘</kbd><kbd>D</kbd>), Elimina (⌫)
+## Clipboard
 
-## Ordine Z
-**]** porta in primo piano · **[** manda in fondo
+| Azione | macOS | Windows / Linux |
+|--------|-------|-----------------|
+| Copy | <kbd>⌘</kbd><kbd>C</kbd> | <kbd>Ctrl</kbd><kbd>C</kbd> |
+| Cut | <kbd>⌘</kbd><kbd>X</kbd> | <kbd>Ctrl</kbd><kbd>X</kbd> |
+| Paste here | <kbd>⌘</kbd><kbd>V</kbd> | <kbd>Ctrl</kbd><kbd>V</kbd> |
+| Duplicate | <kbd>⌘</kbd><kbd>D</kbd> | <kbd>Ctrl</kbd><kbd>D</kbd> |
+| Delete | <kbd>⌫</kbd> | Backspace/<kbd>Canc</kbd> |
 
-## Raggruppamento
-Raggruppa (<kbd>⌘</kbd><kbd>G</kbd>), Separa (<kbd>⇧</kbd><kbd>⌘</kbd><kbd>G</kbd>), Aggiungi auto-layout (<kbd>⇧</kbd><kbd>A</kbd>)
+## Ordine
 
-## Componenti
-Crea componente (<kbd>⌥</kbd><kbd>⌘</kbd><kbd>K</kbd>), Crea set componenti (<kbd>⇧</kbd><kbd>⌘</kbd><kbd>K</kbd>), Crea istanza, Vai al componente principale, Separa istanza (<kbd>⌥</kbd><kbd>⌘</kbd><kbd>B</kbd>). Azioni in viola.
+| Azione | Scorciatoia |
+|--------|-------------|
+| Bring to front | ] |
+| Send to back | [ |
 
-## Visibilità e blocco
-Nascondi/Mostra (<kbd>⇧</kbd><kbd>⌘</kbd><kbd>H</kbd>), Blocca/Sblocca (<kbd>⇧</kbd><kbd>⌘</kbd><kbd>L</kbd>)
+## Groups e Auto layout
 
-## Sposta in pagina
-Sottomenu con tutte le pagine tranne quella corrente.
+| Azione | macOS | Windows / Linux |
+|--------|-------|-----------------|
+| Group | <kbd>⌘</kbd><kbd>G</kbd> | <kbd>Ctrl</kbd><kbd>G</kbd> |
+| Ungroup | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>G</kbd> | <kbd>Shift</kbd><kbd>Ctrl</kbd><kbd>G</kbd> |
+| Add Auto layout | <kbd>⇧</kbd><kbd>A</kbd> | <kbd>Shift</kbd><kbd>A</kbd> |
+
+## Components
+
+Le Component actions sono mostrate in viola.
+
+| Azione | macOS | Windows / Linux | Disponibile per |
+|--------|-------|-----------------|-----------------|
+| Create component | <kbd>⌥</kbd><kbd>⌘</kbd><kbd>K</kbd> | <kbd>Ctrl</kbd><kbd>Alt</kbd><kbd>K</kbd> | Frames e Groups |
+| Create component set | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>K</kbd> | <kbd>Shift</kbd><kbd>Ctrl</kbd><kbd>K</kbd> | Due o più Components |
+| Create instance | — | — | Components |
+| Go to main component | — | — | Instances |
+| Detach instance | <kbd>⌥</kbd><kbd>⌘</kbd><kbd>B</kbd> | <kbd>Ctrl</kbd><kbd>Alt</kbd><kbd>B</kbd> | Instances |
+
+## Visibility e Lock
+
+| Azione | macOS | Windows / Linux |
+|--------|-------|-----------------|
+| Hide / Show | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>H</kbd> | <kbd>Shift</kbd><kbd>Ctrl</kbd><kbd>H</kbd> |
+| Lock / Unlock | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>L</kbd> | <kbd>Shift</kbd><kbd>Ctrl</kbd><kbd>L</kbd> |
+
+## Move to page
+
+Il Submenu **Move to page** contiene tutte le Pages tranne quella corrente.
+
+## Suggerimenti
+
+- Right-click su un’area libera offre Paste.
+- Le Component actions compaiono solo quando sono compatibili con la Selection.
+- Il menu mostra le Scorciatoie e aiuta a scoprire le Commands disponibili.

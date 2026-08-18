@@ -1,34 +1,66 @@
 ---
-title: Selezione e manipolazione
-description: Selezionare, spostare, ridimensionare, ruotare e organizzare nodi in OpenPencil.
+title: Selezionare e trasformare
+description: Selezionare, spostare, ridimensionare, ruotare, duplicare e ordinare gli oggetti.
 ---
-# Selezione e manipolazione
 
-## Selezionare
-- **Click** su un nodo per selezionarlo
-- <kbd>Shift</kbd> + click per aggiungere/rimuovere dalla selezione
-- **Trascinamento marquee** — trascina sul canvas vuoto per la selezione rettangolare
-- <kbd>⌘</kbd><kbd>A</kbd> — seleziona tutto
-- **Click su canvas vuoto** — deseleziona tutto
+# Selezionare e trasformare
+
+Gli oggetti selezionati possono essere spostati, ridimensionati, ruotati, duplicati e riordinati tra i Layers.
+
+## Selection
+
+- Click su un oggetto sostituisce la Selection corrente.
+- <kbd>Shift</kbd> + Click aggiunge o rimuove un oggetto.
+- Drag su un’area libera del canvas crea una Marquee selection e seleziona gli oggetti intersecati.
+- <kbd>⌘</kbd><kbd>A</kbd> seleziona tutti gli oggetti della Page corrente.
+- Click su un’area libera annulla la Selection.
 
 ## Spostare
-- **Trascinamento** del nodo selezionato
-- **Frecce** — sposta di 1 px · <kbd>Shift</kbd> + frecce — 10 px
 
-## Ridimensionare
-8 maniglie (4 angoli + 4 punti medi). <kbd>Shift</kbd> + trascinamento mantiene le proporzioni.
+- Trascina un oggetto selezionato.
+- Gli Arrow keys spostano di 1 px.
+- <kbd>Shift</kbd> + Arrow keys spostano di 10 px.
 
-## Ruotare
-Passa vicino a un angolo per il cursore di rotazione. <kbd>Shift</kbd> scatta a incrementi di 15°.
+## Resize
 
-## Duplicare
-- <kbd>Alt</kbd> + trascinamento — duplica e sposta · <kbd>⌘</kbd><kbd>D</kbd> — duplica sul posto
+La Selection mostra otto Handles: quattro agli angoli e quattro al centro dei lati. Trascinane uno per modificare Width e Height.
 
-## Eliminare
-<kbd>Backspace</kbd> o **Canc**
+Tieni premuto <kbd>Shift</kbd> su un Corner handle per conservare le proporzioni.
 
-## Ordine Z
-**]** porta in primo piano · **[** manda in fondo
+## Rotation
 
-## Visibilità e blocco
-<kbd>⇧</kbd><kbd>⌘</kbd><kbd>H</kbd> visibilità · <kbd>⇧</kbd><kbd>⌘</kbd><kbd>L</kbd> blocco
+Porta il Pointer poco oltre un Corner handle finché compare il Rotation cursor, quindi trascina. <kbd>Shift</kbd> allinea la Rotation a intervalli di 15°.
+
+## Duplicate
+
+- <kbd>⌥</kbd> oppure <kbd>Alt</kbd> durante il Drag crea e sposta una copia.
+- <kbd>⌘</kbd><kbd>D</kbd> oppure <kbd>Ctrl</kbd><kbd>D</kbd> duplica nella stessa Position.
+
+## Delete
+
+Backspace oppure Delete elimina tutti gli oggetti selezionati.
+
+## Ordine
+
+- **]** porta la Selection in primo piano.
+- **[** la manda sullo sfondo.
+
+## Visibility e Lock
+
+- <kbd>⇧</kbd><kbd>⌘</kbd><kbd>H</kbd> cambia Visibility.
+- <kbd>⇧</kbd><kbd>⌘</kbd><kbd>L</kbd> cambia Lock.
+
+## Scorciatoie
+
+| Azione | macOS | Windows / Linux |
+|--------|-------|-----------------|
+| Seleziona tutto | <kbd>⌘</kbd><kbd>A</kbd> | <kbd>Ctrl</kbd><kbd>A</kbd> |
+| Duplicate | <kbd>⌘</kbd><kbd>D</kbd> | <kbd>Ctrl</kbd><kbd>D</kbd> |
+| Duplica e sposta | <kbd>⌥</kbd> + Drag | <kbd>Alt</kbd> + Drag |
+| Delete | <kbd>⌫</kbd>/<kbd>Canc</kbd> | Backspace/<kbd>Canc</kbd> |
+| Sposta di 1 px | Arrow keys | Arrow keys |
+| Sposta di 10 px | <kbd>⇧</kbd> + Arrow keys | <kbd>Shift</kbd> + Arrow keys |
+| Primo piano | ] | ] |
+| Sfondo | [ | [ |
+| Visibility | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>H</kbd> | <kbd>Shift</kbd><kbd>Ctrl</kbd><kbd>H</kbd> |
+| Lock | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>L</kbd> | <kbd>Shift</kbd><kbd>Ctrl</kbd><kbd>L</kbd> |

@@ -1,15 +1,15 @@
 ---
 title: PositionControlsRoot
-description: Primitiva root headless per controlli di posizione, dimensione, allineamento e trasformazione.
+description: Headless component per Position, Size, Alignment e Transform.
 ---
 
 # PositionControlsRoot
 
-`PositionControlsRoot` espone handler di posizione, dimensione, rotazione, allineamento, capovolgimento e rotazione per la selezione corrente.
+`PositionControlsRoot` fornisce Values e Actions per Position, Size, Rotation, Alignment e Flip della Selection corrente.
 
-Usala quando vuoi controlli di posizione personalizzati senza reimplementare il cablaggio con l'editor.
+Consente di creare Fields e Buttons personalizzati senza reintegrare le Editor operations.
 
-## API correlate
+## Vedi anche
 
 - [usePosition](../composables/use-position)
-- [Guida Pannelli Proprietà](../../guides/property-panels)
+- [Pannelli Properties](../../guides/property-panels)

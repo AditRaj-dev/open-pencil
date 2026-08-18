@@ -1,36 +1,37 @@
 ---
 layout: doc
 title: Guida utente
-description: Impara a usare OpenPencil — navigazione canvas, disegno, testo, componenti, auto-layout e altro.
+description: Navigare, disegnare, modificare testo, usare Components e configurare Auto layout in OpenPencil.
 ---
 
 # Guida utente
 
-OpenPencil è un editor di design open-source, compatibile con Figma — completamente locale, IA-nativo e programmabile.
+OpenPencil è un editor di design open source compatibile con Figma, con elaborazione locale dei file, AI integrata e APIs di automazione. Questa guida illustra i principali workflow dell’editor.
 
-::: tip Scorciatoie multipiattaforma
-<kbd>⌘</kbd> = <kbd>Command</kbd> (<kbd>Ctrl</kbd> su Windows/Linux), <kbd>⌥</kbd> = <kbd>Option</kbd> (<kbd>Alt</kbd>), <kbd>⇧</kbd> = <kbd>Shift</kbd>.
+::: tip Scorciatoie sui diversi sistemi
+La documentazione usa la notazione macOS: <kbd>⌘</kbd> corrisponde a <kbd>Command</kbd> oppure <kbd>Ctrl</kbd> su Windows e Linux; <kbd>⌥</kbd> a <kbd>Option</kbd> oppure <kbd>Alt</kbd>; <kbd>⇧</kbd> a <kbd>Shift</kbd>.
 :::
 
-## Orientamento
+## Primi passi
 
-- [Navigazione canvas](./canvas-navigation) — panoramica, zoom e strumento mano
-- [Selezione e manipolazione](./selection-and-manipulation) — selezionare, spostare, ridimensionare, ruotare
+- [Navigazione nel canvas](./canvas-navigation) — spostare il Viewport, usare Zoom e Hand tool
+- [Selezionare e trasformare](./selection-and-manipulation) — selezionare, spostare, ridimensionare, ruotare e ordinare gli oggetti
 
-## Creazione contenuti
+## Creare contenuti
 
-- [Disegno forme](./drawing-shapes) — rettangoli, ellissi, linee, frame, sezioni
-- [Modifica testo](./text-editing) — creare e modificare testo con formattazione rich
-- [Strumento penna](./pen-tool) — percorsi vettoriali con curve di Bézier
+- [Disegnare Shapes](./drawing-shapes) — Rectangles, Ellipses, Lines, Frames, Sections, Polygons e Stars
+- [Modificare il testo](./text-editing) — creare, selezionare e formattare il testo
+- [Pen tool](./pen-tool) — disegnare Vector paths e Bezier curves
+- [Modificare Vectors](./vector-edit) — regolare Anchors, Handles e Segments
 
-## Organizzazione
+## Organizzare il documento
 
-- [Livelli e pagine](./layers-and-pages) — pannello livelli, pagine e proprietà
-- [Menu contestuale](./context-menu) — azioni con click destro
-- [Esportazione](./exporting) — esportazione immagini e operazioni .fig
+- [Layers e Pages](./layers-and-pages) — pannello Layers, Pages e pannello Properties
+- [Menu contestuale](./context-menu) — Actions per Clipboard, Groups, Components e altre operazioni
+- [Export](./exporting) — esportare Images, SVG e file `.fig`
 
-## Funzionalità avanzate
+## Funzioni avanzate
 
-- [Auto-layout](./auto-layout) — posizionamento automatico basato su flexbox
-- [Componenti](./components) — componenti riutilizzabili, istanze e override
-- [Variabili](./variables) — variabili di design, collezioni, modalità
+- [Auto layout](./auto-layout) — disposizione automatica con Flexbox e CSS Grid
+- [Components](./components) — Components riutilizzabili, Instances e Overrides
+- [Variables](./variables) — Design variables, Collections, Modes e Bindings

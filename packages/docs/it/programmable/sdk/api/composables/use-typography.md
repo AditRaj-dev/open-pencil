@@ -1,30 +1,11 @@
 ---
 title: useTypography
-description: Leggi e aggiorna famiglia di font, peso, dimensione, allineamento e formattazione per i nodi testo.
+description: Leggere e modificare Font family, Style, Size, Alignment e Formatting degli oggetti di testo.
 ---
 
 # useTypography
 
-`useTypography()` è il composable di controllo delle proprietà del testo per i pannelli di modifica del testo.
-
-Espone:
-
-- famiglia di font
-- peso del font
-- dimensione del font
-- stato della formattazione
-- stato dei font mancanti
-- helper per cambiare famiglia, peso, allineamento e decorazioni
-
-## Utilizzo
-
-```ts
-import { useTypography } from '@open-pencil/vue'
-
-const typography = useTypography()
-```
-
-## Esempio base
+`useTypography()` fornisce Font family, Font style, Font size, Formatting attivo, informazioni sui Fonts mancanti e Functions per modificare Family, Style, Alignment e Decoration.
 
 ```ts
 const {
@@ -36,29 +17,13 @@ const {
   setWeight,
   setAlign,
 } = useTypography()
-```
 
-## Esempi pratici
-
-### Carica e cambia una famiglia di font
-
-```ts
-const typography = useTypography({
-  loadFont: async (family, style) => {
-    await myFontLoader(family, style)
-  },
-})
-```
-
-### Attiva/disattiva la formattazione
-
-```ts
 typography.toggleBold()
 typography.toggleItalic()
 typography.toggleDecoration('UNDERLINE')
 ```
 
-## API correlate
+## Vedi anche
 
 - [useTextEdit](./use-text-edit)
 - [useSelectionState](./use-selection-state)

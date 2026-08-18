@@ -1,36 +1,34 @@
 ---
 title: PropertyListRoot
-description: Primitiva strutturale headless per UI di lista di riempimenti, tratti ed effetti.
+description: Controlled list per Fills, Strokes, Effects e altre Array properties.
 ---
+
+<script setup lang="ts">
+import { data } from '#docs-api/components/property-list.data'
+</script>
 
 # PropertyListRoot
 
-`PropertyListRoot` è una primitiva strutturale headless per editor di proprietà basati su array.
-
-È destinata a UI di proprietà come:
-
-- riempimenti
-- tratti
-- effetti
-
-Fornisce slot prop per:
-
-- gli elementi correnti
-- il rilevamento dello stato misto
-- operazioni di aggiunta/rimozione/aggiornamento/patch
-- attivazione/disattivazione della visibilità per elemento
-
-## Utilizzo
+`PropertyListRoot` coordina un’interfaccia per Properties memorizzate come Array, per esempio Fills, Strokes ed Effects. Riceve Values e Mixed state tramite Props ed emette le modifiche.
 
 ```vue
-<PropertyListRoot prop-key="fills" v-slot="{ items, add, remove }">
-  <div v-for="(fill, index) in items" :key="index">
-    <button @click="remove(index)">Rimuovi</button>
-  </div>
-  <button @click="add(defaultFill)">Aggiungi riempimento</button>
-</PropertyListRoot>
+<script setup lang="ts">
+import { PropertyListRoot, useEditorPropertyList } from '@open-pencil/vue'
+const fills = useEditorPropertyList('fills')
+</script>
+
+<template>
+  <PropertyListRoot
+    prop-key="fills"
+    :items="fills.items.value"
+    :mixed="fills.isMixed.value"
+    @add="fills.actions.add"
+    @remove="fills.actions.remove"
+    v-slot="{ items, actions }"
+  >
+    <button v-for="(_, index) in items" :key="index" @click="actions.remove(index)">Rimuovi</button>
+  </PropertyListRoot>
+</template>
 ```
 
-## API correlate
-
-- [Panoramica API SDK](../)
+<SdkComponentAPI :components="data.components" />

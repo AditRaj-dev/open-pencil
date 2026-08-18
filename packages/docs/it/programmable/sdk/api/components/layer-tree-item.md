@@ -1,15 +1,15 @@
 ---
 title: LayerTreeItem
-description: Primitiva di riga headless per un singolo nodo dell'albero dei layer.
+description: Un Item del Layer tree.
 ---
 
 # LayerTreeItem
 
-`LayerTreeItem` renderizza una riga dell'albero dei layer ed espone handler per selezione, espansione, visibilità, blocco e rinomina attraverso il suo slot predefinito.
+`LayerTreeItem` rappresenta una Row del Layer tree. Il Default slot riceve State e Actions per Selection, espansione dei Children, Visibility, Lock e Inline rename.
 
-Usala quando vuoi markup di riga gestito dall'app con comportamento dell'albero dei layer fornito dall'SDK.
+L’applicazione può renderizzare Row markup personalizzato mantenendo le Interactions del SDK.
 
-## API correlate
+## Vedi anche
 
 - [LayerTreeRoot](./layer-tree-root)
 - [useLayerTree](../advanced/use-layer-tree)

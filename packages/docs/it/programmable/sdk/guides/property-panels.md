@@ -1,18 +1,17 @@
 ---
-title: Pannelli Proprietà
-description: Crea pannelli proprietà con composable di controllo e primitive di lista headless.
+title: Pannelli Properties
+description: Creare pannelli Properties con composables e Headless list components.
 ---
 
-# Pannelli Proprietà
+# Pannelli Properties
 
-I pannelli proprietà in `@open-pencil/vue` sono intenzionalmente progettati per essere composable-first.
+`@open-pencil/vue` fornisce principalmente composables per i pannelli Properties.
 
-Se un pannello ha principalmente bisogno di valori derivati dalla selezione e azioni di aggiornamento, preferisci i composable.
-Se un pannello ha bisogno di struttura array/lista riutilizzabile, usa una primitiva headless come `PropertyListRoot`.
+Se un pannello usa Values calcolati dalla Selection e Actions per modificarli, scegli un composable. Per una Structure riutilizzabile di Array o List, usa un Headless component come `PropertyListRoot`.
 
-## Composable di controllo comuni
+## Composables
 
-Per le sezioni proprietà standard, inizia con:
+Per le sezioni comuni:
 
 - `usePosition()`
 - `useLayout()`
@@ -20,13 +19,25 @@ Per le sezioni proprietà standard, inizia con:
 - `useTypography()`
 - `useExport()`
 
-Per pannelli in stile lista, usa:
+Per le Array properties:
 
 - `useFillControls()`
 - `useStrokeControls()`
 - `useEffectsControls()`
 
-## Esempio: pannello posizione
+## Variable bindings
+
+Quando un Field può essere collegato a una Variable o a un Design token esterno, inseriscilo in `BindableValueRoot`.
+
+- Fuori dall’editing, mostra il Name della Variable; il Value calcolato può apparire in un Tooltip.
+- Il Focus e l’apertura del Variable picker non devono rimuovere un Binding esistente.
+- Applica `detach-on-edit`, `readonly-when-bound` oppure `edit-variable` solo dopo una modifica reale.
+- È preferibile inserire un’Action esplicita per rimuovere il Binding nel Picker, invece di un Button facile da attivare accidentalmente accanto al Field.
+- Raggruppa Binding changes, Detach durante l’editing e Multi-selection updates in una sola Provider batch operation.
+
+L’applicazione OpenPencil mostra il Name della Variable in viola quando il Field è inattivo. All’inizio dell’editing, `NumberField` mostra il Value numerico calcolato. Un’interfaccia personalizzata può presentare lo stesso Headless state in modo diverso.
+
+## Esempio: Position e Size
 
 ```vue
 <script setup lang="ts">
@@ -45,33 +56,45 @@ const { x, y, width, height, updateProp, commitProp } = usePosition()
 </template>
 ```
 
-## Esempio: pannello riempimenti
+## Esempio: Fills
 
 ```vue
 <script setup lang="ts">
-import { PropertyListRoot, useFillControls } from '@open-pencil/vue'
+import {
+  PropertyListRoot,
+  useEditorPropertyList,
+  useFillControls
+} from '@open-pencil/vue'
 
 const fillControls = useFillControls()
+const fills = useEditorPropertyList('fills')
 </script>
 
 <template>
-  <PropertyListRoot prop-key="fills" v-slot="{ items, add, remove }">
+  <PropertyListRoot
+    prop-key="fills"
+    :items="fills.items.value"
+    :mixed="fills.isMixed.value"
+    @add="fills.actions.add"
+    @remove="fills.actions.remove"
+    v-slot="{ items, actions }"
+  >
     <div v-for="(fill, index) in items" :key="index">
       {{ fill.type }}
-      <button @click="remove(index)">Rimuovi</button>
+      <button @click="actions.remove(index)">Rimuovi</button>
     </div>
 
-    <button @click="add(fillControls.defaultFill)">Aggiungi riempimento</button>
+    <button @click="actions.add(fillControls.defaultFill)">Aggiungi Fill</button>
   </PropertyListRoot>
 </template>
 ```
 
-## Regola pratica
+## Scegliere l’API
 
-- usa i composable per logica di controllo diretta
-- usa le primitive strutturali quando la parte difficile è la coordinazione ripetuta di lista/albero/slot
+- Composables per State e Actions.
+- Headless structural components quando il lavoro principale è coordinare Lists, Trees o Slots ripetuti.
 
-## API correlate
+## Vedi anche
 
 - [usePosition](../api/composables/use-position)
 - [useLayout](../api/composables/use-layout)
