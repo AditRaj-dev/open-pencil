@@ -1,13 +1,13 @@
 ---
 title: Panele właściwości
-description: Tworzenie paneli właściwości za pomocą composables i komponentów headless dla list.
+description: Tworzenie paneli właściwości za pomocą composables i komponentów bez narzuconego wyglądu.
 ---
 
 # Panele właściwości
 
 Panele właściwości w `@open-pencil/vue` są budowane przede wszystkim za pomocą composables.
 
-Jeśli panel potrzebuje wartości obliczonych z selection i operacji do ich zmiany, użyj composable. Jeśli ważna jest struktura tablicy lub listy przeznaczona do ponownego użycia, wybierz komponent headless, na przykład `PropertyListRoot`.
+Jeśli panel potrzebuje wartości obliczonych z zaznaczenia i działań do ich zmiany, użyj composable. Jeśli ważna jest wielokrotnego użytku struktura tablicy lub listy, wybierz komponent bez narzuconego wyglądu, na przykład `PropertyListRoot`.
 
 ## Główne composables
 
@@ -19,7 +19,7 @@ Do zwykłych sekcji panelu właściwości służą:
 - `useTypography()`
 - `useExport()`
 
-Do properties przedstawianych jako listy:
+Do właściwości przedstawianych jako listy:
 
 - `useFillControls()`
 - `useStrokeControls()`
@@ -27,15 +27,15 @@ Do properties przedstawianych jako listy:
 
 ## Pola powiązane ze zmiennymi
 
-Jeśli wartość pola można powiązać z variable albo zewnętrznym design token, umieść pole wewnątrz `BindableValueRoot`. Komponent nie określa wyglądu pola, ale interfejs nie powinien niszczyć istniejącego binding podczas zwykłego uzyskania focus:
+Jeśli wartość pola można powiązać ze zmienną albo zewnętrznym tokenem projektu, umieść pole wewnątrz `BindableValueRoot`.
 
-- Gdy pole nie jest edytowane, pokazuj nazwę variable. Obliczoną wartość można wyświetlić w elemencie pomocniczym, na przykład tooltip.
-- Uzyskanie focus i otwarcie variable picker nie powinny usuwać binding.
-- Stosuj `detach-on-edit`, `readonly-when-bound` albo `edit-variable` dopiero po rzeczywistej zmianie wartości przez użytkownika.
-- Osobną operację usunięcia binding lepiej umieścić w picker niż w niebezpiecznej ikonie obok pola.
-- Zmianę binding, jego usunięcie podczas edycji i zmianę wielu obiektów wykonuj w jednej batch operation provider.
+- Gdy pole nie jest edytowane, pokazuj nazwę zmiennej. Obliczoną wartość można wyświetlić na przykład w dymku.
+- Uzyskanie fokusu i otwarcie wyboru zmiennej nie powinny usuwać powiązania.
+- Stosuj `detach-on-edit`, `readonly-when-bound` albo `edit-variable` dopiero po rzeczywistej zmianie wartości.
+- Osobne działanie usunięcia powiązania lepiej umieścić w oknie wyboru niż w łatwej do przypadkowego użycia ikonie obok pola.
+- Zmianę powiązania, jego usunięcie podczas edycji i zmianę wielu obiektów wykonuj w jednej operacji zbiorczej dostawcy.
 
-Interfejs aplikacji OpenPencil pokazuje nazwę variable na fioletowym tle, gdy pole nie jest edytowane. Po rozpoczęciu edycji `NumberField` pokazuje obliczoną wartość liczbową. Własny interfejs może przedstawić ten sam headless state inaczej.
+Aplikacja OpenPencil pokazuje nazwę zmiennej na fioletowym tle, gdy pole nie jest edytowane. Po rozpoczęciu edycji `NumberField` pokazuje obliczoną wartość liczbową. Własny interfejs może przedstawić ten sam stan inaczej.
 
 ## Przykład: położenie i rozmiar
 
@@ -56,7 +56,7 @@ const { x, y, width, height, updateProp, commitProp } = usePosition()
 </template>
 ```
 
-## Przykład: lista fills
+## Przykład: lista zalew
 
 ```vue
 <script setup lang="ts">
@@ -84,15 +84,15 @@ const fills = useEditorPropertyList('fills')
       <button @click="actions.remove(index)">Usuń</button>
     </div>
 
-    <button @click="actions.add(fillControls.defaultFill)">Dodaj fill</button>
+    <button @click="actions.add(fillControls.defaultFill)">Dodaj zalew</button>
   </PropertyListRoot>
 </template>
 ```
 
 ## Wybór API
 
-- Używaj composables do state i actions.
-- Używaj strukturalnych komponentów headless, gdy główną trudnością jest koordynacja powtarzających się list, drzew albo slots.
+- Używaj composables do stanu i działań.
+- Używaj komponentów strukturalnych bez narzuconego wyglądu, gdy główną trudnością jest koordynacja powtarzających się list, drzew albo slotów.
 
 ## Zobacz też
 
