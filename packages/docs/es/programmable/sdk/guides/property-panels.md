@@ -1,13 +1,13 @@
 ---
-title: Paneles Properties
-description: Crear paneles Properties con composables y Headless list components.
+title: Paneles de propiedades
+description: Crear paneles de propiedades con composables y componentes sin aspecto predefinido.
 ---
 
-# Paneles Properties
+# Paneles de propiedades
 
-`@open-pencil/vue` ofrece principalmente composables para construir paneles Properties.
+`@open-pencil/vue` ofrece principalmente composables para construir paneles de propiedades.
 
-Si un panel necesita Values calculados a partir de la Selection y Actions para modificarlos, usa un composable. Si requiere una Structure reutilizable para Arrays o Lists, usa un Headless component como `PropertyListRoot`.
+Si un panel necesita valores calculados a partir de la selección y acciones para modificarlos, usa un composable. Si requiere una estructura reutilizable para matrices o listas, usa un componente sin aspecto predefinido como `PropertyListRoot`.
 
 ## Composables
 
@@ -19,25 +19,25 @@ Para secciones habituales:
 - `useTypography()`
 - `useExport()`
 
-Para Array properties:
+Para propiedades en forma de lista:
 
 - `useFillControls()`
 - `useStrokeControls()`
 - `useEffectsControls()`
 
-## Variable bindings
+## Enlaces con variables
 
-Cuando un Field pueda vincularse a una Variable o un Design token externo, colócalo dentro de `BindableValueRoot`.
+Cuando un campo pueda vincularse a una variable o un token de diseño externo, colócalo dentro de `BindableValueRoot`.
 
-- Sin edición activa, muestra el Name de la Variable; el Value calculado puede aparecer en un Tooltip.
-- El Focus y la apertura del Variable picker no deben eliminar un Binding existente.
+- Sin edición activa, muestra el nombre de la variable; el valor calculado puede aparecer en una ayuda emergente.
+- El foco y la apertura del selector de variables no deben eliminar un enlace existente.
 - Aplica `detach-on-edit`, `readonly-when-bound` o `edit-variable` solo después de una modificación real.
-- Es preferible incluir una Action explícita para eliminar el Binding dentro del Picker que un Button fácil de pulsar por accidente junto al Field.
-- Agrupa Binding changes, Detach durante la edición y Multi-selection updates en una sola Provider batch operation.
+- Es preferible incluir una acción explícita para eliminar el enlace dentro del selector que un botón fácil de pulsar por accidente junto al campo.
+- Agrupa cambios de enlace, separación durante la edición y actualizaciones de varios objetos en una sola operación por lotes del proveedor.
 
-La aplicación de OpenPencil muestra el Name de la Variable en morado cuando el Field está inactivo. Al empezar a editar, `NumberField` muestra el Value numérico calculado. Una interfaz propia puede presentar el mismo Headless state de otra forma.
+La aplicación de OpenPencil muestra el nombre de la variable en morado cuando el campo está inactivo. Al empezar a editar, `NumberField` muestra el valor numérico calculado. Una interfaz propia puede presentar el mismo estado de otra forma.
 
-## Ejemplo: Position y Size
+## Ejemplo: posición y tamaño
 
 ```vue
 <script setup lang="ts">
@@ -56,7 +56,7 @@ const { x, y, width, height, updateProp, commitProp } = usePosition()
 </template>
 ```
 
-## Ejemplo: Fills
+## Ejemplo: rellenos
 
 ```vue
 <script setup lang="ts">
@@ -84,15 +84,15 @@ const fills = useEditorPropertyList('fills')
       <button @click="actions.remove(index)">Eliminar</button>
     </div>
 
-    <button @click="actions.add(fillControls.defaultFill)">Añadir Fill</button>
+    <button @click="actions.add(fillControls.defaultFill)">Añadir relleno</button>
   </PropertyListRoot>
 </template>
 ```
 
-## Elegir el API
+## Elegir la API
 
-- Composables para State y Actions.
-- Headless structural components cuando lo principal sea coordinar Lists, Trees o Slots repetidos.
+- Composables para el estado y las acciones.
+- Componentes estructurales sin aspecto predefinido cuando lo principal sea coordinar listas, árboles o slots repetidos.
 
 ## Consulta también
 

@@ -1,13 +1,13 @@
 ---
-title: Panneaux Properties
-description: Créer des panneaux Properties avec des composables et des Headless list components.
+title: Panneaux de propriétés
+description: Créer des panneaux de propriétés avec des composables et des composants sans apparence imposée.
 ---
 
-# Panneaux Properties
+# Panneaux de propriétés
 
-`@open-pencil/vue` fournit principalement des composables pour les panneaux Properties.
+`@open-pencil/vue` fournit principalement des composables pour les panneaux de propriétés.
 
-Si un panneau utilise des Values calculés depuis la Selection et des Actions pour les modifier, choisissez un composable. Pour une Structure réutilisable d’Array ou de List, utilisez un Headless component comme `PropertyListRoot`.
+Si un panneau utilise des valeurs calculées depuis la sélection et des actions pour les modifier, choisissez un composable. Pour une structure réutilisable de tableau ou de liste, utilisez un composant sans apparence imposée comme `PropertyListRoot`.
 
 ## Composables
 
@@ -19,25 +19,25 @@ Pour les sections courantes :
 - `useTypography()`
 - `useExport()`
 
-Pour les Array properties :
+Pour les propriétés sous forme de listes :
 
 - `useFillControls()`
 - `useStrokeControls()`
 - `useEffectsControls()`
 
-## Variable bindings
+## Liaisons avec des variables
 
-Lorsqu’un Field peut être lié à une Variable ou à un Design token externe, placez-le dans `BindableValueRoot`.
+Lorsqu’un champ peut être lié à une variable ou à un jeton de design externe, placez-le dans `BindableValueRoot`.
 
-- Hors édition, affichez le Name de la Variable ; le Value calculé peut apparaître dans un Tooltip.
-- Le Focus et l’ouverture du Variable picker ne doivent pas supprimer un Binding existant.
+- Hors édition, affichez le nom de la variable ; la valeur calculée peut apparaître dans une infobulle.
+- Le focus et l’ouverture du sélecteur de variable ne doivent pas supprimer une liaison existante.
 - N’appliquez `detach-on-edit`, `readonly-when-bound` ou `edit-variable` qu’après une modification réelle.
-- Une Action explicite de suppression du Binding est préférable dans le Picker à un Button facile à déclencher par erreur près du Field.
-- Regroupez Binding changes, Detach pendant l’édition et Multi-selection updates dans une seule Provider batch operation.
+- Une action explicite de suppression de la liaison est préférable dans le sélecteur à un bouton facile à déclencher par erreur près du champ.
+- Regroupez changement de liaison, détachement pendant l’édition et mises à jour de plusieurs objets dans une seule opération groupée du fournisseur.
 
-L’application OpenPencil affiche le Name de la Variable en violet lorsque le Field est inactif. Au début de l’édition, `NumberField` affiche le Value numérique calculé. Une interface personnalisée peut présenter le même Headless state différemment.
+L’application OpenPencil affiche le nom de la variable en violet lorsque le champ est inactif. Au début de l’édition, `NumberField` affiche la valeur numérique calculée. Une interface personnalisée peut présenter le même état différemment.
 
-## Exemple : Position et Size
+## Exemple : position et taille
 
 ```vue
 <script setup lang="ts">
@@ -56,7 +56,7 @@ const { x, y, width, height, updateProp, commitProp } = usePosition()
 </template>
 ```
 
-## Exemple : Fills
+## Exemple : remplissages
 
 ```vue
 <script setup lang="ts">
@@ -84,15 +84,15 @@ const fills = useEditorPropertyList('fills')
       <button @click="actions.remove(index)">Supprimer</button>
     </div>
 
-    <button @click="actions.add(fillControls.defaultFill)">Ajouter un Fill</button>
+    <button @click="actions.add(fillControls.defaultFill)">Ajouter un remplissage</button>
   </PropertyListRoot>
 </template>
 ```
 
 ## Choisir l’API
 
-- Composables pour State et Actions.
-- Headless structural components lorsque la coordination de Lists, Trees ou Slots répétitifs constitue l’essentiel du travail.
+- Composables pour l’état et les actions.
+- Composants structurels sans apparence imposée lorsque la coordination de listes, arbres ou slots répétitifs constitue l’essentiel du travail.
 
 ## Voir aussi
 
