@@ -1,90 +1,77 @@
 ---
 title: Menu kontekstowe
-description: Clipboard, kolejność nakładania, groups, components i inne operacje dostępne pod prawym przyciskiem.
+description: Schowek, kolejność nakładania, grupy, komponenty i inne działania dostępne pod prawym przyciskiem.
 ---
 
 # Menu kontekstowe
 
-Naciśnij obszar roboczy prawym przyciskiem myszy. Jeśli wskaźnik znajduje się nad obiektem, OpenPencil najpierw go zaznaczy. Prawy przycisk na pustym obszarze usuwa bieżące zaznaczenie.
+Kliknij obszar roboczy prawym przyciskiem myszy. Jeśli wskaźnik znajduje się nad obiektem, OpenPencil najpierw go zaznaczy. Kliknięcie pustego obszaru prawym przyciskiem usuwa bieżące zaznaczenie.
 
-## Copy/Paste as
+## Kopiuj jako
 
-Submenu **Copy/Paste as** udostępnia dodatkowe clipboard formats:
-
-| Działanie | macOS | Windows / Linux |
-|-----------|-------|-----------------|
-| Copy as text | — | — |
-| Copy as SVG | — | — |
-| Copy as PNG | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>C</kbd> | <kbd>Shift</kbd> + <kbd>Ctrl</kbd> + <kbd>C</kbd> |
-| Copy as JSX | — | — |
-
-- **Copy as text** kopiuje widoczny tekst z selection.
-- **Copy as SVG** kopiuje drzewo obiektów jako SVG markup.
-- **Copy as PNG** renderuje obraz w skali 2× i umieszcza go w systemowym clipboard.
-- **Copy as JSX** kopiuje OpenPencil JSX do użycia z `renderJsx()`.
-
-## Clipboard
+Podmenu **Kopiuj jako** udostępnia dodatkowe formaty:
 
 | Działanie | macOS | Windows / Linux |
 |-----------|-------|-----------------|
-| Copy | <kbd>⌘</kbd><kbd>C</kbd> | <kbd>Ctrl</kbd> + <kbd>C</kbd> |
-| Cut | <kbd>⌘</kbd><kbd>X</kbd> | <kbd>Ctrl</kbd> + <kbd>X</kbd> |
-| Paste here | <kbd>⌘</kbd><kbd>V</kbd> | <kbd>Ctrl</kbd> + <kbd>V</kbd> |
-| Duplicate | <kbd>⌘</kbd><kbd>D</kbd> | <kbd>Ctrl</kbd> + <kbd>D</kbd> |
-| Delete | <kbd>⌫</kbd> | <kbd>Backspace</kbd> / <kbd>Delete</kbd> |
+| Kopiuj jako tekst | — | — |
+| Kopiuj jako SVG | — | — |
+| Kopiuj jako PNG | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>C</kbd> | <kbd>Shift</kbd> + <kbd>Ctrl</kbd> + <kbd>C</kbd> |
+| Kopiuj jako JSX | — | — |
 
-Gdy nic nie jest zaznaczone, operacje dotyczące selection są niedostępne. Paste pozostaje dostępne, jeśli clipboard zawiera obsługiwane dane.
+Tekst jest kopiowany z widocznej zawartości, SVG jako znacznikowe drzewo obiektów, PNG w skali 2×, a JSX w formacie zgodnym z `renderJsx()`.
+
+## Schowek
+
+| Działanie | macOS | Windows / Linux |
+|-----------|-------|-----------------|
+| Kopiuj | <kbd>⌘</kbd><kbd>C</kbd> | <kbd>Ctrl</kbd> + <kbd>C</kbd> |
+| Wytnij | <kbd>⌘</kbd><kbd>X</kbd> | <kbd>Ctrl</kbd> + <kbd>X</kbd> |
+| Wklej tutaj | <kbd>⌘</kbd><kbd>V</kbd> | <kbd>Ctrl</kbd> + <kbd>V</kbd> |
+| Duplikuj | <kbd>⌘</kbd><kbd>D</kbd> | <kbd>Ctrl</kbd> + <kbd>D</kbd> |
+| Usuń | <kbd>⌫</kbd> | <kbd>Backspace</kbd> / <kbd>Delete</kbd> |
 
 ## Kolejność nakładania
 
 | Działanie | Klawisz |
 |-----------|---------|
-| Bring to front | <kbd>]</kbd> |
-| Send to back | <kbd>[</kbd> |
+| Na pierwszy plan | <kbd>]</kbd> |
+| Na dalszy plan | <kbd>[</kbd> |
 
-Polecenia przesuwają obiekt na początek lub koniec listy children jego parent.
+Polecenia przesuwają obiekt na początek lub koniec listy elementów potomnych jego obiektu nadrzędnego.
 
-## Groups i Auto layout
+## Grupy i automatyczny układ
 
 | Działanie | macOS | Windows / Linux |
 |-----------|-------|-----------------|
-| Group | <kbd>⌘</kbd><kbd>G</kbd> | <kbd>Ctrl</kbd> + <kbd>G</kbd> |
-| Ungroup | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>G</kbd> | <kbd>Shift</kbd> + <kbd>Ctrl</kbd> + <kbd>G</kbd> |
-| Add auto layout | <kbd>⇧</kbd><kbd>A</kbd> | <kbd>Shift</kbd> + <kbd>A</kbd> |
+| Grupuj | <kbd>⌘</kbd><kbd>G</kbd> | <kbd>Ctrl</kbd> + <kbd>G</kbd> |
+| Rozgrupuj | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>G</kbd> | <kbd>Shift</kbd> + <kbd>Ctrl</kbd> + <kbd>G</kbd> |
+| Dodaj automatyczny układ | <kbd>⇧</kbd><kbd>A</kbd> | <kbd>Shift</kbd> + <kbd>A</kbd> |
 
-- **Group** jest dostępne, gdy zaznaczono co najmniej dwa obiekty.
-- **Ungroup** przenosi children zaznaczonego group do jego parent.
-- **Add auto layout** umieszcza selection w nowym frame z [Auto layout](./auto-layout).
+## Komponenty
 
-## Components
-
-Operacje dotyczące components są wyświetlane na fioletowo.
+Działania dotyczące komponentów są wyświetlane na fioletowo.
 
 | Działanie | macOS | Windows / Linux | Dostępne dla |
 |-----------|-------|-----------------|--------------|
-| Create component | <kbd>⌥</kbd><kbd>⌘</kbd><kbd>K</kbd> | <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>K</kbd> | Frames, groups i multi-selection |
-| Create component set | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>K</kbd> | <kbd>Shift</kbd> + <kbd>Ctrl</kbd> + <kbd>K</kbd> | Co najmniej dwa components |
-| Create instance | — | — | Components |
-| Go to main component | — | — | Instances |
-| Detach instance | <kbd>⌥</kbd><kbd>⌘</kbd><kbd>B</kbd> | <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>B</kbd> | Instances |
-
-Więcej informacji znajduje się na stronie [Komponenty](./components).
+| Utwórz komponent | <kbd>⌥</kbd><kbd>⌘</kbd><kbd>K</kbd> | <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>K</kbd> | Ramki, grupy i kilka obiektów |
+| Utwórz zestaw komponentów | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>K</kbd> | <kbd>Shift</kbd> + <kbd>Ctrl</kbd> + <kbd>K</kbd> | Co najmniej dwa komponenty |
+| Utwórz egzemplarz | — | — | Komponenty |
+| Przejdź do głównego komponentu | — | — | Egzemplarze |
+| Odłącz egzemplarz | <kbd>⌥</kbd><kbd>⌘</kbd><kbd>B</kbd> | <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>B</kbd> | Egzemplarze |
 
 ## Widoczność i blokada
 
 | Działanie | macOS | Windows / Linux |
 |-----------|-------|-----------------|
-| Hide / Show | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>H</kbd> | <kbd>Shift</kbd> + <kbd>Ctrl</kbd> + <kbd>H</kbd> |
-| Lock / Unlock | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>L</kbd> | <kbd>Shift</kbd> + <kbd>Ctrl</kbd> + <kbd>L</kbd> |
+| Ukryj / Pokaż | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>H</kbd> | <kbd>Shift</kbd> + <kbd>Ctrl</kbd> + <kbd>H</kbd> |
+| Zablokuj / Odblokuj | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>L</kbd> | <kbd>Shift</kbd> + <kbd>Ctrl</kbd> + <kbd>L</kbd> |
 
-Nazwa polecenia zależy od bieżącego stanu: dla widocznego obiektu pojawia się Hide, a dla ukrytego — Show.
+## Przenieś na stronę
 
-## Move to page
-
-Submenu **Move to page** zawiera wszystkie strony poza bieżącą. Wybrana strona staje się nowym parent dla przenoszonych obiektów.
+Podmenu zawiera wszystkie strony poza bieżącą. Wybrana strona staje się nowym obiektem nadrzędnym przenoszonych obiektów.
 
 ## Wskazówki
 
-- Na pustym obszarze menu kontekstowe pozwala wykonać Paste w wybranym miejscu.
-- Polecenia components pojawiają się tylko w odpowiednim context, na przykład Create instance jest widoczne wyłącznie dla component.
+- Na pustym obszarze menu kontekstowe pozwala wkleić dane w wybranym miejscu.
+- Polecenia komponentów pojawiają się tylko w odpowiednim kontekście.
 - Przy poleceniach są pokazane skróty, dlatego menu może służyć jako podręczna ściągawka.
