@@ -30,7 +30,7 @@ brew install open-pencil/tap/open-pencil
 
 ### Что потребуется
 
-- [Bun](https://bun.sh/) — runtime и package manager;
+- [Bun](https://bun.sh/) — среда выполнения и менеджер пакетов;
 - [Rust](https://rustup.rs/) — только для приложения Tauri.
 
 ### Установка
@@ -53,13 +53,13 @@ bun run dev
 
 | Команда | Назначение |
 |---------|------------|
-| `bun run dev` | Запустить dev server с HMR |
-| `bun run build` | Собрать production-версию |
+| `bun run dev` | Запустить сервер разработки с HMR |
+| `bun run build` | Собрать версию для публикации |
 | `bun run check` | Запустить oxlint и проверку типов с помощью tsgo |
-| `bun run test` | Запустить E2E-тесты и сравнение внешнего вида в Playwright |
+| `bun run test` | Запустить сквозные тесты и сравнение внешнего вида в Playwright |
 | `bun run test:update` | Обновить эталонные снимки экрана |
-| `bun run test:unit` | Запустить unit-тесты с помощью bun:test |
-| `bun run docs:dev` | Запустить dev server документации |
+| `bun run test:unit` | Запустить модульные тесты с помощью bun:test |
+| `bun run docs:dev` | Запустить сервер разработки документации |
 | `bun run docs:build` | Быстро собрать документацию для локальной проверки |
 | `bun run docs:build:production` | Полностью собрать документацию для публикации, включая файлы для LLM |
 
