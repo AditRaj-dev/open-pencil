@@ -1,13 +1,11 @@
 ---
 title: CanvasRoot
-description: Headless component для rendering surfaces OpenPencil.
+description: Компонент без встроенного оформления для управления холстом OpenPencil.
 ---
 
 # CanvasRoot
 
-`CanvasRoot` задаёт структуру холста и предоставляет его context в `@open-pencil/vue`.
-
-Используйте component, если SDK должен управлять context и подключением холста, а приложение — layout и оформлением.
+`CanvasRoot` предоставляет дочерним компонентам контекст холста. SDK управляет подключением к редактору, а приложение определяет компоновку и оформление.
 
 ## См. также
 

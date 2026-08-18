@@ -1,11 +1,11 @@
 ---
 title: useCanvas
-description: Подключение renderer на базе CanvasKit к элементу canvas редактора OpenPencil.
+description: Подключение отрисовки CanvasKit к элементу canvas редактора OpenPencil.
 ---
 
 # useCanvas
 
-`useCanvas()` подключает редактор к реальному элементу `<canvas>`.
+`useCanvas()` подключает редактор к элементу `<canvas>`.
 
 Обрабатывает:
 

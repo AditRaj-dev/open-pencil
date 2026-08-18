@@ -1,6 +1,6 @@
 ---
 title: useSelectionState
-description: "Реактивное состояние редактора, производное от выделения: текущий узел, количество и тип выделения."
+description: "Реактивные сведения о выделении: основной объект, количество и тип."
 ---
 
 # useSelectionState
@@ -10,9 +10,9 @@ description: "Реактивное состояние редактора, про
 Используйте их, если интерфейс зависит от:
 
 - наличия выделения
-- количества выделенных узлов
-- основного выделенного узла
-- того, является ли выделенный объект instance, component или group.
+- количества выделенных объектов
+- основного выделенного объекта
+- того, является ли выделенный объект экземпляром, компонентом или группой.
 
 ## Использование
 
@@ -22,7 +22,7 @@ import { useSelectionState } from '@open-pencil/vue'
 const selection = useSelectionState()
 ```
 
-## Базовый пример
+## Пример
 
 ```vue
 <script setup lang="ts">
@@ -56,15 +56,15 @@ const { hasSelection, selectedCount, isInstance } = useSelectionState()
 - `isGroup`
 - `canCreateComponentSet`
 
-## Практические примеры
+## Примеры
 
-### Показывать действия только для instances
+### Показывать действия только для экземпляров
 
 ```ts
 const { isInstance } = useSelectionState()
 ```
 
-### Активировать UI создания набора компонентов
+### Разрешить создание набора компонентов
 
 ```ts
 const { canCreateComponentSet } = useSelectionState()

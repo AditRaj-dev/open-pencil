@@ -1,20 +1,18 @@
 ---
 title: ColorInputRoot
-description: Headless color input с parsing hex и functions обновления.
+description: Разбор шестнадцатеричного цвета и обновление значения в собственном поле ввода.
 ---
 
 # ColorInputRoot
 
-`ColorInputRoot` предоставляет state и functions для собственного интерфейса ввода цвета.
-
-Component вычисляет hex из `Color` и позволяет обновить значение как через hex, так и через полный объект `Color`.
+`ColorInputRoot` преобразует текущее значение `Color` в шестнадцатеричную строку и предоставляет функции обновления из строки или полного объекта `Color`.
 
 ## Props
 
 <SdkPropsTable
   :rows="[
-    { name: 'color', type: 'Color', description: 'Текущее значение color.', required: true },
-    { name: 'editable', type: 'boolean | undefined', description: 'Следует ли показывать value как доступное для редактирования.' }
+    { name: 'color', type: 'Color', description: 'Текущее значение цвета.', required: true },
+    { name: 'editable', type: 'boolean | undefined', description: 'Следует ли показывать значение как доступное для редактирования.' }
   ]"
 />
 
@@ -22,7 +20,7 @@ Component вычисляет hex из `Color` и позволяет обнови
 
 <SdkEventsTable
   :rows="[
-    { name: 'update', payload: 'color: Color', description: 'Вызывается после изменения color.' }
+    { name: 'update', payload: 'color: Color', description: 'Вызывается после изменения цвета.' }
   ]"
 />
 
@@ -30,7 +28,7 @@ Component вычисляет hex из `Color` и позволяет обнови
 
 <SdkSlotsTable
   :rows="[
-    { name: 'default', props: '{ color: Color, editable: boolean, hex: string, updateFromHex: (value: string) => void, updateColor: (color: Color) => void }', description: 'Contract для интерфейса color input.' }
+    { name: 'default', props: '{ color: Color, editable: boolean, hex: string, updateFromHex: (value: string) => void, updateColor: (color: Color) => void }', description: 'Состояние и действия для отображения поля цвета.' }
   ]"
 />
 

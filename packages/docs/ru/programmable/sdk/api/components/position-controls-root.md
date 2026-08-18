@@ -1,13 +1,13 @@
 ---
 title: PositionControlsRoot
-description: Headless root для position, size, alignment и transform controls.
+description: Компонент без встроенного оформления для положения, размера, выравнивания и преобразований.
 ---
 
 # PositionControlsRoot
 
-`PositionControlsRoot` передаёт position, size и rotation текущего selection, а также handlers для align, flip и rotate.
+`PositionControlsRoot` предоставляет значения и действия для положения, размера, поворота, выравнивания и отражения текущего выделения.
 
-Используйте его для собственного интерфейса position controls, чтобы не реализовывать подключение к editor state заново.
+Используйте его для собственного набора полей и кнопок, чтобы не реализовывать подключение к состоянию редактора заново.
 
 ## См. также
 

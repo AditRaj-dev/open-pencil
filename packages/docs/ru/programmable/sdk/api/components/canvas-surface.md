@@ -1,13 +1,13 @@
 ---
 title: CanvasSurface
-description: Элемент canvas, подключённый к ближайшему context CanvasRoot.
+description: Элемент canvas, подключённый к ближайшему CanvasRoot.
 ---
 
 # CanvasSurface
 
-`CanvasSurface` создаёт элемент `<canvas>`, который использует canvas stack SDK.
+`CanvasSurface` отображает элемент `<canvas>`, используемый средствами отрисовки SDK.
 
-Разместите его внутри `CanvasRoot`, если SDK должен управлять canvas refs и подключением renderer, а приложение — layout и оформлением.
+Размещайте его внутри `CanvasRoot`: SDK управляет ссылками и подключением отрисовки, а приложение — компоновкой и оформлением.
 
 ## См. также
 

@@ -1,13 +1,13 @@
 ---
 title: ToolbarItem
-description: Headless component одного editor tool в toolbar.
+description: Один инструмент панели редактора без встроенного оформления.
 ---
 
 # ToolbarItem
 
-`ToolbarItem` передаёт active state и поведение выбора одного tool.
+`ToolbarItem` предоставляет состояние активности инструмента и обрабатывает его выбор.
 
-Используйте его внутри `ToolbarRoot`, если приложению нужен собственный markup button при общем подключении tool selection.
+Внутри `ToolbarRoot` приложение может отобразить собственную кнопку и использовать общую логику SDK.
 
 ## См. также
 

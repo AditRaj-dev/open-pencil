@@ -1,13 +1,13 @@
 ---
 title: PropertyListItem
-description: Headless component строки fill, stroke или effect.
+description: Строка заливки, обводки или эффекта без встроенного оформления.
 ---
 
 # PropertyListItem
 
-`PropertyListItem` передаёт handlers `update`, `patch`, `remove` и изменения visibility для одного item массива внутри `PropertyListRoot`.
+`PropertyListItem` предоставляет действия для замены, частичного обновления, удаления и изменения видимости одного элемента внутри `PropertyListRoot`.
 
-Используйте его для собственного интерфейса строки fill, stroke или effect.
+Используйте его для собственной строки заливки, обводки или эффекта.
 
 ## См. также
 

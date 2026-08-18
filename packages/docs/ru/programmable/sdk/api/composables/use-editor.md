@@ -7,7 +7,7 @@ description: Доступ к экземпляру редактора OpenPencil,
 
 `useEditor()` возвращает экземпляр редактора OpenPencil, переданный ближайшим вызовом `provideEditor()`.
 
-Это основная точка входа для composables и headless components, которым нужен редактор.
+Это основная точка входа для composables и компонентов без встроенного оформления, которым нужен редактор.
 
 ## Использование
 
@@ -19,7 +19,7 @@ import { useEditor } from '@open-pencil/vue'
 const editor = useEditor()
 ```
 
-## Базовый пример
+## Пример
 
 ```vue
 <script setup lang="ts">
@@ -32,13 +32,13 @@ const pageId = computed(() => editor.state.currentPageId)
 </script>
 
 <template>
-  <div>Current page: {{ pageId }}</div>
+  <div>Текущая страница: {{ pageId }}</div>
 </template>
 ```
 
-## Практические примеры
+## Примеры
 
-### Чтение выбранных узлов
+### Чтение выделенных объектов
 
 ```ts
 const editor = useEditor()
