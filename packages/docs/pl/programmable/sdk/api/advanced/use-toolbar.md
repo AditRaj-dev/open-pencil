@@ -1,13 +1,13 @@
 ---
 title: useToolbar
-description: Dostęp do context udostępnionego przez ToolbarRoot.
+description: Dostęp do kontekstu udostępnionego przez ToolbarRoot.
 ---
 
 # useToolbar
 
-`useToolbar()` zwraca context najbliższego `ToolbarRoot`.
+`useToolbar()` zwraca kontekst najbliższego `ToolbarRoot`.
 
-Użyj composable w własnych components potomnych wymagających listy tools, active state albo action wyboru tool.
+Użyj composable w komponentach potomnych wymagających listy narzędzi, stanu aktywności albo funkcji wyboru narzędzia.
 
 ## Zobacz też
 

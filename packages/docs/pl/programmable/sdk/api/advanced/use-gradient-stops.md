@@ -1,13 +1,13 @@
 ---
 title: useGradientStops
-description: State i actions gradient stops.
+description: Stan i działania dotyczące punktów gradientu.
 ---
 
 # useGradientStops
 
-`useGradientStops(fill, onUpdate)` zarządza active stop, gradient subtype, przeciąganiem stops oraz zmianą ich position, color i opacity.
+`useGradientStops(fill, onUpdate)` zarządza aktywnym punktem, rodzajem gradientu, przeciąganiem punktów oraz zmianą położenia, koloru i przezroczystości.
 
-Użyj composable podczas tworzenia własnego edytora gradientu zamiast składania tej logiki samodzielnie.
+Użyj composable do zbudowania własnego edytora gradientu bez ponownego implementowania tej logiki.
 
 ## Zobacz też
 

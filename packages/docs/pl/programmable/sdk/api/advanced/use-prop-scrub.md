@@ -1,13 +1,13 @@
 ---
 title: usePropScrub
-description: Preview i commit numeric property zmienianej przez scrubbing.
+description: Podgląd i zapis właściwości liczbowej podczas przeciągania.
 ---
 
 # usePropScrub
 
-`usePropScrub(editor)` aktualizuje property podczas przeciągania, a po zakończeniu interaction zapisuje końcową zmianę w Undo history.
+`usePropScrub(editor)` aktualizuje właściwość podczas przeciągania, a po zakończeniu zapisuje zmianę końcową w historii cofania.
 
-Użyj go w numeric controls, które zmieniają properties zaznaczonych obiektów przez scrubbing.
+Użyj composable w liczbowych elementach sterujących, które zmieniają właściwości zaznaczonych obiektów przez przeciąganie.
 
 ## Zobacz też
 

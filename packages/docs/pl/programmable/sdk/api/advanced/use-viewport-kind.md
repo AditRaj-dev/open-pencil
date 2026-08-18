@@ -1,26 +1,17 @@
 ---
 title: useViewportKind
-description: Reaktywne flags mobile i desktop dla własnego interfejsu edytora.
+description: Reaktywne oznaczenia widoku mobilnego i komputerowego dla własnego interfejsu.
 ---
 
 # useViewportKind
 
-`useViewportKind()` zwraca uproszczoną informację o rozmiarze viewport używaną przez responsive UI OpenPencil.
+`useViewportKind()` zwraca uproszczoną klasyfikację rozmiaru widoku używaną przez responsywny interfejs OpenPencil.
 
-Użyj composable, jeśli potrzebujesz jedynie podziału mobile/desktop zamiast bezpośredniej konfiguracji `useBreakpoints()`.
-
-## Użycie
+Użyj composable, jeśli wystarczy rozróżnienie widoku mobilnego i komputerowego bez bezpośredniej konfiguracji `useBreakpoints()`.
 
 ```ts
-import { useViewportKind } from '@open-pencil/vue'
-
 const { isMobile, isDesktop } = useViewportKind()
 ```
-
-## Zwracane wartości
-
-- `isMobile`
-- `isDesktop`
 
 ## Zobacz też
 

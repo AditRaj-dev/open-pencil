@@ -1,23 +1,19 @@
 ---
 title: useVariablesDialogState
-description: State zmiany nazw collections i zarządzanie focus w oknie variables.
+description: Stan zmiany nazw kolekcji i zarządzania fokusem w oknie zmiennych.
 ---
 
 # useVariablesDialogState
 
-`useVariablesDialogState()` rozszerza `useVariables()` o state potrzebny w oknie variables do zmiany nazwy collection i zarządzania focus pola.
+`useVariablesDialogState()` rozszerza `useVariables()` o stan potrzebny do zmiany nazwy kolekcji i zarządzania fokusem.
 
-Użyj composable podczas tworzenia własnego dialog zamiast gotowej integracji `useVariablesEditor()`.
-
-## Użycie
+Użyj composable do zbudowania własnego okna zamiast pełnej integracji `useVariablesEditor()`.
 
 ```ts
-import { useVariablesDialogState } from '@open-pencil/vue'
-
 const variablesDialog = useVariablesDialogState()
 ```
 
-## Dodatkowe API
+Dodatkowe wartości i funkcje:
 
 - `editingCollectionId`
 - `setCollectionInputRef()`

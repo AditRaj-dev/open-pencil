@@ -1,13 +1,13 @@
 ---
 title: usePropertyList
-description: Dostęp do context udostępnionego przez PropertyListRoot.
+description: Dostęp do kontekstu udostępnionego przez PropertyListRoot.
 ---
 
 # usePropertyList
 
-`usePropertyList()` zwraca context najbliższego `PropertyListRoot`.
+`usePropertyList()` zwraca kontekst najbliższego `PropertyListRoot`.
 
-Użyj composable w własnych components potomnych wymagających dostępu do items, mixed state albo actions dotyczących fills, strokes lub effects.
+Użyj composable w komponentach potomnych wymagających elementów, mieszanego stanu lub działań dotyczących zalewów, obwiedni i efektów.
 
 ## Zobacz też
 

@@ -1,13 +1,13 @@
 ---
 title: useLayerTree
-description: Dostęp do context udostępnionego przez LayerTreeRoot.
+description: Dostęp do kontekstu udostępnionego przez LayerTreeRoot.
 ---
 
 # useLayerTree
 
-`useLayerTree()` zwraca context najbliższego `LayerTreeRoot`.
+`useLayerTree()` zwraca kontekst najbliższego `LayerTreeRoot`.
 
-Użyj composable w własnych components potomnych wymagających dostępu do tree items, selection, expanded state albo actions wiersza.
+Użyj composable we własnych komponentach potomnych wymagających elementów drzewa, zaznaczenia, rozwiniętych gałęzi lub działań wierszy.
 
 ## Zobacz też
 

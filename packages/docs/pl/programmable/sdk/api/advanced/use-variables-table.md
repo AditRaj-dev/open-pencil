@@ -1,25 +1,19 @@
 ---
 title: useVariablesTable
-description: Definicje columns TanStack Table dla edytora variables.
+description: Definicje kolumn TanStack Table dla edytora zmiennych.
 ---
 
 # useVariablesTable
 
-`useVariablesTable(options)` zwraca reaktywne definitions columns TanStack Table używane w tabeli variables.
+`useVariablesTable(options)` zwraca reaktywne definicje kolumn tabeli zmiennych.
 
-Użyj composable, jeśli chcesz wykorzystać zachowanie SDK, ale samodzielnie tworzysz table instance albo przekazujesz własne icons i components.
-
-## Użycie
+Użyj composable, jeśli potrzebujesz zachowania SDK, ale egzemplarz tabeli, ikony lub komponenty dostarcza aplikacja.
 
 ```ts
-import { useVariablesTable } from '@open-pencil/vue'
-
 const { columns } = useVariablesTable(options)
 ```
 
-## Uwagi
-
-W większości przypadków wygodniejszym punktem wejścia jest `useVariablesEditor()`. Wybierz `useVariablesTable()`, gdy potrzebujesz bezpośredniej kontroli nad konfiguracją tabeli.
+Dla większości aplikacji prostszym punktem wyjścia jest `useVariablesEditor()`. `useVariablesTable()` daje bezpośrednią kontrolę nad konfiguracją tabeli.
 
 ## Zobacz też
 

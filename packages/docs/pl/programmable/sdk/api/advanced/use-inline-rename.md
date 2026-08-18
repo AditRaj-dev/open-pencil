@@ -1,13 +1,13 @@
 ---
 title: useInlineRename
-description: State, focus i keyboard handling podczas zmiany nazwy w miejscu.
+description: Stan, fokus i klawiatura podczas zmiany nazwy w miejscu.
 ---
 
 # useInlineRename
 
-`useInlineRename(onCommit)` zarządza trybem edycji nazwy, focus, kliknięciem poza polem oraz obsługą Enter i Escape.
+`useInlineRename(onCommit)` zarządza trybem edycji, fokusem, kliknięciem poza polem oraz klawiszami <kbd>Enter</kbd> i <kbd>Escape</kbd>.
 
-Użyj composable w listach stron, drzewach warstw i innych interfaces umożliwiających zmianę nazwy bez otwierania osobnego dialog.
+Użyj composable w listach stron, drzewach warstw i innych interfejsach, w których nazwa zmienia się bez osobnego okna.
 
 ## Zobacz też
 
