@@ -1,14 +1,13 @@
 ---
 title: PropertyListItem
-description: Pojedynczy item listy fills, strokes albo effects.
+description: Pojedynczy element listy zalewów, obwiedni albo efektów.
 ---
 
 # PropertyListItem
 
-`PropertyListItem` udostępnia actions zastępowania, częściowej aktualizacji, usuwania i zmiany visibility jednego elementu wewnątrz `PropertyListRoot`.
+`PropertyListItem` udostępnia działania zastępowania, częściowej aktualizacji, usuwania i zmiany widoczności jednego elementu wewnątrz `PropertyListRoot`.
 
-Użyj go do zbudowania własnego row dla fill, stroke albo effect.
-
+Użyj go do zbudowania własnego wiersza zalewu, obwiedni albo efektu.
 
 ## Zobacz też
 

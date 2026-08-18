@@ -1,14 +1,13 @@
 ---
 title: LayerTreeRoot
-description: Component headless udostępniający strukturę i actions drzewa warstw.
+description: Komponent bez narzuconego wyglądu udostępniający strukturę i działania drzewa warstw.
 ---
 
 # LayerTreeRoot
 
-`LayerTreeRoot` przygotowuje items drzewa warstw, selection, expanded state oraz actions potrzebne do nawigacji po strukturze dokumentu.
+`LayerTreeRoot` przygotowuje elementy drzewa, zaznaczenie, rozwinięte gałęzie oraz działania nawigacji po strukturze dokumentu.
 
-SDK zarządza danymi i interactions, a aplikacja renderuje własne rows i określa ich wygląd.
-
+SDK zarządza danymi i zachowaniem, a aplikacja wyświetla własne wiersze i określa ich wygląd.
 
 ## Zobacz też
 
