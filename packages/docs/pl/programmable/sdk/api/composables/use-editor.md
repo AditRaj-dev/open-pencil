@@ -7,7 +7,7 @@ description: Dostęp do instancji edytora OpenPencil przekazanej przez provideEd
 
 `useEditor()` zwraca instancję edytora OpenPencil przekazaną przez najbliższe wywołanie `provideEditor()`.
 
-To główny punkt wejścia dla composables i komponentów headless wymagających dostępu do edytora.
+To główny punkt wejścia dla composables i komponentów bez narzuconego wyglądu wymagających dostępu do edytora.
 
 ## Użycie
 
@@ -51,7 +51,7 @@ editor.zoomToFit()
 editor.undoAction()
 ```
 
-## Brak context
+## Brak kontekstu
 
 Jeśli `useEditor()` zostanie wywołane poza drzewem, w którym wykonano `provideEditor()`, function zgłosi czytelny błąd. Pozwala to natychmiast wykryć brak context edytora.
 

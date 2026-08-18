@@ -1,44 +1,18 @@
 ---
 title: useEffectsControls
-description: Zarządzanie shadows i blur effects w panelu efektów.
+description: Zarządzanie cieniami i rozmyciem w panelu efektów.
 ---
 
 # useEffectsControls
 
-`useEffectsControls()` udostępnia panelowi efektów:
-
-- wartości nowych effects;
-- konfigurację shadows i blur effects;
-- state rozwiniętych items;
-- preview podczas przeciągania;
-- commit końcowej wartości;
-- zmianę type i color effect.
-
-## Użycie
-
-```ts
-import { useEffectsControls } from '@open-pencil/vue'
-
-const effects = useEffectsControls()
-```
-
-## Przykład
+`useEffectsControls()` dostarcza wartości domyślne nowych efektów, ustawienia cieni i rozmyć, stan rozwiniętych elementów, podgląd podczas przeciągania, zapis wartości końcowej oraz zmianę rodzaju i koloru efektu.
 
 ```ts
 const { effectOptions, createDefaultEffect, toggleExpand, scrubEffect, commitEffect } = useEffectsControls()
-```
 
-### Nowy effect
-
-```ts
-const effect = effects.createDefaultEffect()
-```
-
-### Preview i commit
-
-```ts
-effects.scrubEffect(node, index, { radius: 12 })
-effects.commitEffect(node, index, { radius: 12 })
+const effect = createDefaultEffect()
+scrubEffect(node, index, { radius: 12 })
+commitEffect(node, index, { radius: 12 })
 ```
 
 ## Zobacz też

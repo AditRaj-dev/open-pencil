@@ -1,18 +1,11 @@
 ---
 title: useVariablesEditor
-description: Przygotowanie state okna variables i TanStack Table.
+description: Przygotowanie stanu okna zmiennych i TanStack Table.
 ---
 
 # useVariablesEditor
 
-`useVariablesEditor()` łączy elementy potrzebne do utworzenia okna albo osobnego ekranu edycji variables:
-
-- state okna;
-- columns tabeli;
-- podłączenie TanStack Vue Table;
-- functions dla collections i modes.
-
-## Użycie
+`useVariablesEditor()` łączy stan okna, kolumny tabeli, integrację TanStack Vue Table oraz funkcje kolekcji i trybów.
 
 ```ts
 const variables = useVariablesEditor({
@@ -23,15 +16,9 @@ const variables = useVariablesEditor({
 })
 ```
 
-## Zwracane API
+Wynik zawiera niskopoziomowy stan okna i tabeli oraz `columns`, `table` i `hasCollections`.
 
-Wynik zawiera low-level state okna i tabeli oraz:
-
-- `columns`
-- `table`
-- `hasCollections`
-
-Użyj `useVariablesEditor()`, jeśli potrzebujesz jednego composable z podłączoną tabelą i handlers działań.
+Użyj tego composable, gdy jeden punkt wejścia ma zapewniać integrację tabeli i obsługę działań.
 
 ## Zobacz też
 

@@ -1,56 +1,17 @@
 ---
 title: usePosition
-description: Odczytywanie i zmiana position, size, rotation, alignment i flip zaznaczonego obiektu.
+description: Odczytywanie i zmiana położenia, rozmiaru, obrotu, wyrównania i odbicia zaznaczonego obiektu.
 ---
 
 # usePosition
 
-`usePosition()` udostępnia panelom położenia i rozmiaru wartości wybranego obiektu:
-
-- `x`
-- `y`
-- `width`
-- `height`
-- `rotation`
-
-oraz actions:
-
-- alignment;
-- flip;
-- rotation;
-- preview i commit numeric properties.
-
-## Użycie
-
-```ts
-import { usePosition } from '@open-pencil/vue'
-
-const position = usePosition()
-```
-
-## Przykład
+`usePosition()` udostępnia `x`, `y`, `width`, `height` i `rotation`, a także działania wyrównania, odbicia, obrotu oraz podglądu i zapisu właściwości liczbowych.
 
 ```ts
 const { x, y, width, height, rotation, updateProp, commitProp } = usePosition()
-```
 
-### Alignment
-
-```ts
 position.align('horizontal', 'center')
-position.align('vertical', 'min')
-```
-
-### Flip
-
-```ts
 position.flip('horizontal')
-position.flip('vertical')
-```
-
-### Rotation
-
-```ts
 position.rotate(90)
 ```
 
