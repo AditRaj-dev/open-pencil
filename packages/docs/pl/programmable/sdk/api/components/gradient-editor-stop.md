@@ -1,6 +1,6 @@
 ---
 title: GradientEditorStop
-description: State i actions pojedynczego gradient stop.
+description: Stan i działania pojedynczego punktu gradientu.
 ---
 
 <script setup lang="ts">
@@ -9,9 +9,7 @@ import { data } from '#docs-api/components/gradient-editor-stop.data'
 
 # GradientEditorStop
 
-`GradientEditorStop` przekazuje przez slot dane potrzebne do wyświetlenia i edycji jednego gradient stop: position, opacity, color, active state oraz actions aktualizacji i usunięcia.
-
-## Przykład
+`GradientEditorStop` udostępnia położenie, przezroczystość, kolor i stan aktywności punktu gradientu oraz działania aktualizacji i usuwania.
 
 ```vue
 <GradientEditorStop :stop="stop" :index="index" :active="active" v-slot="ctx">
@@ -19,7 +17,7 @@ import { data } from '#docs-api/components/gradient-editor-stop.data'
 </GradientEditorStop>
 ```
 
-<ComponentApi :meta="data" />
+<SdkComponentAPI :components="data.components" />
 
 ## Zobacz też
 

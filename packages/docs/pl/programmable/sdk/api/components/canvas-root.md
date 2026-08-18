@@ -1,12 +1,11 @@
 ---
 title: CanvasRoot
-description: Component headless definiujący context obszaru roboczego OpenPencil.
+description: Komponent bez narzuconego wyglądu definiujący kontekst obszaru roboczego OpenPencil.
 ---
 
 # CanvasRoot
 
-`CanvasRoot` udostępnia context obszaru roboczego components potomnym. SDK zarządza integracją z edytorem, natomiast aplikacja określa układ i wygląd.
-
+`CanvasRoot` udostępnia kontekst obszaru roboczego komponentom potomnym. SDK zarządza integracją z edytorem, a aplikacja określa układ i wygląd.
 
 ## Zobacz też
 

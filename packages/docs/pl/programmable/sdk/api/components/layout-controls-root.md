@@ -1,6 +1,6 @@
 ---
 title: LayoutControlsRoot
-description: Component headless dla Auto layout i sizing.
+description: Komponent bez narzuconego wyglądu dla automatycznego układu i trybów rozmiaru.
 ---
 
 <script setup lang="ts">
@@ -11,9 +11,9 @@ import { data } from '#docs-api/components/layout-controls-root.data'
 
 `LayoutControlsRoot` przekazuje przez slot API zwracane przez `useLayout()`.
 
-Pozwala aplikacji wyrenderować własny panel Auto layout i sizing, zachowując state oraz actions dostarczane przez SDK.
+Aplikacja może wyrenderować własny panel automatycznego układu i rozmiarów, korzystając ze stanu i działań SDK.
 
-<ComponentApi :meta="data" />
+<SdkComponentAPI :components="data.components" />
 
 ## Zobacz też
 

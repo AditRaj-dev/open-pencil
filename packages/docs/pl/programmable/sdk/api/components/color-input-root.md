@@ -1,22 +1,17 @@
 ---
 title: ColorInputRoot
-description: Parsowanie wartości hex i aktualizacja color w polu koloru.
+description: Odczyt wartości szesnastkowej i aktualizacja koloru we własnym polu.
 ---
 
 # ColorInputRoot
 
-`ColorInputRoot` przekształca bieżący color na wartość hex i udostępnia functions aktualizacji z hex albo pełnej wartości `Color`.
-
-Aplikacja renderuje własne pole przez domyślny slot.
-
-## Przykład
+`ColorInputRoot` przekształca bieżący kolor na zapis szesnastkowy i udostępnia funkcje aktualizacji z ciągu tekstowego albo pełnego obiektu `Color`.
 
 ```vue
 <ColorInputRoot :color="color" @update="color = $event" v-slot="{ hex, updateFromHex }">
   <input :value="hex" @input="updateFromHex(($event.target as HTMLInputElement).value)" />
 </ColorInputRoot>
 ```
-
 
 ## Zobacz też
 

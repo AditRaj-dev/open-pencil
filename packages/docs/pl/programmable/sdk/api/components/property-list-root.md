@@ -1,6 +1,6 @@
 ---
 title: PropertyListRoot
-description: Kontrolowana lista fills, strokes, effects albo innych array properties.
+description: Kontrolowana lista zalewów, obwiedni, efektów i innych właściwości tablicowych.
 ---
 
 <script setup lang="ts">
@@ -9,21 +9,11 @@ import { data } from '#docs-api/components/property-list.data'
 
 # PropertyListRoot
 
-`PropertyListRoot` koordynuje interfejs właściwości przechowywanych jako array, na przykład fills, strokes i effects.
-
-Otrzymuje values i mixed state przez props, emituje zmiany, a przez slot udostępnia:
-
-- bieżące items;
-- mixed state;
-- actions dodawania, usuwania, zastępowania i częściowej aktualizacji;
-- action zmiany visibility pojedynczego item.
-
-## Przykład
+`PropertyListRoot` koordynuje interfejs właściwości przechowywanych jako tablica. Otrzymuje elementy i mieszany stan przez właściwości komponentu, emituje zmiany, a przez slot udostępnia działania dodawania, usuwania, zastępowania, częściowej aktualizacji i zmiany widoczności.
 
 ```vue
 <script setup lang="ts">
 import { PropertyListRoot, useEditorPropertyList } from '@open-pencil/vue'
-
 const fills = useEditorPropertyList('fills')
 </script>
 
@@ -34,18 +24,8 @@ const fills = useEditorPropertyList('fills')
     :mixed="fills.isMixed.value"
     @add="fills.actions.add"
     @remove="fills.actions.remove"
-    v-slot="{ items, actions }"
-  >
-    <div v-for="(fill, index) in items" :key="index">
-      <button @click="actions.remove(index)">Usuń</button>
-    </div>
-    <button @click="actions.add(defaultFill)">Dodaj fill</button>
-  </PropertyListRoot>
+  />
 </template>
 ```
 
-<ComponentApi :meta="data" />
-
-## Zobacz też
-
-- [Dokumentacja API](../)
+<SdkComponentAPI :components="data.components" />
