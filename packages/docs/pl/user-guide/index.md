@@ -1,7 +1,7 @@
 ---
 layout: doc
 title: Podręcznik użytkownika
-description: Nawigacja, rysowanie, tekst, komponenty, Auto layout i pozostałe funkcje OpenPencil.
+description: Nawigacja, rysowanie, tekst, komponenty, automatyczny układ i pozostałe funkcje OpenPencil.
 ---
 
 # Podręcznik użytkownika
@@ -15,22 +15,23 @@ W podręczniku używane są oznaczenia z macOS: <kbd>⌘</kbd> oznacza <kbd>Comm
 ## Nawigacja i zaznaczanie
 
 - [Nawigacja po obszarze roboczym](./canvas-navigation) — przesuwanie widoku, powiększenie i narzędzie Rączka;
-- [Zaznaczanie i modyfikowanie](./selection-and-manipulation) — wybieranie, przesuwanie, zmiana rozmiaru, obracanie i porządkowanie obiektów.
+- [Zaznaczanie i przekształcanie](./selection-and-manipulation) — wybieranie, przesuwanie, zmiana rozmiaru, obracanie i porządkowanie obiektów.
 
 ## Tworzenie obiektów
 
 - [Kształty](./drawing-shapes) — prostokąty, elipsy, linie, ramki, sekcje, wielokąty i gwiazdy;
 - [Tekst](./text-editing) — tworzenie i edytowanie tekstu z formatowaniem;
-- [Pen tool](./pen-tool) — tworzenie ścieżek wektorowych z krzywymi Béziera.
+- [Narzędzie Pióro](./pen-tool) — tworzenie ścieżek wektorowych z krzywymi Béziera;
+- [Edycja wektorów](./vector-edit) — zmiana punktów, uchwytów i segmentów.
 
 ## Struktura dokumentu i pliki
 
 - [Warstwy i strony](./layers-and-pages) — drzewo warstw, strony i panel właściwości;
-- [Menu kontekstowe](./context-menu) — clipboard, grupowanie, komponenty i inne operacje;
+- [Menu kontekstowe](./context-menu) — schowek, grupowanie, komponenty i inne operacje;
 - [Eksport](./exporting) — eksport obrazów i praca z plikami `.fig`.
 
 ## Funkcje zaawansowane
 
-- [Auto layout](./auto-layout) — automatyczne rozmieszczanie obiektów za pomocą flexbox;
-- [Komponenty](./components) — components, instances i overrides przeznaczone do ponownego użycia;
-- [Zmienne](./variables) — design variables, collections, modes i powiązania z wypełnieniami.
+- [Automatyczny układ](./auto-layout) — rozmieszczanie obiektów za pomocą Flexbox i CSS Grid;
+- [Komponenty](./components) — komponenty, egzemplarze i nadpisania przeznaczone do ponownego użycia;
+- [Zmienne](./variables) — zmienne projektu, kolekcje, tryby i powiązania z zalewami.

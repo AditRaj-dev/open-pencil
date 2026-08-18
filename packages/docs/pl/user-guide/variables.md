@@ -1,56 +1,58 @@
 ---
 title: Zmienne
-description: Design variables, collections, modes i binding do fills w OpenPencil.
+description: Zmienne projektu, kolekcje, tryby i powiązania kolorów w OpenPencil.
 ---
 
 # Zmienne
 
-Variables przechowują design tokens przeznaczone do ponownego użycia: kolory, spacing i inne wartości, które można powiązać z obiektami. Po zmianie variable wszystkie powiązane obiekty zostają zaktualizowane.
+Zmienne przechowują tokeny projektu przeznaczone do ponownego użycia: kolory, odstępy i inne wartości, które można powiązać z obiektami. Po zmianie zmiennej wszystkie powiązane obiekty zostają zaktualizowane.
 
-## Otwieranie Variables
+## Otwieranie edytora zmiennych
 
-Usuń zaznaczenie ze wszystkich obiektów. Karta Design pokaże właściwości strony, w tym sekcję Variables z liczbą collections i variables. Naciśnij ikonę ustawień, aby otworzyć okno.
+Usuń zaznaczenie ze wszystkich obiektów. Karta „Projekt” pokaże właściwości strony, w tym sekcję „Zmienne”. Kliknij ikonę ustawień, aby otworzyć okno.
 
-## Collections
+## Kolekcje
 
-Variables są łączone w collections. Każda collection jest przedstawiona jako osobna karta.
+Zmienne są łączone w kolekcje. Każda kolekcja jest przedstawiona jako osobna karta.
 
-- Naciśnij kartę, aby przejść do collection.
-- Naciśnij jej nazwę dwukrotnie, aby zmienić nazwę collection.
+- Kliknij kartę, aby przejść do kolekcji.
+- Kliknij jej nazwę dwukrotnie, aby ją zmienić.
 
-## Modes
+## Tryby
 
-Collection może zawierać kilka modes, na przykład Light i Dark. W tabeli każdy mode zajmuje osobną kolumnę, a variable przechowuje wartość dla każdego mode.
+Kolekcja może zawierać kilka trybów, na przykład Light i Dark. W tabeli każdy tryb zajmuje osobną kolumnę, a zmienna przechowuje wartość dla każdego trybu.
 
-### Dodawanie collections i modes
+### Dodawanie kolekcji i trybów
 
-Nową collection tworzy się przez toolbar okna. Dodawaj modes, aby przechowywać warianty motywu albo wartości dla różnych responsive breakpoints.
+Nową kolekcję tworzy się z paska narzędzi okna. Dodawaj tryby, aby przechowywać warianty motywu albo wartości dla różnych punktów przełamania układu.
 
-## Praca z variables
+## Praca ze zmiennymi
 
-Tabela zawiera kolumnę Name o zmiennej szerokości oraz po jednej kolumnie dla każdego mode.
+Tabela zawiera kolumnę „Nazwa” o zmiennej szerokości oraz po jednej kolumnie dla każdego trybu.
 
-- **Utworzyć:** naciśnij **+ Create variable**.
-- **Zmienić nazwę:** naciśnij komórkę z nazwą.
-- **Zmienić wartość:** naciśnij komórkę odpowiedniego mode.
-- **Wyszukać:** wpisz część nazwy w search field.
+- **Utwórz:** kliknij **Utwórz zmienną**.
+- **Zmień nazwę:** kliknij komórkę z nazwą.
+- **Zmień wartość:** kliknij komórkę odpowiedniego trybu.
+- **Wyszukaj:** wpisz część nazwy w polu wyszukiwania.
 
-### Color variables
+### Zmienne kolorów
 
-Dla color variable tabela pokazuje color input. Naciśnij swatch, aby otworzyć color picker.
+Dla zmiennej koloru tabela pokazuje pole koloru. Kliknij próbkę, aby otworzyć wybór koloru.
 
-## Binding do Fill
+Typy `FLOAT`, `STRING` i `BOOLEAN` istnieją w modelu danych, ale nie mają jeszcze pełnego interfejsu edycji.
 
-Na panelu właściwości otwórz sekcję Fill i wybierz color variable za pomocą variable picker.
+## Powiązania zalewów i obwiedni
 
-- **Bind:** wybierz variable. Obok fill pojawi się fioletowa etykieta z jej nazwą.
-- **Detach:** usuń binding. Fill zachowa color value obliczone w tej chwili.
+W panelu właściwości otwórz sekcję „Zalew” albo „Obwiednia” i wybierz zmienną koloru.
 
-Po zmianie variable albo przełączeniu mode wszystkie powiązane fills aktualizują się automatycznie.
+- Wybierz zmienną, aby utworzyć powiązanie. Obok właściwości pojawi się fioletowa etykieta z jej nazwą.
+- Usuń powiązanie za pomocą osobnego działania w oknie wyboru. Bieżąca obliczona wartość zostanie zachowana.
+
+Otwarcie pola lub okna wyboru nie zmienia powiązania. Może ono zostać usunięte tylko przez jawne działanie albo faktyczną zmianę wartości — zależnie od zachowania elementu sterującego.
 
 ## Wskazówki
 
-- Łącz powiązane tokens w collections, na przykład Primitives dla kolorów źródłowych, Semantic dla role-based aliases i Spacing dla wartości layout.
-- Wartości Light i Dark jednego motywu wygodnie przechowywać jako modes jednej collection.
-- Variables obsługują aliases: variable z Semantic może odwoływać się do wartości z Primitives.
-- Fills i color picker opisano na stronie [Kształty](./drawing-shapes).
+- Łącz powiązane tokeny w kolekcje, na przykład `Primitives` dla kolorów źródłowych, `Semantic` dla tokenów znaczeniowych i `Spacing` dla odstępów.
+- Wartości Light i Dark jednego motywu wygodnie przechowywać jako tryby jednej kolekcji.
+- Zmienne obsługują aliasy: zmienna z `Semantic` może odwoływać się do wartości z `Primitives`.
+- Zalewy i wybór koloru opisano na stronie [Kształty](./drawing-shapes).

@@ -21,23 +21,23 @@ hero:
 features:
   - icon: 📂
     title: Zgodność z Figmą
-    details: Otwiera .fig bez wcześniejszej konwersji. Obsługuje Copy i Paste między Figmą a OpenPencil. Binary codec Kiwi zachowuje dane podczas importu i eksportu.
+    details: Otwiera .fig bez wcześniejszej konwersji. Obsługuje kopiowanie między Figmą a OpenPencil. Binarny kodek Kiwi zachowuje dane podczas importu i eksportu.
   - icon: ⚡
     title: Automatyzacja
-    details: Headless CLI przegląda, eksportuje i analizuje .fig. Polecenie eval udostępnia Figma Plugin API. Dostępne są Tailwind CSS i JSON output dla CI oraz scripts.
+    details: CLI bez interfejsu graficznego przegląda, eksportuje i analizuje .fig. Polecenie eval udostępnia Figma Plugin API. Dostępne są eksport Tailwind CSS i wyjście JSON dla CI oraz skryptów.
   - icon: 🧩
     title: Nie tylko aplikacja
-    details: Vue SDK pozwala tworzyć własne interfejsy edycji, osadzać OpenPencil w innych produktach i budować wyspecjalizowane edytory na wspólnym core.
+    details: Vue SDK pozwala tworzyć własne interfejsy edycji, osadzać OpenPencil w innych produktach i budować wyspecjalizowane edytory na wspólnym silniku.
   - icon: 🤖
     title: Wbudowane AI
-    details: AI chat używa 90 tools do tworzenia obiektów, ustawiania styles i layout oraz analizowania tokens. MCP server łączy się z Claude Code, Cursor i Windsurf.
+    details: Czat AI używa 90 narzędzi do tworzenia obiektów, ustawiania stylów i układu oraz analizowania tokenów. Serwer MCP łączy się z Claude Code, Cursor i Windsurf.
   - icon: 📖
     title: Open source
-    details: Licencja MIT. Można analizować i zmieniać edytor, silnik, file codec i CLI.
+    details: Licencja MIT. Można analizować i zmieniać edytor, silnik, kodek plików i CLI.
   - icon: 🖥️
     title: Bezpłatnie i lokalnie
-    details: Konto, osobny server i stałe połączenie z internetem nie są potrzebne. Desktop app zajmuje około 7 MB; dostępna jest również web app.
+    details: Konto, osobny serwer i stałe połączenie z internetem nie są potrzebne. Aplikacja komputerowa zajmuje około 7 MB; dostępna jest również wersja internetowa.
   - icon: 👥
     title: Współpraca
-    details: Peer-to-peer WebRTC bez centralnego server. Wyślij link i wspólnie edytuj dokument, korzystając z live cursors oraz Follow mode.
+    details: Połączenie WebRTC bez centralnego serwera. Wyślij odnośnik i wspólnie edytuj dokument, korzystając z kursorów uczestników oraz trybu śledzenia.
 ---
