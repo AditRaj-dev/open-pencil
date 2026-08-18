@@ -1,19 +1,19 @@
 ---
-title: Zaawansowane API
-description: Low-level i wyspecjalizowane API pakietu @open-pencil/vue.
+title: Niskopoziomowe API
+description: Wyspecjalizowane publiczne API pakietu @open-pencil/vue.
 ---
 
-# Zaawansowane API
+# Niskopoziomowe API
 
-Te publiczne API są przeznaczone do bardziej wyspecjalizowanych integrations niż główne components i composables.
+Te publiczne API służą do bardziej wyspecjalizowanych integracji niż podstawowe komponenty i composables.
 
-## Selection i SceneGraph
+## Zaznaczenie i SceneGraph
 
 - [useNodeProps](./use-node-props)
 - [useSceneComputed](./use-scene-computed)
 - [usePropScrub](./use-prop-scrub)
 
-## Pickers, variables, locale i state edytora
+## Wybór wartości, zmienne, język i stan edytora
 
 - [useColorVariableBinding](./use-color-variable-binding)
 - [useGradientStops](./use-gradient-stops)
@@ -22,11 +22,11 @@ Te publiczne API są przeznaczone do bardziej wyspecjalizowanych integrations ni
 - [useVariables](./use-variables)
 - [useVariablesDialogState](./use-variables-dialog-state)
 - [useVariablesTable](./use-variables-table)
-- [Locale API](./locale-apis)
+- [API języka](./locale-apis)
 - [useToolbarState](./use-toolbar-state)
 - [useNodeFontStatus](./use-node-font-status)
 
-## Własny interfejs edytora
+## Własne interfejsy edytora
 
 - [useLayerDrag](./use-layer-drag)
 - [useInlineRename](./use-inline-rename)
@@ -35,7 +35,7 @@ Te publiczne API są przeznaczone do bardziej wyspecjalizowanych integrations ni
 - [useViewportKind](./use-viewport-kind)
 - [toolCursor](./tool-cursor)
 
-## Context components headless
+## Kontekst komponentów
 
 - [useCanvasContext](./use-canvas-context)
 - [useLayerTree](./use-layer-tree)
