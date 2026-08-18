@@ -1,6 +1,6 @@
 ---
 title: PropertyList
-description: Строго типизированная headless-структура списков fills, strokes и effects.
+description: Строго типизированная структура без встроенного оформления для списков заливок, обводок и эффектов.
 ---
 
 <script setup lang="ts">
@@ -9,15 +9,15 @@ import { data } from '#docs-api/components/property-list.data'
 
 # PropertyList
 
-PropertyList — controlled headless component для списков fills, strokes и effects. Discriminator `propKey` задаёт для slots и actions точный тип `Fill`, `Stroke` или `Effect`. Изменение editor state и Undo остаются в `useEditorPropertyList()` или adapter приложения.
+PropertyList — управляемый компонент без встроенного оформления для списков заливок, обводок и эффектов. Параметр `propKey` задаёт точный тип `Fill`, `Stroke` или `Effect` для слотов и действий. Изменение состояния редактора и история отмены остаются в `useEditorPropertyList()` или адаптере приложения.
 
 ## Состав
 
-- `PropertyListRoot` — controlled items, identity, mixed state и semantic events;
-- `PropertyListItem` — точный тип item, а также `data-hidden` и `data-dragging`;
-- `PropertyListAdd` — добавление типизированного item;
-- `PropertyListRemove` — удаление item по index;
-- `PropertyListVisibility` — изменение visibility по index и значение `aria-pressed`.
+- `PropertyListRoot` — управляемые элементы, их идентификация, смешанное состояние и смысловые события;
+- `PropertyListItem` — точный тип элемента, а также `data-hidden` и `data-dragging`;
+- `PropertyListAdd` — добавление типизированного элемента;
+- `PropertyListRemove` — удаление элемента по индексу;
+- `PropertyListVisibility` — изменение видимости по индексу и значение `aria-pressed`.
 
 ```vue twoslash
 <script setup lang="ts">
@@ -53,11 +53,11 @@ const fills = ref<Fill[]>([])
 </template>
 ```
 
-Общая интерактивная matrix состояний показана в [demo PropertySection](/programmable/sdk/api/components/property-section).
+Общая матрица интерактивных состояний показана в [демонстрации PropertySection](/programmable/sdk/api/components/property-section).
 
-## Adapter редактора
+## Адаптер редактора
 
-Панели OpenPencil используют `useEditorPropertyList(propKey)`, чтобы связать controlled events с selection, изменением нескольких объектов, batch для Undo и изменением порядка. Пользователи SDK могут предоставить собственный state adapter без context редактора OpenPencil.
+Панели OpenPencil используют `useEditorPropertyList(propKey)`, чтобы связать управляемые события с выделением, изменением нескольких объектов, группировкой истории отмены и изменением порядка. Пользователи SDK могут предоставить собственный адаптер состояния без контекста редактора OpenPencil.
 
 ## Сгенерированный справочник API
 
