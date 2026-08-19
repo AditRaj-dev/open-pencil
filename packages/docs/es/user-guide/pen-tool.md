@@ -1,54 +1,30 @@
 ---
-title: Pen tool
-description: Dibujar Vector paths y Bezier curves con Pen tool.
+title: Pluma
+description: Dibujar rutas vectoriales y curvas de Bézier con la herramienta Pluma.
 ---
 
-# Pen tool
+# Pluma
 
-Pen tool crea Vector paths mediante el modelo Vector network compatible con Figma.
+La herramienta Pluma crea rutas mediante el modelo de red vectorial compatible con Figma.
 
-## Activar
+Pulsa <kbd>P</kbd> para activarla.
 
-Pulsa <kbd>P</kbd>.
+## Dibujar
 
-## Crear Anchors
+- Un clic crea un punto de esquina y un segmento recto.
+- Haz clic y arrastra para crear un punto con tiradores de Bézier.
+- Mantén <kbd>Space</kbd> durante el arrastre para mover el punto antes de soltarlo.
 
-- Click crea un Corner anchor y un Segment recto.
-- Click y Drag crea un Anchor con Bezier handles.
-- Mantén <kbd>Space</kbd> durante el Drag para mover el propio Anchor sin soltar el Button.
+Cada punto amplía la ruta. Una línea de vista previa conecta el último punto con el puntero.
 
-Cada Anchor adicional amplía el Path con un nuevo Segment. Una Preview line conecta el último Anchor con el Pointer.
+## Cerrar o terminar
 
-## Cerrar un Path
+Haz clic en el primer punto para cerrar la ruta. Pulsa <kbd>Enter</kbd> para terminarla abierta o <kbd>Escape</kbd> para cancelar el dibujo actual.
 
-Haz Click en el primer Anchor para cerrar el Path. Los Paths cerrados pueden tener Fill.
+## Continuar una ruta
 
-## Path abierto
+Selecciona una ruta abierta y activa Pluma. Haz clic en uno de sus extremos para seguir dibujando desde él.
 
-Pulsa <kbd>Escape</kbd> para terminar sin cerrar. Los Paths abiertos se muestran únicamente mediante Strokes.
+## Curvas
 
-## Vector networks
-
-OpenPencil no almacena los Vectors como una lista simple de puntos, sino como Vector networks. Este modelo permite Topologies ramificadas y guarda la geometría en `.fig` sin convertirla.
-
-## Continuar en Edit mode
-
-Con Pen tool activo:
-
-- Click en el Endpoint de un Path abierto continúa el dibujo desde allí;
-- Click en un Segment inserta un Anchor;
-- <kbd>Option</kbd>/<kbd>Alt</kbd> + Click elimina un Anchor si la Topology lo permite.
-
-Consulta [Editar Vectors](./vector-edit) para conocer el Edit mode.
-
-## Atajos
-
-| Acción | macOS | Windows / Linux |
-|--------|-------|-----------------|
-| Pen tool | <kbd>P</kbd> | <kbd>P</kbd> |
-| Terminar un Path abierto | <kbd>Escape</kbd> | <kbd>Escape</kbd> |
-
-## Consejos
-
-- Un Drag más largo genera Bezier handles más largos.
-- Después puedes modificar Fill, Stroke y Effects desde el panel Properties.
+Al arrastrar un punto aparecen dos tiradores opuestos que generan una curva suave. Durante la [edición vectorial](./vector-edit) puedes moverlos juntos o separarlos.

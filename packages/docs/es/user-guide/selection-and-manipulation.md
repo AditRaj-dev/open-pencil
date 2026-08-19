@@ -38,12 +38,14 @@ Sitúa el puntero justo fuera de un tirador de esquina hasta que aparezca el cur
 
 ## Eliminar
 
-Backspace o Supr elimina todos los objetos seleccionados.
+Pulsa <kbd>Backspace</kbd> o <kbd>Supr</kbd> para eliminar todos los objetos seleccionados.
 
 ## Orden
 
-- **]** lleva la selección al frente.
-- **[** la envía al fondo.
+- **]** adelanta la selección un nivel.
+- <kbd>⌘</kbd><kbd>]</kbd> o <kbd>Ctrl</kbd><kbd>]</kbd> la lleva al frente.
+- **[** retrasa la selección un nivel.
+- <kbd>⌘</kbd><kbd>[</kbd> o <kbd>Ctrl</kbd><kbd>[</kbd> la envía al fondo.
 
 ## Visibilidad y bloqueo
 
@@ -60,7 +62,9 @@ Backspace o Supr elimina todos los objetos seleccionados.
 | Eliminar | <kbd>⌫</kbd>/<kbd>Supr</kbd> | Backspace/<kbd>Supr</kbd> |
 | Mover 1 px | Flechas | Flechas |
 | Mover 10 px | <kbd>⇧</kbd> + flechas | <kbd>Shift</kbd> + flechas |
-| Llevar al frente | ] | ] |
-| Enviar al fondo | [ | [ |
+| Adelantar un nivel | ] | ] |
+| Llevar al frente | <kbd>⌘</kbd><kbd>]</kbd> | <kbd>Ctrl</kbd><kbd>]</kbd> |
+| Retrasar un nivel | [ | [ |
+| Enviar al fondo | <kbd>⌘</kbd><kbd>[</kbd> | <kbd>Ctrl</kbd><kbd>[</kbd> |
 | Visibilidad | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>H</kbd> | <kbd>Shift</kbd><kbd>Ctrl</kbd><kbd>H</kbd> |
 | Bloqueo | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>L</kbd> | <kbd>Shift</kbd><kbd>Ctrl</kbd><kbd>L</kbd> |
