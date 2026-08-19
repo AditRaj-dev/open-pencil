@@ -1,15 +1,15 @@
 ---
 title: useGradientStops
-description: State y Actions para Gradient stops.
+description: Estado y acciones de los puntos de un degradado.
 ---
 
 # useGradientStops
 
-`useGradientStops(fill, onUpdate)` gestiona Active stop, Gradient subtype, Drag de Stops y cambios de Position, Color y Opacity.
+`useGradientStops(fill, onUpdate)` gestiona el punto activo, el tipo de degradado, el arrastre y los cambios de posición, color y opacidad.
 
-Usa el composable para crear un Gradient editor propio sin volver a implementar esta Logic.
+Use el composable para crear una interfaz de degradados sin duplicar esta lógica.
 
-## Consulta también
+## Véase también
 
 - [GradientEditorRoot](../components/gradient-editor-root)
 - [GradientEditorBar](../components/gradient-editor-bar)
