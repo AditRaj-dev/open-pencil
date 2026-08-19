@@ -1,11 +1,11 @@
 ---
 title: Dateien untersuchen
-description: Document tree, Nodes, Pages und Variables über die CLI lesen.
+description: Dokumentbaum, Objekte, Seiten und Variablen über die CLI lesen.
 ---
 
 # Dateien untersuchen
 
-Mit der CLI können `.fig`-Dateien gelesen werden, ohne den Editor zu öffnen. Läuft die Desktop-App, kann bei den meisten Befehlen der Dateiname entfallen; die CLI verwendet dann RPC zum geöffneten Dokument.
+Die CLI liest `.fig`-Dateien, ohne den Editor zu öffnen. Läuft die Desktop-App, kann der Dateiname entfallen; die CLI verwendet dann RPC für das geöffnete Dokument.
 
 ::: tip Installation
 ```sh
@@ -19,76 +19,53 @@ brew install open-pencil/tap/open-pencil
 
 ## Dokumentinformationen
 
-Pages, Anzahl der Nodes, verwendete Fonts und Dateigröße anzeigen:
-
 ```sh
 openpencil info design.fig
 ```
 
-## Document tree
+Zeigt Seiten, Objektanzahl, verwendete Schriften und Dateigröße.
+
+## Dokumentbaum und Suche
 
 ```sh
 openpencil tree design.fig
-```
-
-```text
-[0] [page] "Getting started" (0:46566)
-  [0] [section] "" (0:46567)
-    [0] [frame] "Body" (0:46568)
-      [0] [frame] "Introduction" (0:46569)
-        [0] [frame] "Introduction Card" (0:46570)
-          [0] [frame] "Guidance" (0:46571)
-```
-
-## Nodes suchen
-
-Nach Type:
-
-```sh
 openpencil find design.fig --type TEXT
-```
-
-Nach Name:
-
-```sh
 openpencil find design.fig --name "Button"
 ```
 
-Beide Flags können kombiniert werden.
+## XPath-Abfragen
 
-## Node details
+```sh
+openpencil query design.fig "//FRAME"
+openpencil query design.fig "//TEXT[@fontSize >= 24]"
+openpencil query design.fig "//*[@visible = false]"
+```
+
+Attributnamen wie `fontSize`, `layoutMode` und `strokeWeight` entsprechen der API und bleiben unverändert.
+
+## Objekte, Seiten und Variablen
 
 ```sh
 openpencil node design.fig --id 1:23
-```
-
-Der Befehl zeigt die Properties des Node mit der angegebenen ID.
-
-## Pages
-
-```sh
 openpencil pages design.fig
-```
-
-## Variables
-
-```sh
 openpencil variables design.fig
 ```
 
-## Live document
-
-Bei laufender Desktop-App:
+## Geöffnetes Dokument
 
 ```sh
-openpencil tree          # geöffnetes Dokument
-openpencil eval -c "..." # Editor über Figma Plugin API abfragen
+openpencil documents
+openpencil tree --document-id tab-123 --page-id 0:1
 ```
 
-## JSON output
+Für automatisierte Abläufe zuerst `openpencil documents --json` aufrufen und anschließend `--document-id` und `--page-id` ausdrücklich übergeben.
 
-Inspection commands unterstützen `--json`. Die Ausgabe kann an `jq`, CI oder andere Tools weitergegeben werden:
+## Qualitätsprüfung
 
 ```sh
-openpencil tree design.fig --json | jq '.[] | .name'
+openpencil lint design.fig
+openpencil lint design.pen --preset strict
+openpencil lint design.fig --rule color-contrast
 ```
+
+Alle Befehle unterstützen `--json`.

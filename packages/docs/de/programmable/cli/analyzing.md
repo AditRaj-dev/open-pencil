@@ -1,63 +1,44 @@
 ---
 title: Designs analysieren
-description: Colors, Typography, Spacing und wiederkehrende Strukturen in `.fig`-Dateien untersuchen.
+description: Farben, Typografie, Abstände und wiederkehrende Strukturen in `.fig`-Dateien untersuchen.
 ---
 
 # Designs analysieren
 
-Die Commands unter `analyze` prüfen ein vollständiges Dokument im Terminal. Sie zeigen verwendete Colors und Text styles, Abweichungen im Spacing und wiederkehrende Strukturen, die sich möglicherweise als Components eignen.
+Die `analyze`-Befehle prüfen ein vollständiges Dokument im Terminal. Sie zeigen Farben und Textstile, Abweichungen bei Abständen und wiederkehrende Strukturen, die sich als Komponenten eignen könnten.
 
-## Colors
+## Farben
 
 ```sh
 openpencil analyze colors design.fig
 ```
 
-Der Command zählt jede Color im Dokument und zeigt ein Histogramm:
+Zählt jede Farbe und zeigt ein Histogramm.
 
-```text
-#1d1b20  ██████████████████████████████ 17155×
-#49454f  ██████████████████████████████ 9814×
-#ffffff  ██████████████████████████████ 8620×
-#6750a4  ██████████████████████████████ 3967×
-```
-
-## Typography
+## Typografie
 
 ```sh
 openpencil analyze typography design.fig
 ```
 
-Listet Kombinationen aus Font family, Size und Style mit ihrer Häufigkeit auf. Einzelne abweichende Text styles lassen sich so leichter erkennen.
+Listet Kombinationen aus Schriftfamilie, Größe und Schnitt mit ihrer Häufigkeit auf.
 
-## Spacing
+## Abstände
 
 ```sh
 openpencil analyze spacing design.fig
 ```
 
-Prüft Gap und Padding in Auto-Layout-Frames. Ein einzelner Wert von `13px` zwischen sonst üblichen `8/16/24` wird dadurch sichtbar.
+Prüft Abstände und Innenabstände in Rahmen mit automatischer Anordnung. So wird beispielsweise ein einzelner Wert von `13px` zwischen üblichen `8/16/24` sichtbar.
 
-## Clusters
+## Wiederkehrende Strukturen
 
 ```sh
 openpencil analyze clusters design.fig
 ```
 
-Sucht wiederkehrende Node structures, die als Components zusammengefasst werden könnten:
+Sucht wiederkehrende Objektstrukturen, die als Komponenten zusammengefasst werden könnten.
 
-```text
-3771× frame "container" (100% match)
-     size: 40×40, structure: Frame > [Frame]
+## JSON-Ausgabe
 
-2982× instance "Checkboxes" (100% match)
-     size: 48×48, structure: Instance > [Frame]
-```
-
-## JSON output
-
-```sh
-openpencil analyze colors design.fig --json
-```
-
-Alle Analyze commands unterstützen `--json`. Die Ausgabe kann mit `jq` verarbeitet, in CI geprüft oder in Scripts für Design-token-Regeln verwendet werden.
+Alle Analysebefehle unterstützen `--json`. Die Ausgabe kann mit `jq`, in CI oder in Skripten für Designtoken verarbeitet werden.
