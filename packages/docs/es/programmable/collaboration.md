@@ -1,38 +1,35 @@
 ---
-title: Collaboration
-description: Edición conjunta en tiempo real mediante P2P WebRTC, sin servidor central.
+title: Colaboración
+description: Edición P2P en tiempo real mediante WebRTC y Yjs, sin servidor central.
 ---
 
-# Collaboration
+# Colaboración
 
-Varias personas pueden editar el mismo documento a la vez. Los Peers se conectan directamente mediante WebRTC y no se necesita una cuenta.
+OpenPencil permite editar un documento entre varias personas en tiempo real. La conexión es P2P: los cambios viajan directamente entre participantes mediante WebRTC.
 
-## Compartir un Room
+## Iniciar una sesión
 
-1. Abre el Share button de la esquina superior derecha.
-2. Copia el enlace `app.openpencil.dev/share/<room-id>`.
-3. Envíalo a los demás participantes.
+Abre el menú de colaboración, crea una sala y comparte el enlace. El identificador se genera con aleatoriedad criptográfica y no contiene datos del documento.
 
-Cualquier persona con el enlace puede entrar. El Room permanece accesible mientras al menos un participante mantenga la Page abierta.
+Quien abre el enlace entra en la misma sala. El documento inicial se sincroniza automáticamente.
 
-## Datos sincronizados
+## Datos compartidos
 
-- **Documento:** cambios en Shapes, Text, Properties y Layout;
-- **Cursors:** Position, Name y Color de cada participante;
-- **Selections:** objetos seleccionados por otros Peers.
+- **Documento:** cambios en formas, texto, propiedades y disposición;
+- **Presencia:** nombre, color, selección y página activa;
+- **Cursores:** posición de cada participante;
+- **Vista:** posibilidad de seguir el encuadre de otra persona.
 
-## Follow mode
+## Arquitectura
 
-Haz Click en un Avatar de la barra superior para seguir el Viewport de ese Peer. Pan y Zoom se adaptan a su vista. Otro Click detiene Follow mode.
+Yjs mantiene el estado compartido mediante CRDT. Trystero descubre participantes y establece las conexiones WebRTC. Un servidor de señalización ayuda a iniciar la conexión, pero no retransmite el documento.
 
-## Funcionamiento
+No es necesario crear una cuenta ni desplegar una infraestructura propia. La calidad de conexión depende de la red y de la posibilidad de establecer WebRTC entre los participantes.
 
-WebRTC transmite los datos del diseño directamente entre Peers. Un Application server central no retransmite los cambios del documento.
+## Privacidad
 
-Yjs sincroniza el estado como CRDT y combina automáticamente las modificaciones simultáneas. IndexedDB guarda el estado local para que un Reload del mismo Room pueda recuperarlo.
+El contenido no se almacena en un servidor de OpenPencil. Cada participante conserva una copia local. Comparte el enlace solo con personas de confianza: quien conoce la sala puede intentar unirse mientras esté activa.
 
-## Consejos
+## Finalizar
 
-- Collaboration funciona en el navegador y en la aplicación de escritorio.
-- Los Room IDs se generan con valores aleatorios criptográficamente seguros. Solo puede entrar quien conozca el enlace.
-- Los Cursors y Presence entries de Peers desconectados se eliminan automáticamente.
+Al cerrar la sesión se eliminan los participantes remotos y sus cursores. Los cambios ya sincronizados permanecen en el documento local.
