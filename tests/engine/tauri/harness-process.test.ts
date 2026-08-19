@@ -9,7 +9,7 @@ afterEach(async () => {
 })
 
 describe('Harness sidecar process', () => {
-  test('spawns the bundled sidecar and keeps credentials in process environment', async () => {
+  test('spawns the optional companion and keeps credentials in process environment', async () => {
     let onEvent: ((event: unknown) => void) | undefined
     const calls: Array<{ cmd: string; args: unknown }> = []
     await mockTauriIPC((cmd, args) => {
@@ -50,5 +50,29 @@ describe('Harness sidecar process', () => {
     expect(
       JSON.stringify(calls.find((call) => call.cmd === 'plugin:shell|stdin_write'))
     ).not.toContain('secret')
+  })
+
+  test('routes the npm launcher through cmd on Windows', async () => {
+    Object.defineProperty(globalThis, 'navigator', {
+      configurable: true,
+      value: { userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }
+    })
+    await mockTauriIPC((cmd, args) => {
+      if (cmd === 'plugin:shell|spawn') {
+        expect(args).toMatchObject({
+          program: 'cmd',
+          args: ['/c', 'openpencil-harness'],
+          options: { encoding: 'raw', env: {} }
+        })
+        return 46
+      }
+      return null
+    })
+    const process = await spawnHarnessProcess({
+      environment: {},
+      onUnexpectedClose: () => undefined
+    })
+    await process.child.kill()
+    Reflect.deleteProperty(globalThis, 'navigator')
   })
 })

@@ -1,6 +1,6 @@
 # @open-pencil/harness
 
-Private Node runtime for coding-agent harness sessions. It owns the backend-neutral session lifecycle, opaque resume-state persistence, and the JSONL sidecar protocol used by host applications.
+Optional Node companion runtime for coding-agent harness sessions. It owns the backend-neutral session lifecycle, opaque resume-state persistence, and the JSONL sidecar protocol used by host applications.
 
 The first backend uses AI SDK `HarnessAgent`, Pi, and local `just-bash`. Pi runs in the Node host process; `just-bash` provides an isolated in-memory workspace and shell without requiring cloud infrastructure.
 
