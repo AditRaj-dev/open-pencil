@@ -8,8 +8,8 @@ description: Eine eigene Oberfläche mit provideEditor, CanvasRoot, Menüs, Pane
 Eine OpenPencil-Anwendung mit Vue besteht typischerweise aus drei Schichten:
 
 1. `@open-pencil/core` erstellt den Editor;
-2. `@open-pencil/vue` verbindet ihn mit Vue composables und headless components;
-3. die Anwendung bestimmt Layout, Styling und produktspezifisches Verhalten.
+2. `@open-pencil/vue` verbindet ihn mit Vue Composables und Komponenten ohne vorgegebenes Erscheinungsbild;
+3. die Anwendung bestimmt Anordnung, Gestaltung und produktspezifisches Verhalten.
 
 ## Mögliche Anwendungen
 
@@ -19,10 +19,10 @@ Die fertige OpenPencil-App ist nur eine mögliche Oberfläche. Mit dem SDK könn
 
 Eine typische Oberfläche:
 
-- ruft `provideEditor()` weit oben im Component tree auf;
+- ruft `provideEditor()` weit oben im Komponentenbaum auf;
 - platziert den Canvas in der Mitte;
 - zeigt Pages und Layers in einem Side panel;
-- zeigt Properties im gegenüberliegenden Panel;
+- zeigt Eigenschaften im gegenüberliegenden Panel;
 - steuert Menüs und Toolbars über composables.
 
 ## Beispiel
@@ -88,9 +88,9 @@ provideEditor(editor)
 
 ## Zuständigkeiten
 
-- Das SDK übernimmt die Integration mit dem Editor und wiederverwendbare headless logic.
-- Die Anwendung übernimmt Layout, Styling und eigene Actions.
-- Composables stellen Menüs und Panels die benötigten Daten bereit, ohne zusätzliche Wrapper components zu erzwingen.
+- Das SDK übernimmt die Integration mit dem Editor und wiederverwendbare, gestaltungsunabhängige Logik.
+- Die Anwendung übernimmt Anordnung, Gestaltung und eigene Aktionen.
+- Composables stellen Menüs und Panels die benötigten Daten bereit, ohne zusätzliche Hüllkomponenten zu erzwingen.
 
 ## Siehe auch
 

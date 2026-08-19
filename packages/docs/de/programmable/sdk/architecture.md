@@ -11,7 +11,7 @@ Das Editor-Modell bleibt Bestandteil von core. Dieses Paket ergänzt:
 
 - Dependency Injection mit Vue;
 - reaktive Composables;
-- strukturelle Headless-Komponenten;
+- strukturelle Komponenten ohne vorgegebenes Erscheinungsbild;
 - die Anbindung der Arbeitsfläche und Eingabeverarbeitung.
 
 ## Paketstruktur
@@ -33,7 +33,7 @@ Der Code ist nach Funktionsbereichen gegliedert.
 - `NumberField/`
 - `Toolbar/`
 
-Diese Verzeichnisse enthalten strukturelle Headless-Komponenten und bereichsspezifische Hilfsfunktionen.
+Diese Verzeichnisse enthalten strukturelle Komponenten ohne vorgegebenes Erscheinungsbild und bereichsspezifische Hilfsfunktionen.
 
 ### Controls
 
@@ -56,13 +56,13 @@ In `controls/` befinden sich Composables für Eigenschaftenpanels und Editor-Ste
 
 `VariablesEditor/` enthält Composables und Code, der den Zustand des Variableneditors an Vue anbindet.
 
-### Selection
+### Auswahl
 
 `selection/` enthält den aus der Auswahl abgeleiteten Zustand sowie Angaben zu den verfügbaren Aktionen.
 
-### Context
+### Kontext
 
-`context/` enthält den Schlüssel und die Funktionen, mit denen der Editor per Vue Dependency Injection bereitgestellt wird:
+`context/` enthält Schlüssel und Funktionen, mit denen der Editor über die Abhängigkeitsinjektion von Vue bereitgestellt wird:
 
 - `EDITOR_KEY`
 - `provideEditor`
@@ -70,7 +70,7 @@ In `controls/` befinden sich Composables für Eigenschaftenpanels und Editor-Ste
 
 ### Internal
 
-`internal/` enthält gemeinsam genutzte Hilfsfunktionen. Sie gehören nicht zu den primären Headless-Komponenten des Pakets.
+`internal/` enthält gemeinsam genutzte Hilfsfunktionen. Sie gehören nicht zu den zentralen Komponenten des Pakets.
 
 ## Grundsätze der öffentlichen API
 
@@ -78,7 +78,7 @@ In `controls/` befinden sich Composables für Eigenschaftenpanels und Editor-Ste
 
 Wenn Code hauptsächlich Zustand berechnet oder verwaltet beziehungsweise Editor-Aktionen ausführt, stellen Sie ihn als Composable bereit.
 
-### Headless-Komponenten nur für relevante Struktur
+### Komponenten ohne Gestaltung nur bei relevanter Struktur
 
 Eine Root-Komponente ist sinnvoll, wenn sie Struktur, untergeordnete Elemente, Slots oder Kontext koordiniert.
 
@@ -99,7 +99,7 @@ Beispiele:
 ### SDK
 
 - Editor-Integration;
-- wiederverwendbare Headless-Logik;
+- wiederverwendbare, gestaltungsunabhängige Logik;
 - wiederverwendbare UI-Struktur ohne Vorgaben zur Gestaltung;
 - Integration mit dem Rendering der Arbeitsfläche.
 

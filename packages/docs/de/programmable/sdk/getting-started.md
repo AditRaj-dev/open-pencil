@@ -23,7 +23,7 @@ import { provideEditor, useCanvas } from '@open-pencil/vue'
 Eine Anwendung auf Grundlage des SDK besteht aus drei Ebenen:
 
 1. `@open-pencil/core` — die vom Framework unabhängige Editor-Engine;
-2. `@open-pencil/vue` — Composables und Headless-Komponenten für Vue;
+2. `@open-pencil/vue` — Composables und Komponenten ohne vorgegebenes Erscheinungsbild für Vue;
 3. die Anwendung — Gestaltung, Routing, Dateiverwaltung und produktspezifische Oberfläche.
 
 ## Minimale Einrichtung

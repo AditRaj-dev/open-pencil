@@ -1,30 +1,28 @@
 ---
 title: Navigations-Panels
-description: Side panels für Pages und Layers mit PageListRoot, LayerTreeRoot und Selection state.
+description: Seiten- und Ebenen-Panels mit PageListRoot, LayerTreeRoot und Auswahlzustand.
 ---
 
 # Navigations-Panels
 
-Ein OpenPencil-Side-panel enthält häufig eine Liste der Pages und den Tree der Layers. Das Vue SDK stellt für beide Bereiche headless components bereit.
+Ein Seiten-Panel enthält häufig eine Seitenliste und den Ebenenbaum. Das Vue SDK stellt für beide Bereiche Komponenten ohne vorgegebenes Erscheinungsbild bereit.
 
-## Pages
+## Seiten
 
-`PageListRoot` oder `usePageList()` verwenden:
+Verwenden Sie `PageListRoot` oder `usePageList()`.
 
 ```vue
 <PageListRoot v-slot="{ pages, currentPageId, switchPage, addPage }">
-  <div>
-    <button v-for="page in pages" :key="page.id" @click="switchPage(page.id)">
-      {{ page.name }}
-    </button>
-    <button @click="addPage()">Neue Seite</button>
-  </div>
+  <button v-for="page in pages" :key="page.id" @click="switchPage(page.id)">
+    {{ page.name }}
+  </button>
+  <button @click="addPage()">Neue Seite</button>
 </PageListRoot>
 ```
 
-## Layers
+## Ebenen
 
-`LayerTreeRoot` verwenden, wenn das SDK die Tree structure und Interactions verwalten soll, während die Anwendung das Markup und Styling bestimmt:
+Verwenden Sie `LayerTreeRoot`, wenn das SDK Baumstruktur und Verhalten verwalten soll, während die Anwendung Markup und Gestaltung bestimmt.
 
 ```vue
 <LayerTreeRoot v-slot="{ items, selectedIds, select, toggleExpand, getKey, getChildren }">
@@ -39,15 +37,14 @@ Ein OpenPencil-Side-panel enthält häufig eine Liste der Pages und den Tree der
 </LayerTreeRoot>
 ```
 
-## Typisches Layout
+## Typische Anordnung
 
-- Pages oben im Side panel;
-- Layers darunter;
-- Details und Inline rename direkt in den Row components.
+- Seiten oben;
+- Ebenen darunter;
+- Details und direkte Umbenennung in den Zeilenkomponenten.
 
 ## Siehe auch
 
 - [usePageList](../api/composables/use-page-list)
 - [PageListRoot](../api/components/page-list-root)
 - [LayerTreeRoot](../api/components/layer-tree-root)
-- [useSelectionState](../api/composables/use-selection-state)
