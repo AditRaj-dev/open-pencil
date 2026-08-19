@@ -12,15 +12,12 @@ import { FileResumeStateStore } from '#harness/session-store'
 
 const stateRoot =
   process.env.OPENPENCIL_HARNESS_STATE_DIR ?? join(homedir(), '.open-pencil', 'harness-sessions')
+const agentDir = process.env.OPENPENCIL_HARNESS_AGENT_DIR
+const apiKey = process.env.OPENPENCIL_HARNESS_API_KEY
 const service = new HarnessSessionService(
   new PiHarnessBackend({
-    ...(process.env.OPENPENCIL_HARNESS_MODEL
-      ? { model: process.env.OPENPENCIL_HARNESS_MODEL }
-      : {}),
-    ...(process.env.OPENPENCIL_HARNESS_AGENT_DIR
-      ? { agentDir: process.env.OPENPENCIL_HARNESS_AGENT_DIR }
-      : {}),
-    permissionMode: 'allow-edits'
+    ...(agentDir ? { agentDir } : {}),
+    ...(apiKey ? { apiKey } : {})
   }),
   new FileResumeStateStore(stateRoot)
 )
@@ -39,7 +36,10 @@ async function dispatch(line: string): Promise<boolean> {
     const request = parseHarnessRequest(line)
     requestId = request.id
     if (request.method === 'session.create') {
-      const result = await service.createSession(request.params.sessionId)
+      const result = await service.createSession(
+        request.params.sessionId,
+        request.params.configuration
+      )
       emit({
         type: 'response',
         id: request.id,

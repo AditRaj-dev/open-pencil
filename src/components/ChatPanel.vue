@@ -242,7 +242,7 @@ function handleClearChat() {
   clearChatFailure()
   clearImageAttachmentPresentations()
   chat.value = null
-  resetChat()
+  void resetChat()
   clearToolLogEntries()
   clearACPDebugLog()
 }

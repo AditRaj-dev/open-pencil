@@ -1,13 +1,28 @@
 export type JSONPrimitive = null | boolean | number | string
 export type JSONValue = JSONPrimitive | JSONValue[] | { [key: string]: JSONValue }
 
+export interface HarnessPiConfiguration {
+  model?: string
+  thinkingLevel?: 'off' | 'minimal' | 'low' | 'medium' | 'high' | 'xhigh'
+  permissionMode?: 'allow-all' | 'allow-reads' | 'allow-edits'
+}
+
+export interface HarnessSessionConfiguration {
+  pi?: HarnessPiConfiguration
+  mcpServers?: Record<string, Record<string, JSONValue>>
+}
+
 export interface HarnessTurnInput {
   sessionId: string
   prompt: string
 }
 
 export type HarnessRequest =
-  | { id: string; method: 'session.create'; params: { sessionId: string } }
+  | {
+      id: string
+      method: 'session.create'
+      params: { sessionId: string; configuration?: HarnessSessionConfiguration }
+    }
   | { id: string; method: 'session.turn'; params: HarnessTurnInput }
   | { id: string; method: 'session.stop'; params: { sessionId: string } }
   | { id: string; method: 'session.destroy'; params: { sessionId: string } }
@@ -45,6 +60,12 @@ function parseSessionParams(value: unknown): { sessionId: string } {
   return { sessionId: requireString(value, 'sessionId') }
 }
 
+function parseConfiguration(value: unknown): HarnessSessionConfiguration | undefined {
+  if (value === undefined) return undefined
+  if (!isRecord(value)) throw new Error('Expected Harness Pi configuration')
+  return structuredClone(value) as HarnessSessionConfiguration
+}
+
 export function parseHarnessRequest(line: string): HarnessRequest {
   if (Buffer.byteLength(line, 'utf8') > MAX_PROTOCOL_LINE_BYTES) {
     throw new Error('Harness request exceeds the protocol size limit')
@@ -55,7 +76,20 @@ export function parseHarnessRequest(line: string): HarnessRequest {
   const id = requireString(parsed, 'id')
   const method = requireString(parsed, 'method')
 
-  if (method === 'session.create' || method === 'session.stop' || method === 'session.destroy') {
+  if (method === 'session.create') {
+    const params = parseSessionParams(parsed.params)
+    return {
+      id,
+      method,
+      params: {
+        ...params,
+        ...(isRecord(parsed.params) && parsed.params.configuration !== undefined
+          ? { configuration: parseConfiguration(parsed.params.configuration) }
+          : {})
+      }
+    }
+  }
+  if (method === 'session.stop' || method === 'session.destroy') {
     return { id, method, params: parseSessionParams(parsed.params) }
   }
   if (method === 'session.turn') {

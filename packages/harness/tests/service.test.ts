@@ -6,6 +6,7 @@ import type {
   HarnessBackend,
   HarnessResumeState
 } from '../src/backends/types'
+import type { HarnessSessionConfiguration } from '../src/protocol'
 import { HarnessSessionService } from '../src/service'
 import type { ResumeStateStore } from '../src/session-store'
 
@@ -62,6 +63,7 @@ class FakeBackend implements HarnessBackend {
   async createSession(options: {
     sessionId: string
     resumeState?: HarnessResumeState
+    configuration?: HarnessSessionConfiguration
   }): Promise<BackendSession> {
     const session = new FakeSession(options.sessionId, options.resumeState !== undefined)
     this.sessions.push(session)

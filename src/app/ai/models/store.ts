@@ -22,7 +22,9 @@ import type {
   AIModelRoleAssignment,
   AIModelSettings,
   OptionalAIModelRole,
-  ResolvedAIModelRole
+  ResolvedAIModelRole,
+  HarnessPermissionMode,
+  HarnessThinkingLevel
 } from '@/app/ai/models/types'
 
 const LEGACY_CONNECTION_ID = 'connection-default'
@@ -42,6 +44,14 @@ function isProviderID(value: unknown): value is AIProviderID {
 
 function isAPIType(value: unknown): value is 'completions' | 'responses' {
   return value === 'completions' || value === 'responses'
+}
+
+function isHarnessThinkingLevel(value: unknown): value is HarnessThinkingLevel {
+  return ['off', 'minimal', 'low', 'medium', 'high', 'xhigh'].includes(String(value))
+}
+
+function isHarnessPermissionMode(value: unknown): value is HarnessPermissionMode {
+  return ['allow-reads', 'allow-edits', 'allow-all'].includes(String(value))
 }
 
 function isCapability(value: unknown): value is AIModelCapability {
@@ -88,6 +98,12 @@ function parseProfile(value: unknown, connectionIds: Set<string>): AIModelProfil
     customModelID: stringValue(value.customModelID),
     maxOutputTokens: normalizedMaxOutputTokens(value.maxOutputTokens),
     reasoningEffort: stringValue(value.reasoningEffort).trim() || undefined,
+    harnessThinkingLevel: isHarnessThinkingLevel(value.harnessThinkingLevel)
+      ? value.harnessThinkingLevel
+      : undefined,
+    harnessPermissionMode: isHarnessPermissionMode(value.harnessPermissionMode)
+      ? value.harnessPermissionMode
+      : undefined,
     capabilities: [...new Set(capabilities)]
   }
 }
@@ -126,9 +142,10 @@ function parseSettings(value: unknown): AIModelSettings | null {
     const profileId = assignment === 'design' ? resolvedDesign : assignment
     const profile = models.find((candidate) => candidate.id === profileId)
     const connection = connections.find((candidate) => candidate.id === profile?.connectionId)
-    const invalidACP = connection?.providerID.startsWith('acp:')
+    const invalidAgent =
+      connection?.providerID.startsWith('acp:') || connection?.providerID === 'harness:pi'
     const invalidVision = role === 'vision' && !profile?.capabilities.includes('vision')
-    if (invalidACP || invalidVision) assignments[role] = null
+    if (invalidAgent || invalidVision) assignments[role] = null
   }
   return { version: 1, connections, models, assignments }
 }
@@ -212,6 +229,11 @@ export function designModelProfiles(): AIModelProfile[] {
   return aiModelSettings.value.models.filter(isDesignModelProfile)
 }
 
+export function isAgentModelProfile(profile: AIModelProfile | null): boolean {
+  const providerID = profile ? modelConnection(profile.connectionId)?.providerID : undefined
+  return Boolean(providerID?.startsWith('acp:') || providerID === 'harness:pi')
+}
+
 export function isACPModelProfile(profile: AIModelProfile | null): boolean {
   return Boolean(profile && modelConnection(profile.connectionId)?.providerID.startsWith('acp:'))
 }
@@ -279,6 +301,8 @@ function draftForProfile(
     customAPIType: connection.customAPIType,
     maxOutputTokens: profile.maxOutputTokens,
     reasoningEffort: profile.reasoningEffort ?? '',
+    harnessThinkingLevel: profile.harnessThinkingLevel ?? 'medium',
+    harnessPermissionMode: profile.harnessPermissionMode ?? 'allow-edits',
     capabilities: [...profile.capabilities]
   }
 }
@@ -297,6 +321,8 @@ function newProfileDraft(connection: AIModelConnection | null): AIModelProfileDr
     customAPIType: connection?.customAPIType ?? 'completions',
     maxOutputTokens: DEFAULT_MAX_OUTPUT_TOKENS,
     reasoningEffort: '',
+    harnessThinkingLevel: 'medium',
+    harnessPermissionMode: 'allow-edits',
     capabilities: ['tools']
   }
 }
@@ -331,6 +357,10 @@ export function saveModelProfileDraft(draft: AIModelProfileDraft): AIModelProfil
     customModelID: draft.customModelID.trim(),
     maxOutputTokens: normalizedMaxOutputTokens(draft.maxOutputTokens),
     reasoningEffort: draft.reasoningEffort.trim() || undefined,
+    harnessThinkingLevel:
+      draft.providerID === 'harness:pi' ? draft.harnessThinkingLevel : undefined,
+    harnessPermissionMode:
+      draft.providerID === 'harness:pi' ? draft.harnessPermissionMode : undefined,
     capabilities: [...new Set(draft.capabilities)]
   }
   const index = aiModelSettings.value.models.findIndex((model) => model.id === profile.id)
@@ -402,7 +432,7 @@ export function setModelRoleAssignment(role: AIModelRole, assignment: AIModelRol
       assignment === 'design'
         ? modelProfile(aiModelSettings.value.assignments.design)
         : modelProfile(assignment)
-    if (isACPModelProfile(profile)) return
+    if (isAgentModelProfile(profile)) return
     if (role === 'vision' && !profile?.capabilities.includes('vision')) return
   }
   aiModelSettings.value.assignments[role] = assignment

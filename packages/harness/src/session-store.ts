@@ -1,7 +1,7 @@
 import { mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 
-import type { HarnessResumeState } from '#harness/backends/types'
+import type { HarnessResumeState } from './backends/types'
 
 const MAX_RESUME_STATE_BYTES = 1024 * 1024
 const SESSION_ID_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,127}$/

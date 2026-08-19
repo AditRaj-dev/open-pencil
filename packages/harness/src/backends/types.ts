@@ -1,4 +1,4 @@
-import type { JSONValue } from '#harness/protocol'
+import type { HarnessSessionConfiguration, JSONValue } from '../protocol'
 
 export type HarnessResumeState = {
   type: 'resume-session'
@@ -29,6 +29,7 @@ export interface HarnessBackend {
   createSession(options: {
     sessionId: string
     resumeState?: HarnessResumeState
+    configuration?: HarnessSessionConfiguration
     signal?: AbortSignal
   }): Promise<BackendSession>
 }

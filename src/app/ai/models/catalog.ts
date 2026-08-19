@@ -47,17 +47,22 @@ function normalizeModel(id: string, model: ModelsDevModel): ModelOption {
   }
 }
 
-async function loadCatalog(fetcher: typeof fetch): Promise<ModelsDevCatalog | null> {
-  const cached = await readCacheJSON<ModelsDevCatalog>(
-    MODELS_DEV_CACHE_KEY,
-    MODELS_DEV_CACHE_TTL_MS
-  )
-  if (cached) return cached
+async function loadCatalog(
+  fetcher: typeof fetch,
+  options: { useCache: boolean }
+): Promise<ModelsDevCatalog | null> {
+  if (options.useCache) {
+    const cached = await readCacheJSON<ModelsDevCatalog>(
+      MODELS_DEV_CACHE_KEY,
+      MODELS_DEV_CACHE_TTL_MS
+    )
+    if (cached) return cached
+  }
   try {
     const response = await fetcher(MODELS_DEV_URL)
     if (!response.ok) throw new Error(`models.dev catalog request failed: ${response.status}`)
     const catalog = (await response.json()) as ModelsDevCatalog
-    await writeCacheJSON(MODELS_DEV_CACHE_KEY, catalog)
+    if (options.useCache) await writeCacheJSON(MODELS_DEV_CACHE_KEY, catalog)
     return catalog
   } catch {
     return null
@@ -85,8 +90,10 @@ export async function resolveModelsDevModel(
 ): Promise<ModelOption | null> {
   const providerKeys = PROVIDER_KEYS[providerID]
   if (!providerKeys?.length || !modelID) return null
-  catalogPromise ??= loadCatalog(fetcher)
-  const catalog = await catalogPromise
+  const useCache = fetcher === fetch
+  const catalog = await (useCache
+    ? (catalogPromise ??= loadCatalog(fetcher, { useCache: true }))
+    : loadCatalog(fetcher, { useCache: false }))
   if (!catalog) return null
 
   for (const providerKey of providerKeys) {

@@ -1,5 +1,6 @@
-import type { BackendEvent, BackendSession, HarnessBackend } from '#harness/backends/types'
-import type { ResumeStateStore } from '#harness/session-store'
+import type { BackendEvent, BackendSession, HarnessBackend } from './backends/types'
+import type { HarnessSessionConfiguration } from './protocol'
+import type { ResumeStateStore } from './session-store'
 
 export class HarnessSessionService {
   private readonly sessions = new Map<string, BackendSession>()
@@ -9,14 +10,23 @@ export class HarnessSessionService {
     private readonly store: ResumeStateStore
   ) {}
 
-  async createSession(sessionId: string, signal?: AbortSignal): Promise<{ isResume: boolean }> {
+  async createSession(
+    sessionId: string,
+    configuration?: HarnessSessionConfiguration,
+    signal?: AbortSignal
+  ): Promise<{ isResume: boolean }> {
     if (this.sessions.has(sessionId))
       throw new Error(`Harness session already active: ${sessionId}`)
     const resumeState = await this.store.load(sessionId)
     if (resumeState && resumeState.harnessId !== this.backend.id) {
       throw new Error(`Harness state belongs to ${resumeState.harnessId}, not ${this.backend.id}`)
     }
-    const session = await this.backend.createSession({ sessionId, resumeState, signal })
+    const session = await this.backend.createSession({
+      sessionId,
+      resumeState,
+      configuration,
+      signal
+    })
     this.sessions.set(sessionId, session)
     return { isResume: session.isResume }
   }

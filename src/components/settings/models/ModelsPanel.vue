@@ -14,6 +14,7 @@ const editing = ref(false)
 const editingProfileId = ref<string>()
 const statusByConnection = ref<Record<string, CredentialStatus>>({})
 function providerName(providerID: string): string {
+  if (providerID === 'harness:pi') return 'Pi'
   if (providerID.startsWith('acp:')) {
     const agentID = providerID.slice('acp:'.length)
     return ACP_AGENTS.find((agent) => agent.id === agentID)?.name ?? providerID
@@ -57,6 +58,7 @@ async function refreshStatuses(): Promise<void> {
 }
 
 function statusLabel(connectionId: string, providerID: string): string {
+  if (providerID === 'harness:pi') return dialogs.value.connected
   if (providerID.startsWith('acp:')) return dialogs.value.modelAgentConnection
   const status = statusByConnection.value[connectionId]
   if (status === 'configured') return dialogs.value.connected
