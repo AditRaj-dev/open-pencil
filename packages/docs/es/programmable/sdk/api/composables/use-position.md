@@ -1,55 +1,21 @@
 ---
 title: usePosition
-description: Leer y modificar Position, Size, Rotation, Alignment y Flip de los objetos seleccionados.
+description: Leer y modificar posición, tamaño, giro, alineación y reflejo.
 ---
 
 # usePosition
 
-`usePosition()` proporciona a los paneles de Position y Size estos Values:
+`usePosition()` proporciona valores calculados y acciones para la selección actual:
 
-- `x`
-- `y`
-- `width`
-- `height`
-- `rotation`
+- `x`, `y`, anchura y altura;
+- giro;
+- proporciones bloqueadas;
+- alineación respecto al contenedor;
+- reflejo horizontal y vertical.
 
-También incluye Actions para Alignment, Flip, Rotation y para Preview y Commit de Properties numéricas.
+Los valores mixtos se conservan cuando los objetos seleccionados no coinciden.
 
-## Uso
+## Véase también
 
-```ts
-import { usePosition } from '@open-pencil/vue'
-
-const position = usePosition()
-```
-
-## Ejemplo
-
-```ts
-const { x, y, width, height, rotation, updateProp, commitProp } = usePosition()
-```
-
-### Alignment
-
-```ts
-position.align('horizontal', 'center')
-position.align('vertical', 'min')
-```
-
-### Flip
-
-```ts
-position.flip('horizontal')
-position.flip('vertical')
-```
-
-### Rotation
-
-```ts
-position.rotate(90)
-```
-
-## Consulta también
-
-- [useLayout](./use-layout)
-- [useAppearance](./use-appearance)
+- [PositionControlsRoot](../components/position-controls-root)
+- [usePropScrub](../advanced/use-prop-scrub)
