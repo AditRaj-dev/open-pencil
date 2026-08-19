@@ -1,6 +1,6 @@
 ---
 title: Vue SDK
-description: Crea editores basados en OpenPencil con componentes headless y composables para Vue.
+description: Crea editores basados en OpenPencil con componentes sin estilos y composables para Vue.
 ---
 
 # Vue SDK
@@ -16,7 +16,7 @@ El SDK proporciona:
 - el contexto del editor mediante dependency injection de Vue;
 - renderizado del lienzo con CanvasKit;
 - composables para la selección, los comandos, los menús, los paneles de propiedades y las variables;
-- componentes estructurales headless como `PageListRoot`, `PropertyListRoot` y `ToolbarRoot`;
+- componentes estructurales sin estilos como `PageListRoot`, `PropertyListRoot` y `ToolbarRoot`;
 - localización para menús, paneles y diálogos, además de componentes para seleccionar el idioma.
 
 ## Por dónde empezar
@@ -36,7 +36,7 @@ Puede tratarse de un editor de diseño completo, un lienzo integrado en otra apl
 
 ## Principios de diseño
 
-- **Headless ante todo:** el SDK proporciona lógica y estructura, pero no impone el aspecto de la aplicación.
+- **Sin estilos por diseño:** el SDK proporciona lógica y estructura, pero no impone el aspecto de la aplicación.
 - **Composable en lugar de un wrapper innecesario:** si no hay que coordinar la estructura de la interfaz, basta con un composable.
 - **API pública deliberada:** las funciones estables se exportan desde `packages/vue/src/index.ts`.
 - **Integración estrecha con Vue:** el SDK conecta Vue con las funciones de `@open-pencil/core`.

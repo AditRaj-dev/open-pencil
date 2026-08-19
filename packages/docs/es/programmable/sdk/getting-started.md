@@ -23,7 +23,7 @@ import { provideEditor, useCanvas } from '@open-pencil/vue'
 Una aplicación basada en el SDK consta de tres capas:
 
 1. `@open-pencil/core` — el motor del editor, independiente del framework;
-2. `@open-pencil/vue` — composables y componentes headless para Vue;
+2. `@open-pencil/vue` — composables y componentes sin estilos para Vue;
 3. la aplicación — estilos, routing, gestión de archivos e interfaz específica del producto.
 
 ## Configuración mínima

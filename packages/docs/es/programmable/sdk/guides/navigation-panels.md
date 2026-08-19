@@ -1,11 +1,11 @@
 ---
 title: Paneles de navegación
-description: Paneles laterales de Pages y Layers con PageListRoot, LayerTreeRoot y Selection state.
+description: Paneles laterales de páginas y capas con PageListRoot, LayerTreeRoot y estado de selección.
 ---
 
 # Paneles de navegación
 
-Un panel lateral de OpenPencil suele incluir una lista de Pages y el Tree de Layers. El SDK de Vue ofrece Headless components para ambas áreas.
+Un panel lateral suele incluir una lista de páginas y el árbol de capas. El SDK de Vue ofrece componentes sin estilos para ambas áreas.
 
 ## Pages
 
@@ -39,11 +39,11 @@ Usa `LayerTreeRoot` si quieres que el SDK gestione Tree structure e Interactions
 </LayerTreeRoot>
 ```
 
-## Layout habitual
+## Disposición habitual
 
 - Pages en la parte superior del panel;
 - Layers debajo;
-- detalles e Inline rename dentro de los Row components.
+- detalles y cambio de nombre directo dentro de los componentes de fila.
 
 ## Consulta también
 

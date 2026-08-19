@@ -11,7 +11,7 @@ El modelo del editor sigue perteneciendo a core. Este paquete añade:
 
 - dependency injection mediante Vue;
 - composables reactivos;
-- componentes estructurales headless;
+- componentes estructurales sin estilos;
 - conexión del lienzo y gestión de la entrada del usuario.
 
 ## Estructura del paquete
@@ -33,7 +33,7 @@ El código se organiza por áreas funcionales.
 - `NumberField/`
 - `Toolbar/`
 
-Estos directorios contienen componentes estructurales headless y funciones auxiliares específicas de cada área.
+Estos directorios contienen componentes estructurales sin estilos y funciones auxiliares específicas de cada área.
 
 ### Controls
 
@@ -56,7 +56,7 @@ Estos directorios contienen componentes estructurales headless y funciones auxil
 
 `VariablesEditor/` contiene composables y el código que conecta el estado del editor de variables con Vue.
 
-### Selection
+### Selección
 
 `selection/` contiene el estado calculado a partir de la selección y la información sobre las operaciones disponibles.
 
@@ -70,7 +70,7 @@ Estos directorios contienen componentes estructurales headless y funciones auxil
 
 ### Internal
 
-`internal/` contiene funciones auxiliares compartidas. No forman parte de los componentes headless principales del paquete.
+`internal/` contiene funciones auxiliares compartidas. No forman parte de los componentes públicos principales del paquete.
 
 ## Principios de la API pública
 
@@ -78,7 +78,7 @@ Estos directorios contienen componentes estructurales headless y funciones auxil
 
 Si el código sirve principalmente para calcular o administrar el estado, o para ejecutar operaciones del editor, proporciónalo como composable.
 
-### Componentes headless solo cuando la estructura sea relevante
+### Componentes sin estilos solo cuando la estructura sea relevante
 
 Un componente raíz resulta útil cuando coordina la estructura, los elementos descendientes, los slots o el contexto.
 
@@ -90,16 +90,16 @@ Ejemplos:
 - `SegmentedControlRoot`
 - `ToolbarRoot`
 
-### No pases todo el contexto por un único slot
+### No pases todo el contexto por una única ranura
 
-Pasa al slot únicamente los props necesarios o utiliza el composable directamente. Los componentes controlados, como `PropertyListRoot`, emiten eventos semánticos. La conexión con la selección y el historial de deshacer debe estar en un adaptador o composable de control, no en el propio componente.
+Pasa a la ranura únicamente las propiedades necesarias o utiliza el composable directamente. Los componentes controlados, como `PropertyListRoot`, emiten eventos semánticos. La conexión con la selección y el historial de deshacer debe estar en un adaptador o composable de control, no en el propio componente.
 
 ## Responsabilidades de la aplicación y el SDK
 
 ### SDK
 
 - integración con el editor;
-- lógica headless reutilizable;
+- lógica reutilizable sin estilos;
 - estructura de interfaz reutilizable y sin requisitos de estilo;
 - integración con el renderizado del lienzo.
 
