@@ -1,50 +1,42 @@
 ---
-title: Canvas-Navigation
-description: Viewport verschieben, zoomen und das Hand tool in OpenPencil verwenden.
+title: Navigation auf der Arbeitsfläche
+description: Ansicht verschieben, zoomen und das Handwerkzeug in OpenPencil verwenden.
 ---
 
-# Canvas-Navigation
+# Navigation auf der Arbeitsfläche
 
-Der Canvas ist unbegrenzt. Durch Pan und Zoom kann zu jedem Bereich des Dokuments navigiert werden.
+Die Arbeitsfläche ist unbegrenzt. Verschieben und vergrößern Sie die Ansicht, um jeden Bereich des Dokuments zu erreichen.
 
-## Pan
+## Ansicht verschieben
 
-Der sichtbare Bereich lässt sich verschieben, ohne Objekte zu verändern:
-
-- <kbd>Space</kbd> gedrückt halten und auf dem Canvas ziehen;
+- <kbd>Space</kbd> gedrückt halten und auf der Arbeitsfläche ziehen;
 - mit gedrückter mittlerer Maustaste ziehen;
 - mit zwei Fingern auf dem Trackpad scrollen.
 
-## Hand tool
+## Handwerkzeug
 
-<kbd>H</kbd> aktiviert das Hand tool. Solange es aktiv ist, verschiebt jeder Drag auf dem Canvas den Viewport; <kbd>Space</kbd> muss nicht gedrückt werden.
+<kbd>H</kbd> aktiviert das Handwerkzeug. Solange es aktiv ist, verschiebt jedes Ziehen die Ansicht, ohne dass <kbd>Space</kbd> gedrückt werden muss.
 
-Ein anderes Tool auswählen, zum Beispiel Select mit <kbd>V</kbd>, um den Modus zu verlassen.
+Mit <kbd>V</kbd> wechseln Sie zurück zum Auswahlwerkzeug.
 
 ## Zoom
 
-Zoom wird auf die Position des Pointer ausgerichtet:
+Der Zoom richtet sich nach der Position des Mauszeigers:
 
 - <kbd>Ctrl</kbd> + Scroll beziehungsweise <kbd>⌘</kbd> + Scroll auf macOS;
-- Pinch gesture auf dem Trackpad;
-- Shortcuts aus der Tabelle.
+- Zwei-Finger-Zoom auf dem Trackpad;
+- Tastenkürzel aus der Tabelle.
 
-Auf dem Layers- und Properties-Panel wird Pinch nicht an den Canvas weitergeleitet. So verändert die Geste dort weder den Editor-Zoom noch unbeabsichtigt den Zoom der Browserseite.
+Gesten über den Ebenen- und Eigenschaften-Panels werden nicht an die Arbeitsfläche weitergegeben.
 
-## Shortcuts
+## Tastenkürzel
 
 | Aktion | macOS | Windows / Linux |
 |--------|-------|-----------------|
-| Pan | <kbd>Space</kbd> + Drag | <kbd>Space</kbd> + Drag |
-| Hand tool | <kbd>H</kbd> | <kbd>H</kbd> |
-| Zoom in | <kbd>⌘</kbd><kbd>+</kbd> | <kbd>Strg</kbd><kbd>+</kbd> |
-| Zoom out | <kbd>⌘</kbd><kbd>−</kbd> | <kbd>Strg</kbd><kbd>−</kbd> |
+| Ansicht verschieben | <kbd>Space</kbd> + Ziehen | <kbd>Space</kbd> + Ziehen |
+| Handwerkzeug | <kbd>H</kbd> | <kbd>H</kbd> |
+| Vergrößern | <kbd>⌘</kbd><kbd>+</kbd> | <kbd>Strg</kbd><kbd>+</kbd> |
+| Verkleinern | <kbd>⌘</kbd><kbd>−</kbd> | <kbd>Strg</kbd><kbd>−</kbd> |
 | 100 % | <kbd>⌘</kbd><kbd>0</kbd> | <kbd>Strg</kbd><kbd>0</kbd> |
-| Fit | <kbd>⌘</kbd><kbd>1</kbd> | <kbd>Strg</kbd><kbd>1</kbd> |
-| Zoom to selection | <kbd>⌘</kbd><kbd>2</kbd> | <kbd>Strg</kbd><kbd>2</kbd> |
-
-## Hinweise
-
-- Pointer vor dem Zoom auf den Bereich setzen, der im Mittelpunkt bleiben soll.
-- Das Hand tool bleibt aktiv, bis ein anderes Tool gewählt wird.
-- Das Bearbeiten von Objekten wird unter [Auswählen und Bearbeiten](./selection-and-manipulation) erklärt.
+| Dokument einpassen | <kbd>⌘</kbd><kbd>1</kbd> | <kbd>Strg</kbd><kbd>1</kbd> |
+| Auf Auswahl zoomen | <kbd>⌘</kbd><kbd>2</kbd> | <kbd>Strg</kbd><kbd>2</kbd> |
