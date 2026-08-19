@@ -42,33 +42,31 @@ export class HarnessSessionService {
 
   async stopSession(sessionId: string): Promise<void> {
     const session = this.requireSession(sessionId)
-    try {
-      const state = await session.stop()
-      await this.store.save(sessionId, state)
-    } finally {
-      this.sessions.delete(sessionId)
-    }
+    const state = await session.stop()
+    await this.store.save(sessionId, state)
+    this.sessions.delete(sessionId)
   }
 
   async destroySession(sessionId: string): Promise<void> {
     const session = this.requireSession(sessionId)
-    try {
-      await session.destroy()
-      await this.store.remove(sessionId)
-    } finally {
-      this.sessions.delete(sessionId)
-    }
+    await session.destroy()
+    await this.store.remove(sessionId)
+    this.sessions.delete(sessionId)
   }
 
   async shutdown(): Promise<void> {
     const sessions = [...this.sessions.entries()]
-    this.sessions.clear()
-    await Promise.allSettled(
+    const results = await Promise.allSettled(
       sessions.map(async ([sessionId, session]) => {
         const state = await session.stop()
         await this.store.save(sessionId, state)
+        this.sessions.delete(sessionId)
       })
     )
+    const errors = results
+      .filter((result) => result.status === 'rejected')
+      .map((result) => result.reason)
+    if (errors.length) throw new AggregateError(errors, 'Harness shutdown failed')
   }
 
   private requireSession(sessionId: string): BackendSession {

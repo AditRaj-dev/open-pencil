@@ -22,8 +22,11 @@ const service = new HarnessSessionService(
   new FileResumeStateStore(stateRoot)
 )
 
-function emit(message: HarnessSidecarMessage): void {
-  process.stdout.write(`${JSON.stringify(message)}\n`)
+async function emit(message: HarnessSidecarMessage): Promise<void> {
+  if (process.stdout.write(`${JSON.stringify(message)}\n`)) return
+  await new Promise<void>((resolve) => {
+    process.stdout.once('drain', resolve)
+  })
 }
 
 function messageFor(error: unknown): string {
@@ -40,7 +43,7 @@ async function dispatch(line: string): Promise<boolean> {
         request.params.sessionId,
         request.params.configuration
       )
-      emit({
+      await emit({
         type: 'response',
         id: request.id,
         result: { isResume: result.isResume }
@@ -49,26 +52,26 @@ async function dispatch(line: string): Promise<boolean> {
     }
     if (request.method === 'session.turn') {
       for await (const event of service.runTurn(request.params.sessionId, request.params.prompt)) {
-        emit({ type: 'turn.event', id: request.id, event })
+        await emit({ type: 'turn.event', id: request.id, event })
       }
-      emit({ type: 'response', id: request.id, result: { completed: true } })
+      await emit({ type: 'response', id: request.id, result: { completed: true } })
       return true
     }
     if (request.method === 'session.stop') {
       await service.stopSession(request.params.sessionId)
-      emit({ type: 'response', id: request.id, result: { stopped: true } })
+      await emit({ type: 'response', id: request.id, result: { stopped: true } })
       return true
     }
     if (request.method === 'session.destroy') {
       await service.destroySession(request.params.sessionId)
-      emit({ type: 'response', id: request.id, result: { destroyed: true } })
+      await emit({ type: 'response', id: request.id, result: { destroyed: true } })
       return true
     }
     await service.shutdown()
-    emit({ type: 'response', id: request.id, result: { shutdown: true } })
+    await emit({ type: 'response', id: request.id, result: { shutdown: true } })
     return false
   } catch (error) {
-    emit({ type: 'response', id: requestId, error: messageFor(error) })
+    await emit({ type: 'response', id: requestId, error: messageFor(error) })
     return true
   }
 }
@@ -83,8 +86,20 @@ input.on('line', (line) => {
     return next
   })
 })
-input.on('close', () => {
-  void queue.finally(() => process.exit(0))
-})
+let closing: Promise<void> | undefined
+async function closeSidecar(): Promise<void> {
+  closing ??= queue
+    .then(async () => {
+      await service.shutdown()
+      return undefined
+    })
+    .catch((error) => {
+      process.stderr.write(`${messageFor(error)}\n`)
+      process.exitCode = 1
+    })
+  await closing
+}
+
+input.on('close', () => void closeSidecar())
 process.on('SIGTERM', () => input.close())
 process.on('SIGINT', () => input.close())

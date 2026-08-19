@@ -49,8 +49,14 @@ export interface PiHarnessBackendOptions {
 }
 
 function asJSONValue(value: unknown): JSONValue {
-  if (value === undefined) return null
-  return structuredClone(value) as JSONValue
+  if (value === undefined || typeof value === 'bigint' || typeof value === 'function') return null
+  try {
+    const clone = structuredClone(value)
+    JSON.stringify(clone)
+    return clone as JSONValue
+  } catch {
+    return null
+  }
 }
 
 function mapPart(part: TextStreamPart<ToolSet>): BackendEvent | undefined {

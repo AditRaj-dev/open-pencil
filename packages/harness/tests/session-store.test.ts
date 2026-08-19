@@ -29,6 +29,23 @@ describe('FileResumeStateStore', () => {
     }
   })
 
+  test('concurrent saves leave valid state', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'open-pencil-harness-'))
+    try {
+      const store = new FileResumeStateStore(root)
+      await Promise.all([
+        store.save('session-1', state),
+        store.save('session-1', { ...state, data: { opaque: 'newer' } })
+      ])
+      expect(await store.load('session-1')).toMatchObject({
+        type: 'resume-session',
+        harnessId: 'fake'
+      })
+    } finally {
+      await rm(root, { recursive: true, force: true })
+    }
+  })
+
   test('rejects path traversal session IDs', async () => {
     const store = new FileResumeStateStore(tmpdir())
     await expect(store.save('../escape', state)).rejects.toThrow('Invalid harness session ID')

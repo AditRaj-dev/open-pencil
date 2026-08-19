@@ -5,10 +5,10 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/index.d.mts",
       "bun": "./src/index.ts",
-      "import": "./dist/index.js",
-      "default": "./dist/index.js"
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
     }
   },
   "bin": {
