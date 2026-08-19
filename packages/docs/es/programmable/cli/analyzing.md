@@ -1,63 +1,50 @@
 ---
-title: Analizar diseños
-description: Examinar Colors, Typography, Spacing y Structures repetidas en archivos `.fig`.
+title: Analizar documentos con la CLI
+description: Detectar colores, tipografías, espaciados y estructuras repetidas.
 ---
 
-# Analizar diseños
+# Analizar documentos con la CLI
 
-Los Commands de `analyze` examinan un documento completo desde el terminal. Muestran Colors y Text styles, desviaciones de Spacing y Structures repetidas que podrían convertirse en Components.
+Los subcomandos `analyze` examinan el documento completo y ayudan a descubrir inconsistencias o candidatos a componentes.
 
-## Colors
-
-```sh
-openpencil analyze colors design.fig
-```
-
-Cuenta cada Color del documento y muestra un Histograma:
-
-```text
-#1d1b20  ██████████████████████████████ 17155×
-#49454f  ██████████████████████████████ 9814×
-#ffffff  ██████████████████████████████ 8620×
-#6750a4  ██████████████████████████████ 3967×
-```
-
-## Typography
+## Colores
 
 ```sh
-openpencil analyze typography design.fig
+bun open-pencil analyze colors design.fig
 ```
 
-Lista las combinaciones de Font family, Size y Style con su frecuencia. Así se detectan Text styles aislados.
+Agrupa los colores de rellenos y contornos, cuenta su uso y ayuda a detectar tonos casi idénticos.
 
-## Spacing
+## Tipografía
 
 ```sh
-openpencil analyze spacing design.fig
+bun open-pencil analyze typography design.fig
 ```
 
-Examina Gap y Padding en Auto-layout Frames. Por ejemplo, permite descubrir un valor `13px` entre valores habituales de `8/16/24`.
+Enumera las combinaciones de familia, tamaño y estilo con su frecuencia. Así se identifican estilos aislados.
 
-## Clusters
+## Espaciado
 
 ```sh
-openpencil analyze clusters design.fig
+bun open-pencil analyze spacing design.fig
 ```
 
-Busca Node structures repetidas que podrían agruparse como Components:
+Examina separación y relleno en marcos con disposición automática. Permite detectar, por ejemplo, un valor de `13px` entre los habituales `8/16/24`.
 
-```text
-3771× frame "container" (100% match)
-     size: 40×40, structure: Frame > [Frame]
-
-2982× instance "Checkboxes" (100% match)
-     size: 48×48, structure: Instance > [Frame]
-```
-
-## JSON output
+## Estructuras repetidas
 
 ```sh
-openpencil analyze colors design.fig --json
+bun open-pencil analyze clusters design.fig
 ```
 
-Todos los Analyze commands admiten `--json`. La salida se puede procesar con `jq`, validar en CI o usar en Scripts que apliquen reglas de Design tokens.
+Busca jerarquías similares que podrían convertirse en componentes y muestra coincidencia, tamaño y estructura.
+
+## Salida JSON
+
+Añade `--json` para procesar los resultados en CI, generar informes o aplicar reglas propias.
+
+```sh
+bun open-pencil analyze colors design.fig --json
+```
+
+Estos análisis no modifican el archivo. Para transformaciones usa [`eval`](./scripting).
