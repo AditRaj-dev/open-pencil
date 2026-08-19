@@ -1,98 +1,25 @@
 ---
 title: useCanvas
-description: Conectar el CanvasKit renderer con un elemento canvas y un Editor de OpenPencil.
+description: Crear y mantener la superficie CanvasKit del editor.
 ---
 
 # useCanvas
 
-`useCanvas()` conecta una instancia del Editor con un elemento `<canvas>`.
+`useCanvas(options)` conecta un elemento `<canvas>` con el renderizador. Se encarga de:
 
-El composable se ocupa de:
+- cargar CanvasKit;
+- crear y recrear la superficie;
+- observar el tamaño;
+- ajustar la escala de píxeles;
+- solicitar repintados;
+- limpiar recursos al desmontar.
 
-- inicializar CanvasKit;
-- crear la Surface;
-- programar el Rendering;
-- gestionar Resize;
-- mostrar Rulers opcionales;
-- ejecutar un Callback cuando el Renderer está preparado.
+Puede configurar reglas, color de fondo y comportamiento de una vista previa integrada.
 
-## Uso
+Use `CanvasRoot` y `CanvasSurface` para la composición habitual, o este composable cuando necesite controlar directamente el elemento.
 
-```ts
-import { ref } from 'vue'
+## Véase también
 
-import { useCanvas, useEditor } from '@open-pencil/vue'
-
-const canvasRef = ref<HTMLCanvasElement | null>(null)
-const editor = useEditor()
-
-useCanvas(canvasRef, editor)
-```
-
-## Ejemplo
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-
-import { useCanvas, useEditor } from '@open-pencil/vue'
-
-const canvasRef = ref<HTMLCanvasElement | null>(null)
-const editor = useEditor()
-
-useCanvas(canvasRef, editor, {
-  showRulers: true,
-  onReady: () => {
-    console.log('Renderer ready')
-  },
-})
-</script>
-
-<template>
-  <canvas ref="canvasRef" class="size-full" />
-</template>
-```
-
-### Ocultar Rulers en un Preview integrado
-
-```ts
-useCanvas(canvasRef, editor, {
-  showRulers: false,
-})
-```
-
-### Conservar el Drawing buffer para Screenshots
-
-```ts
-useCanvas(canvasRef, editor, {
-  preserveDrawingBuffer: true,
-})
-```
-
-## Notas
-
-- `useCanvas()` integra el Renderer y está pensado para Browser environments.
-- Gestiona el canvas activo, no la apertura o el guardado de archivos.
-- Normalmente se combina con `useCanvasInput()` para Pointer interactions.
-
-## Consulta también
-
-- [useEditor](./use-editor)
+- [CanvasRoot](../components/canvas-root)
+- [CanvasSurface](../components/canvas-surface)
 - [useCanvasInput](./use-canvas-input)
-- [useTextEdit](./use-text-edit)
-
-## Tipo
-
-```ts
-interface UseCanvasOptions {
-  showRulers?: boolean
-  preserveDrawingBuffer?: boolean
-  onReady?: () => void
-}
-
-function useCanvas(
-  canvasRef: Ref<HTMLCanvasElement | null>,
-  editor: Editor,
-  options?: UseCanvasOptions,
-): void
-```

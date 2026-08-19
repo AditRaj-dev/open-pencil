@@ -1,71 +1,25 @@
 ---
 title: useCanvasInput
-description: Conectar Pointer input, Drag, Selection, Resize, Rotation y Tools con el canvas.
+description: Conectar puntero, arrastre, selección, tamaño, giro y herramientas con el lienzo.
 ---
 
 # useCanvasInput
 
-`useCanvasInput()` conecta las Pointer y Mouse interactions con el Editor canvas.
+`useCanvasInput(options)` enlaza los eventos del elemento con el sistema de entrada del editor:
 
-Gestiona:
+- movimiento, pulsación y liberación del puntero;
+- selección y marco de selección;
+- desplazamiento y zoom;
+- arrastre de objetos;
+- redimensionado y giro;
+- herramientas de forma, Pluma, Texto y Mano;
+- edición vectorial y de texto.
 
-- Selection;
-- Drag;
-- Resize;
-- Rotation;
-- Pan;
-- dibujo con Pen tool;
-- Interactions del Text edit mode;
-- Hit testing que tiene en cuenta el Viewport.
+El composable convierte coordenadas de pantalla a coordenadas del lienzo y conserva la captura del puntero durante una interacción.
 
-## Uso
+Esta API de bajo nivel está pensada principalmente para componentes que contienen el lienzo de una interfaz propia.
 
-Normalmente se utiliza junto con `useCanvas()` y las Hit-test functions del Renderer:
-
-```ts
-useCanvasInput(
-  canvasRef,
-  editor,
-  hitTestSectionTitle,
-  hitTestComponentLabel,
-  hitTestFrameTitle,
-)
-```
-
-## Ejemplo
-
-```ts
-const canvas = useCanvas(canvasRef, editor)
-
-useCanvasInput(
-  canvasRef,
-  editor,
-  canvas.hitTestSectionTitle,
-  canvas.hitTestComponentLabel,
-  canvas.hitTestFrameTitle,
-)
-```
-
-### Position del Pointer en Coordinates del canvas
-
-```ts
-useCanvasInput(
-  canvasRef,
-  editor,
-  hitTestSectionTitle,
-  hitTestComponentLabel,
-  hitTestFrameTitle,
-  (cx, cy) => {
-    console.log(cx, cy)
-  },
-)
-```
-
-## Notas
-
-Este Low-level composable está pensado principalmente para Components que contienen el canvas de una interfaz de edición propia.
-
-## Consulta también
+## Véase también
 
 - [useCanvas](./use-canvas)
-- [useEditor](./use-editor)
+- [useTextEdit](./use-text-edit)
