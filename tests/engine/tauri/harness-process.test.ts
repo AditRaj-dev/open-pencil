@@ -16,7 +16,7 @@ describe('Harness sidecar process', () => {
       calls.push({ cmd, args })
       if (cmd === 'plugin:shell|spawn') {
         expect(args).toMatchObject({
-          program: expect.stringContaining('openpencil-harness'),
+          program: 'openpencil-harness',
           args: [],
           options: {
             encoding: 'raw',

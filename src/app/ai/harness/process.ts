@@ -16,7 +16,7 @@ export async function spawnHarnessProcess(options: {
   onUnexpectedClose: () => void
 }): Promise<HarnessProcess> {
   const { Command } = await import('@tauri-apps/plugin-shell')
-  const command = Command.sidecar('binaries/openpencil-harness', [], {
+  const command = Command.create('openpencil-harness', [], {
     encoding: 'raw',
     env: options.environment
   })
