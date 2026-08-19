@@ -4,6 +4,7 @@ import type { ResumeStateStore } from './session-store'
 
 export class HarnessSessionService {
   private readonly sessions = new Map<string, BackendSession>()
+  private readonly turns = new Map<string, AbortController>()
 
   constructor(
     private readonly backend: HarnessBackend,
@@ -37,7 +38,19 @@ export class HarnessSessionService {
     signal?: AbortSignal
   ): AsyncIterable<BackendEvent> {
     const session = this.requireSession(sessionId)
-    yield* session.runTurn(prompt, signal)
+    const controller = new AbortController()
+    this.turns.set(sessionId, controller)
+    signal?.addEventListener('abort', () => controller.abort(), { once: true })
+    try {
+      yield* session.runTurn(prompt, controller.signal)
+    } finally {
+      this.turns.delete(sessionId)
+    }
+  }
+
+  cancelTurn(sessionId: string): void {
+    this.requireSession(sessionId)
+    this.turns.get(sessionId)?.abort()
   }
 
   async stopSession(sessionId: string): Promise<void> {

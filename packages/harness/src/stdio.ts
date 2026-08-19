@@ -57,6 +57,11 @@ async function dispatch(line: string): Promise<boolean> {
       await emit({ type: 'response', id: request.id, result: { completed: true } })
       return true
     }
+    if (request.method === 'session.cancel') {
+      service.cancelTurn(request.params.sessionId)
+      await emit({ type: 'response', id: request.id, result: { cancelled: true } })
+      return true
+    }
     if (request.method === 'session.stop') {
       await service.stopSession(request.params.sessionId)
       await emit({ type: 'response', id: request.id, result: { stopped: true } })

@@ -94,7 +94,17 @@ export class HarnessChatTransport implements ChatTransport<UIMessage> {
         this.pending.set(requestId, pending)
         controller.enqueue({ type: 'start' })
         controller.enqueue({ type: 'start-step' })
-        abortSignal?.addEventListener('abort', () => void this.destroy(), { once: true })
+        abortSignal?.addEventListener(
+          'abort',
+          () => {
+            void process.send({
+              id: crypto.randomUUID(),
+              method: 'session.cancel',
+              params: { sessionId: this.sessionId }
+            })
+          },
+          { once: true }
+        )
         void process.send({
           id: requestId,
           method: 'session.turn',

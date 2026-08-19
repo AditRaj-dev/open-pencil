@@ -25,6 +25,7 @@ export type HarnessRequest =
       params: { sessionId: string; configuration?: HarnessSessionConfiguration }
     }
   | { id: string; method: 'session.turn'; params: HarnessTurnInput }
+  | { id: string; method: 'session.cancel'; params: { sessionId: string } }
   | { id: string; method: 'session.stop'; params: { sessionId: string } }
   | { id: string; method: 'session.destroy'; params: { sessionId: string } }
   | { id: string; method: 'service.shutdown'; params?: Record<string, never> }
@@ -90,7 +91,7 @@ export function parseHarnessRequest(line: string): HarnessRequest {
       }
     }
   }
-  if (method === 'session.stop' || method === 'session.destroy') {
+  if (method === 'session.cancel' || method === 'session.stop' || method === 'session.destroy') {
     return { id, method, params: parseSessionParams(parsed.params) }
   }
   if (method === 'session.turn') {
