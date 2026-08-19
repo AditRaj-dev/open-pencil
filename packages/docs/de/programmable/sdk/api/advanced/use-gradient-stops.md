@@ -1,13 +1,13 @@
 ---
 title: useGradientStops
-description: State und Actions für Gradient stops.
+description: Zustand und Aktionen für Verlaufspunkte.
 ---
 
 # useGradientStops
 
-`useGradientStops(fill, onUpdate)` verwaltet Active stop, Gradient subtype, Drag der Stops sowie Änderungen an Position, Color und Opacity.
+`useGradientStops(fill, onUpdate)` verwaltet aktiven Punkt, Verlaufsart, Ziehen der Punkte sowie Änderungen an Position, Farbe und Deckkraft.
 
-Das composable kann für einen eigenen Gradient editor verwendet werden, damit diese Logic nicht erneut implementiert werden muss.
+Verwenden Sie das Composable für eine eigene Verlaufsoberfläche, ohne diese Logik erneut umzusetzen.
 
 ## Siehe auch
 

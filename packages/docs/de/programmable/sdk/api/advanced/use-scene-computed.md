@@ -1,13 +1,13 @@
 ---
 title: useSceneComputed
-description: Reaktiver computed value auf Grundlage von SceneGraph data.
+description: Reaktiver berechneter Wert auf Grundlage von SceneGraph-Daten.
 ---
 
 # useSceneComputed
 
-`useSceneComputed(fn)` ist ein kleiner Wrapper um Vue `computed`. Er kennzeichnet Values, die von SceneGraph data des Editor abhängen.
+`useSceneComputed(fn)` ist eine kleine Hülle um Vue `computed`, die eine Abhängigkeit von den SceneGraph-Daten des Editors kennzeichnet.
 
-Das composable eignet sich für andere composables, die Values aus Objekten des Dokuments berechnen.
+Verwenden Sie sie in anderen Composables, die Werte aus Dokumentobjekten berechnen.
 
 ## Siehe auch
 

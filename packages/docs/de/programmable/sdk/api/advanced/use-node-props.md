@@ -1,22 +1,16 @@
 ---
 title: useNodeProps
-description: Low-level API für Mixed values und Property changes an ausgewählten Objekten.
+description: API auf niedriger Ebene für gemischte Werte und Änderungen an Eigenschaften ausgewählter Objekte.
 ---
 
 # useNodeProps
 
-`useNodeProps()` bildet die Grundlage für composables wie `useAppearance`, `useLayout` und `useTypography`.
+`useNodeProps()` bildet die Grundlage für `useAppearance`, `useLayout` und `useTypography`.
 
-Das API direkt verwenden, wenn ein eigenes Panel benötigt:
-
-- Erkennung von Mixed values;
-- Änderung einer Property an mehreren ausgewählten Objekten;
-- Bearbeitung von Array items;
-- Preview und Commit mit Undo support.
+Verwenden Sie es, wenn ein eigenes Panel gemischte Werte erkennen, eine Eigenschaft mehrerer Objekte ändern, Array-Einträge bearbeiten oder Vorschau und Speichern mit Rückgängig-Unterstützung ausführen muss.
 
 ## Siehe auch
 
 - [useAppearance](../composables/use-appearance)
 - [useLayout](../composables/use-layout)
 - [useTypography](../composables/use-typography)
-- [PropertyListRoot](../components/property-list-root)

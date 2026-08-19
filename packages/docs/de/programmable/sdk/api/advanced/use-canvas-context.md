@@ -1,13 +1,13 @@
 ---
 title: useCanvasContext
-description: Auf den von CanvasRoot bereitgestellten Context zugreifen.
+description: Auf den von CanvasRoot bereitgestellten Kontext zugreifen.
 ---
 
 # useCanvasContext
 
-`useCanvasContext()` gibt den Context des nächsten `CanvasRoot` zurück.
+`useCanvasContext()` gibt den Kontext des nächsten `CanvasRoot` zurück.
 
-Das composable wird in `CanvasSurface` oder eigenen Child components verwendet, die Refs und State des Canvas benötigen.
+Verwenden Sie das Composable in `CanvasSurface` oder eigenen untergeordneten Komponenten, die Referenzen und Zustand der Arbeitsfläche benötigen.
 
 ## Siehe auch
 

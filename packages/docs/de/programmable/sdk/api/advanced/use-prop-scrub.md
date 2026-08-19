@@ -1,13 +1,13 @@
 ---
 title: usePropScrub
-description: Preview und Commit einer numerischen Property während Scrubbing.
+description: Vorschau und Speichern einer numerischen Eigenschaft während des Ziehens.
 ---
 
 # usePropScrub
 
-`usePropScrub(editor)` aktualisiert eine Property während des Drag und schreibt nach Ende der Interaction die endgültige Änderung in die Undo history.
+`usePropScrub(editor)` aktualisiert eine Eigenschaft während des Ziehens und schreibt nach Ende der Interaktion den Endwert in die Rückgängig-Historie.
 
-Das composable eignet sich für Numeric controls, die Properties ausgewählter Objekte per Scrubbing verändern.
+Das Composable eignet sich für Zahlenfelder, die Eigenschaften ausgewählter Objekte durch Ziehen verändern.
 
 ## Siehe auch
 

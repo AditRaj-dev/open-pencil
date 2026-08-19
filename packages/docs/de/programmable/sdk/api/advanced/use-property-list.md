@@ -1,13 +1,13 @@
 ---
 title: usePropertyList
-description: Auf den von PropertyListRoot bereitgestellten Context zugreifen.
+description: Auf den von PropertyListRoot bereitgestellten Kontext zugreifen.
 ---
 
 # usePropertyList
 
-`usePropertyList()` gibt den Context des nächsten `PropertyListRoot` zurück.
+`usePropertyList()` gibt den Kontext des nächsten `PropertyListRoot` zurück.
 
-Das composable wird in eigenen Child components verwendet, die Items, Mixed state oder Actions für Fills, Strokes und Effects benötigen.
+Verwenden Sie das Composable in untergeordneten Komponenten, die Einträge, gemischten Zustand oder Aktionen für Füllungen, Konturen und Effekte benötigen.
 
 ## Siehe auch
 

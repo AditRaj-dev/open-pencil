@@ -1,13 +1,13 @@
 ---
 title: useToolbar
-description: Auf den von ToolbarRoot bereitgestellten Context zugreifen.
+description: Auf den von ToolbarRoot bereitgestellten Kontext zugreifen.
 ---
 
 # useToolbar
 
-`useToolbar()` gibt den Context des nächsten `ToolbarRoot` zurück.
+`useToolbar()` gibt den Kontext des nächsten `ToolbarRoot` zurück.
 
-Das composable wird in eigenen Child components verwendet, die Tools, Active state oder die Action zur Auswahl eines Tool benötigen.
+Verwenden Sie das Composable in untergeordneten Komponenten, die Werkzeuge, Aktivzustand oder die Aktion zur Werkzeugauswahl benötigen.
 
 ## Siehe auch
 

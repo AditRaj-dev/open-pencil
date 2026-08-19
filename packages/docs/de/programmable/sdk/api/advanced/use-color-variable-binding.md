@@ -1,25 +1,15 @@
 ---
 title: useColorVariableBinding
-description: Fill oder Stroke color mit einer Variable verbinden.
+description: Farbe einer Füllung oder Kontur mit einer Variable verbinden.
 ---
 
 # useColorVariableBinding
 
-`useColorVariableBinding(kind)` stellt Functions zum Suchen, Setzen und Entfernen eines Binding für Color variables in Fills oder Strokes bereit.
+`useColorVariableBinding(kind)` stellt Funktionen zum Suchen, Setzen und Entfernen einer Farbvariablenbindung in Füllungen oder Konturen bereit.
 
-Das composable eignet sich für Color controls mit Unterstützung für Design variables.
-
-## Verwendung
-
-```ts
-import { useColorVariableBinding } from '@open-pencil/vue'
-
-const fillBinding = useColorVariableBinding('fills')
-const strokeBinding = useColorVariableBinding('strokes')
-```
+Verwenden Sie das Composable in Farbsteuerelementen mit Designvariablen.
 
 ## Siehe auch
 
 - [useFillControls](../composables/use-fill-controls)
 - [useStrokeControls](../composables/use-stroke-controls)
-- [FillRoot](/programmable/sdk/api/components/fill-root)

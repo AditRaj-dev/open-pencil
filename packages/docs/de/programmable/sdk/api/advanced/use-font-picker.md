@@ -1,13 +1,13 @@
 ---
 title: useFontPicker
-description: State, Search und Auswahl einer Font family in einem eigenen Font picker.
+description: Zustand, Suche und Auswahl einer Schriftfamilie in einer eigenen Schriftauswahl.
 ---
 
 # useFontPicker
 
-`useFontPicker(options)` verwaltet Font families, Search query, Open state und die Auswahl der aktiven Family.
+`useFontPicker(options)` verwaltet Schriftfamilien, Suchbegriff, Öffnungszustand und aktive Familie.
 
-Das composable verwenden, wenn `FontPickerRoot` nicht ausreicht und ein eigener Font picker benötigt wird.
+Verwenden Sie das Composable, wenn `FontPickerRoot` nicht ausreicht und eine eigene Schriftauswahl benötigt wird.
 
 ## Siehe auch
 
