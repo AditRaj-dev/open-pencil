@@ -1,6 +1,6 @@
 ---
 title: Własny interfejs edytora
-description: Tworzenie własnego interfejsu edytora za pomocą provideEditor, CanvasRoot, menu, paneli i toolbars.
+description: Tworzenie własnego interfejsu edytora za pomocą provideEditor, CanvasRoot, menu, paneli i pasków narzędzi.
 ---
 
 # Własny interfejs edytora
@@ -25,7 +25,7 @@ Wygodny interfejs zwykle:
 - umieszcza obszar roboczy pośrodku;
 - pokazuje strony i warstwy na jednym panelu bocznym;
 - pokazuje właściwości na drugim panelu;
-- steruje menu i toolbars za pomocą composables.
+- steruje menu i paskami narzędzi za pomocą composables.
 
 ## Przykład
 
