@@ -1,64 +1,36 @@
 ---
-title: Export
-description: Exportar la Selection como PNG, JPG, WEBP o SVG y abrir o guardar archivos `.fig`.
+title: Exportar
+description: Exportar la selección como PNG, JPG, WEBP o SVG y guardar archivos `.fig`.
 ---
 
-# Export
+# Exportar
 
-OpenPencil exporta objetos como Images o SVG y guarda documentos completos en formato `.fig`.
+## Exportación de imágenes
 
-## Images y SVG
+Selecciona un objeto y abre **Exportar** en el panel de propiedades. Cada ajuste define:
 
-Selecciona un objeto y abre la sección Export del panel Properties.
+- formato: PNG, JPG, WEBP o SVG;
+- escala o anchura explícita;
+- sufijo del nombre;
+- calidad para JPG y WEBP.
 
-### Ajustes
+Un objeto puede tener varios ajustes. La vista previa aparece sobre un fondo de tablero que permite comprobar la transparencia.
 
-- **Scale:** de 0,5× a 4×; no se muestra para SVG porque es independiente de la resolución;
-- **Format:** PNG con Background transparente, JPG con Background blanco, WEBP con Background transparente o SVG;
-- varios Export settings por objeto;
-- Live preview sobre un Checkerboard background.
+También puedes abrir **Exportar…** desde el menú contextual.
 
-### Iniciar el Export
+## Copiar como
 
-| Método | macOS | Windows / Linux |
-|--------|-------|-----------------|
-| Atajo | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>E</kbd> | <kbd>Shift</kbd><kbd>Ctrl</kbd><kbd>E</kbd> |
-| Menú contextual | Right-click → Export… | Right-click → Export… |
-| Panel Properties | Button Export | Button Export |
+El menú contextual copia la selección al portapapeles como texto, SVG, PNG o JSX.
 
-## Copy as
+## Guardar documentos
 
-El menú contextual puede escribir la Selection en el Clipboard:
+**Guardar** actualiza el archivo actual. **Guardar como…** permite elegir una ubicación nueva. En Tauri se usan diálogos nativos; Chrome y Edge pueden usar File System Access API; otros navegadores descargan el archivo.
 
-| Acción | macOS | Windows / Linux |
-|--------|-------|-----------------|
-| Copy as text | — | — |
-| Copy as SVG | — | — |
-| Copy as PNG | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>C</kbd> | <kbd>Shift</kbd><kbd>Ctrl</kbd><kbd>C</kbd> |
-| Copy as JSX | — | — |
+Los archivos `.fig` exportados incluyen datos Kiwi, compresión Zstandard y miniatura. Los componentes y conjuntos se conservan para poder volver a abrir el archivo en Figma.
 
-## Archivos `.fig`
+## Elegir formato
 
-OpenPencil usa el formato de Figma. Los archivos guardados se comprimen e incluyen una Thumbnail.
-
-### Abrir y guardar
-
-| Acción | macOS | Windows / Linux |
-|--------|-------|-----------------|
-| Open file | <kbd>⌘</kbd><kbd>O</kbd> | <kbd>Ctrl</kbd><kbd>O</kbd> |
-| Save | <kbd>⌘</kbd><kbd>S</kbd> | <kbd>Ctrl</kbd><kbd>S</kbd> |
-| Save As | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>S</kbd> | <kbd>Shift</kbd><kbd>Ctrl</kbd><kbd>S</kbd> |
-
-**Save** sobrescribe el archivo actual si OpenPencil conserva el permiso de escritura. **Save As** abre un diálogo para elegir otra ruta.
-
-En el navegador, OpenPencil usa File System Access API cuando está disponible en Chrome y Edge. Otros navegadores, incluido Safari, descargan el archivo.
-
-### Compatibilidad
-
-Los `.fig` exportados se pueden volver a abrir en OpenPencil y en Figma. OpenPencil también importa archivos creados por Figma.
-
-## Consejos
-
-- Usa Scale 2× o 3× para pantallas de alta resolución.
-- JPG siempre usa Background blanco; elige PNG o WEBP para conservar Transparency.
-- SVG resulta adecuado para seguir editando en Code editors o Vector tools.
+- PNG conserva transparencia y resulta apropiado para interfaces.
+- JPG reduce el tamaño de fotografías.
+- WEBP ofrece buena compresión para la web.
+- SVG mantiene vectores editables y es adecuado para iconos y código.

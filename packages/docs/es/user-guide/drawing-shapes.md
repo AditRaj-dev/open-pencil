@@ -1,77 +1,48 @@
 ---
-title: Dibujar Shapes
-description: Crear Rectangles, Ellipses, Lines, Frames, Sections, Polygons y Stars en OpenPencil.
+title: Dibujar formas
+description: Crear rectángulos, elipses, líneas, marcos, secciones, polígonos y estrellas.
 ---
 
-# Dibujar Shapes
+# Dibujar formas
 
-La Toolbar inferior incluye Tools para crear Shapes, Frames y Sections. Selecciona uno y arrastra sobre el canvas.
+La barra inferior contiene herramientas para crear formas, marcos y secciones. Selecciona una y arrastra sobre el lienzo.
 
-## Tools
+## Herramientas
 
-| Tool | Atajo | Función |
-|------|-------|---------|
-| Rectangle | <kbd>R</kbd> | Crea un Rectangle |
-| Ellipse | <kbd>O</kbd> | Crea una Ellipse |
-| Line | <kbd>L</kbd> | Crea una Line |
-| Frame | <kbd>F</kbd> | Crea un Frame que actúa como contenedor |
-| Section | <kbd>S</kbd> | Crea una Section e incorpora objetos superpuestos |
+| Herramienta | Tecla | Resultado |
+|-------------|-------|-----------|
+| Rectángulo | <kbd>R</kbd> | Rectángulo |
+| Elipse | <kbd>O</kbd> | Elipse |
+| Línea | <kbd>L</kbd> | Línea |
+| Marco | <kbd>F</kbd> | Contenedor de otros objetos |
+| Sección | <kbd>S</kbd> | Contenedor de nivel superior |
 
-## Menú Shapes
+Polígono y Estrella están disponibles en el menú de formas.
 
-También contiene:
+## Mantener proporciones
 
-- **Polygon:** tres lados de forma predeterminada;
-- **Star:** cinco puntas de forma predeterminada.
+Con <kbd>Shift</kbd>, el rectángulo se convierte en cuadrado, la elipse en círculo y la línea se ajusta a 0°, 45° y 90°.
 
-## Mantener las proporciones
+## Propiedades
 
-Mantén <kbd>Shift</kbd> durante el arrastre:
+### Relleno
 
-- Rectangle se convierte en cuadrado;
-- Ellipse se convierte en círculo;
-- Line se ajusta a 0°, 45° y 90°.
+Color sólido, degradado lineal, radial, angular o diamante, e imagen.
 
-## Properties
+### Contorno
 
-### Fill
+Grosor común o por lado, color, alineación interior/central/exterior, extremos, uniones y guiones.
 
-Un Shape puede usar Solid color, Gradient lineal/radial/angular/diamond o Image fill.
+### Radio de esquina
 
-### Stroke
+Puede ser común o independiente para rectángulos, marcos, componentes e instancias.
 
-- **Weight:** uniforme o independiente para Top, Right, Bottom y Left
-- **Color:** Solid color con Opacity
-- **Alignment:** Inside, Center u Outside con Clipping compatible con Figma
-- **Cap:** None, Round, Square o Arrow
-- **Join:** Miter, Bevel o Round
-- **Dash:** longitudes alternas de Dash y Gap
+### Efectos
 
-### Corner radius
+Sombra exterior e interior y desenfoque de capa, fondo o primer plano.
 
-Rectangles, Frames, Components e Instances admiten un Radius común o uno distinto en cada esquina.
+## Marcos y secciones
 
-### Effects
+Un marco es un contenedor. Los objetos arrastrados dentro pasan a ser secundarios. El recorte está desactivado de forma predeterminada. Los marcos admiten [disposición automática](./auto-layout).
 
-- **Drop shadow:** Offset, Blur radius, Spread y Color
-- **Inner shadow:** los mismos ajustes dentro del Shape
-- **Layer blur:** desenfoca todo el objeto
-- **Background blur:** desenfoca el contenido situado detrás
-- **Foreground blur:** desenfoca el contenido situado delante
-
-## Frames y Sections
-
-Los **Frames** son contenedores. Los Shapes que se arrastran dentro pasan a ser sus Children. También admiten [Auto layout](./auto-layout).
-
-Las **Sections** organizan objetos en el nivel superior e incorporan automáticamente los Siblings superpuestos.
-
-## Atajos
-
-| Acción | macOS | Windows / Linux |
-|--------|-------|-----------------|
-| Rectangle | <kbd>R</kbd> | <kbd>R</kbd> |
-| Ellipse | <kbd>O</kbd> | <kbd>O</kbd> |
-| Line | <kbd>L</kbd> | <kbd>L</kbd> |
-| Frame | <kbd>F</kbd> | <kbd>F</kbd> |
-| Section | <kbd>S</kbd> | <kbd>S</kbd> |
-| Cuadrado o círculo | <kbd>Shift</kbd> + Drag | <kbd>Shift</kbd> + Drag |
+Una sección es un contenedor de nivel superior que adopta los objetos superpuestos al dibujarla.
