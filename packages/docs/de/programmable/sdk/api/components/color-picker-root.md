@@ -1,6 +1,6 @@
 ---
 title: ColorPickerRoot
-description: Headless component zum Aufbau eines Color picker.
+description: Komponente ohne vorgegebene Gestaltung für eine Farbauswahl.
 ---
 
 <script setup lang="ts">
@@ -9,25 +9,7 @@ import { data } from '#docs-api/components/color-picker-root.data'
 
 # ColorPickerRoot
 
-`ColorPickerRoot` stellt die Slots für einen Color picker bereit:
-
-- `trigger` mit dem Style des Color swatch;
-- Default trigger, falls die Anwendung keinen eigenen übergibt;
-- `default` mit dem aktuellen `color` und der Function `update()`.
-
-## Beispiel
-
-```vue
-<ColorPickerRoot :color="color" @update="color = $event">
-  <template #trigger="{ style }">
-    <button class="size-6 rounded border" :style="style" />
-  </template>
-
-  <template #default="{ color, update }">
-    <MyColorEditor :color="color" @change="update" />
-  </template>
-</ColorPickerRoot>
-```
+`ColorPickerRoot` stellt einen Slot für die Schaltfläche mit Farbmuster, eine Standardschaltfläche und einen Inhalts-Slot mit aktuellem Farbwert und `update()` bereit.
 
 <SdkComponentAPI :components="data.components" />
 

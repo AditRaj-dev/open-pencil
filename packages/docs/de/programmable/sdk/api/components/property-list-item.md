@@ -1,13 +1,11 @@
 ---
 title: PropertyListItem
-description: Ein Item in einer List aus Fills, Strokes oder Effects.
+description: Ein Eintrag einer Liste von Füllungen, Konturen oder Effekten.
 ---
 
 # PropertyListItem
 
-`PropertyListItem` stellt Actions zum Ersetzen, partiellen Aktualisieren, Entfernen und Ändern der Visibility eines Item innerhalb von `PropertyListRoot` bereit.
-
-Damit kann eine eigene Row für einen Fill, Stroke oder Effect gebaut werden.
+`PropertyListItem` stellt Aktionen zum Ersetzen, teilweisen Aktualisieren, Entfernen und Ändern der Sichtbarkeit eines Eintrags bereit.
 
 ## Siehe auch
 

@@ -1,15 +1,15 @@
 ---
 title: PositionControlsRoot
-description: Headless component für Position, Size, Alignment und Transform.
+description: Komponente ohne vorgegebene Gestaltung für Position, Größe, Ausrichtung und Transformation.
 ---
 
 # PositionControlsRoot
 
-`PositionControlsRoot` stellt Values und Actions für Position, Size, Rotation, Alignment und Flip der aktuellen Selection bereit.
+`PositionControlsRoot` stellt Werte und Aktionen für Position, Größe, Drehung, Ausrichtung und Spiegelung der Auswahl bereit.
 
-Damit lassen sich eigene Fields und Buttons erstellen, ohne die Editor operations erneut zu integrieren.
+Damit lassen sich eigene Felder und Schaltflächen erstellen, ohne die Editorvorgänge erneut anzubinden.
 
 ## Siehe auch
 
 - [usePosition](../composables/use-position)
-- [Properties-Panels](../../guides/property-panels)
+- [Eigenschaften-Panels](../../guides/property-panels)

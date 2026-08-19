@@ -1,6 +1,6 @@
 ---
 title: GradientEditorStop
-description: State und Actions eines Gradient stop.
+description: Zustand und Aktionen eines Verlaufspunkts.
 ---
 
 <script setup lang="ts">
@@ -9,15 +9,7 @@ import { data } from '#docs-api/components/gradient-editor-stop.data'
 
 # GradientEditorStop
 
-`GradientEditorStop` stellt Position, Opacity, Color und Active state eines Gradient stop sowie Actions zum Aktualisieren und Entfernen bereit.
-
-## Beispiel
-
-```vue
-<GradientEditorStop :stop="stop" :index="index" :active="active" v-slot="ctx">
-  <MyGradientStopRow v-bind="ctx" />
-</GradientEditorStop>
-```
+`GradientEditorStop` stellt Position, Deckkraft, Farbe und Aktivzustand eines Verlaufspunkts sowie Aktionen zum Aktualisieren und Entfernen bereit.
 
 <SdkComponentAPI :components="data.components" />
 

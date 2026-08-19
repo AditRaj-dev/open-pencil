@@ -1,15 +1,15 @@
 ---
 title: LayoutControlsRoot
-description: Headless component für Auto Layout und Sizing.
+description: Komponente ohne vorgegebene Gestaltung für automatische Anordnung und Größenmodi.
 ---
 
 # LayoutControlsRoot
 
-`LayoutControlsRoot` gibt das von `useLayout()` erzeugte API über seinen Slot weiter.
+`LayoutControlsRoot` gibt die API von `useLayout()` über seinen Slot weiter.
 
-Die Anwendung kann damit ein eigenes Panel für Auto Layout und Sizing rendern, während State und Actions vom SDK kommen.
+Die Anwendung kann ein eigenes Panel für Anordnung und Größe darstellen und dabei Zustand und Aktionen des SDK verwenden.
 
 ## Siehe auch
 
 - [useLayout](../composables/use-layout)
-- [Properties-Panels](../../guides/property-panels)
+- [Eigenschaften-Panels](../../guides/property-panels)

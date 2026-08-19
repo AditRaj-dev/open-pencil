@@ -1,15 +1,15 @@
 ---
 title: AppearanceControlsRoot
-description: Headless component für Opacity, Visibility und Corner radius.
+description: Komponente ohne vorgegebenes Erscheinungsbild für Deckkraft, Sichtbarkeit und Eckenradius.
 ---
 
 # AppearanceControlsRoot
 
-`AppearanceControlsRoot` gibt das von `useAppearance()` erzeugte API über seinen Slot weiter.
+`AppearanceControlsRoot` gibt Zustand und Aktionen aus `useAppearance()` über seinen Slot weiter.
 
-Eigene Fields für Opacity, Visibility und Corner radius können dadurch den State und die Actions des SDK verwenden.
+Eigene Felder für Deckkraft, Sichtbarkeit und Eckenradius können so die Editorlogik des SDK verwenden.
 
 ## Siehe auch
 
 - [useAppearance](../composables/use-appearance)
-- [Properties-Panels](../../guides/property-panels)
+- [Eigenschaften-Panels](../../guides/property-panels)

@@ -1,11 +1,11 @@
 ---
 title: ToolbarRoot
-description: Headless component für Tools und Active tool.
+description: Komponente ohne vorgegebene Gestaltung für Werkzeuge und aktives Werkzeug.
 ---
 
 # ToolbarRoot
 
-`ToolbarRoot` stellt die verfügbaren Tools, das Active tool und die Action zum Wechseln des Tool bereit. Die Anwendung rendert eigene Buttons und bestimmt Layout und Styling der Toolbar.
+`ToolbarRoot` stellt die verfügbaren Werkzeuge, das aktive Werkzeug und die Aktion zum Wechseln bereit. Die Anwendung rendert eigene Schaltflächen und bestimmt Anordnung und Gestaltung.
 
 ## Siehe auch
 
