@@ -1,43 +1,20 @@
 ---
 title: useStrokeControls
-description: Gestionar Stroke alignment, Sides y Weights en el panel Properties.
+description: Gestionar contornos de la selección actual.
 ---
 
 # useStrokeControls
 
-`useStrokeControls()` proporciona a un panel Strokes:
+`useStrokeControls()` proporciona:
 
-- Options de Stroke alignment;
-- selección de All, Top, Bottom, Left, Right o una combinación libre;
-- Default value de un nuevo Stroke;
-- Functions para Stroke weights independientes por lado.
+- contornos y estado mixto;
+- contorno predeterminado;
+- grosor común o por lado;
+- alineación, extremos, uniones y patrón de guiones;
+- acciones de lista y visibilidad;
+- enlaces con variables de color.
 
-## Uso
-
-```ts
-import { useStrokeControls } from '@open-pencil/vue'
-
-const strokes = useStrokeControls()
-```
-
-## Ejemplo
-
-```ts
-const { alignOptions, sideOptions, currentAlign, currentSides, selectSide } = useStrokeControls()
-```
-
-### Stroke dentro del límite
-
-```ts
-strokes.updateAlign('INSIDE', activeNode)
-```
-
-### Stroke solo en Top
-
-```ts
-strokes.selectSide('TOP', activeNode)
-```
-
-## Consulta también
+## Véase también
 
 - [PropertyListRoot](../components/property-list-root)
+- [useColorVariableBinding](../advanced/use-color-variable-binding)
