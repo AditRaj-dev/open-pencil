@@ -1,11 +1,11 @@
 ---
-title: Scripts
+title: Skripte
 description: JavaScript mit einer Figma-kompatiblen Plugin API ausführen, um Designs zu lesen, zu verändern und zu erzeugen.
 ---
 
-# Scripts
+# Skripte
 
-`openpencil eval` führt JavaScript gegen ein OpenPencil-Dokument aus und stellt dabei ein Figma-kompatibles globales `figma` object bereit. Der Command eignet sich für Batch edits, Inspection, Fixtures und Automatisierung ohne Editor UI.
+`openpencil eval` führt JavaScript für ein OpenPencil-Dokument aus und stellt das globale Objekt `figma` bereit. Der Befehl eignet sich für Massenänderungen, Prüfungen, Testdaten und Automatisierung ohne Editoroberfläche.
 
 ## Grundlagen
 
@@ -13,167 +13,30 @@ description: JavaScript mit einer Figma-kompatiblen Plugin API ausführen, um De
 openpencil eval design.fig -c "return figma.currentPage.children.length"
 ```
 
-`-c` akzeptiert JavaScript. Beginnt der Code nicht mit `return`, führt OpenPencil ihn in einer async function aus und gibt deren Ergebnis zurück, sofern eines vorhanden ist.
-
-```sh
-openpencil eval design.fig -c "
-  const frame = figma.createFrame()
-  frame.name = 'Card'
-  frame.resize(300, 200)
-  frame.layoutMode = 'VERTICAL'
-  frame.itemSpacing = 12
-  return { id: frame.id, name: frame.name }
-"
-```
-
-## Nodes abfragen
-
-```sh
-openpencil eval design.fig -c "
-  return figma.currentPage
-    .findAll((node) => node.type === 'FRAME' && node.name.includes('Button'))
-    .map((button) => ({
-      id: button.id,
-      name: button.name,
-      width: button.width,
-      height: button.height
-    }))
-"
-```
+Beginnt der Code nicht mit `return`, führt OpenPencil ihn in einer asynchronen Funktion aus.
 
 ## Ändern und speichern
 
-`--write` beziehungsweise `-w` schreibt in die Eingabedatei:
+`--write` schreibt in die Eingabedatei, `--output` in eine neue Datei. Längere Skripte können über die Standardeingabe gelesen werden.
 
-```sh
-openpencil eval design.fig -c "
-  figma.currentPage.children.forEach((node) => {
-    node.opacity = 0.5
-  })
-" --write
-```
+## Geöffnetes Dokument
 
-`--output` beziehungsweise `-o` schreibt eine neue Datei:
+Ohne Dateipfad wird das aktuelle Dokument der Desktop-App verwendet.
 
-```sh
-openpencil eval design.fig -c "figma.currentPage.name = 'Updated'" -o updated.fig
-```
+## Ausgabe
 
-## Script über stdin
-
-```sh
-cat transform.js | openpencil eval design.fig --stdin --write
-```
-
-## Live document
-
-Ohne Dateipfad wird das aktuell geöffnete Dokument der Desktop-App verwendet:
-
-```sh
-openpencil eval -c "return figma.currentPage.name"
-```
-
-Die Desktop-App muss laufen und ein Dokument geöffnet haben.
-
-## Output
-
-Bei nicht interaktiver Ausgabe verwendet `eval` standardmäßig JSON. `--json` erzwingt das Format:
-
-```sh
-openpencil eval design.fig -c "return figma.currentPage.children.map((n) => n.name)" --json
-```
-
-`--quiet` oder `-q` unterdrückt die Ausgabe, wenn nur eine Datei geschrieben werden soll.
+Nicht interaktive Ausgabe verwendet standardmäßig JSON. `--quiet` unterdrückt die Ausgabe.
 
 ## Unterstützte API
 
-Die API orientiert sich an der Figma Plugin API, arbeitet intern jedoch mit OpenPencils SceneGraph und Dateiformat.
+Die API orientiert sich an Figma Plugin API und arbeitet mit SceneGraph und dem OpenPencil-Dateiformat.
 
-### Dokument und Pages
+Sie umfasst Dokumente und Seiten, Objekterstellung, Baumoperationen, Komponenten, Variablen sowie häufige Eigenschaften für Geometrie, Darstellung, Text, automatische Anordnung und Konturen.
 
-- `figma.root`
-- `figma.currentPage`
-- `figma.currentPage.selection`
-- `figma.getNodeById(id)`
-- `figma.createPage()`
-
-### Nodes erstellen
-
-- `figma.createFrame()`
-- `figma.createRectangle()`
-- `figma.createEllipse()`
-- `figma.createText()`
-- `figma.createLine()`
-- `figma.createPolygon()`
-- `figma.createStar()`
-- `figma.createVector()`
-- `figma.createComponent()`
-- `figma.createSection()`
-
-### Tree operations
-
-- `node.children`
-- `node.parent`
-- `node.appendChild(child)`
-- `node.insertChild(index, child)`
-- `node.clone()`
-- `node.remove()`
-- `node.findAll(callback?)`
-- `node.findOne(callback)`
-- `node.findChild(callback)`
-- `node.findChildren(callback?)`
-- `figma.group(nodes, parent)`
-- `figma.ungroup(node)`
-
-### Components
-
-- `figma.createComponentFromNode(node)`
-- `component.createInstance()`
-- `instance.mainComponent`
-
-### Variables
-
-- `figma.getLocalVariables(type?)`
-- `figma.getVariableById(id)`
-- `figma.getLocalVariableCollections()`
-- `figma.getVariableCollectionById(id)`
-- `figma.createVariable(name, type, collectionId, value?)`
-- `figma.setVariableValue(variableId, modeId, value)`
-- `figma.deleteVariable(id)`
-- `figma.createVariableCollection(name)`
-- `figma.deleteVariableCollection(id)`
-- `figma.bindVariable(nodeId, field, variableId)`
-- `figma.unbindVariable(nodeId, field)`
-
-### Properties
-
-Häufige Properties können über den Proxy gelesen und geschrieben werden:
-
-- Geometry: `x`, `y`, `width`, `height`, `rotation`, `resize(width, height)`;
-- Appearance: `fills`, `strokes`, `effects`, `opacity`, `visible`, `locked`, `blendMode`, `clipsContent`;
-- Radius: `cornerRadius`, `topLeftRadius`, `topRightRadius`, `bottomRightRadius`, `bottomLeftRadius`;
-- Text: `characters`, `fontSize`, `fontName`, `fontWeight`, Alignment, Line height, Letter spacing und Style-run helpers;
-- Auto Layout: `layoutMode`, Axis alignment, `itemSpacing`, Padding, Sizing und Layout position;
-- Stroke: `strokeWeight`, `strokeAlign`, `dashPattern`.
-
-### Utilities
-
-- `figma.mixed`
-- `figma.createImage(data)`
-- `figma.loadFontAsync(fontName)` ist ein No-op, da Plugin font loading Text edits in OpenPencil nicht blockiert
-- `figma.listAvailableFontsAsync()` liefert verfügbare Host fonts
-- `figma.notify(message)` schreibt im Headless mode eine Warning
-- `figma.viewport`
+Exakte Namen wie `figma.createFrame()`, `node.appendChild()`, `fontSize` und `layoutMode` bleiben mit Figma kompatibel.
 
 ## Noch nicht kompatibel
 
-Folgende Figma APIs stehen noch nicht als kompatible Helpers zur Verfügung:
+Noch nicht angeboten werden unter anderem `node.exportAsync()`, `node.setBoundVariable()`, `node.detachInstance()`, `figma.combineAsVariants()` und die Stil-APIs von Figma.
 
-- `node.exportAsync()`
-- `node.setBoundVariable(field, variable)`
-- `node.detachInstance()`
-- `figma.combineAsVariants(components, parent)`
-- Style APIs wie `figma.createPaintStyle()` und `figma.createTextStyle()`
-- vollständige Parität bei Vector boolean operations
-
-Je nach Aufgabe können stattdessen CLI export, Core tools oder direkte SceneGraph helpers verwendet werden.
+Dafür stehen je nach Aufgabe CLI-Export, Werkzeuge des Kernpakets oder direkte SceneGraph-Hilfsfunktionen zur Verfügung.
