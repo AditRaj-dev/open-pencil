@@ -62,7 +62,6 @@ const providerDef = computed(
 )
 
 const displayName = computed(() => {
-  if (providerID.value === 'harness:pi') return 'Pi'
   if (providerID.value.startsWith('acp:')) {
     const agentId = providerID.value.replace('acp:', '')
     return ACP_AGENTS.find((agent) => agent.id === agentId)?.name ?? providerID.value
@@ -84,7 +83,7 @@ const groups = computed(() => {
   }
 
   result.push({
-    label: acpAgents.value.length ? 'Providers' : undefined,
+    label: acpAgents.value.length ? 'API key' : undefined,
     items: [...AI_PROVIDERS]
       .sort((left, right) => left.name.localeCompare(right.name))
       .map((provider) => ({

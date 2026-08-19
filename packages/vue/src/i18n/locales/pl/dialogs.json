@@ -297,16 +297,5 @@
   "codeUpdatedLive": "Updated live",
   "codePreviewFailed": "Preview failed",
   "codeGeneratedReadOnly": "Generated, read only",
-  "codeReset": "Reset",
-  "harnessThinkingLevel": "Poziom rozumowania",
-  "harnessThinkingOff": "Wyłączony",
-  "harnessThinkingMinimal": "Minimalny",
-  "harnessThinkingLow": "Niski",
-  "harnessThinkingMedium": "Średni",
-  "harnessThinkingHigh": "Wysoki",
-  "harnessThinkingExtraHigh": "Bardzo wysoki",
-  "harnessToolPermissions": "Uprawnienia narzędzi",
-  "harnessPermissionReads": "Pytaj przed zmianami i poleceniami",
-  "harnessPermissionEdits": "Pytaj przed poleceniami",
-  "harnessPermissionAll": "Zezwalaj na wszystkie narzędzia"
+  "codeReset": "Reset"
 }

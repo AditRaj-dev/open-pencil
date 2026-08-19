@@ -63,13 +63,12 @@ describe('model provider registry', () => {
     expect(requestBody).toContain('"model":"MiniMax-M3"')
   })
 
-  test('registers every direct provider without handling agent runtimes as models', () => {
-    for (const provider of AI_PROVIDERS.filter((entry) => entry.id !== 'harness:pi')) {
+  test('registers every direct provider without handling ACP agents as models', () => {
+    for (const provider of AI_PROVIDERS) {
       expect(modelProviderAdapter(provider.id).create).toBeFunction()
     }
-    expect(() => modelProviderAdapter('harness:pi')).toThrow('Harness agents')
     expect(() => modelProviderAdapter('acp:claude-code')).toThrow(
-      'ACP providers and Harness agents do not use direct API models'
+      'ACP providers do not use direct API models'
     )
   })
 })
