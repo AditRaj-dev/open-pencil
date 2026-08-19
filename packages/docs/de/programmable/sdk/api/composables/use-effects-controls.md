@@ -1,44 +1,17 @@
 ---
 title: useEffectsControls
-description: Shadows und Blur effects in einem Effects-Panel verwalten.
+description: Schatten und Unschärfen im Effekte-Panel verwalten.
 ---
 
 # useEffectsControls
 
-`useEffectsControls()` stellt einem Effects-Panel bereit:
-
-- Default values für neue Effects;
-- Konfiguration für Shadows und Blur effects;
-- State aufgeklappter Items;
-- Preview während Scrubbing;
-- Commit des endgültigen Value;
-- Änderung von Type und Color eines Effect.
-
-## Verwendung
+`useEffectsControls()` stellt Standardwerte, Einstellungen für Schatten und Unschärfen, den Zustand aufgeklappter Einträge, Vorschau beim Ziehen und Speichern des Endwerts bereit.
 
 ```ts
-import { useEffectsControls } from '@open-pencil/vue'
+const { createDefaultEffect, scrubEffect, commitEffect } = useEffectsControls()
 
-const effects = useEffectsControls()
-```
-
-## Beispiel
-
-```ts
-const { effectOptions, createDefaultEffect, toggleExpand, scrubEffect, commitEffect } = useEffectsControls()
-```
-
-### Effect erstellen
-
-```ts
-const effect = effects.createDefaultEffect()
-```
-
-### Preview und Commit
-
-```ts
-effects.scrubEffect(node, index, { radius: 12 })
-effects.commitEffect(node, index, { radius: 12 })
+scrubEffect(node, index, { radius: 12 })
+commitEffect(node, index, { radius: 12 })
 ```
 
 ## Siehe auch

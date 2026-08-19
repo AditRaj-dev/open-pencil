@@ -1,69 +1,25 @@
 ---
 title: useEditor
-description: Auf die mit provideEditor bereitgestellte OpenPencil-Editor-Instanz zugreifen.
+description: Auf die mit provideEditor bereitgestellte OpenPencil-Editorinstanz zugreifen.
 ---
 
 # useEditor
 
-`useEditor()` gibt die Editor-Instanz aus dem nächsten `provideEditor()`-Context zurück.
+`useEditor()` gibt die Editorinstanz aus dem nächsten `provideEditor()`-Kontext zurück.
 
-Composables und headless components verwenden diese Function als zentralen Zugang zum Editor.
-
-## Verwendung
-
-`useEditor()` innerhalb eines Component tree aufrufen, in dem zuvor `provideEditor(editor)` ausgeführt wurde:
-
-```ts
-import { useEditor } from '@open-pencil/vue'
-
-const editor = useEditor()
-```
-
-## Beispiel
-
-```vue
-<script setup lang="ts">
-import { computed } from 'vue'
-
-import { useEditor } from '@open-pencil/vue'
-
-const editor = useEditor()
-const pageId = computed(() => editor.state.currentPageId)
-</script>
-
-<template>
-  <div>Aktuelle Seite: {{ pageId }}</div>
-</template>
-```
-
-### Selection lesen
+Composables und Komponenten ohne vorgegebenes Erscheinungsbild verwenden diese Funktion als zentralen Zugang zum Editor.
 
 ```ts
 const editor = useEditor()
 const selected = editor.getSelectedNodes()
-```
-
-### Actions ausführen
-
-```ts
-const editor = useEditor()
 editor.zoomToFit()
 editor.undoAction()
 ```
 
-## Fehlender Context
-
-Wird `useEditor()` außerhalb eines passenden Provider tree aufgerufen, wirft die Function einen verständlichen Fehler. So wird eine fehlende Editor integration früh erkannt.
+Außerhalb eines gültigen Provider-Baums löst die Funktion einen verständlichen Fehler aus.
 
 ## Siehe auch
 
 - [provideEditor](./provide-editor)
 - [useCanvas](./use-canvas)
 - [useSelectionState](./use-selection-state)
-- [useEditorCommands](./use-editor-commands)
-
-## Typ
-
-```ts
-function useEditor(): Editor
-```

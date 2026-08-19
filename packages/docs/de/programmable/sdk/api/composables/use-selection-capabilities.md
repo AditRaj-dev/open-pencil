@@ -1,56 +1,21 @@
 ---
 title: useSelectionCapabilities
-description: Reaktive Boolean values für die mit der aktuellen Selection verfügbaren Actions.
+description: Reaktive Wahrheitswerte für die mit der aktuellen Auswahl verfügbaren Aktionen.
 ---
 
 # useSelectionCapabilities
 
-`useSelectionCapabilities()` gibt reaktive Boolean values zurück, die angeben, ob häufige Editor actions für die aktuelle Selection verfügbar sind.
-
-Das composable eignet sich für:
-
-- Menüs;
-- Toolbars;
-- Shortcuts;
-- Action buttons;
-- Context-dependent panels.
-
-## Verwendung
+`useSelectionCapabilities()` gibt an, ob typische Editoraktionen verfügbar sind. Das Composable eignet sich für Menüs, Werkzeugleisten, Tastenkürzel, Schaltflächen und kontextabhängige Panels.
 
 ```ts
-import { useSelectionCapabilities } from '@open-pencil/vue'
-
-const caps = useSelectionCapabilities()
-```
-
-## Beispiel
-
-```vue
-<script setup lang="ts">
-import { useSelectionCapabilities } from '@open-pencil/vue'
-
-const { canDelete, canDuplicate, canCreateComponent } = useSelectionCapabilities()
-</script>
-
-<template>
-  <div class="flex gap-2">
-    <button :disabled="!canDuplicate">Duplicate</button>
-    <button :disabled="!canDelete">Delete</button>
-    <button :disabled="!canCreateComponent">Create component</button>
-  </div>
-</template>
-```
-
-### Verfügbarkeit von Menüeinträgen
-
-```ts
-const { canMoveToPage, canGoToMainComponent } = useSelectionCapabilities()
-```
-
-### Zoom to selection
-
-```ts
-const { canZoomToSelection } = useSelectionCapabilities()
+const {
+  canDelete,
+  canDuplicate,
+  canCreateComponent,
+  canMoveToPage,
+  canGoToMainComponent,
+  canZoomToSelection,
+} = useSelectionCapabilities()
 ```
 
 ## Siehe auch
