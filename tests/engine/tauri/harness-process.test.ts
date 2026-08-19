@@ -53,26 +53,31 @@ describe('Harness sidecar process', () => {
   })
 
   test('routes the npm launcher through cmd on Windows', async () => {
-    Object.defineProperty(globalThis, 'navigator', {
-      configurable: true,
-      value: { userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }
-    })
-    await mockTauriIPC((cmd, args) => {
-      if (cmd === 'plugin:shell|spawn') {
-        expect(args).toMatchObject({
-          program: 'cmd',
-          args: ['/c', 'openpencil-harness'],
-          options: { encoding: 'raw', env: {} }
-        })
-        return 46
-      }
-      return null
-    })
-    const process = await spawnHarnessProcess({
-      environment: {},
-      onUnexpectedClose: () => undefined
-    })
-    await process.child.kill()
-    Reflect.deleteProperty(globalThis, 'navigator')
+    const originalNavigator = Object.getOwnPropertyDescriptor(globalThis, 'navigator')
+    try {
+      Object.defineProperty(globalThis, 'navigator', {
+        configurable: true,
+        value: { userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }
+      })
+      await mockTauriIPC((cmd, args) => {
+        if (cmd === 'plugin:shell|spawn') {
+          expect(args).toMatchObject({
+            program: 'cmd',
+            args: ['/c', 'openpencil-harness'],
+            options: { encoding: 'raw', env: {} }
+          })
+          return 46
+        }
+        return null
+      })
+      const process = await spawnHarnessProcess({
+        environment: {},
+        onUnexpectedClose: () => undefined
+      })
+      await process.child.kill()
+    } finally {
+      if (originalNavigator) Object.defineProperty(globalThis, 'navigator', originalNavigator)
+      else Reflect.deleteProperty(globalThis, 'navigator')
+    }
   })
 })
