@@ -49,13 +49,17 @@ export class HarnessSessionService {
     signal?: AbortSignal
   ): AsyncIterable<BackendEvent> {
     const session = this.requireSession(sessionId)
+    if (this.turns.has(sessionId)) throw new Error(`Harness turn already active: ${sessionId}`)
     const controller = new AbortController()
     this.turns.set(sessionId, controller)
-    signal?.addEventListener('abort', () => controller.abort(), { once: true })
+    const abort = () => controller.abort()
+    if (signal?.aborted) abort()
+    else signal?.addEventListener('abort', abort, { once: true })
     try {
       yield* session.runTurn(prompt, controller.signal)
     } finally {
-      this.turns.delete(sessionId)
+      signal?.removeEventListener('abort', abort)
+      if (this.turns.get(sessionId) === controller) this.turns.delete(sessionId)
     }
   }
 

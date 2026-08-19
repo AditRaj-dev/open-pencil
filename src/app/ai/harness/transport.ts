@@ -17,6 +17,14 @@ interface PendingRequest {
   reasoningStarted: boolean
 }
 
+function requestID(): string {
+  if (typeof crypto === 'undefined' || typeof crypto.getRandomValues !== 'function') {
+    throw new TypeError('Harness requests require Web Crypto')
+  }
+  const bytes = crypto.getRandomValues(new Uint8Array(16))
+  return [...bytes].map((byte) => byte.toString(16).padStart(2, '0')).join('')
+}
+
 function mapEvent(event: HarnessTurnEvent, pending: PendingRequest): UIMessageChunk[] {
   const chunks: UIMessageChunk[] = []
   if (event.type === 'text-delta') {
@@ -85,7 +93,7 @@ export class HarnessChatTransport implements ChatTransport<UIMessage> {
         .filter((part): part is { type: 'text'; text: string } => part.type === 'text')
         .map((part) => part.text)
         .join('\n') ?? ''
-    const requestId = crypto.randomUUID()
+    const requestId = requestID()
 
     return new ReadableStream<UIMessageChunk>({
       start: (controller) => {
@@ -94,17 +102,26 @@ export class HarnessChatTransport implements ChatTransport<UIMessage> {
         this.pending.set(requestId, pending)
         controller.enqueue({ type: 'start' })
         controller.enqueue({ type: 'start-step' })
-        abortSignal?.addEventListener(
-          'abort',
-          () => {
-            void process.send({
-              id: crypto.randomUUID(),
+        const cancel = () => {
+          void process
+            .send({
+              id: requestID(),
               method: 'session.cancel',
               params: { sessionId: this.sessionId }
             })
-          },
-          { once: true }
-        )
+            .catch((error) =>
+              this.failAll(error instanceof Error ? error : new Error(String(error)))
+            )
+        }
+        if (abortSignal?.aborted) {
+          cancel()
+          controller.enqueue({ type: 'finish-step' })
+          controller.enqueue({ type: 'finish', finishReason: 'stop' })
+          controller.close()
+          this.pending.delete(requestId)
+          return
+        }
+        abortSignal?.addEventListener('abort', cancel, { once: true })
         void process.send({
           id: requestId,
           method: 'session.turn',
@@ -129,7 +146,7 @@ export class HarnessChatTransport implements ChatTransport<UIMessage> {
       if (sessionCreated) {
         await process
           .send({
-            id: crypto.randomUUID(),
+            id: requestID(),
             method: 'session.destroy',
             params: { sessionId: this.sessionId }
           })
@@ -156,7 +173,7 @@ export class HarnessChatTransport implements ChatTransport<UIMessage> {
     params: object
   }): Promise<HarnessSidecarMessage> {
     const process = await this.ensureProcess()
-    const id = crypto.randomUUID()
+    const id = requestID()
     return new Promise((resolve, reject) => {
       this.pending.set(id, {
         resolve,

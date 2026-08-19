@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { createInterface } from 'node:readline'
 
 import { PiHarnessBackend } from '#harness/backends/pi'
-import type { HarnessSidecarMessage } from '#harness/protocol'
+import type { HarnessRequest, HarnessSidecarMessage } from '#harness/protocol'
 import { parseHarnessRequest } from '#harness/protocol'
 import { HarnessSessionService } from '#harness/service'
 import { FileResumeStateStore } from '#harness/session-store'
@@ -92,7 +92,19 @@ async function dispatch(line: string): Promise<boolean> {
 
 const input = createInterface({ input: process.stdin, crlfDelay: Infinity })
 let queue = Promise.resolve(true)
+const activeTurns = new Set<Promise<boolean>>()
 input.on('line', (line) => {
+  let request: HarnessRequest | undefined
+  try {
+    request = parseHarnessRequest(line)
+  } catch (error) {
+    console.warn('Deferring malformed Harness request to protocol error handling:', error)
+  }
+  if (request?.method === 'session.turn') {
+    const turn = dispatch(line).finally(() => activeTurns.delete(turn))
+    activeTurns.add(turn)
+    return
+  }
   queue = queue.then(async (keepRunning) => {
     if (!keepRunning) return false
     const next = await dispatch(line)
@@ -104,6 +116,7 @@ let closing: Promise<void> | undefined
 async function closeSidecar(): Promise<void> {
   closing ??= queue
     .then(async () => {
+      await Promise.allSettled(activeTurns)
       await service.shutdown()
       return undefined
     })
