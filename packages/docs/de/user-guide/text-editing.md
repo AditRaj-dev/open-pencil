@@ -1,78 +1,52 @@
 ---
 title: Text bearbeiten
-description: Text auf dem Canvas erstellen, auswählen und formatieren sowie Fonts verwalten.
+description: Text auf der Arbeitsfläche erstellen, auswählen und formatieren sowie Schriften verwalten.
 ---
 
 # Text bearbeiten
 
-Text wird direkt auf dem Canvas erstellt und bearbeitet. Unterschiedliche Zeichenbereiche können eigene Styles besitzen.
+Text wird direkt auf der Arbeitsfläche erstellt und bearbeitet. Verschiedene Zeichenbereiche können eigene Stile besitzen.
 
 ## Text erstellen
 
-<kbd>T</kbd> drücken und auf den Canvas klicken. OpenPencil erstellt ein leeres Text object und aktiviert sofort den Caret.
+<kbd>T</kbd> drücken und auf die Arbeitsfläche klicken. OpenPencil erstellt ein leeres Textobjekt und aktiviert den Cursor.
 
-## Edit mode
+## Bearbeitungsmodus
 
-Ein vorhandenes Text object per Double-click öffnen. Ein blauer Outline kennzeichnet den Edit mode. Ein Click außerhalb beendet die Bearbeitung.
+Ein vorhandenes Textobjekt doppelklicken. Eine blaue Umrandung kennzeichnet den Bearbeitungsmodus. Ein Klick außerhalb beendet die Bearbeitung.
 
-## Caret bewegen
+## Cursor bewegen und Text auswählen
 
-| Aktion | macOS | Windows / Linux |
-|--------|-------|-----------------|
-| Zeichenweise | <kbd>←</kbd>/<kbd>→</kbd> | <kbd>←</kbd>/<kbd>→</kbd> |
-| Zeilenweise | <kbd>↑</kbd>/<kbd>↓</kbd> | <kbd>↑</kbd>/<kbd>↓</kbd> |
-| Wortweise | <kbd>⌥</kbd><kbd>←</kbd>/<kbd>⌥</kbd><kbd>→</kbd> | <kbd>Strg</kbd><kbd>←</kbd>/<kbd>Strg</kbd><kbd>→</kbd> |
-| Zeilenanfang oder -ende | <kbd>⌘</kbd><kbd>←</kbd>/<kbd>⌘</kbd><kbd>→</kbd> | <kbd>Pos1</kbd>/<kbd>Ende</kbd> |
+Die Pfeiltasten bewegen den Cursor zeichen- oder zeilenweise. <kbd>Option</kbd>/<kbd>Strg</kbd> bewegt wortweise. Mit <kbd>Shift</kbd> wird die Auswahl erweitert.
 
-Mit <kbd>Shift</kbd> wird die Selection bei jeder Bewegung erweitert.
+- Klick setzt den Cursor.
+- Ziehen markiert einen Bereich.
+- Doppelklick wählt ein Wort.
+- Dreifachklick wählt den gesamten Text.
 
-## Text auswählen
-
-- Click positioniert den Caret;
-- Drag markiert einen Textbereich;
-- Double-click wählt ein Wort;
-- Triple-click wählt den gesamten Text.
-
-## Formatting
+## Formatierung
 
 | Aktion | macOS | Windows / Linux |
 |--------|-------|-----------------|
-| Bold | <kbd>⌘</kbd><kbd>B</kbd> | <kbd>Strg</kbd><kbd>B</kbd> |
-| Italic | <kbd>⌘</kbd><kbd>I</kbd> | <kbd>Strg</kbd><kbd>I</kbd> |
-| Underline | <kbd>⌘</kbd><kbd>U</kbd> | <kbd>Strg</kbd><kbd>U</kbd> |
+| Fett | <kbd>⌘</kbd><kbd>B</kbd> | <kbd>Strg</kbd><kbd>B</kbd> |
+| Kursiv | <kbd>⌘</kbd><kbd>I</kbd> | <kbd>Strg</kbd><kbd>I</kbd> |
+| Unterstrichen | <kbd>⌘</kbd><kbd>U</kbd> | <kbd>Strg</kbd><kbd>U</kbd> |
 
-Strikethrough ist über den Button **S** im Bereich Typography verfügbar.
+Durchgestrichen ist über **S** im Bereich Typografie verfügbar. Die Formatierung wird pro Zeichen gespeichert.
 
-## Bearbeitungsbefehle
+## Schriftauswahl
 
-| Aktion | macOS | Windows / Linux |
-|--------|-------|-----------------|
-| Vorheriges Wort löschen | <kbd>⌥</kbd><kbd>⌫</kbd> | <kbd>Strg</kbd> + Backspace |
-| Bis zum Zeilenanfang löschen | <kbd>⌘</kbd><kbd>⌫</kbd> | — |
-| Cut | <kbd>⌘</kbd><kbd>X</kbd> | <kbd>Strg</kbd><kbd>X</kbd> |
-| Copy | <kbd>⌘</kbd><kbd>C</kbd> | <kbd>Strg</kbd><kbd>C</kbd> |
-| Paste | <kbd>⌘</kbd><kbd>V</kbd> | <kbd>Strg</kbd><kbd>V</kbd> |
+Die Schriftauswahl unterstützt Suche, Vorschau, virtuelles Scrollen und das Anspringen der aktuellen Schrift.
 
-## Font picker
+## Schriftquellen
 
-Der Font picker im Bereich Typography unterstützt Suche, Preview und Virtual scrolling.
+- Inter wird automatisch geladen.
+- Die Desktop-App verwendet Systemschriften und aktivierte Kataloge von Google Fonts, Fontsource, Bunny Fonts und Fontshare.
+- Chrome und Edge können Systemschriften im Browser verwenden.
+- Heruntergeladene Schriftschnitte werden lokal gespeichert.
 
-## Font-Quellen
+## Fehlende Schriften
 
-- **Standard:** Inter wird automatisch geladen.
-- **Desktop:** System fonts sowie aktivierte Kataloge von Google Fonts, Fontsource, Bunny Fonts und Fontshare.
-- **Browser:** Chrome und Edge können System fonts verwenden; Online-Kataloge setzen die Desktop-App voraus.
-- **Heruntergeladene Fonts:** Die Desktop-App speichert geladene Font styles zur weiteren Verwendung auf demselben Gerät.
+Kann eine Familie oder ein Schnitt nicht geladen werden, zeigt OpenPencil eine Warnung mit den verwendeten Ersatzschriften. Betroffene Ebenen können ausgewählt und die Schriften erneut geladen werden.
 
-## Fehlende Fonts
-
-Kann eine angeforderte Font family oder ein Font style nicht geladen werden, zeigt OpenPencil oberhalb des Editors eine Warnung. Die Ersatzdarstellung wird nicht als originalgetreu ausgegeben.
-
-Die aufgeklappte Warnung nennt alle betroffenen Font styles und deren aktuelle Fallbacks. **Layers auswählen** markiert die betreffenden Text objects. **Fonts neu laden** startet nach Änderungen an Netzwerk, lokalen Berechtigungen oder Provider settings einen weiteren Versuch.
-
-Fehlt nur ein Style, kann OpenPencil ihn aus einem anderen geladenen Style derselben Family ableiten. Fehlt die gesamte Family, dient nach Möglichkeit Inter als Fallback.
-
-## Hinweise
-
-- IME für Chinesisch, Japanisch und Koreanisch wird unterstützt.
-- Rich-text formatting bleibt beim Import und Export von `.fig`-Dateien erhalten.
+Fehlt nur ein Schnitt, kann er aus einem anderen Schnitt derselben Familie erzeugt werden. Fehlt die ganze Familie, wird nach Möglichkeit Inter verwendet.
