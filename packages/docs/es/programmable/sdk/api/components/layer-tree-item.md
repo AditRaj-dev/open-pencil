@@ -1,16 +1,13 @@
 ---
 title: LayerTreeItem
-description: Un Item del Layer tree.
+description: Fila individual de un árbol de capas.
 ---
 
 # LayerTreeItem
 
-`LayerTreeItem` representa una Row del Layer tree. Su Default slot recibe State y Actions para Selection, expansión de Children, Visibility, Lock e Inline rename.
+`LayerTreeItem` representa una fila del árbol. Su ranura predeterminada recibe estado y acciones para selección, despliegue de elementos secundarios, visibilidad, bloqueo y cambio de nombre directo.
 
-La aplicación puede renderizar su propio Row markup y mantener las Interactions del SDK.
-
-## Consulta también
+## Véase también
 
 - [LayerTreeRoot](./layer-tree-root)
 - [useLayerTree](../advanced/use-layer-tree)
-- [useLayerDrag](../advanced/use-layer-drag)
