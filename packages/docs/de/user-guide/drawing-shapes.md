@@ -1,77 +1,48 @@
 ---
-title: Shapes zeichnen
-description: Rectangles, Ellipses, Lines, Frames, Sections, Polygons und Stars in OpenPencil erstellen.
+title: Formen zeichnen
+description: Rechtecke, Ellipsen, Linien, Rahmen, Sektionen, Polygone und Sterne erstellen.
 ---
 
-# Shapes zeichnen
+# Formen zeichnen
 
-Die Toolbar am unteren Rand enthält Tools für Shapes, Frames und Sections. Tool auswählen und anschließend auf dem Canvas ziehen.
+Die untere Werkzeugleiste enthält Werkzeuge für Formen, Rahmen und Sektionen. Wählen Sie ein Werkzeug und ziehen Sie auf der Arbeitsfläche.
 
-## Tools
+## Werkzeuge
 
-| Tool | Shortcut | Funktion |
-|------|----------|----------|
-| Rectangle | <kbd>R</kbd> | Erstellt ein Rectangle |
-| Ellipse | <kbd>O</kbd> | Erstellt eine Ellipse |
-| Line | <kbd>L</kbd> | Erstellt eine Line |
-| Frame | <kbd>F</kbd> | Erstellt einen Frame als Container |
-| Section | <kbd>S</kbd> | Erstellt eine Section und übernimmt überlappende Objekte |
+| Werkzeug | Taste | Ergebnis |
+|----------|-------|----------|
+| Rechteck | <kbd>R</kbd> | Rechteck |
+| Ellipse | <kbd>O</kbd> | Ellipse |
+| Linie | <kbd>L</kbd> | Linie |
+| Rahmen | <kbd>F</kbd> | Container für andere Objekte |
+| Sektion | <kbd>S</kbd> | Container der obersten Ebene |
 
-## Shape-Menü
-
-Das Shape-Menü enthält außerdem:
-
-- **Polygon:** standardmäßig ein Dreieck mit drei Seiten;
-- **Star:** standardmäßig ein Stern mit fünf Spitzen.
+Polygon und Stern befinden sich im Formenmenü.
 
 ## Proportionen beibehalten
 
-Während des Ziehens <kbd>Shift</kbd> gedrückt halten:
+Mit <kbd>Shift</kbd> wird ein Rechteck zum Quadrat, eine Ellipse zum Kreis und eine Linie rastet bei 0°, 45° und 90° ein.
 
-- Rectangle wird zum Quadrat;
-- Ellipse wird zum Kreis;
-- Line rastet bei 0°, 45° und 90° ein.
+## Eigenschaften
 
-## Properties
+### Füllung
 
-### Fill
+Volltonfarbe, linearer, radialer, Winkel- oder Diamantverlauf sowie Bildfüllung.
 
-Ein Shape kann einen Solid fill, Linear/Radial/Angular/Diamond gradient oder Image fill besitzen.
+### Kontur
 
-### Stroke
+Gemeinsame oder seitenspezifische Stärke, Farbe, Ausrichtung innen/mittig/außen, Enden, Verbindungen und Strichelung.
 
-- **Weight:** einheitlich oder separat für Top, Right, Bottom und Left
-- **Color:** Solid color mit Opacity
-- **Alignment:** Inside, Center oder Outside mit Figma-kompatiblem Clipping
-- **Cap:** None, Round, Square oder Arrow
-- **Join:** Miter, Bevel oder Round
-- **Dash:** wechselnde Dash- und Gap-Längen
+### Eckenradius
 
-### Corner radius
+Ein gemeinsamer oder separater Radius ist für Rechtecke, Rahmen, Komponenten und Instanzen verfügbar.
 
-Rectangles, Frames, Components und Instances unterstützen einen gemeinsamen oder separaten Radius für jede Ecke.
+### Effekte
 
-### Effects
+Schlagschatten, innerer Schatten sowie Ebenen-, Hintergrund- und Vordergrundunschärfe.
 
-- **Drop shadow:** Offset, Blur radius, Spread und Color
-- **Inner shadow:** dieselben Einstellungen innerhalb des Shape
-- **Layer blur:** verwischt das gesamte Objekt
-- **Background blur:** verwischt den Inhalt hinter dem Objekt
-- **Foreground blur:** verwischt den Inhalt vor dem Objekt
+## Rahmen und Sektionen
 
-## Frames und Sections
+Ein Rahmen ist ein Container. Hineingezogene Objekte werden untergeordnet. Das Beschneiden ist standardmäßig ausgeschaltet. Rahmen unterstützen [automatische Anordnung](./auto-layout).
 
-**Frames** sind Container. Werden Shapes in einen Frame gezogen, werden sie dessen Children. Frames unterstützen [Auto Layout](./auto-layout).
-
-**Sections** organisieren Objekte auf oberster Ebene und übernehmen überlappende Siblings automatisch.
-
-## Shortcuts
-
-| Aktion | macOS | Windows / Linux |
-|--------|-------|-----------------|
-| Rectangle | <kbd>R</kbd> | <kbd>R</kbd> |
-| Ellipse | <kbd>O</kbd> | <kbd>O</kbd> |
-| Line | <kbd>L</kbd> | <kbd>L</kbd> |
-| Frame | <kbd>F</kbd> | <kbd>F</kbd> |
-| Section | <kbd>S</kbd> | <kbd>S</kbd> |
-| Quadrat oder Kreis | <kbd>Shift</kbd> + Drag | <kbd>Shift</kbd> + Drag |
+Eine Sektion ist ein Container der obersten Ebene und übernimmt beim Zeichnen überlappende Nachbarobjekte.
