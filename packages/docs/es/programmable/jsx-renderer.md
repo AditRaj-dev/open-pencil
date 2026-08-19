@@ -1,110 +1,60 @@
 ---
-title: JSX renderer
-description: Crear diseños de forma declarativa con JSX y exportarlos como JSX o HTML con Tailwind.
+title: Renderizador JSX
+description: Crear diseños desde JSX y exportar selecciones como JSX con Tailwind.
 ---
 
-# JSX renderer
+# Renderizador JSX
 
-OpenPencil puede crear un Design tree a partir de JSX. Su sintaxis declarativa y compacta sirve para AI agents, Scripts y generación repetible de diseños.
-
-JSX también funciona como representación legible de un diseño existente. Los cambios aparecen como un Code diff normal, por lo que se pueden revisar y versionar.
-
-## Crear un diseño
-
-El Tool `render`, disponible en AI Chat, MCP y CLI `eval`, acepta JSX:
+OpenPencil puede convertir JSX declarativo en un árbol de diseño. El mismo sistema está disponible en el chat con AI, MCP y `eval`.
 
 ```jsx
-<Frame name="Card" w={320} h="hug" flex="col" gap={16} p={24} bg="#FFF" rounded={16}>
+<Frame flex="col" gap={16} p={24} w={320} bg="#ffffff" radius={16}>
   <Text size={18} weight="bold">Card Title</Text>
-  <Text size={14} color="#666">Description text</Text>
+  <Text color="#667085">Description</Text>
+  <Button>Continue</Button>
 </Frame>
 ```
 
-En MCP y AI Chat, el JSX string se pasa directamente a `render`. Para la dirección contraria, la CLI usa `export`: [Exportar un diseño como JSX](./cli/exporting).
-
 ## Elementos
 
-| Elemento | Resultado | Alias |
-|----------|-----------|-------|
-| `<Frame>` | Frame con Auto layout opcional | `<View>` |
-| `<Rectangle>` | Rectangle | `<Rect>` |
-| `<Ellipse>` | Ellipse o Circle | |
-| `<Text>` | Objeto de texto; sus Children se convierten en contenido | |
-| `<Line>` | Line | |
-| `<Star>` | Star | |
-| `<Polygon>` | Polygon | |
-| `<Vector>` | Vector path | |
-| `<Group>` | Group | |
-| `<Section>` | Section | |
+| JSX | Resultado |
+|-----|-----------|
+| `<Frame>` | Marco, opcionalmente con disposición automática |
+| `<Text>` | Objeto de texto |
+| `<Rectangle>` | Rectángulo |
+| `<Ellipse>` | Elipse |
+| `<Image>` | Forma con relleno de imagen |
+| Componente registrado | Árbol reutilizable definido por la aplicación |
 
-## Style props
+## Disposición
 
-Las abreviaturas siguen la nomenclatura de Tailwind.
+- `flex="row"` o `flex="col"` activa la disposición automática.
+- `gap` establece la separación.
+- `p`, `px`, `py`, `pt`, `pr`, `pb` y `pl` establecen el relleno.
+- `align` y `justify` controlan la alineación.
+- `wrap` permite saltos de línea.
 
-### Layout
+## Tamaño y posición
 
-| Prop | Significado |
-|------|-------------|
-| `flex` | `"row"` o `"col"`; activa Auto layout |
-| `gap` | Espacio entre Children |
-| `wrap` | Coloca los Children en otras filas |
-| `rowGap` | Espacio entre filas con Wrap |
-| `justify` | `"start"`, `"end"`, `"center"`, `"between"` |
-| `items` | `"start"`, `"end"`, `"center"`, `"stretch"` |
-| `p`, `px`, `py`, `pt`, `pr`, `pb`, `pl` | Padding |
+- `w` y `h` aceptan números, `"fill"` o `"hug"`.
+- `minW`, `maxW`, `minH` y `maxH` establecen límites.
+- `x` e `y` fijan la posición cuando el objeto no participa en el flujo.
 
-### Size y Position
+## Apariencia
 
-| Prop | Significado |
-|------|-------------|
-| `w`, `h` | Width o Height como número, `"fill"` o `"hug"` |
-| `minW`, `maxW`, `minH`, `maxH` | Límites de tamaño |
-| `x`, `y` | Position |
+- `bg` o `fill` define el relleno.
+- `color` define el color del texto.
+- `stroke`, `strokeWidth`, `opacity` y `radius` controlan contorno, opacidad y esquinas.
+- `shadow` añade una sombra.
 
-### Appearance
+## Tipografía
 
-| Prop | Significado |
-|------|-------------|
-| `bg` | Background fill como Hex color |
-| `fill` | Alias de `bg` |
-| `stroke` | Stroke color |
-| `strokeWidth` | Stroke weight; 1 de forma predeterminada |
-| `rounded` | Corner radius; esquinas individuales mediante `roundedTL`, `roundedTR`, `roundedBL`, `roundedBR` |
-| `cornerSmoothing` | Continuous corner smoothing de 0 a 1 |
-| `opacity` | Valor de 0 a 1 |
-| `shadow` | Drop shadow, por ejemplo `"0 4 8 #00000040"` |
-| `blur` | Layer blur radius |
-| `rotate` | Rotation en grados |
-| `blendMode` | Blend mode |
-| `overflow` | `"hidden"` o `"visible"` |
+`size`, `font`, `weight`, `lineHeight`, `letterSpacing` y `align` configuran el texto. Los nombres de propiedades se mantienen en inglés porque forman parte de la API JSX.
 
-### Typography
+## Eventos y metadatos
 
-| Prop | Significado |
-|------|-------------|
-| `size` / `fontSize` | Font size |
-| `font` / `fontFamily` | Font family |
-| `weight` / `fontWeight` | `"bold"`, `"medium"`, `"normal"` o número |
-| `color` | Text color |
-| `textAlign` | `"left"`, `"center"`, `"right"`, `"justified"` |
+Las propiedades desconocidas se conservan cuando el tipo de objeto las admite. Los eventos DOM no se ejecutan: el resultado es un documento de diseño, no una aplicación web.
 
-## Exportar JSX
+## Exportar a JSX
 
-```sh
-openpencil export design.fig -f jsx                   # JSX de OpenPencil
-openpencil export design.fig -f jsx --style tailwind  # HTML con Tailwind classes
-```
-
-El diseño exportado se puede modificar como Code y renderizar de nuevo.
-
-## Diffs
-
-```diff
- <Frame name="Card" w={320} flex="col" gap={16} p={24} bg="#FFF">
--  <Text size={18} weight="bold">Old Title</Text>
-+  <Text size={24} weight="bold" color="#1D1B20">New Title</Text>
-   <Text size={14} color="#666">Description</Text>
- </Frame>
-```
-
-Esta representación permite revisar cambios de diseño en Pull requests y conservarlos en Version control.
+El menú **Copiar como → JSX** convierte la selección en JSX y clases Tailwind. La salida intenta conservar jerarquía, disposición, tamaños, colores, tipografía y bordes, y sirve como punto de partida para implementar una interfaz.

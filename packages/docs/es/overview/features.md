@@ -14,7 +14,7 @@ OpenPencil abre y guarda archivos `.fig` directamente. La importación y exporta
 - **Texto enriquecido:** negrita, cursiva, subrayado y tachado en rangos de caracteres.
 - **Disposición automática:** Flexbox y CSS Grid mediante Yoga WASM, con dirección, separación, relleno, distribución, alineación, tamaño y pistas de cuadrícula.
 - **Componentes:** creación de componentes y conjuntos, instancias, sustituciones y sincronización.
-- **Variables:** tokens de diseño con colecciones, modos Light/Dark, tipos Color/Float/String/Boolean y enlaces.
+- **Variables:** valores de diseño con colecciones, modos claro/oscuro, tipos color/número/texto/booleano y enlaces.
 - **Secciones:** contenedores de organización que incorporan automáticamente los objetos superpuestos.
 
 ## Panel de propiedades
@@ -61,9 +61,9 @@ Puedes crear, eliminar y renombrar páginas; cada una conserva su posición y es
 openpencil export design.fig -f jsx --style tailwind
 ```
 
-## Chat AI
+## Chat con AI
 
-<kbd>⌘</kbd><kbd>J</kbd> abre el asistente. Más de 90 herramientas crean formas, modifican estilos y disposiciones, trabajan con componentes y variables, ejecutan operaciones booleanas, analizan tokens de diseño y exportan recursos. Admite Anthropic, OpenAI, Google AI, OpenRouter y puntos finales compatibles.
+<kbd>⌘</kbd><kbd>J</kbd> abre el asistente. Más de 90 herramientas crean formas, modifican estilos y disposiciones, trabajan con componentes y variables, ejecutan operaciones booleanas, analizan variables de diseño y exportan recursos. Admite Anthropic, OpenAI, Google AI, OpenRouter y extremos compatibles.
 
 Las llamadas a herramientas aparecen en una cronología plegable. Para verificar visualmente los cambios, el asistente renderiza el resultado y lo compara con la solicitud. Todas las modificaciones realizadas por AI se pueden deshacer.
 
