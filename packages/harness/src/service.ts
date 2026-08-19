@@ -1,5 +1,5 @@
 import type { BackendEvent, BackendSession, HarnessBackend } from './backends/types'
-import type { HarnessSessionConfiguration } from './protocol'
+import type { HarnessSessionConfiguration, JSONValue } from './protocol'
 import type { ResumeStateStore } from './session-store'
 
 export class HarnessSessionService {
@@ -7,22 +7,33 @@ export class HarnessSessionService {
   private readonly turns = new Map<string, AbortController>()
 
   constructor(
-    private readonly backend: HarnessBackend,
+    private readonly backends: ReadonlyMap<string, HarnessBackend>,
     private readonly store: ResumeStateStore
   ) {}
 
+  capabilities(): JSONValue {
+    return this.backends.size
+      ? [...this.backends.values()].map((backend) => ({
+          ...backend.capabilities,
+          sandboxes: [...backend.capabilities.sandboxes]
+        }))
+      : []
+  }
+
   async createSession(
     sessionId: string,
-    configuration?: HarnessSessionConfiguration,
+    configuration: HarnessSessionConfiguration,
     signal?: AbortSignal
   ): Promise<{ isResume: boolean }> {
     if (this.sessions.has(sessionId))
       throw new Error(`Harness session already active: ${sessionId}`)
+    const backend = this.backends.get(configuration.adapter)
+    if (!backend) throw new Error(`Harness adapter is unavailable: ${configuration.adapter}`)
     const resumeState = await this.store.load(sessionId)
-    if (resumeState && resumeState.harnessId !== this.backend.id) {
-      throw new Error(`Harness state belongs to ${resumeState.harnessId}, not ${this.backend.id}`)
+    if (resumeState && resumeState.harnessId !== backend.id) {
+      throw new Error(`Harness state belongs to ${resumeState.harnessId}, not ${backend.id}`)
     }
-    const session = await this.backend.createSession({
+    const session = await backend.createSession({
       sessionId,
       resumeState,
       configuration,

@@ -1,16 +1,27 @@
 export type JSONPrimitive = null | boolean | number | string
 export type JSONValue = JSONPrimitive | JSONValue[] | { [key: string]: JSONValue }
 
-export interface HarnessPiConfiguration {
-  model?: string
-  thinkingLevel?: 'off' | 'minimal' | 'low' | 'medium' | 'high' | 'xhigh'
-  permissionMode?: 'allow-all' | 'allow-reads' | 'allow-edits'
+export const HARNESS_ADAPTER_IDS = ['pi'] as const
+export const HARNESS_SANDBOX_IDS = ['just-bash'] as const
+
+export type HarnessAdapterID = (typeof HARNESS_ADAPTER_IDS)[number]
+export type HarnessSandboxID = (typeof HARNESS_SANDBOX_IDS)[number]
+
+export interface HarnessSessionConfiguration {
+  adapter: HarnessAdapterID
+  sandbox: HarnessSandboxID
+  model: string
+  settings?: Record<string, JSONValue>
+  mcpServers?: Record<string, Record<string, JSONValue>>
   instructions?: string
 }
 
-export interface HarnessSessionConfiguration {
-  pi?: HarnessPiConfiguration
-  mcpServers?: Record<string, Record<string, JSONValue>>
+export interface HarnessProviderCapability {
+  adapter: HarnessAdapterID
+  sandboxes: readonly HarnessSandboxID[]
+  structuredOutput: boolean
+  sessionResume: 'live-process' | 'persistent'
+  turnContinuation: boolean
 }
 
 export interface HarnessTurnInput {
@@ -21,8 +32,13 @@ export interface HarnessTurnInput {
 export type HarnessRequest =
   | {
       id: string
+      method: 'service.capabilities'
+      params?: Record<string, never>
+    }
+  | {
+      id: string
       method: 'session.create'
-      params: { sessionId: string; configuration?: HarnessSessionConfiguration }
+      params: { sessionId: string; configuration: HarnessSessionConfiguration }
     }
   | { id: string; method: 'session.turn'; params: HarnessTurnInput }
   | { id: string; method: 'session.cancel'; params: { sessionId: string } }
@@ -57,15 +73,45 @@ function requireString(record: Record<string, unknown>, key: string): string {
   return value
 }
 
+function isAdapterID(value: unknown): value is HarnessAdapterID {
+  return typeof value === 'string' && HARNESS_ADAPTER_IDS.includes(value as HarnessAdapterID)
+}
+
+function isSandboxID(value: unknown): value is HarnessSandboxID {
+  return typeof value === 'string' && HARNESS_SANDBOX_IDS.includes(value as HarnessSandboxID)
+}
+
+function parseJSONRecord(value: unknown, field: string): Record<string, JSONValue> | undefined {
+  if (value === undefined) return undefined
+  if (!isRecord(value)) throw new Error(`Expected object at ${field}`)
+  try {
+    JSON.stringify(value)
+    return structuredClone(value) as Record<string, JSONValue>
+  } catch {
+    throw new Error(`Expected JSON-compatible object at ${field}`)
+  }
+}
+
+function parseConfiguration(value: unknown): HarnessSessionConfiguration {
+  if (!isRecord(value)) throw new Error('Expected Harness session configuration')
+  if (!isAdapterID(value.adapter)) throw new Error('Unknown Harness adapter')
+  if (!isSandboxID(value.sandbox)) throw new Error('Unknown Harness sandbox')
+  const mcpServers = parseJSONRecord(value.mcpServers, 'mcpServers')
+  return {
+    adapter: value.adapter,
+    sandbox: value.sandbox,
+    model: requireString(value, 'model'),
+    ...(parseJSONRecord(value.settings, 'settings')
+      ? { settings: parseJSONRecord(value.settings, 'settings') }
+      : {}),
+    ...(mcpServers ? { mcpServers: mcpServers as Record<string, Record<string, JSONValue>> } : {}),
+    ...(typeof value.instructions === 'string' ? { instructions: value.instructions } : {})
+  }
+}
+
 function parseSessionParams(value: unknown): { sessionId: string } {
   if (!isRecord(value)) throw new Error('Expected request params')
   return { sessionId: requireString(value, 'sessionId') }
-}
-
-function parseConfiguration(value: unknown): HarnessSessionConfiguration | undefined {
-  if (value === undefined) return undefined
-  if (!isRecord(value)) throw new Error('Expected Harness Pi configuration')
-  return structuredClone(value) as HarnessSessionConfiguration
 }
 
 export function parseHarnessRequest(line: string): HarnessRequest {
@@ -78,17 +124,16 @@ export function parseHarnessRequest(line: string): HarnessRequest {
   const id = requireString(parsed, 'id')
   const method = requireString(parsed, 'method')
 
+  if (method === 'service.capabilities' || method === 'service.shutdown') {
+    return { id, method, params: {} }
+  }
   if (method === 'session.create') {
     const params = parseSessionParams(parsed.params)
+    if (!isRecord(parsed.params)) throw new Error('Expected request params')
     return {
       id,
       method,
-      params: {
-        ...params,
-        ...(isRecord(parsed.params) && parsed.params.configuration !== undefined
-          ? { configuration: parseConfiguration(parsed.params.configuration) }
-          : {})
-      }
+      params: { ...params, configuration: parseConfiguration(parsed.params.configuration) }
     }
   }
   if (method === 'session.cancel' || method === 'session.stop' || method === 'session.destroy') {
@@ -101,6 +146,5 @@ export function parseHarnessRequest(line: string): HarnessRequest {
     if (prompt.length > MAX_PROMPT_LENGTH) throw new Error('Harness prompt exceeds the size limit')
     return { id, method, params: { sessionId, prompt } }
   }
-  if (method === 'service.shutdown') return { id, method, params: {} }
   throw new Error(`Unknown harness method: ${method}`)
 }

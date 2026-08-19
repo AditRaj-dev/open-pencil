@@ -14,11 +14,12 @@ const stateRoot =
   process.env.OPENPENCIL_HARNESS_STATE_DIR ?? join(homedir(), '.open-pencil', 'harness-sessions')
 const agentDir = process.env.OPENPENCIL_HARNESS_AGENT_DIR
 const apiKey = process.env.OPENPENCIL_HARNESS_API_KEY
+const backend = new PiHarnessBackend({
+  ...(agentDir ? { agentDir } : {}),
+  ...(apiKey ? { apiKey } : {})
+})
 const service = new HarnessSessionService(
-  new PiHarnessBackend({
-    ...(agentDir ? { agentDir } : {}),
-    ...(apiKey ? { apiKey } : {})
-  }),
+  new Map([[backend.id, backend]]),
   new FileResumeStateStore(stateRoot)
 )
 
@@ -38,6 +39,14 @@ async function dispatch(line: string): Promise<boolean> {
   try {
     const request = parseHarnessRequest(line)
     requestId = request.id
+    if (request.method === 'service.capabilities') {
+      await emit({
+        type: 'response',
+        id: request.id,
+        result: service.capabilities()
+      })
+      return true
+    }
     if (request.method === 'session.create') {
       const result = await service.createSession(
         request.params.sessionId,

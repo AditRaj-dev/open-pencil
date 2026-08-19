@@ -10,6 +10,12 @@ import type { HarnessSessionConfiguration } from '../src/protocol'
 import { HarnessSessionService } from '../src/service'
 import type { ResumeStateStore } from '../src/session-store'
 
+const configuration: HarnessSessionConfiguration = {
+  adapter: 'pi',
+  sandbox: 'just-bash',
+  model: 'test/model'
+}
+
 class MemoryStore implements ResumeStateStore {
   readonly states = new Map<string, HarnessResumeState>()
 
@@ -45,7 +51,7 @@ class FakeSession implements BackendSession {
   async stop(): Promise<HarnessResumeState> {
     return {
       type: 'resume-session',
-      harnessId: 'fake',
+      harnessId: 'pi',
       specificationVersion: 'harness-v1',
       data: { sessionId: this.sessionId }
     }
@@ -57,7 +63,14 @@ class FakeSession implements BackendSession {
 }
 
 class FakeBackend implements HarnessBackend {
-  readonly id = 'fake'
+  readonly id = 'pi' as const
+  readonly capabilities = {
+    adapter: 'pi',
+    sandboxes: ['just-bash'],
+    structuredOutput: false,
+    sessionResume: 'live-process',
+    turnContinuation: true
+  } as const
   sessions: FakeSession[] = []
 
   async createSession(options: {
@@ -72,12 +85,26 @@ class FakeBackend implements HarnessBackend {
 }
 
 describe('HarnessSessionService', () => {
+  test('reports adapter and sandbox capabilities', () => {
+    const backend = new FakeBackend()
+    const service = new HarnessSessionService(new Map([[backend.id, backend]]), new MemoryStore())
+    expect(service.capabilities()).toEqual([
+      {
+        adapter: 'pi',
+        sandboxes: ['just-bash'],
+        structuredOutput: false,
+        sessionResume: 'live-process',
+        turnContinuation: true
+      }
+    ])
+  })
+
   test('streams turns and resumes from opaque persisted state', async () => {
     const backend = new FakeBackend()
     const store = new MemoryStore()
-    const service = new HarnessSessionService(backend, store)
+    const service = new HarnessSessionService(new Map([[backend.id, backend]]), store)
 
-    expect(await service.createSession('session-1')).toEqual({ isResume: false })
+    expect(await service.createSession('session-1', configuration)).toEqual({ isResume: false })
     const events: BackendEvent[] = []
     for await (const event of service.runTurn('session-1', 'hello')) events.push(event)
     expect(events).toEqual([
@@ -87,16 +114,16 @@ describe('HarnessSessionService', () => {
 
     await service.stopSession('session-1')
     expect(store.states.get('session-1')?.data).toEqual({ sessionId: 'session-1' })
-    expect(await service.createSession('session-1')).toEqual({ isResume: true })
+    expect(await service.createSession('session-1', configuration)).toEqual({ isResume: true })
   })
 
   test('destroys a session and removes resumability', async () => {
     const backend = new FakeBackend()
     const store = new MemoryStore()
-    const service = new HarnessSessionService(backend, store)
-    await service.createSession('session-1')
+    const service = new HarnessSessionService(new Map([[backend.id, backend]]), store)
+    await service.createSession('session-1', configuration)
     await service.stopSession('session-1')
-    await service.createSession('session-1')
+    await service.createSession('session-1', configuration)
     await service.destroySession('session-1')
 
     expect(store.states.has('session-1')).toBeFalse()
@@ -111,7 +138,9 @@ describe('HarnessSessionService', () => {
       specificationVersion: 'harness-v1',
       data: {}
     })
-    const service = new HarnessSessionService(new FakeBackend(), store)
-    await expect(service.createSession('session-1')).rejects.toThrow('belongs to other')
+    const service = new HarnessSessionService(new Map([['pi', new FakeBackend()]]), store)
+    await expect(service.createSession('session-1', configuration)).rejects.toThrow(
+      'belongs to other'
+    )
   })
 })

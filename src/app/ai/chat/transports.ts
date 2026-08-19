@@ -189,12 +189,14 @@ export function createChatSessionManager({
     const transport = new HarnessChatTransport(
       `tab-${getActiveTabId()}-${runtime.role.profile.id}`,
       {
-        pi: {
-          model,
+        adapter: 'pi',
+        sandbox: 'just-bash',
+        model,
+        settings: {
           thinkingLevel: runtime.role.profile.harnessThinkingLevel ?? 'medium',
-          permissionMode: runtime.role.profile.harnessPermissionMode ?? 'allow-edits',
-          instructions: SYSTEM_PROMPT
+          permissionMode: runtime.role.profile.harnessPermissionMode ?? 'allow-edits'
         },
+        instructions: SYSTEM_PROMPT,
         mcpServers: await buildPiMCPServers()
       },
       { OPENPENCIL_HARNESS_API_KEY: apiKey }

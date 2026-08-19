@@ -1,4 +1,4 @@
-import type { HarnessPiConfiguration, HarnessSidecarMessage } from '@open-pencil/harness'
+import type { HarnessSidecarMessage } from '@open-pencil/harness'
 
 export type HarnessChild = {
   write(data: number[]): Promise<void>
@@ -65,5 +65,3 @@ export async function spawnHarnessProcess(options: {
     }
   }
 }
-
-export type { HarnessPiConfiguration }

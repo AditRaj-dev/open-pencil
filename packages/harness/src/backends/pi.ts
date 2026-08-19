@@ -119,6 +119,13 @@ class PiBackendSession implements BackendSession {
 
 export class PiHarnessBackend implements HarnessBackend {
   readonly id = 'pi'
+  readonly capabilities = {
+    adapter: 'pi',
+    sandboxes: ['just-bash'],
+    structuredOutput: false,
+    sessionResume: 'live-process',
+    turnContinuation: true
+  } as const
 
   constructor(private readonly defaults: PiHarnessBackendOptions = {}) {}
 
@@ -128,15 +135,24 @@ export class PiHarnessBackend implements HarnessBackend {
     configuration?: HarnessSessionConfiguration
     signal?: AbortSignal
   }): Promise<BackendSession> {
-    const configuration = options.configuration?.pi ?? {}
+    const configuration = options.configuration
+    if (!configuration) throw new Error('Harness configuration is required')
+    const thinkingLevel =
+      typeof configuration.settings?.thinkingLevel === 'string'
+        ? (configuration.settings.thinkingLevel as PiThinkingLevel)
+        : undefined
+    const permissionMode =
+      typeof configuration.settings?.permissionMode === 'string'
+        ? (configuration.settings.permissionMode as PiHarnessBackendOptions['permissionMode'])
+        : undefined
     const environment: Record<string, string> = this.defaults.apiKey
       ? { AI_GATEWAY_API_KEY: this.defaults.apiKey }
       : {}
     return withEnvironment(environment, async () => {
       const harness = createPi({
         ...optional('auth', this.defaults.auth),
-        ...optional('model', configuration.model ?? this.defaults.model),
-        ...optional('thinkingLevel', configuration.thinkingLevel ?? this.defaults.thinkingLevel),
+        ...optional('model', configuration.model),
+        ...optional('thinkingLevel', thinkingLevel ?? this.defaults.thinkingLevel),
         ...optional('agentDir', this.defaults.agentDir),
         ...optional('mcpServers', options.configuration?.mcpServers ?? this.defaults.mcpServers)
       })
@@ -144,11 +160,8 @@ export class PiHarnessBackend implements HarnessBackend {
         harness,
         sandbox: createJustBashSandbox({ cwd: '/workspace' }),
         sandboxConfig: { workDir: 'workspace' },
-        ...((configuration.instructions ?? this.defaults.instructions)
-          ? { instructions: configuration.instructions ?? this.defaults.instructions }
-          : {}),
-        permissionMode:
-          configuration.permissionMode ?? this.defaults.permissionMode ?? 'allow-edits'
+        ...optional('instructions', configuration.instructions ?? this.defaults.instructions),
+        permissionMode: permissionMode ?? this.defaults.permissionMode ?? 'allow-edits'
       })
       const session = await agent.createSession({
         sessionId: options.sessionId,
