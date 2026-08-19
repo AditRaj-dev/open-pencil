@@ -41,11 +41,11 @@ export async function buildPiMCPServers(options?: {
     )
   )
   return {
+    ...Object.fromEntries(entries),
     'open-pencil': {
       url: `http://127.0.0.1:${AUTOMATION_HTTP_PORT}/mcp`,
       ...(authorizationToken ? { headers: { Authorization: `Bearer ${authorizationToken}` } } : {}),
       auth: false
-    },
-    ...Object.fromEntries(entries)
+    }
   }
 }

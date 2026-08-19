@@ -157,15 +157,27 @@ export function createChatSessionManager({
     currentChatMessages = new WeakMap()
   }
 
+  async function destroyAgentTransports(): Promise<void> {
+    const acp = acpTransportInstance
+    const harness = harnessTransportInstance
+    acpTransportInstance = null
+    harnessTransportInstance = null
+    const results = await Promise.allSettled([acp?.destroy(), harness?.destroy()])
+    const errors = results
+      .filter((result) => result.status === 'rejected')
+      .map((result) => result.reason)
+    if (errors.length) throw new AggregateError(errors, 'Agent transport teardown failed')
+  }
+
   async function createActiveACPTransport() {
-    await acpTransportInstance?.destroy()
+    await destroyAgentTransports()
     const transport = await createACPTransport(providerID.value)
     acpTransportInstance = transport
     return transport as ChatTransport<UIMessage>
   }
 
   async function createActiveHarnessTransport() {
-    await harnessTransportInstance?.destroy()
+    await destroyAgentTransports()
     const runtime = await createAIModelRuntime('design')
     if (runtime?.kind !== 'harness') throw new Error('The Design agent is not configured for Pi')
     const [{ HarnessChatTransport }, { buildPiMCPServers }, { getActiveTabId }] = await Promise.all(
@@ -180,7 +192,8 @@ export function createChatSessionManager({
         pi: {
           model,
           thinkingLevel: runtime.role.profile.harnessThinkingLevel ?? 'medium',
-          permissionMode: runtime.role.profile.harnessPermissionMode ?? 'allow-edits'
+          permissionMode: runtime.role.profile.harnessPermissionMode ?? 'allow-edits',
+          instructions: SYSTEM_PROMPT
         },
         mcpServers: await buildPiMCPServers()
       },
@@ -193,10 +206,7 @@ export function createChatSessionManager({
   async function createTransport(store: EditorStore) {
     if (overrideTransport) return overrideTransport()
 
-    void harnessTransportInstance?.destroy()
-    harnessTransportInstance = null
-    void acpTransportInstance?.destroy()
-    acpTransportInstance = null
+    await destroyAgentTransports()
 
     const runtime = await createAIModelRuntime('design')
     if (runtime?.kind !== 'direct') {
@@ -247,10 +257,7 @@ export function createChatSessionManager({
 
   async function resetChat() {
     if (currentChatStore) currentChatMessages.delete(currentChatStore)
-    await acpTransportInstance?.destroy()
-    await harnessTransportInstance?.destroy()
-    acpTransportInstance = null
-    harnessTransportInstance = null
+    await destroyAgentTransports()
     failure.value = null
     chat = null
     currentChatStore = null

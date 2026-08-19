@@ -58,7 +58,6 @@ async function refreshStatuses(): Promise<void> {
 }
 
 function statusLabel(connectionId: string, providerID: string): string {
-  if (providerID === 'harness:pi') return dialogs.value.connected
   if (providerID.startsWith('acp:')) return dialogs.value.modelAgentConnection
   const status = statusByConnection.value[connectionId]
   if (status === 'configured') return dialogs.value.connected

@@ -167,6 +167,8 @@ describe('AI model profiles and role assignments', () => {
     expect(savedSecond.customModelID).toBe('custom/provider-model')
     expect(savedFirst.harnessThinkingLevel).toBe('medium')
     expect(savedSecond.harnessThinkingLevel).toBe('high')
+    expect(savedFirst.harnessPermissionMode).toBe('allow-edits')
+    expect(savedSecond.harnessPermissionMode).toBe('allow-reads')
   })
 
   test('keeps ACP agents exclusive to the Design role', () => {

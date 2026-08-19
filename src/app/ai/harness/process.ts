@@ -24,13 +24,23 @@ export async function spawnHarnessProcess(options: {
   let controller: ReadableStreamDefaultController<HarnessSidecarMessage> | undefined
   const decoder = new TextDecoder()
 
+  const messages = new ReadableStream<HarnessSidecarMessage>({
+    start(streamController) {
+      controller = streamController
+    }
+  })
+
   function flush(chunk: Uint8Array): void {
     buffer += decoder.decode(chunk, { stream: true })
     const lines = buffer.split('\n')
     buffer = lines.pop() ?? ''
     for (const line of lines) {
       if (!line.trim()) continue
-      controller?.enqueue(JSON.parse(line) as HarnessSidecarMessage)
+      try {
+        controller?.enqueue(JSON.parse(line) as HarnessSidecarMessage)
+      } catch (error) {
+        console.warn('[Harness] Ignoring malformed sidecar output:', error)
+      }
     }
   }
 
@@ -47,11 +57,6 @@ export async function spawnHarnessProcess(options: {
   })
 
   const child = await command.spawn()
-  const messages = new ReadableStream<HarnessSidecarMessage>({
-    start(streamController) {
-      controller = streamController
-    }
-  })
   return {
     child,
     messages,

@@ -6,8 +6,6 @@ import type {
   HarnessTurnEvent
 } from '@open-pencil/harness'
 
-import SYSTEM_PROMPT from '@/app/ai/chat/system-prompt.md?raw'
-
 import { spawnHarnessProcess, type HarnessProcess } from './process'
 
 interface PendingRequest {
@@ -100,7 +98,7 @@ export class HarnessChatTransport implements ChatTransport<UIMessage> {
         void process.send({
           id: requestId,
           method: 'session.turn',
-          params: { sessionId: this.sessionId, prompt: `${SYSTEM_PROMPT}\n\n${text}` }
+          params: { sessionId: this.sessionId, prompt: text }
         })
       }
     })
@@ -114,9 +112,11 @@ export class HarnessChatTransport implements ChatTransport<UIMessage> {
     if (this.destroyed) return
     this.destroyed = true
     const process = this.process
+    const sessionCreated = this.sessionCreated
     this.process = null
+    this.sessionCreated = false
     if (process) {
-      if (this.sessionCreated) {
+      if (sessionCreated) {
         await process
           .send({
             id: crypto.randomUUID(),
@@ -132,15 +132,9 @@ export class HarnessChatTransport implements ChatTransport<UIMessage> {
   }
 
   private createPending(id: string): PendingRequest {
-    let resolveMessage: (message: HarnessSidecarMessage) => void = () => undefined
-    let rejectMessage: (error: Error) => void = () => undefined
-    void new Promise<HarnessSidecarMessage>((resolve, reject) => {
-      resolveMessage = resolve
-      rejectMessage = reject
-    })
     return {
-      resolve: resolveMessage,
-      reject: rejectMessage,
+      resolve: () => undefined,
+      reject: () => undefined,
       textId: `text-${id}`,
       textStarted: false,
       reasoningStarted: false
@@ -186,31 +180,34 @@ export class HarnessChatTransport implements ChatTransport<UIMessage> {
         const message = next.value
         if (message.type === 'turn.event') {
           const pending = this.pending.get(message.id)
-          if (!pending?.controller) continue
-          for (const chunk of mapEvent(message.event, pending)) pending.controller.enqueue(chunk)
-          continue
-        }
-        const pending = this.pending.get(message.id)
-        if (!pending) continue
-        this.pending.delete(message.id)
-        if (message.error) {
-          const error = new Error(message.error)
-          pending.controller?.enqueue({ type: 'error', errorText: error.message })
-          pending.reject(error)
-        } else {
-          if (pending.reasoningStarted) {
-            pending.controller?.enqueue({
-              type: 'reasoning-end',
-              id: `reasoning-${pending.textId}`
-            })
+          if (pending?.controller) {
+            for (const chunk of mapEvent(message.event, pending)) pending.controller.enqueue(chunk)
           }
-          if (pending.textStarted)
-            pending.controller?.enqueue({ type: 'text-end', id: pending.textId })
-          pending.controller?.enqueue({ type: 'finish-step' })
-          pending.controller?.enqueue({ type: 'finish', finishReason: 'stop' })
-          pending.resolve(message)
+        } else {
+          const pending = this.pending.get(message.id)
+          if (pending) {
+            this.pending.delete(message.id)
+            if (message.error) {
+              const error = new Error(message.error)
+              pending.controller?.enqueue({ type: 'error', errorText: error.message })
+              pending.reject(error)
+            } else {
+              if (pending.reasoningStarted) {
+                pending.controller?.enqueue({
+                  type: 'reasoning-end',
+                  id: `reasoning-${pending.textId}`
+                })
+              }
+              if (pending.textStarted) {
+                pending.controller?.enqueue({ type: 'text-end', id: pending.textId })
+              }
+              pending.controller?.enqueue({ type: 'finish-step' })
+              pending.controller?.enqueue({ type: 'finish', finishReason: 'stop' })
+              pending.resolve(message)
+            }
+            pending.controller?.close()
+          }
         }
-        pending.controller?.close()
         next = await reader.read()
       }
     } catch (error) {

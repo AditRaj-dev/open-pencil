@@ -1,5 +1,4 @@
 import { execFileSync } from 'node:child_process'
-import { existsSync } from 'node:fs'
 import { chmod, mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
 
@@ -27,7 +26,6 @@ if (!bunTarget) throw new Error(`Unsupported Harness sidecar target: ${target}`)
 const extension = target.includes('windows') ? '.exe' : ''
 const output = join('desktop', 'binaries', `openpencil-harness-${target}${extension}`)
 await mkdir(join('desktop', 'binaries'), { recursive: true })
-if (existsSync(output)) process.exit(0)
 execFileSync(
   'bun',
   [

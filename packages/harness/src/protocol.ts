@@ -5,6 +5,7 @@ export interface HarnessPiConfiguration {
   model?: string
   thinkingLevel?: 'off' | 'minimal' | 'low' | 'medium' | 'high' | 'xhigh'
   permissionMode?: 'allow-all' | 'allow-reads' | 'allow-edits'
+  instructions?: string
 }
 
 export interface HarnessSessionConfiguration {

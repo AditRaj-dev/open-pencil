@@ -12,19 +12,21 @@ import {
   readLegacyAIModelStorage,
   writeAIModelSettingsStorage
 } from '@/app/ai/models/storage'
-import type {
-  AIModelCapability,
-  AIModelConnection,
-  AIModelProfile,
-  AIModelProfileDraft,
-  AIModelProfileId,
-  AIModelRole,
-  AIModelRoleAssignment,
-  AIModelSettings,
-  OptionalAIModelRole,
-  ResolvedAIModelRole,
-  HarnessPermissionMode,
-  HarnessThinkingLevel
+import {
+  HARNESS_PERMISSION_MODES,
+  HARNESS_THINKING_LEVELS,
+  type AIModelCapability,
+  type AIModelConnection,
+  type AIModelProfile,
+  type AIModelProfileDraft,
+  type AIModelProfileId,
+  type AIModelRole,
+  type AIModelRoleAssignment,
+  type AIModelSettings,
+  type OptionalAIModelRole,
+  type ResolvedAIModelRole,
+  type HarnessPermissionMode,
+  type HarnessThinkingLevel
 } from '@/app/ai/models/types'
 
 const LEGACY_CONNECTION_ID = 'connection-default'
@@ -47,11 +49,15 @@ function isAPIType(value: unknown): value is 'completions' | 'responses' {
 }
 
 function isHarnessThinkingLevel(value: unknown): value is HarnessThinkingLevel {
-  return ['off', 'minimal', 'low', 'medium', 'high', 'xhigh'].includes(String(value))
+  return (
+    typeof value === 'string' && HARNESS_THINKING_LEVELS.includes(value as HarnessThinkingLevel)
+  )
 }
 
 function isHarnessPermissionMode(value: unknown): value is HarnessPermissionMode {
-  return ['allow-reads', 'allow-edits', 'allow-all'].includes(String(value))
+  return (
+    typeof value === 'string' && HARNESS_PERMISSION_MODES.includes(value as HarnessPermissionMode)
+  )
 }
 
 function isCapability(value: unknown): value is AIModelCapability {

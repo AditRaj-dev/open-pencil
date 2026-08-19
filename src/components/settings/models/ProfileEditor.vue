@@ -177,7 +177,6 @@ function updateProvider(providerID: AIProviderID): void {
   draft.customBaseURL = ''
   draft.customAPIType = 'completions'
   advancedOpen.value = providerID === 'harness:pi'
-  customModelSelected.value = providerID === 'harness:pi'
   if (providerID.startsWith('acp:')) {
     draft.capabilities = ['tools']
     if (!draft.name.trim()) draft.name = providerDisplayName.value
@@ -446,29 +445,29 @@ void refreshKeyStatus()
               </div>
             </div>
 
-            <ProviderSettingsField v-if="isHarness" label="Thinking level">
+            <ProviderSettingsField v-if="isHarness" :label="dialogs.harnessThinkingLevel">
               <AppSelect
                 v-model="draft.harnessThinkingLevel"
-                label="Thinking level"
+                :label="dialogs.harnessThinkingLevel"
                 :options="[
-                  { value: 'off', label: 'Off' },
-                  { value: 'minimal', label: 'Minimal' },
-                  { value: 'low', label: 'Low' },
-                  { value: 'medium', label: 'Medium' },
-                  { value: 'high', label: 'High' },
-                  { value: 'xhigh', label: 'Extra high' }
+                  { value: 'off', label: dialogs.harnessThinkingOff },
+                  { value: 'minimal', label: dialogs.harnessThinkingMinimal },
+                  { value: 'low', label: dialogs.harnessThinkingLow },
+                  { value: 'medium', label: dialogs.harnessThinkingMedium },
+                  { value: 'high', label: dialogs.harnessThinkingHigh },
+                  { value: 'xhigh', label: dialogs.harnessThinkingExtraHigh }
                 ]"
               />
             </ProviderSettingsField>
 
-            <ProviderSettingsField v-if="isHarness" label="Tool permissions">
+            <ProviderSettingsField v-if="isHarness" :label="dialogs.harnessToolPermissions">
               <AppSelect
                 v-model="draft.harnessPermissionMode"
-                label="Tool permissions"
+                :label="dialogs.harnessToolPermissions"
                 :options="[
-                  { value: 'allow-reads', label: 'Ask before edits and commands' },
-                  { value: 'allow-edits', label: 'Ask before commands' },
-                  { value: 'allow-all', label: 'Allow all tools' }
+                  { value: 'allow-reads', label: dialogs.harnessPermissionReads },
+                  { value: 'allow-edits', label: dialogs.harnessPermissionEdits },
+                  { value: 'allow-all', label: dialogs.harnessPermissionAll }
                 ]"
               />
             </ProviderSettingsField>

@@ -86,14 +86,17 @@ function modelIDCandidates(providerKey: string, modelID: string): string[] {
 export async function resolveModelsDevModel(
   providerID: AIProviderID,
   modelID: string,
-  fetcher: typeof fetch = fetch
+  fetcher?: typeof fetch
 ): Promise<ModelOption | null> {
   const providerKeys = PROVIDER_KEYS[providerID]
   if (!providerKeys?.length || !modelID) return null
-  const useCache = fetcher === fetch
+  const nativeFetch = typeof globalThis.fetch === 'function' ? globalThis.fetch : undefined
+  const resolvedFetcher = fetcher ?? nativeFetch
+  if (!resolvedFetcher) return null
+  const useCache = resolvedFetcher === nativeFetch
   const catalog = await (useCache
-    ? (catalogPromise ??= loadCatalog(fetcher, { useCache: true }))
-    : loadCatalog(fetcher, { useCache: false }))
+    ? (catalogPromise ??= loadCatalog(resolvedFetcher, { useCache: true }))
+    : loadCatalog(resolvedFetcher, { useCache: false }))
   if (!catalog) return null
 
   for (const providerKey of providerKeys) {
