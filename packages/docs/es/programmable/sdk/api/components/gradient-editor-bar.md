@@ -1,47 +1,16 @@
 ---
 title: GradientEditorBar
-description: Gradient bar interactivo para seleccionar y arrastrar Stops.
+description: Barra interactiva para colocar y seleccionar puntos de un degradado.
 ---
 
 # GradientEditorBar
 
-`GradientEditorBar` proporciona State y Pointer handlers para renderizar un Gradient bar. El Component gestiona Selection y Drag de los Stops.
+`GradientEditorBar` proporciona estado y controladores de puntero para representar una barra de degradado. Gestiona selección, creación y arrastre de puntos.
 
-## Props
+La aplicación controla el aspecto de la barra y utiliza la información de la ranura para dibujar los puntos.
 
-<SdkPropsTable
-  :rows="[
-    { name: 'stops', type: 'GradientStop[]', description: 'Gradient stops actuales.', required: true },
-    { name: 'activeStopIndex', type: 'number', description: 'Índice del Active stop.', required: true },
-    { name: 'barBackground', type: 'string', description: 'CSS background del Bar.', required: true }
-  ]"
-/>
-
-## Events
-
-<SdkEventsTable
-  :rows="[
-    { name: 'selectStop', payload: 'index: number', description: 'Se emite al seleccionar un Stop.' },
-    { name: 'dragStop', payload: 'index: number, position: number', description: 'Se emite durante el Drag de un Stop.' }
-  ]"
-/>
-
-## Ejemplo
-
-```vue
-<GradientEditorBar
-  :stops="stops"
-  :active-stop-index="activeStopIndex"
-  :bar-background="barBackground"
-  @select-stop="selectStop"
-  @drag-stop="dragStop"
-  v-slot="ctx"
->
-  <MyGradientBar v-bind="ctx" />
-</GradientEditorBar>
-```
-
-## Consulta también
+## Véase también
 
 - [GradientEditorRoot](./gradient-editor-root)
 - [GradientEditorStop](./gradient-editor-stop)
+- [useGradientStops](../advanced/use-gradient-stops)

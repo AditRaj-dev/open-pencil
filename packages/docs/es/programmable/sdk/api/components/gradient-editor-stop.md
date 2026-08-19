@@ -1,27 +1,15 @@
 ---
 title: GradientEditorStop
-description: State y Actions de un Gradient stop.
+description: Estado y acciones de un punto de degradado.
 ---
-
-<script setup lang="ts">
-import { data } from '#docs-api/components/gradient-editor-stop.data'
-</script>
 
 # GradientEditorStop
 
-`GradientEditorStop` proporciona Position, Opacity, Color y Active state de un Gradient stop, además de Actions para actualizarlo y eliminarlo.
+`GradientEditorStop` proporciona posición, opacidad, color y estado activo de un punto, además de acciones para actualizarlo y eliminarlo.
 
-## Ejemplo
+Úselo dentro de `GradientEditorBar` o en una representación propia de los puntos.
 
-```vue
-<GradientEditorStop :stop="stop" :index="index" :active="active" v-slot="ctx">
-  <MyGradientStopRow v-bind="ctx" />
-</GradientEditorStop>
-```
-
-<SdkComponentAPI :components="data.components" />
-
-## Consulta también
+## Véase también
 
 - [GradientEditorRoot](./gradient-editor-root)
-- [GradientEditorBar](./gradient-editor-bar)
+- [useGradientStops](../advanced/use-gradient-stops)
