@@ -1,38 +1,38 @@
 ---
-title: Collaboration
-description: Gemeinsame Bearbeitung in Echtzeit über P2P WebRTC ohne zentralen Server.
+title: Zusammenarbeit
+description: Gemeinsame Bearbeitung in Echtzeit direkt über WebRTC, ohne zentralen Server.
 ---
 
-# Collaboration
+# Zusammenarbeit
 
-Mehrere Personen können dasselbe Dokument gleichzeitig bearbeiten. Die Peers verbinden sich direkt über WebRTC; ein Konto ist nicht erforderlich.
+Mehrere Personen können dasselbe Dokument gleichzeitig bearbeiten. Die Teilnehmer verbinden sich direkt über WebRTC; ein Konto ist nicht erforderlich.
 
-## Room teilen
+## Raum teilen
 
-1. Share button oben rechts öffnen.
+1. Schaltfläche „Teilen“ oben rechts öffnen.
 2. Den erzeugten Link `app.openpencil.dev/share/<room-id>` kopieren.
 3. Link an die anderen Teilnehmer senden.
 
-Jede Person mit dem Link kann beitreten. Der Room bleibt erreichbar, solange mindestens ein Teilnehmer die Seite geöffnet hat.
+Jede Person mit dem Link kann beitreten. Der Raum bleibt erreichbar, solange mindestens ein Teilnehmer die Seite geöffnet hat.
 
 ## Synchronisierte Daten
 
-- **Dokument:** Änderungen an Shapes, Text, Properties und Layout;
-- **Cursors:** Position, Name und Color jedes Teilnehmers;
-- **Selections:** ausgewählte Objekte der anderen Peers.
+- **Dokument:** Änderungen an Formen, Text, Eigenschaften und Anordnung;
+- **Zeiger:** Position, Name und Farbe jedes Teilnehmers;
+- **Auswahl:** ausgewählte Objekte der anderen Teilnehmer.
 
-## Follow mode
+## Ansichtsverfolgung
 
-Click auf einen Avatar in der oberen Leiste folgt dem Viewport dieses Peer. Pan und Zoom werden an dessen Ansicht angepasst. Ein weiterer Click beendet Follow mode.
+Ein Klick auf einen Avatar folgt der Ansicht dieses Teilnehmers. Position und Zoom werden angepasst. Ein weiterer Klick beendet die Verfolgung.
 
 ## Technische Grundlage
 
-WebRTC überträgt die Designdaten direkt zwischen den Peers. Ein zentraler Application server leitet die Dokumentänderungen nicht weiter.
+WebRTC überträgt die Designdaten direkt zwischen den Teilnehmern. Ein zentraler Anwendungsserver leitet die Änderungen nicht weiter.
 
-Der Dokumentzustand wird mit Yjs als CRDT synchronisiert. Gleichzeitige Änderungen werden dadurch automatisch zusammengeführt. IndexedDB speichert den lokalen Stand, sodass ein Reload desselben Room den vorhandenen Zustand wiederherstellen kann.
+Yjs synchronisiert den Dokumentzustand als CRDT und führt gleichzeitige Änderungen automatisch zusammen. IndexedDB speichert den lokalen Stand, sodass ein erneutes Öffnen desselben Raums ihn wiederherstellt.
 
 ## Hinweise
 
-- Collaboration funktioniert im Browser und in der Desktop-App.
-- Room IDs werden mit kryptografisch sicheren Zufallswerten erzeugt. Zugang hat nur, wer den Link kennt.
-- Cursors und Presence entries getrennter Peers werden automatisch entfernt.
+- Zusammenarbeit funktioniert im Browser und in der Desktop-App.
+- Raumkennungen werden mit kryptografisch sicheren Zufallswerten erzeugt.
+- Zeiger und Anwesenheitseinträge getrennter Teilnehmer werden automatisch entfernt.
