@@ -59,6 +59,8 @@ bun run benchmark:navigation \
 
 Use `--no-trace` for the lowest-overhead metrics pass. Run a separate diagnostic pass with tracing enabled, and add `--cpu-profile` only when stack sampling is needed: CPU profiling can perturb the timing being measured.
 
+Performance runs require a hardware-accelerated Metal/ANGLE context and fail if Chromium falls back to SwiftShader. Use `--software-gpu` only for portable correctness and CI smoke runs; never compare its timings with hardware results. Every run records the unmasked GL renderer and vendor in `environment.json`.
+
 Open the trace:
 
 ```sh
