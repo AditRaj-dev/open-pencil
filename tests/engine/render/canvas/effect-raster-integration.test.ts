@@ -120,6 +120,41 @@ describe('retained effect raster integration', () => {
     }
   })
 
+  test('nested shadow subtrees retain the single-picture backing path', () => {
+    const graph = new SceneGraph()
+    const page = graph.getPages()[0]
+    if (!page) throw new Error('Expected default page')
+    const frame = graph.createNode('FRAME', page.id, { width: 200, height: 160 })
+    graph.createNode('RECTANGLE', frame.id, {
+      x: 20,
+      y: 20,
+      width: 100,
+      height: 80,
+      effects: [
+        {
+          type: 'DROP_SHADOW',
+          color: { r: 0, g: 0, b: 0, a: 0.5 },
+          offset: { x: 4, y: 6 },
+          radius: 8,
+          spread: 0,
+          visible: true
+        }
+      ]
+    })
+    const surface = expectDefined(ck.MakeSurface(256, 192), 'nested shadow surface')
+    const renderer = new SkiaRenderer(ck, surface)
+    renderer.viewportWidth = 256
+    renderer.viewportHeight = 192
+    renderer.pageId = page.id
+    try {
+      renderPixels(renderer, graph)
+      expect(renderer.effectRasterCache.size).toBe(0)
+      expect(renderer.subtreePictureCache.has(frame.id)).toBe(true)
+    } finally {
+      renderer.destroy()
+    }
+  })
+
   test('backdrop-dependent blur remains on the picture fallback', () => {
     const { graph, pageId } = createEffectGraph('BACKGROUND_BLUR')
     const surface = expectDefined(ck.MakeSurface(256, 192), 'blur surface')
