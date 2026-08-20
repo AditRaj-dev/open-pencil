@@ -30,7 +30,7 @@ features:
     details: Crea interfaces de edición con el SDK de Vue, integra OpenPencil en otros productos o desarrolla editores especializados sobre el mismo núcleo.
   - icon: 🤖
     title: IA integrada
-    details: Chat con 90 herramientas para crear formas, modificar estilos, gestionar disposiciones y analizar tokens. Servidor MCP para Claude Code, Cursor y Windsurf.
+    details: Chat con 90 herramientas para crear formas, modificar estilos, gestionar disposiciones y analizar variables de diseño. Servidor MCP para Claude Code, Cursor y Windsurf.
   - icon: 📖
     title: Código abierto
     details: Licencia MIT. Puedes consultar y modificar el editor, el motor, el códec de archivos y la CLI.

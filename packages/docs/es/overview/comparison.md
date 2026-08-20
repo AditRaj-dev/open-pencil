@@ -105,15 +105,15 @@ nodes: Map<string, SceneNode>
 
 OpenPencil ofrece:
 
-- Lookup por ID en O(1);
-- 29 Object types del Kiwi schema de Figma;
-- unas 390 Fields en `NodeChange`;
-- Strict TypeScript types;
+- búsqueda por identificador en O(1);
+- 29 tipos de objeto del esquema Kiwi de Figma;
+- unos 390 campos en `NodeChange`;
+- tipos estrictos de TypeScript;
 - GUID con formato `sessionID:localID` de Figma.
 
-Penpot mantiene sus propias Type definitions en Clojure/ClojureScript y Rust. Modules distintos gestionan Colors, Components, Containers, Fills, Grid, Modifiers, Pages y Paths. Malli valida Schemas en Runtime y los Rendering data cruzan el límite CLJS → Rust.
+Penpot mantiene definiciones de tipos propias en Clojure/ClojureScript y Rust. Módulos distintos gestionan colores, componentes, contenedores, rellenos, Grid, modificadores, páginas y rutas. Malli valida esquemas en tiempo de ejecución y los datos de renderizado cruzan el límite CLJS → Rust.
 
-OpenPencil utiliza directamente Kiwi schema. Penpot debe mantener sincronizado su modelo entre varios lenguajes.
+OpenPencil utiliza directamente el esquema Kiwi. Penpot debe mantener sincronizado su modelo entre varios lenguajes.
 
 ## 5. Motor de disposición
 
@@ -127,7 +127,7 @@ root.calculateLayout()
 applyYogaLayout(graph, frame, yogaRoot)
 ```
 
-Penpot mantiene Implementations propias de Flex y Grid en ClojureScript y Rust WASM. Ambos Engines deben producir el mismo resultado.
+Penpot mantiene implementaciones propias de Flex y Grid en ClojureScript y Rust WASM. Ambos motores deben producir el mismo resultado.
 
 OpenPencil utiliza Yoga, incluida una variante con Grid. Penpot mantiene varios miles de líneas de código propio de disposición en dos lenguajes.
 

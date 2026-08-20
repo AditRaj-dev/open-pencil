@@ -7,7 +7,7 @@ description: Estructura del paquete, límites de la API pública y principios de
 
 `@open-pencil/vue` conecta `@open-pencil/core` con Vue.
 
-El modelo del editor sigue perteneciendo a core. Este paquete añade:
+El modelo del editor sigue perteneciendo al núcleo. Este paquete añade:
 
 - dependency injection mediante Vue;
 - composables reactivos;

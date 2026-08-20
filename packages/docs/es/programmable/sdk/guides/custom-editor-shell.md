@@ -90,7 +90,7 @@ provideEditor(editor)
 
 - El SDK se ocupa de la integración con el editor y de la lógica reutilizable sin estilos.
 - La aplicación controla la disposición, los estilos y sus propias acciones.
-- Los composables proporcionan los datos de Menús y Paneles sin obligar a crear Wrapper components adicionales.
+- Los composables proporcionan los datos de menús y paneles sin obligar a crear componentes envolventes adicionales.
 
 ## Consulta también
 
