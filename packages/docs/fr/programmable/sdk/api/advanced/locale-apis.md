@@ -1,38 +1,18 @@
 ---
-title: Locale API
-description: Low-level Locale stores et Metadata de @open-pencil/vue.
+title: API de configuration régionale
+description: Configurer langue, messages personnalisés et langue de repli du SDK.
 ---
 
-# Locale API
+# API de configuration régionale
 
-En plus de `useI18n()`, le SDK Vue exporte une Low-level API pour accéder directement au Locale state :
+Ces API permettent de choisir la langue du SDK et de remplacer certains messages.
 
-- `locale`
-- `localeSetting`
-- `setLocale()`
-- `AVAILABLE_LOCALES`
-- `LOCALE_LABELS`
+- `locale` contient la configuration effective après application des préférences et de la langue de repli.
+- `messages` contient le catalogue résolu.
+- `t(key, params?)` traduit une clé.
+- l’application peut fournir ses propres catalogues partiels.
 
-Ces Exports conviennent lorsque Locale fait partie d’un Application state plus large ou lorsque la liste des langues est nécessaire sans toute l’API `useI18n()`.
-
-## Utilisation
-
-```ts
-import {
-  locale,
-  localeSetting,
-  setLocale,
-  AVAILABLE_LOCALES,
-  LOCALE_LABELS,
-} from '@open-pencil/vue'
-```
-
-## Comportement
-
-- `locale` contient le Locale réellement utilisé après Settings et Fallback.
-- `localeSetting` conserve la Preference utilisateur.
-- `setLocale()` met à jour Preference et Locale actif.
-- `AVAILABLE_LOCALES` et `LOCALE_LABELS` servent à créer un Locale picker personnalisé.
+Les clés et noms de configuration restent en anglais car ils font partie de l’API.
 
 ## Voir aussi
 
