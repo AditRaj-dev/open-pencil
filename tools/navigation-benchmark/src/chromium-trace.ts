@@ -12,20 +12,29 @@ const TRACE_CATEGORIES = [
   'toplevel',
   'cc',
   'gpu',
-  'v8',
-  'disabled-by-default-v8.cpu_profiler'
+  'v8'
 ]
 
 export interface ChromiumTraceCapture {
   stop: (path: string) => Promise<void>
 }
 
-export async function startChromiumTrace(page: Page): Promise<ChromiumTraceCapture> {
+export interface ChromiumTraceOptions {
+  cpuProfile?: boolean
+}
+
+export async function startChromiumTrace(
+  page: Page,
+  options: ChromiumTraceOptions = {}
+): Promise<ChromiumTraceCapture> {
+  const categories = options.cpuProfile
+    ? [...TRACE_CATEGORIES, 'disabled-by-default-v8.cpu_profiler']
+    : TRACE_CATEGORIES
   const session = await page.context().newCDPSession(page)
   const chunks: string[] = []
   session.on('Tracing.dataCollected', ({ value }) => chunks.push(...value.map(JSON.stringify)))
   await session.send('Tracing.start', {
-    categories: TRACE_CATEGORIES.join(','),
+    categories: categories.join(','),
     transferMode: 'ReportEvents',
     options: 'sampling-frequency=10000'
   })
