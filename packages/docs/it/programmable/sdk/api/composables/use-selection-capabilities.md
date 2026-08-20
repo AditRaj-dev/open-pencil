@@ -1,22 +1,13 @@
 ---
 title: useSelectionCapabilities
-description: Boolean values reattivi per le Actions disponibili con la Selection corrente.
+description: Operazioni disponibili per la selezione corrente.
 ---
 
 # useSelectionCapabilities
 
-`useSelectionCapabilities()` restituisce Boolean values che indicano se le comuni Editor actions sono disponibili. È adatto a Menu, Toolbars, scorciatoie, Action buttons e pannelli dipendenti dal Context.
+`useSelectionCapabilities()` calcola se la selezione può essere raggruppata, separata, convertita in componente, combinata in varianti, scollegata, ordinata, eliminata o modificata da altre operazioni.
 
-```ts
-const {
-  canDelete,
-  canDuplicate,
-  canCreateComponent,
-  canMoveToPage,
-  canGoToMainComponent,
-  canZoomToSelection,
-} = useSelectionCapabilities()
-```
+Usa questi indicatori per abilitare o nascondere comandi senza duplicare le regole sui tipi.
 
 ## Vedi anche
 

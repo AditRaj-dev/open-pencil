@@ -1,30 +1,14 @@
 ---
 title: useI18n
-description: Leggere Labels localizzati di OpenPencil e cambiare il Locale attivo del SDK.
+description: Accedere a traduzioni e impostazioni locali dell’SDK.
 ---
 
 # useI18n
 
-`useI18n()` restituisce Translations reattive e Functions per cambiare Locale. Fornisce Labels per Menu, Commands, Tools, Pannelli, Pages e Dialogs e consente di creare un Locale picker personalizzato.
+`useI18n()` fornisce impostazione locale attiva, funzione di traduzione ed etichette per menu, comandi, strumenti, pannelli, pagine e finestre.
 
-```ts
-const {
-  menu,
-  commands,
-  tools,
-  panels,
-  pages,
-  dialogs,
-  locale,
-  availableLocales,
-  localeLabels,
-  setLocale,
-} = useI18n()
-```
-
-Un cambio di Locale aggiorna reattivamente tutti i Translation groups. Il SDK esporta anche una Low-level Locale API.
+Permette di creare un selettore di lingua personalizzato senza duplicare i cataloghi.
 
 ## Vedi anche
 
-- [useMenuModel](./use-menu-model)
-- [Locale API](../advanced/locale-apis)
+- [API delle impostazioni locali](../advanced/locale-apis)

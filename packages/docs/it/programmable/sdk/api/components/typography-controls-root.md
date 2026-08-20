@@ -1,16 +1,15 @@
 ---
 title: TypographyControlsRoot
-description: Headless component per Font, Alignment e Text formatting.
+description: Componente senza stile per font, allineamento e formattazione del testo.
 ---
 
 # TypographyControlsRoot
 
-`TypographyControlsRoot` fornisce tramite Slot State e Actions di `useTypography()`.
+`TypographyControlsRoot` espone nel proprio spazio stato e azioni di `useTypography()`.
 
-Controls personalizzati per Font, Alignment e Formatting possono riutilizzare l’Editor integration del SDK.
+I controlli personalizzati possono riutilizzare l’integrazione dell’SDK con l’editor.
 
 ## Vedi anche
 
 - [useTypography](../composables/use-typography)
-- [FontPickerRoot](./font-picker-root)
-- [Pannelli Properties](../../guides/property-panels)
+- [Pannelli delle proprietà](../../guides/property-panels)

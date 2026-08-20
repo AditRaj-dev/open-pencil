@@ -1,28 +1,13 @@
 ---
 title: useAppearance
-description: Gestire Visibility, Opacity e Corner radius della Selection corrente.
+description: Gestire visibilità, opacità e raggi degli angoli della selezione.
 ---
 
 # useAppearance
 
-`useAppearance()` fornisce State e Actions per l’Appearance degli oggetti selezionati: Visibility, Opacity, Corner radius e Corner radii indipendenti.
-
-```ts
-const {
-  visibilityState,
-  opacityPercent,
-  cornerRadiusValue,
-  toggleVisibility,
-  toggleIndependentCorners,
-} = useAppearance()
-```
-
-```ts
-appearance.updateCornerProp('topLeftRadius', 12)
-appearance.commitCornerProp('topLeftRadius', 12, 8)
-```
+`useAppearance()` fornisce valori e azioni per opacità, visibilità, raggio comune o indipendente per angolo e valori misti.
 
 ## Vedi anche
 
-- [useLayout](./use-layout)
-- [useTypography](./use-typography)
+- [AppearanceControlsRoot](../components/appearance-controls-root)
+- [useNodeProps](../advanced/use-node-props)

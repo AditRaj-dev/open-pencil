@@ -1,26 +1,14 @@
 ---
 title: GradientEditorBar
-description: Gradient bar interattivo per selezionare e trascinare Stops.
+description: Barra interattiva per selezionare e trascinare i punti di una sfumatura.
 ---
 
 # GradientEditorBar
 
-`GradientEditorBar` fornisce State e Pointer handlers per renderizzare un Gradient bar. Il Component gestisce Selection e Drag degli Stops.
-
-```vue
-<GradientEditorBar
-  :stops="stops"
-  :active-stop-index="activeStopIndex"
-  :bar-background="barBackground"
-  @select-stop="selectStop"
-  @drag-stop="dragStop"
-  v-slot="ctx"
->
-  <MyGradientBar v-bind="ctx" />
-</GradientEditorBar>
-```
+`GradientEditorBar` fornisce stato e gestori del puntatore per rappresentare una barra di sfumatura. Gestisce selezione, creazione e trascinamento dei punti.
 
 ## Vedi anche
 
 - [GradientEditorRoot](./gradient-editor-root)
 - [GradientEditorStop](./gradient-editor-stop)
+- [useGradientStops](../advanced/use-gradient-stops)

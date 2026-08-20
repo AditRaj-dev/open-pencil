@@ -1,29 +1,12 @@
 ---
 title: useExport
-description: Gestire Scale e Format dell’Export della Selection corrente.
+description: Gestire scala e formato di esportazione della selezione corrente.
 ---
 
 # useExport
 
-`useExport()` fornisce State e Actions per Export settings, IDs degli oggetti selezionati, Name del Output file, Scales e Formats disponibili.
-
-```ts
-const {
-  settings,
-  nodeName,
-  scales,
-  formats,
-  addSetting,
-  updateScale,
-  updateFormat,
-} = useExport()
-
-addSetting()
-updateScale(0, 2)
-updateFormat(0, 'WEBP')
-```
+`useExport()` fornisce stato e azioni per impostazioni, oggetti selezionati, nome del file, scale, formati e anteprima, oltre all’esecuzione dell’esportazione.
 
 ## Vedi anche
 
-- [useSelectionState](./use-selection-state)
-- [useEditor](./use-editor)
+- [Guida all’esportazione](/user-guide/exporting)

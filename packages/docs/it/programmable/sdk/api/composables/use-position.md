@@ -1,21 +1,15 @@
 ---
 title: usePosition
-description: Leggere e modificare Position, Size, Rotation, Alignment e Flip degli oggetti selezionati.
+description: Leggere e modificare posizione, dimensioni, rotazione, allineamento e riflessione.
 ---
 
 # usePosition
 
-`usePosition()` fornisce `x`, `y`, `width`, `height` e `rotation`, oltre ad Actions per Alignment, Flip, Rotation e Preview/Commit delle Properties numeriche.
+`usePosition()` fornisce `x`, `y`, larghezza, altezza e rotazione, oltre ad azioni per allineamento, riflessione e modifica numerica con anteprima e conferma.
 
-```ts
-const { x, y, width, height, rotation, updateProp, commitProp } = usePosition()
-
-position.align('horizontal', 'center')
-position.flip('horizontal')
-position.rotate(90)
-```
+Conserva i valori misti quando gli oggetti selezionati differiscono.
 
 ## Vedi anche
 
-- [useLayout](./use-layout)
-- [useAppearance](./use-appearance)
+- [PositionControlsRoot](../components/position-controls-root)
+- [usePropScrub](../advanced/use-prop-scrub)
