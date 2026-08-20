@@ -5,7 +5,7 @@ description: Udostępnianie instancji edytora OpenPencil komponentom potomnym pr
 
 # provideEditor
 
-`provideEditor(editor)` udostępnia edytor OpenPencil composables i komponentom headless znajdującym się niżej w drzewie Vue.
+`provideEditor(editor)` udostępnia edytor OpenPencil funkcjom composable i komponentom bez narzuconych stylów znajdującym się niżej w drzewie Vue.
 
 Na tej funkcji opiera się `useEditor()`.
 

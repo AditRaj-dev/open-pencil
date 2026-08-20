@@ -1,37 +1,15 @@
 ---
 title: PageListRoot
-description: Component headless udostępniający strony i actions listy stron.
+description: Komponent bez narzuconych stylów udostępniający strony i działania listy stron.
 ---
 
 # PageListRoot
 
-`PageListRoot` przekazuje przez slot:
+`PageListRoot` udostępnia strony, aktywną stronę, stan zmiany nazwy oraz działania tworzenia, przełączania, zmiany nazwy i usuwania.
 
-- strony;
-- ID bieżącej strony;
-- informacje o separators;
-- actions dodawania, przełączania, przemianowywania i usuwania stron.
+Aplikacja decyduje o wyglądzie listy i menu.
 
-Aplikacja samodzielnie renderuje listę i określa jej wygląd.
-
-## Przykład
-
-```vue
-<PageListRoot v-slot="{ pages, currentPageId, switchPage }">
-  <ul>
-    <li v-for="page in pages" :key="page.id">
-      <button
-        :data-active="page.id === currentPageId"
-        @click="switchPage(page.id)"
-      >
-        {{ page.name }}
-      </button>
-    </li>
-  </ul>
-</PageListRoot>
-```
-
-
-## Zobacz też
+## Zobacz także
 
 - [usePageList](../composables/use-page-list)
+- [Panele nawigacyjne](../../guides/navigation-panels)

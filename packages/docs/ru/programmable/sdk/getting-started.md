@@ -23,7 +23,7 @@ import { provideEditor, useCanvas } from '@open-pencil/vue'
 В приложении на базе SDK можно выделить три уровня:
 
 1. `@open-pencil/core` — движок редактора, не зависящий от конкретного framework;
-2. `@open-pencil/vue` — composables и headless components для Vue;
+2. `@open-pencil/vue` — компонуемые функции и компоненты без предустановленных стилей для Vue;
 3. ваше приложение — оформление, маршрутизация, работа с файлами и интерфейс продукта.
 
 ## Минимальная настройка
