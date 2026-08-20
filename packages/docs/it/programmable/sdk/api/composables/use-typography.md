@@ -1,29 +1,16 @@
 ---
 title: useTypography
-description: Leggere e modificare Font family, Style, Size, Alignment e Formatting degli oggetti di testo.
+description: Leggere e modificare font, dimensione, spaziatura e allineamento del testo.
 ---
 
 # useTypography
 
-`useTypography()` fornisce Font family, Font style, Font size, Formatting attivo, informazioni sui Fonts mancanti e Functions per modificare Family, Style, Alignment e Decoration.
+`useTypography()` fornisce famiglia, stile, dimensione, interlinea, spaziatura tra lettere, allineamento, formattazione e valori misti.
 
-```ts
-const {
-  fontFamily,
-  fontWeight,
-  fontSize,
-  activeFormatting,
-  setFamily,
-  setWeight,
-  setAlign,
-} = useTypography()
-
-typography.toggleBold()
-typography.toggleItalic()
-typography.toggleDecoration('UNDERLINE')
-```
+Durante la modifica del testo, i cambiamenti possono applicarsi solo all’intervallo selezionato.
 
 ## Vedi anche
 
-- [useTextEdit](./use-text-edit)
-- [useSelectionState](./use-selection-state)
+- [TypographyControlsRoot](../components/typography-controls-root)
+- [useFontPicker](../advanced/use-font-picker)
+- [Modificare testo](/user-guide/text-editing)

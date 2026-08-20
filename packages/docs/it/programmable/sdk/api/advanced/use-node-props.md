@@ -1,13 +1,13 @@
 ---
 title: useNodeProps
-description: API di basso livello per valori misti e modifiche alle proprietà degli oggetti selezionati.
+description: API di basso livello per valori misti e modifiche alle proprietà.
 ---
 
 # useNodeProps
 
-`useNodeProps()` è la base di composable come `useAppearance`, `useLayout` e `useTypography`.
+`useNodeProps()` è la base di `useAppearance`, `useLayout` e `useTypography`.
 
-Usalo direttamente quando un pannello personalizzato deve rilevare valori misti, modificare una proprietà su più oggetti, aggiornare elementi di un array oppure mostrare un’anteprima e confermare con supporto Annulla.
+Usalo quando un pannello deve rilevare valori misti, aggiornare una proprietà su più oggetti, modificare elementi di un array o separare anteprima e conferma con supporto alla cronologia.
 
 ## Vedi anche
 

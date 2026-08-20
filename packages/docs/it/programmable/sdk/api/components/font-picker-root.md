@@ -1,20 +1,13 @@
 ---
 title: FontPickerRoot
-description: Font picker con Search basato su Reka UI Combobox.
+description: Selettore di famiglie di font con ricerca e caricamento asincrono.
 ---
 
 # FontPickerRoot
 
-`FontPickerRoot` fornisce un Font picker con elenco asincrono di Font families e Search. Usa Reka UI Combobox; Trigger, Search input, Items, Selection indicator ed Empty state possono essere sostituiti tramite Slots.
-
-```vue
-<FontPickerRoot v-model="fontFamily" :list-families="listFamilies">
-  <template #trigger="{ value }">
-    <button class="w-full truncate">{{ value }}</button>
-  </template>
-</FontPickerRoot>
-```
+`FontPickerRoot` fornisce un selettore con elenco asincrono di famiglie e ricerca. Usa Reka UI Combobox, ma permette di sostituire pulsante, campo di ricerca, elementi, indicatore di selezione e stato vuoto tramite spazi.
 
 ## Vedi anche
 
+- [useFontPicker](../advanced/use-font-picker)
 - [useTypography](../composables/use-typography)

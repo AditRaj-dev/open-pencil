@@ -1,21 +1,15 @@
 ---
 title: LayoutControlsRoot
-description: Headless component per Auto layout e Sizing.
+description: Componente senza stile per i controlli della disposizione automatica.
 ---
-
-<script setup lang="ts">
-import { data } from '#docs-api/components/layout-controls-root.data'
-</script>
 
 # LayoutControlsRoot
 
-`LayoutControlsRoot` fornisce tramite Slot l’API restituita da `useLayout()`.
+`LayoutControlsRoot` espone nel proprio spazio stato e azioni di `useLayout()`.
 
-L’applicazione può renderizzare un pannello Auto layout e Sizing personalizzato mentre il SDK fornisce State e Actions.
-
-<SdkComponentAPI :components="data.components" />
+L’applicazione può creare controlli propri per direzione, spaziatura, margini interni, allineamento, dimensionamento e Grid senza duplicare l’integrazione con l’editor.
 
 ## Vedi anche
 
 - [useLayout](../composables/use-layout)
-- [Pannelli Properties](../../guides/property-panels)
+- [Pannelli delle proprietà](../../guides/property-panels)

@@ -1,19 +1,14 @@
 ---
 title: GradientEditorRoot
-description: State e Actions per modificare Gradient stops.
+description: Stato e azioni per modificare i punti di una sfumatura.
 ---
 
 # GradientEditorRoot
 
-`GradientEditorRoot` gestisce Active gradient stop, Gradient subtype, creazione/rimozione/aggiornamento degli Stops, Color dell’Active stop e Background del Gradient bar.
+`GradientEditorRoot` coordina tipo di sfumatura, punto attivo e modifiche a colore, posizione e opacità.
 
-```vue
-<GradientEditorRoot :fill="fill" @update="fill = $event" v-slot="ctx">
-  <MyGradientUI v-bind="ctx" />
-</GradientEditorRoot>
-```
+Riceve un riempimento tramite `fill` ed emette `update` con il nuovo oggetto `Fill`. L’applicazione può comporre `GradientEditorBar` e `GradientEditorStop` nel proprio spazio.
 
 ## Vedi anche
 
-- [GradientEditorBar](./gradient-editor-bar)
-- [GradientEditorStop](./gradient-editor-stop)
+- [useGradientStops](../advanced/use-gradient-stops)

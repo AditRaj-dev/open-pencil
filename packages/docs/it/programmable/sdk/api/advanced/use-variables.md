@@ -1,19 +1,15 @@
 ---
 title: useVariables
-description: Leggere e modificare collezioni, variabili, modalità e valori.
+description: Leggere e modificare raccolte, variabili, modalità e valori.
 ---
 
 # useVariables
 
 `useVariables()` fornisce stato e azioni di basso livello per un editor di variabili.
 
-Usalo per controllare direttamente collezioni, modalità attive, filtri e operazioni CRUD senza una tabella o finestra già pronta.
+Usalo per controllare direttamente raccolte, modalità attive, filtri e operazioni di creazione, lettura, modifica ed eliminazione senza tabella o finestra predefinite.
 
-```ts
-const variables = useVariables()
-```
-
-Tra i valori restituiti figurano `collections`, `activeCollection`, `activeModes`, `variables`, `searchTerm` e le azioni per creare, rinominare, eliminare e aggiornare variabili e collezioni.
+Tra i valori restituiti ci sono `collections`, `activeCollection`, `activeModes`, `variables` e `searchTerm`.
 
 ## Vedi anche
 
