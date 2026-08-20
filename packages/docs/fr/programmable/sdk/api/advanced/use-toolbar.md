@@ -1,13 +1,13 @@
 ---
 title: useToolbar
-description: Accéder au Context fourni par ToolbarRoot.
+description: Accéder au contexte fourni par ToolbarRoot.
 ---
 
 # useToolbar
 
-`useToolbar()` renvoie le Context du `ToolbarRoot` le plus proche.
+`useToolbar()` renvoie le contexte du `ToolbarRoot` le plus proche.
 
-Utilisez le composable dans des Child components personnalisés nécessitant Tools, Active state ou l’Action de sélection d’un Tool.
+Utilisez-le dans les descendants qui ont besoin des outils, de l’état actif ou de l’action de changement d’outil.
 
 ## Voir aussi
 

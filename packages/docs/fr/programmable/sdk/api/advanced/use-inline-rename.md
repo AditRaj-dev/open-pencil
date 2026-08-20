@@ -1,13 +1,13 @@
 ---
 title: useInlineRename
-description: State, Focus et Keyboard handling pendant le changement de nom dans une List.
+description: Gérer état, focus et clavier lors d’un changement de nom direct.
 ---
 
 # useInlineRename
 
-`useInlineRename(onCommit)` gère Edit state, Focus, Click à l’extérieur, Enter et Escape.
+`useInlineRename(onCommit)` gère édition, focus, clic extérieur, validation et annulation avec Escape.
 
-Utilisez le composable dans des Page lists, Layer trees et autres interfaces où le Name change sans Dialog séparé.
+Utilisez-le dans les listes de pages, arbres de calques et autres interfaces où le nom change sans dialogue.
 
 ## Voir aussi
 
