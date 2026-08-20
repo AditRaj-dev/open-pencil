@@ -76,6 +76,7 @@ export function createGraphEventSubscription(options: GraphEventOptions) {
   }
 
   function onNodeStructureChanged(nodeId: string) {
+    for (const renderer of options.getRenderers()) renderer.invalidateNodePicture(nodeId)
     options.scheduleComponentSync(nodeId)
     options.requestRender()
   }

@@ -1,4 +1,5 @@
 import type { SkiaRenderer } from '#core/canvas/renderer'
+import { clearEffectRasterCache } from '#core/canvas/renderer/effect-raster-cache'
 import { clearSubtreePictureCache } from '#core/canvas/renderer/state'
 import { fontManager } from '#core/text/fonts'
 
@@ -72,7 +73,7 @@ export function destroyRenderer(r: SkiaRenderer): void {
   r.maskFilterCache.clear()
   for (const pic of r.nodePictureCache.values()) pic?.delete()
   r.nodePictureCache.clear()
-  r.labelParagraphCache.clear()
+  clearEffectRasterCache(r.effectRasterCache)
   clearSubtreePictureCache(r)
   clearRetainedSceneState(r)
   r._flashPaint?.delete()

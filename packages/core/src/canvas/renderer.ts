@@ -61,6 +61,7 @@ export interface PendingFontNode {
   keys: Set<string>
 }
 
+import type { EffectRasterCacheEntry } from './renderer/effect-raster-cache'
 import type { RenderOverlays, RulerTheme } from './renderer/types'
 
 export class SkiaRenderer {
@@ -101,6 +102,7 @@ export class SkiaRenderer {
   strokeGeometryCache = new Map<string, Path[]>()
   /** Path-text glyph silhouettes (stroke-and-union, font units) keyed by blob hash + relative weight. */
   glyphSilhouetteCache = new Map<string, Path>()
+  renderingSceneBacking = false
   scenePicture: SkPicture | null = null
   scenePictureVersion = -1
   scenePictureFontGeneration = -1
@@ -153,6 +155,7 @@ export class SkiaRenderer {
   lastSceneViewport: { panX: number; panY: number; zoom: number } | null = null
   nodePictureCache = new Map<string, SkPicture | null>()
   nodePictureCacheGenerations = new Map<string, number>()
+  effectRasterCache = new Map<string, EffectRasterCacheEntry>()
   subtreePictureCache = new Map<string, SubtreePictureCacheEntry>()
   subtreePictureCachePageId: string | null = null
   subtreePictureCacheSceneVersion = -1

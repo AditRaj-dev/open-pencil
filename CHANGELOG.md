@@ -58,6 +58,7 @@
 
 ### Performance
 
+- Keep zooming responsive on effect-heavy documents by reusing bounded, invalidation-aware raster snapshots for supported shadow effects while retaining vector-picture fallbacks for backdrop-dependent and oversized effects.
 - Show the FIG page list from a lightweight Kiwi scan before materializing the full document, making large files feel responsive sooner.
 - Avoid redundant collaboration writes when synchronized node fields have not changed.
 - Release obsolete streamed Markdown parser history after each AI response completes, preventing chat memory from multiplying with every streamed chunk. (#544)

@@ -50,7 +50,7 @@ function createRenderer() {
     imageFilterCache: new Map(),
     maskFilterCache: new Map(),
     nodePictureCache: new Map(),
-    labelParagraphCache: { clear: mock() } as SkiaRenderer['labelParagraphCache'],
+    effectRasterCache: new Map(),
     subtreePictureCache: new Map(),
     scenePicture: null,
     sceneBacking: null,
