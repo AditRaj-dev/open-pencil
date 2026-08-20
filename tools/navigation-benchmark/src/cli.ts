@@ -30,7 +30,7 @@ if (command === 'compare') {
 }
 if (command !== 'run') {
   console.log(
-    'Usage: bun tools/navigation-benchmark/src/cli.ts run --url URL --gesture FILE [--mode cdp|dom] [--scenario light|large-flat|raster-stress|current-document] [--no-trace] [--cpu-profile] [--output DIR]\n       bun tools/navigation-benchmark/src/cli.ts compare --baseline METRICS --candidate METRICS [--output FILE]'
+    'Usage: bun tools/navigation-benchmark/src/cli.ts run --url URL --gesture FILE [--mode cdp|dom] [--scenario light|large-flat|raster-stress|current-document] [--no-trace] [--cpu-profile] [--software-gpu] [--output DIR]\n       bun tools/navigation-benchmark/src/cli.ts compare --baseline METRICS --candidate METRICS [--output FILE]'
   )
   process.exit(command ? 1 : 0)
 }
@@ -41,6 +41,7 @@ const mode = argument('--mode', 'cdp') as ReplayMode
 const scenario = argument('--scenario', 'light') as NavigationScenario
 const traceEnabled = !process.argv.includes('--no-trace')
 const cpuProfile = process.argv.includes('--cpu-profile')
+const softwareGpu = process.argv.includes('--software-gpu')
 const output = resolve(argument('--output', 'artifacts/navigation-benchmark'))
 if (mode !== 'cdp' && mode !== 'dom') throw new Error(`Unsupported replay mode: ${mode}`)
 if (!['light', 'large-flat', 'raster-stress', 'current-document'].includes(scenario)) {
@@ -49,9 +50,14 @@ if (!['light', 'large-flat', 'raster-stress', 'current-document'].includes(scena
 
 await mkdir(output, { recursive: true })
 const input = await readRecording(gesturePath)
+function hardwareGpuArgs(): string[] {
+  const base = ['--ignore-gpu-blocklist', '--enable-gpu']
+  return process.platform === 'darwin' ? [...base, '--use-angle=metal'] : base
+}
+
 const browser = await chromium.launch({
   headless: true,
-  args: ['--enable-unsafe-swiftshader']
+  args: softwareGpu ? ['--enable-unsafe-swiftshader'] : hardwareGpuArgs()
 })
 const context = await browser.newContext({
   viewport: { width: 1280, height: 800 },
@@ -63,6 +69,21 @@ try {
   await page.goto(
     `${url}${url.includes('?') ? '&' : '?'}test&no-chrome&no-rulers&navigation-benchmark`
   )
+  const glInfo = await page.evaluate(() => {
+    const canvas = document.createElement('canvas')
+    const gl = canvas.getContext('webgl2')
+    if (!gl) return { renderer: 'unavailable', vendor: 'unavailable' }
+    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info')
+    return {
+      renderer: String(
+        gl.getParameter(debugInfo?.UNMASKED_RENDERER_WEBGL ?? gl.RENDERER) ?? 'unknown'
+      ),
+      vendor: String(gl.getParameter(debugInfo?.UNMASKED_VENDOR_WEBGL ?? gl.VENDOR) ?? 'unknown')
+    }
+  })
+  if (!softwareGpu && /SwiftShader/i.test(glInfo.renderer)) {
+    throw new Error(`Hardware GPU benchmark requested but Chromium uses ${glInfo.renderer}`)
+  }
   await page.locator('[data-test-id="canvas-element"][data-ready="1"]').waitFor({ timeout: 30_000 })
   await setupScenario(page, scenario)
   await page.waitForTimeout(750)
@@ -95,6 +116,8 @@ try {
     scenario,
     traceEnabled,
     cpuProfile,
+    softwareGpu,
+    glInfo,
     gesturePath: resolve(gesturePath),
     browserVersion: await browser.version(),
     platform: process.platform,
