@@ -1,51 +1,40 @@
 ---
-title: Variables
-description: Design variables, Collections, Modes e Color bindings in OpenPencil.
+title: Variabili
+description: Creare variabili, raccolte e modalità e collegarle alle proprietà di design.
 ---
 
-# Variables
+# Variabili
 
-Le Variables memorizzano Design tokens riutilizzabili, come Colors e valori di Spacing. Le Properties degli oggetti possono essere collegate alle Variables. Quando una Variable cambia, tutti gli oggetti associati vengono aggiornati.
+Le variabili memorizzano valori riutilizzabili, come colori e spaziature. Una proprietà collegata viene aggiornata quando cambia la variabile.
 
-## Aprire Variables
+## Aprire l’editor
 
-Quando non è selezionato alcun oggetto, la scheda Design mostra le Page properties. Il Settings icon della sezione Variables apre il Variables dialog.
+Quando non è selezionato alcun oggetto, la scheda **Design** mostra le proprietà della pagina. L’icona delle impostazioni nella sezione Variabili apre l’editor.
 
-## Collections
+## Raccolte e modalità
 
-Le Variables sono organizzate in Collections. Ogni Collection compare in una scheda.
+Una raccolta raggruppa variabili correlate. Ogni raccolta può avere più modalità, per esempio Chiaro e Scuro, con un valore diverso per variabile.
 
-- Click cambia Collection.
-- Double-click sul Name avvia la modifica del nome.
+- Un clic cambia raccolta.
+- Un doppio clic sul nome permette di rinominarla.
+- I pulsanti nell’intestazione creano raccolte e modalità.
 
-## Modes
+## Modificare le variabili
 
-Una Collection può contenere più Modes, per esempio Light e Dark. Vengono mostrati come Columns nella Variables table.
+La tabella contiene nome, tipo e una colonna per modalità. Fai clic su una cella per modificarla.
 
-## Modificare Variables
+Sono supportati colore, numero, testo e booleano. I colori si modificano con un campo e un selettore.
 
-- **Crea:** scegli **Create variable**.
-- **Name:** fai Click sulla Name cell.
-- **Value:** fai Click sulla Cell del Mode corrispondente.
-- **Search:** filtra l’elenco tramite la Search bar.
+## Collegare riempimenti e contorni
 
-### Color variables
+Apri il selettore delle variabili dal controllo colore e scegli una variabile compatibile. Il controllo mostra il collegamento invece di copiare il valore.
 
-I Color values si modificano direttamente nella tabella con un Color input e un Picker.
+Aprire o selezionare il campo non modifica il collegamento. Solo la prima variazione reale può rimuoverlo o modificare direttamente la variabile, in base al controllo.
 
-I Types `FLOAT`, `STRING` e `BOOLEAN` esistono nel modello dati, ma non dispongono ancora di una Editing UI completa.
+## Alias
 
-## Bindings di Fill e Stroke
+Una variabile può fare riferimento a un’altra. OpenPencil risolve la catena in base alla modalità attiva e rileva i cicli.
 
-Il Variable picker delle sezioni Fill e Stroke collega una Color variable alla relativa Color property.
+## Importazione ed esportazione
 
-- Seleziona una Variable per creare il Binding. Il Field mostra un Badge viola con il Name.
-- Rimuovi il Binding tramite l’Action dedicata nel Picker.
-
-Aprire il Field o il Picker non modifica il Binding. Solo una variazione reale del Value può, in base al Control, scollegare il Binding o modificare la Variable stessa.
-
-## Suggerimenti
-
-- Usa Collections per raggruppare Tokens correlati, per esempio `Primitives` per i Colors di base e `Semantic` per i Tokens funzionali.
-- I Modes permettono di definire Themes Light e Dark nella stessa Collection.
-- Gli Aliases permettono a una Variable di fare riferimento a un’altra Variable, anche in un’altra Collection.
+Le variabili vengono conservate nell’importazione e nell’esportazione `.fig`. La CLI può anche elencarle e modificarle tramite l’API compatibile con i plugin Figma.
