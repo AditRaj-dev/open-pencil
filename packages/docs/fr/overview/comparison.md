@@ -105,15 +105,15 @@ nodes: Map<string, SceneNode>
 
 OpenPencil fournit :
 
-- Lookup par ID en O(1) ;
-- 29 Object types du Kiwi schema de Figma ;
-- environ 390 Fields dans `NodeChange` ;
-- Strict TypeScript types ;
-- GUID au format Figma `sessionID:localID`.
+- une recherche par identifiant en O(1) ;
+- 29 types d’objet issus du schéma Kiwi de Figma ;
+- environ 390 champs dans `NodeChange` ;
+- des types TypeScript stricts ;
+- des GUID au format Figma `sessionID:localID`.
 
-Penpot maintient ses propres Type definitions en Clojure/ClojureScript et Rust. Des Modules distincts gèrent Colors, Components, Containers, Fills, Grid, Modifiers, Pages et Paths. Malli valide les Schemas à la Runtime et les Rendering data franchissent la limite CLJS → Rust.
+Penpot maintient ses propres définitions de types en Clojure/ClojureScript et Rust. Des modules distincts gèrent couleurs, composants, conteneurs, remplissages, Grid, modificateurs, pages et tracés. Malli valide les schémas à l’exécution et les données de rendu franchissent la limite CLJS → Rust.
 
-OpenPencil utilise directement Kiwi schema. Penpot doit synchroniser son modèle entre plusieurs langages.
+OpenPencil utilise directement le schéma Kiwi. Penpot doit synchroniser son modèle entre plusieurs langages.
 
 ## 5. Moteur de disposition
 

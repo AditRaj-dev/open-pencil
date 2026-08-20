@@ -7,7 +7,7 @@ description: Créer une interface avec provideEditor, CanvasRoot, Menus, Panneau
 
 Une application OpenPencil avec Vue comporte généralement trois couches :
 
-1. `@open-pencil/core` crée l’Editor ;
+1. `@open-pencil/core` crée l’éditeur ;
 2. `@open-pencil/vue` le relie aux composables et composants sans styles de Vue ;
 3. l’application définit la disposition, les styles et le comportement propre au produit.
 
@@ -88,9 +88,9 @@ provideEditor(editor)
 
 ## Responsabilités
 
-- Le SDK gère l’intégration avec l’Editor et la Headless logic réutilisable.
-- L’application contrôle Layout, Styles et Actions propres.
-- Les composables fournissent les données des Menus et Panneaux sans imposer de Wrapper components supplémentaires.
+- Le SDK gère l’intégration avec l’éditeur et la logique réutilisable sans styles.
+- L’application contrôle la disposition, les styles et ses propres actions.
+- Les composables fournissent les données des menus et panneaux sans imposer de composants enveloppants supplémentaires.
 
 ## Voir aussi
 
