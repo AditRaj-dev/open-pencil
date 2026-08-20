@@ -1,71 +1,25 @@
 ---
 title: useCanvasInput
-description: Connecter Pointer input, Drag, Selection, Resize, Rotation et Tools au canvas.
+description: Relier pointeur, glissement, sélection, taille, rotation et outils à la zone de travail.
 ---
 
 # useCanvasInput
 
-`useCanvasInput()` connecte les Pointer et Mouse interactions au canvas de l’Editor.
+`useCanvasInput(options)` relie les événements de l’élément au système de saisie de l’éditeur :
 
-Il gère :
+- mouvement, pression et relâchement du pointeur ;
+- sélection et rectangle de sélection ;
+- déplacement de la vue et zoom ;
+- glissement des objets ;
+- redimensionnement et rotation ;
+- outils de formes, Plume, Texte et Main ;
+- édition vectorielle et textuelle.
 
-- Selection ;
-- Drag ;
-- Resize ;
-- Rotation ;
-- Pan ;
-- dessin avec Pen tool ;
-- Interactions du Text edit mode ;
-- Hit testing tenant compte du Viewport.
+Le composable convertit les coordonnées d’écran en coordonnées de la zone de travail et conserve la capture du pointeur pendant une interaction.
 
-## Utilisation
-
-Ce composable s’utilise généralement avec `useCanvas()` et les Hit-test functions du Renderer :
-
-```ts
-useCanvasInput(
-  canvasRef,
-  editor,
-  hitTestSectionTitle,
-  hitTestComponentLabel,
-  hitTestFrameTitle,
-)
-```
-
-## Exemple
-
-```ts
-const canvas = useCanvas(canvasRef, editor)
-
-useCanvasInput(
-  canvasRef,
-  editor,
-  canvas.hitTestSectionTitle,
-  canvas.hitTestComponentLabel,
-  canvas.hitTestFrameTitle,
-)
-```
-
-### Position du Pointer en Coordinates du canvas
-
-```ts
-useCanvasInput(
-  canvasRef,
-  editor,
-  hitTestSectionTitle,
-  hitTestComponentLabel,
-  hitTestFrameTitle,
-  (cx, cy) => {
-    console.log(cx, cy)
-  },
-)
-```
-
-## Notes
-
-Ce Low-level composable s’adresse principalement aux Components qui contiennent le canvas d’une interface d’édition personnalisée.
+Cette API de bas niveau est principalement destinée aux composants qui contiennent la zone de travail d’une interface propre.
 
 ## Voir aussi
 
 - [useCanvas](./use-canvas)
-- [useEditor](./use-editor)
+- [useTextEdit](./use-text-edit)

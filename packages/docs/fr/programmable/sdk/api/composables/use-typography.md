@@ -1,60 +1,23 @@
 ---
 title: useTypography
-description: Lire et modifier Font family, Style, Size, Alignment et Formatting des objets texte.
+description: Lire et modifier police, taille, espacement et alignement du texte.
 ---
 
 # useTypography
 
-`useTypography()` fournit aux panneaux texte :
+`useTypography()` fournit l’état et les actions des contrôles typographiques :
 
-- Font family ;
-- Font style ;
-- Font size ;
-- Formatting actif ;
-- informations sur les Fonts manquants ;
-- Functions pour modifier Family, Style, Alignment et Decoration.
+- famille et style ;
+- taille et interligne ;
+- approche ;
+- alignement horizontal et vertical ;
+- gras, italique, souligné et barré ;
+- valeurs mixtes pour une sélection multiple.
 
-## Utilisation
-
-```ts
-import { useTypography } from '@open-pencil/vue'
-
-const typography = useTypography()
-```
-
-## Exemple
-
-```ts
-const {
-  fontFamily,
-  fontWeight,
-  fontSize,
-  activeFormatting,
-  setFamily,
-  setWeight,
-  setAlign,
-} = useTypography()
-```
-
-### Charger et sélectionner une Font family
-
-```ts
-const typography = useTypography({
-  loadFont: async (family, style) => {
-    await myFontLoader(family, style)
-  },
-})
-```
-
-### Formatting
-
-```ts
-typography.toggleBold()
-typography.toggleItalic()
-typography.toggleDecoration('UNDERLINE')
-```
+Pendant l’édition de texte, les changements peuvent ne s’appliquer qu’à la plage sélectionnée.
 
 ## Voir aussi
 
-- [useTextEdit](./use-text-edit)
-- [useSelectionState](./use-selection-state)
+- [TypographyControlsRoot](../components/typography-controls-root)
+- [useFontPicker](../advanced/use-font-picker)
+- [Modifier du texte](/user-guide/text-editing)

@@ -1,71 +1,22 @@
 ---
 title: useSelectionState
-description: State réactif de la Selection actuelle, de l’objet principal et de son Type.
+description: État réactif de la sélection actuelle.
 ---
 
 # useSelectionState
 
-`useSelectionState()` fournit des informations réactives sur la Selection :
+`useSelectionState()` fournit :
 
-- présence d’un objet sélectionné ;
-- nombre d’objets sélectionnés ;
-- objet principal ;
-- nature du principal objet : Instance, Component ou Group.
+- les identifiants sélectionnés ;
+- les objets sélectionnés ;
+- l’objet principal ;
+- le nombre d’objets ;
+- les indicateurs de sélection vide, unique ou multiple ;
+- les types présents.
 
-## Utilisation
-
-```ts
-import { useSelectionState } from '@open-pencil/vue'
-
-const selection = useSelectionState()
-```
-
-## Exemple
-
-```vue
-<script setup lang="ts">
-import { useSelectionState } from '@open-pencil/vue'
-
-const { hasSelection, selectedCount, isInstance } = useSelectionState()
-</script>
-
-<template>
-  <div class="text-xs text-muted">
-    <span v-if="!hasSelection">Aucune Selection</span>
-    <span v-else>
-      {{ selectedCount }} sélectionné(s)
-      <span v-if="isInstance">· Instance</span>
-    </span>
-  </div>
-</template>
-```
-
-## Values
-
-- `selectedIds`
-- `hasSelection`
-- `selectedNode`
-- `selectedCount`
-- `selectedNodeType`
-- `isInstance`
-- `isComponent`
-- `isGroup`
-- `canCreateComponentSet`
-
-### Actions propres aux Instances
-
-```ts
-const { isInstance } = useSelectionState()
-```
-
-### Créer un Component set
-
-```ts
-const { canCreateComponentSet } = useSelectionState()
-```
+Utilisez-le pour afficher une interface réactive à la sélection sans observer les simples rafraîchissements de la zone de travail.
 
 ## Voir aussi
 
 - [useSelectionCapabilities](./use-selection-capabilities)
-- [useEditorCommands](./use-editor-commands)
-- [useEditor](./use-editor)
+- [useSceneComputed](../advanced/use-scene-computed)

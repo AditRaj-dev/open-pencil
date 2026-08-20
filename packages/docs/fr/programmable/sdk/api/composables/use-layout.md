@@ -1,60 +1,22 @@
 ---
 title: useLayout
-description: Gérer Auto layout, Sizing, Padding, Alignment et Grid tracks.
+description: Gérer disposition automatique, taille, marges intérieures, alignement et pistes Grid.
 ---
 
 # useLayout
 
-`useLayout()` fournit State et Actions pour les panneaux de Layout :
+`useLayout()` fournit l’état et les actions des panneaux de disposition :
 
-- Flex ou Grid ;
-- Width et Height sizing ;
-- Padding ;
-- Alignment ;
-- Grid template tracks.
+- mode et direction ;
+- espacement et marges intérieures ;
+- alignement et répartition ;
+- modes fixe, remplir et ajuster ;
+- retour à la ligne ;
+- lignes, colonnes et pistes Grid.
 
-## Utilisation
-
-```ts
-import { useLayout } from '@open-pencil/vue'
-
-const layout = useLayout()
-```
-
-## Exemple
-
-```ts
-const {
-  isGrid,
-  isFlex,
-  widthSizing,
-  heightSizing,
-  setAxisSizing,
-  updateAxisSize,
-  commitAxisSize,
-} = useLayout()
-```
-
-### Padding commun ou par côté
-
-```ts
-layout.toggleIndividualPadding()
-```
-
-### Grid tracks
-
-```ts
-layout.updateGridTrack('gridTemplateColumns', 0, { sizing: 'FIXED', value: 240 })
-layout.addTrack('gridTemplateRows')
-```
-
-### Alignment
-
-```ts
-layout.setAlignment('CENTER', 'MAX')
-```
+Les actions modifient la sélection via l’intégration de l’éditeur et participent à l’annulation.
 
 ## Voir aussi
 
-- [usePosition](./use-position)
-- [useEditor](./use-editor)
+- [LayoutControlsRoot](../components/layout-controls-root)
+- [Disposition automatique](/user-guide/auto-layout)

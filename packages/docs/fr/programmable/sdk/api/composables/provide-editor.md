@@ -1,46 +1,17 @@
 ---
 title: provideEditor
-description: Fournir une instance OpenPencil via Vue dependency injection.
+description: Fournir une instance d’Editor aux composants descendants.
 ---
 
 # provideEditor
 
-`provideEditor(editor)` met l’Editor à la disposition des composables et Headless components situés plus bas dans le Vue component tree.
+`provideEditor(editor)` rend l’éditeur accessible aux composables et composants sans styles placés plus bas dans l’arbre Vue.
 
-`useEditor()` utilise ce Context.
+Appelez-le une fois à la racine de l’interface, puis utilisez `useEditor()` dans les descendants.
 
-## Utilisation
-
-```ts
-import { provideEditor } from '@open-pencil/vue'
-
-provideEditor(editor)
-```
-
-## Exemple
-
-```vue
-<script setup lang="ts">
-import { provideEditor } from '@open-pencil/vue'
-
-import type { Editor } from '@open-pencil/core/editor'
-
-const props = defineProps<{
-  editor: Editor
-}>()
-
-provideEditor(props.editor)
-</script>
-
-<template>
-  <slot />
-</template>
-```
-
-## Notes
-
-Le SDK actuel utilise directement `provideEditor()` et `useEditor()`. D’anciens exemples et messages mentionnent encore `OpenPencilProvider`, mais ce Component ne fait pas partie de l’API publique actuelle.
+Le SDK public actuel utilise directement `provideEditor()` et `useEditor()`. `OpenPencilProvider`, mentionné dans d’anciens exemples, ne fait pas partie de l’API actuelle.
 
 ## Voir aussi
 
 - [useEditor](./use-editor)
+- [Premiers pas](../../getting-started)

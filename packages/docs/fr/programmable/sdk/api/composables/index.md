@@ -1,13 +1,13 @@
 ---
 title: Composables
-description: APIs composable principales de @open-pencil/vue.
+description: État et actions réutilisables pour créer des interfaces d’édition avec Vue.
 ---
 
 # Composables
 
-Ces composables fournissent le State et les Actions généralement nécessaires aux interfaces OpenPencil personnalisées.
+Ces composables fournissent l’état et les actions généralement nécessaires aux interfaces construites sur OpenPencil.
 
-## Context et canvas
+## Éditeur et zone de travail
 
 - [provideEditor](./provide-editor)
 - [useEditor](./use-editor)
@@ -15,26 +15,26 @@ Ces composables fournissent le State et les Actions généralement nécessaires 
 - [useCanvasInput](./use-canvas-input)
 - [useTextEdit](./use-text-edit)
 
-## Selection et Commands
+## Sélection et commandes
 
 - [useSelectionState](./use-selection-state)
 - [useSelectionCapabilities](./use-selection-capabilities)
 - [useEditorCommands](./use-editor-commands)
 - [useMenuModel](./use-menu-model)
 
-## Panneaux Properties
+## Panneaux de propriétés
 
+- [useAppearance](./use-appearance)
 - [usePosition](./use-position)
 - [useLayout](./use-layout)
-- [useAppearance](./use-appearance)
 - [useTypography](./use-typography)
-- [useExport](./use-export)
 - [useFillControls](./use-fill-controls)
 - [useStrokeControls](./use-stroke-controls)
 - [useEffectsControls](./use-effects-controls)
 
-## Variables, navigation et Locale
+## Document
 
-- [useVariablesEditor](./use-variables-editor)
 - [usePageList](./use-page-list)
+- [useVariablesEditor](./use-variables-editor)
+- [useExport](./use-export)
 - [useI18n](./use-i18n)
