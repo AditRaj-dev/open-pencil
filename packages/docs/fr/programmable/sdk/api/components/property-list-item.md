@@ -1,16 +1,15 @@
 ---
 title: PropertyListItem
-description: Un Item d’une List de Fills, Strokes ou Effects.
+description: Élément d’une liste de remplissages, contours, effets ou autres propriétés.
 ---
 
 # PropertyListItem
 
-`PropertyListItem` fournit les Actions pour remplacer, mettre à jour partiellement, supprimer et modifier Visibility d’un Item dans `PropertyListRoot`.
+`PropertyListItem` représente une ligne dans `PropertyListRoot`. Il fournit l’élément, son indice, sa visibilité et des actions pour le modifier, le remplacer ou le supprimer.
 
-Il permet de construire une Row personnalisée pour un Fill, Stroke ou Effect.
+L’application choisit l’affichage de la miniature, des contrôles et du menu de chaque ligne.
 
 ## Voir aussi
 
 - [PropertyListRoot](./property-list-root)
 - [usePropertyList](../advanced/use-property-list)
-- [useNodeProps](../advanced/use-node-props)

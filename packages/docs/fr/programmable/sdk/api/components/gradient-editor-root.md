@@ -1,45 +1,14 @@
 ---
 title: GradientEditorRoot
-description: State et Actions pour modifier des Gradient stops.
+description: État et actions pour modifier les points d’un dégradé.
 ---
 
 # GradientEditorRoot
 
-`GradientEditorRoot` gère :
+`GradientEditorRoot` coordonne le type de dégradé, le point actif et les changements de couleur, position et opacité.
 
-- l’Active gradient stop ;
-- le Gradient subtype ;
-- l’ajout, la suppression et la mise à jour des Stops ;
-- la Color de l’Active stop ;
-- le Background du Gradient bar.
-
-Le Default slot reçoit l’API complète nécessaire à un Gradient editor personnalisé.
-
-## Props
-
-<SdkPropsTable
-  :rows="[
-    { name: 'fill', type: 'Fill', description: 'Gradient fill actuel.', required: true }
-  ]"
-/>
-
-## Events
-
-<SdkEventsTable
-  :rows="[
-    { name: 'update', payload: 'fill: Fill', description: 'Émis lorsque le Gradient fill change.' }
-  ]"
-/>
-
-## Exemple
-
-```vue
-<GradientEditorRoot :fill="fill" @update="fill = $event" v-slot="ctx">
-  <MyGradientUI v-bind="ctx" />
-</GradientEditorRoot>
-```
+Il reçoit un remplissage par `fill` et émet `update` avec le nouvel objet `Fill`. L’application peut composer [GradientEditorBar](./gradient-editor-bar) et [GradientEditorStop](./gradient-editor-stop) dans son emplacement.
 
 ## Voir aussi
 
-- [GradientEditorBar](./gradient-editor-bar)
-- [GradientEditorStop](./gradient-editor-stop)
+- [useGradientStops](../advanced/use-gradient-stops)

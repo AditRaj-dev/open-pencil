@@ -1,47 +1,15 @@
 ---
 title: ColorInputRoot
-description: Hex value et Color updates pour un Color input personnalisé.
+description: État et actions d’un champ de couleur contrôlé.
 ---
 
 # ColorInputRoot
 
-`ColorInputRoot` convertit le Color value actuel en Hex et fournit des Functions de mise à jour via un Hex string ou un objet `Color` complet.
+`ColorInputRoot` normalise une valeur de couleur, produit sa représentation hexadécimale et fournit des actions pour la modifier depuis du texte ou un objet `Color`.
 
-L’application rend l’Input via le Default slot.
-
-## Props
-
-<SdkPropsTable
-  :rows="[
-    { name: 'color', type: 'Color', description: 'Color value actuel.', required: true },
-    { name: 'editable', type: 'boolean | undefined', description: 'Indique si l’application doit présenter le Value comme modifiable.' }
-  ]"
-/>
-
-## Events
-
-<SdkEventsTable
-  :rows="[
-    { name: 'update', payload: 'color: Color', description: 'Émis lorsque le Color value change.' }
-  ]"
-/>
-
-## Slots
-
-<SdkSlotsTable
-  :rows="[
-    { name: 'default', props: '{ color: Color, editable: boolean, hex: string, updateFromHex: (value: string) => void, updateColor: (color: Color) => void }', description: 'State et Actions pour rendre le Color input.' }
-  ]"
-/>
-
-## Exemple
-
-```vue
-<ColorInputRoot :color="color" @update="color = $event" v-slot="{ hex, updateFromHex }">
-  <input :value="hex" @input="updateFromHex(($event.target as HTMLInputElement).value)" />
-</ColorInputRoot>
-```
+L’application affiche le champ dans l’emplacement par défaut. Les noms `color`, `editable`, `hex`, `updateFromHex` et `updateColor` font partie de l’API.
 
 ## Voir aussi
 
 - [ColorPickerRoot](./color-picker-root)
+- [useColorVariableBinding](../advanced/use-color-variable-binding)
