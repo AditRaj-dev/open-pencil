@@ -1,28 +1,15 @@
 ---
 title: useVariablesTable
-description: Column definitions de TanStack Table para un Variables editor.
+description: Definiciones de columnas de TanStack Table para un editor de variables.
 ---
 
 # useVariablesTable
 
-`useVariablesTable(options)` devuelve Column definitions reactivas para la Variables table.
+`useVariablesTable(options)` devuelve definiciones reactivas de columnas para la tabla de variables.
 
-Usa el composable si necesitas el comportamiento del SDK, pero proporcionas la Table instance, Icons o Components por separado.
+Úselo cuando necesite el comportamiento del SDK, pero la aplicación proporcione la tabla, los iconos y los componentes. Para la mayoría de los casos, `useVariablesEditor()` es una entrada más sencilla.
 
-## Uso
-
-```ts
-import { useVariablesTable } from '@open-pencil/vue'
-
-const { columns } = useVariablesTable(options)
-```
-
-## Notas
-
-Para la mayoría de las aplicaciones, `useVariablesEditor()` es el punto de entrada más sencillo. `useVariablesTable()` permite controlar directamente la configuración de la Tabla.
-
-## Consulta también
+## Véase también
 
 - [useVariablesEditor](../composables/use-variables-editor)
 - [useVariables](./use-variables)
-- [useVariablesDialogState](./use-variables-dialog-state)
