@@ -4,6 +4,8 @@
 
 ### Added
 
+- Add a timestamp-faithful pan and zoom benchmark workflow with physical macOS trackpad recording, CDP and DOM replay, Chromium traces, frame-pacing and latency distributions, zoom-anchor drift and viewport-jump detection, retained-backing settlement metrics, and a documented native Instruments acceptance procedure.
+
 - Choose and persist the app interface language from General settings.
 - Duplicate guides with Option/Alt-drag, show active guide coordinates in rulers, measure ruler-created guides against selected frames and their contents, and remove guides from the context menu.
 - Create, select, move, transfer, and delete canvas and frame guides directly from rulers, with undoable edits and `.fig` round-trip fidelity.

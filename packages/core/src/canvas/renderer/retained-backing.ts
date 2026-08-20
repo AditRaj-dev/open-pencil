@@ -11,6 +11,7 @@ import {
 
 import type { SkiaRenderer } from '#core/canvas/renderer'
 import { clearSubtreePictureCache } from '#core/canvas/renderer/state'
+import { emitNavigationTrace } from '#core/profiler'
 
 import type { RenderLayer } from './pipeline'
 
@@ -66,6 +67,13 @@ export function updateSceneBackingPreviewState(r: SkiaRenderer, layer: RenderLay
     r.sceneBackingLastViewportEventAt = timestamp
     r.sceneBackingPreviewUntil = timestamp + sceneBackingPreviewIdleMs(r)
     r.sceneBackingNeedsCrispRender = !!r.sceneBacking
+    emitNavigationTrace('backing:preview', {
+      previewUntil: r.sceneBackingPreviewUntil,
+      hasBacking: !!r.sceneBacking,
+      panX: r.panX,
+      panY: r.panY,
+      zoom: r.zoom
+    })
     r.lastSceneViewport = { panX: r.panX, panY: r.panY, zoom: r.zoom }
   }
 }
@@ -434,6 +442,13 @@ function startSceneBackingBuild(r: SkiaRenderer, graph: SceneGraph, sceneVersion
     fontGeneration: r.fontGeneration,
     ...sceneBackingMetrics(backing)
   }
+  emitNavigationTrace('backing:build', {
+    phase: 'start',
+    childCount: r.sceneBackingBuild.childIds.length,
+    panX: backing.panX,
+    panY: backing.panY,
+    zoom: backing.zoom
+  })
 }
 
 function sceneBackingGeometryFromBuild(build: NonNullable<SkiaRenderer['sceneBackingBuild']>) {
@@ -475,6 +490,11 @@ function stepSceneBackingBuild(r: SkiaRenderer, sceneVersion: number): boolean {
   build.surface.delete()
   r.sceneBackingBuild = null
   installSceneBackingImage(r, image, build.sceneVersion, build.positionPreviewVersion, backing)
+  emitNavigationTrace('backing:crisp', {
+    buildMs: now() - build.startedAt,
+    childCount: build.childIds.length,
+    zoom: backing.zoom
+  })
   r.sceneBackingAverageRecordMs = smoothAverage(
     r.sceneBackingAverageRecordMs,
     clamp(now() - build.startedAt, 1, 1_000)
@@ -499,9 +519,15 @@ function recordSceneBacking(r: SkiaRenderer, graph: SceneGraph, sceneVersion: nu
   const image = surface.makeImageSnapshot()
   surface.delete()
   installSceneBackingImage(r, image, sceneVersion, graph.positionPreviewVersion, backing)
+  const recordMs = now() - startedAt
+  emitNavigationTrace('backing:crisp', {
+    buildMs: recordMs,
+    childCount: pageNode?.childIds.length ?? 0,
+    zoom: backing.zoom
+  })
   r.sceneBackingAverageRecordMs = smoothAverage(
     r.sceneBackingAverageRecordMs,
-    clamp(now() - startedAt, 1, 1_000)
+    clamp(recordMs, 1, 1_000)
   )
 }
 

@@ -2,6 +2,7 @@ import { useEventListener } from '@vueuse/core'
 import type { Ref } from 'vue'
 
 import type { Editor } from '@open-pencil/core/editor'
+import { emitNavigationTrace } from '@open-pencil/core/profiler'
 
 import { createRafScheduler } from '#vue/shared/input/raf-scheduler'
 
@@ -71,6 +72,12 @@ export function setupWheelPanZoom(canvasRef: Ref<HTMLCanvasElement | null>, edit
   }
 
   function flushWheel() {
+    emitNavigationTrace('wheel:flush', {
+      deltaX: wheelAccum.deltaX,
+      deltaY: wheelAccum.deltaY,
+      zoomScale: wheelAccum.zoomScale,
+      zoom: wheelAccum.hasZoom
+    })
     editor.setHoveredNode(null)
     if (wheelAccum.hasZoom) {
       editor.setZoomAroundPoint(
@@ -92,6 +99,18 @@ export function setupWheelPanZoom(canvasRef: Ref<HTMLCanvasElement | null>, edit
   function onWheel(event: WheelEvent) {
     const canvas = canvasRef.value
     if (!canvas) return
+
+    emitNavigationTrace('wheel:received', {
+      deltaX: event.deltaX,
+      deltaY: event.deltaY,
+      deltaMode: event.deltaMode,
+      ctrlKey: event.ctrlKey,
+      metaKey: event.metaKey,
+      shiftKey: event.shiftKey,
+      clientX: event.clientX,
+      clientY: event.clientY,
+      trusted: event.isTrusted
+    })
 
     if (isWheelZoom(event)) {
       const rect = canvas.getBoundingClientRect()

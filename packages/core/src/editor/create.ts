@@ -12,6 +12,7 @@ import { clearLazyFigImportContext } from '#core/kiwi/fig/lazy-import'
 import { releaseFigPopulationWorker } from '#core/kiwi/fig/population/client'
 import { releaseOriginalFigArchive } from '#core/kiwi/fig/session/original-archive'
 import { setTextMeasurer } from '#core/layout'
+import { emitNavigationTrace } from '#core/profiler'
 import { TextEditor } from '#core/text/editor'
 import { fontManager } from '#core/text/fonts'
 import { fontResolver } from '#core/text/resolver'
@@ -88,6 +89,11 @@ export function createEditor(options?: EditorOptions) {
   function requestRender() {
     state.renderVersion++
     state.sceneVersion++
+    emitNavigationTrace('render:requested', {
+      kind: 'render',
+      renderVersion: state.renderVersion,
+      sceneVersion: state.sceneVersion
+    })
     emitEditorEvent('render:requested', {
       renderVersion: state.renderVersion,
       sceneVersion: state.sceneVersion
@@ -96,6 +102,11 @@ export function createEditor(options?: EditorOptions) {
 
   function requestRepaint() {
     state.renderVersion++
+    emitNavigationTrace('render:requested', {
+      kind: 'repaint',
+      renderVersion: state.renderVersion,
+      sceneVersion: state.sceneVersion
+    })
     emitEditorEvent('repaint:requested', {
       renderVersion: state.renderVersion,
       sceneVersion: state.sceneVersion
