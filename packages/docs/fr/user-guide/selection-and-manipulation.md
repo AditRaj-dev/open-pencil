@@ -11,7 +11,7 @@ Les objets sélectionnés peuvent être déplacés, redimensionnés, tournés, d
 
 - Un clic sur un objet remplace la sélection actuelle.
 - <kbd>Shift</kbd> + clic ajoute ou retire un objet.
-- Un glissement sur une zone libre du canevas crée une sélection rectangulaire et sélectionne les objets qu’elle traverse.
+- Un glissement sur une zone libre de la zone de travail crée une sélection rectangulaire et sélectionne les objets qu’elle traverse.
 - <kbd>⌘</kbd><kbd>A</kbd> sélectionne tous les objets de la page actuelle.
 - Un clic sur une zone libre annule la sélection.
 
@@ -38,12 +38,14 @@ Placez le pointeur juste à l’extérieur d’une poignée d’angle jusqu’à
 
 ## Supprimer
 
-Retour arrière ou Suppr supprime tous les objets sélectionnés.
+Appuyez sur <kbd>Retour arrière</kbd> ou <kbd>Suppr</kbd> pour supprimer tous les objets sélectionnés.
 
 ## Ordre
 
-- **]** place la sélection au premier plan.
-- **[** l’envoie à l’arrière-plan.
+- **]** avance la sélection d’un niveau.
+- <kbd>⌘</kbd><kbd>]</kbd> ou <kbd>Ctrl</kbd><kbd>]</kbd> la place au premier plan.
+- **[** recule la sélection d’un niveau.
+- <kbd>⌘</kbd><kbd>[</kbd> ou <kbd>Ctrl</kbd><kbd>[</kbd> l’envoie à l’arrière-plan.
 
 ## Visibilité et verrouillage
 
@@ -60,7 +62,9 @@ Retour arrière ou Suppr supprime tous les objets sélectionnés.
 | Supprimer | <kbd>⌫</kbd>/<kbd>Suppr</kbd> | Retour arrière/<kbd>Suppr</kbd> |
 | Déplacer de 1 px | Flèches | Flèches |
 | Déplacer de 10 px | <kbd>⇧</kbd> + flèches | <kbd>Shift</kbd> + flèches |
-| Premier plan | ] | ] |
-| Arrière-plan | [ | [ |
+| Avancer d’un niveau | ] | ] |
+| Premier plan | <kbd>⌘</kbd><kbd>]</kbd> | <kbd>Ctrl</kbd><kbd>]</kbd> |
+| Reculer d’un niveau | [ | [ |
+| Arrière-plan | <kbd>⌘</kbd><kbd>[</kbd> | <kbd>Ctrl</kbd><kbd>[</kbd> |
 | Visibilité | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>H</kbd> | <kbd>Shift</kbd><kbd>Ctrl</kbd><kbd>H</kbd> |
 | Verrouillage | <kbd>⇧</kbd><kbd>⌘</kbd><kbd>L</kbd> | <kbd>Shift</kbd><kbd>Ctrl</kbd><kbd>L</kbd> |
