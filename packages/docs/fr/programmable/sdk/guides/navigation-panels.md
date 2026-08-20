@@ -1,11 +1,11 @@
 ---
 title: Panneaux de navigation
-description: Panneaux latéraux Pages et Layers avec PageListRoot, LayerTreeRoot et Selection state.
+description: Panneaux latéraux de pages et de calques avec PageListRoot, LayerTreeRoot et état de sélection.
 ---
 
 # Panneaux de navigation
 
-Un panneau latéral OpenPencil contient souvent une Page list et le Layer tree. Le SDK Vue fournit des Headless components pour ces deux zones.
+Un panneau latéral contient souvent une liste de pages et l’arbre des calques. Le SDK Vue fournit des composants sans styles pour ces deux zones.
 
 ## Pages
 
@@ -22,9 +22,9 @@ Utilisez `PageListRoot` ou `usePageList()` :
 </PageListRoot>
 ```
 
-## Layers
+## Calques
 
-Utilisez `LayerTreeRoot` lorsque le SDK doit gérer Tree structure et Interactions tandis que l’application définit Markup et Styles :
+Utilisez `LayerTreeRoot` lorsque le SDK doit gérer la structure de l’arbre et les interactions tandis que l’application définit le balisage et les styles :
 
 ```vue
 <LayerTreeRoot v-slot="{ items, selectedIds, select, toggleExpand, getKey, getChildren }">
@@ -39,11 +39,11 @@ Utilisez `LayerTreeRoot` lorsque le SDK doit gérer Tree structure et Interactio
 </LayerTreeRoot>
 ```
 
-## Layout courant
+## Disposition courante
 
-- Pages en haut du panneau ;
-- Layers en dessous ;
-- détails et Inline rename dans les Row components.
+- pages en haut du panneau ;
+- calques en dessous ;
+- détails et changement de nom direct dans les composants de ligne.
 
 ## Voir aussi
 

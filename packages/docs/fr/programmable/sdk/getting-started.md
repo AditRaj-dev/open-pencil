@@ -23,7 +23,7 @@ import { provideEditor, useCanvas } from '@open-pencil/vue'
 Une application basée sur le SDK se compose de trois couches :
 
 1. `@open-pencil/core` — le moteur de l'éditeur, indépendant du framework ;
-2. `@open-pencil/vue` — les composables et composants headless pour Vue ;
+2. `@open-pencil/vue` — les composables et composants sans styles pour Vue ;
 3. l'application — la présentation, le routage, la gestion des fichiers et l'interface propre au produit.
 
 ## Configuration minimale

@@ -8,21 +8,21 @@ description: Créer une interface avec provideEditor, CanvasRoot, Menus, Panneau
 Une application OpenPencil avec Vue comporte généralement trois couches :
 
 1. `@open-pencil/core` crée l’Editor ;
-2. `@open-pencil/vue` le relie à des composables Vue et des Headless components ;
-3. l’application définit Layout, Styles et comportement propre au produit.
+2. `@open-pencil/vue` le relie aux composables et composants sans styles de Vue ;
+3. l’application définit la disposition, les styles et le comportement propre au produit.
 
 ## Cas d’usage
 
-L’application OpenPencil n’est qu’une interface possible. Le SDK permet de créer un Editor intégré à un autre produit, un Tool interne pour Assets, un Template editor, une Annotation UI ou un Editor spécialisé avec AI assistance.
+L’application OpenPencil n’est qu’une interface possible. Le SDK permet de créer un éditeur intégré à un autre produit, un outil interne pour les ressources, un éditeur de modèles, une interface d’annotation ou un éditeur spécialisé avec assistance AI.
 
 ## Structure recommandée
 
 Une interface courante :
 
-- exécute `provideEditor()` haut dans le Component tree ;
+- exécute `provideEditor()` haut dans l’arbre des composants ;
 - place le canvas au centre ;
-- affiche Pages et Layers dans un panneau latéral ;
-- affiche Properties dans le panneau opposé ;
+- affiche les pages et les calques dans un panneau latéral ;
+- affiche les propriétés dans le panneau opposé ;
 - pilote Menus et Toolbars avec des composables.
 
 ## Exemple
@@ -80,7 +80,7 @@ provideEditor(editor)
     </main>
 
     <aside class="border-l">
-      Panneau Properties
+      Panneau des propriétés
     </aside>
   </div>
 </template>
