@@ -1,36 +1,19 @@
 ---
 title: PageListRoot
-description: Headless component pour les Pages et Actions d’une Page list.
+description: Composant sans styles pour une liste de pages et ses actions.
 ---
 
 # PageListRoot
 
-`PageListRoot` fournit via son Slot :
+`PageListRoot` fournit dans son emplacement :
 
-- les Pages ;
-- l’ID de la Page actuelle ;
-- des informations sur les Separators ;
-- les Actions pour créer, changer, renommer et supprimer des Pages.
+- les pages et la page active ;
+- l’état du changement de nom ;
+- les actions pour créer, ouvrir, renommer et supprimer des pages.
 
-L’application rend la List et définit ses Styles.
-
-## Exemple
-
-```vue
-<PageListRoot v-slot="{ pages, currentPageId, switchPage }">
-  <ul>
-    <li v-for="page in pages" :key="page.id">
-      <button
-        :data-active="page.id === currentPageId"
-        @click="switchPage(page.id)"
-      >
-        {{ page.name }}
-      </button>
-    </li>
-  </ul>
-</PageListRoot>
-```
+L’application choisit la présentation de la liste et de ses menus.
 
 ## Voir aussi
 
 - [usePageList](../composables/use-page-list)
+- [Panneaux de navigation](../../guides/navigation-panels)

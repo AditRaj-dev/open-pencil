@@ -1,51 +1,21 @@
 ---
 title: PropertyListRoot
-description: Controlled list pour Fills, Strokes, Effects et autres Array properties.
+description: Liste contrôlée pour remplissages, contours, effets et autres propriétés sous forme de tableau.
 ---
-
-<script setup lang="ts">
-import { data } from '#docs-api/components/property-list.data'
-</script>
 
 # PropertyListRoot
 
-`PropertyListRoot` coordonne une interface pour les Properties stockées sous forme d’Array, par exemple Fills, Strokes et Effects.
+`PropertyListRoot` coordonne les propriétés stockées sous forme de tableaux, comme les remplissages, contours et effets.
 
-Values et Mixed state sont transmis via Props. Les modifications sont émises sous forme d’Events. Le Slot reçoit :
+Il reçoit les éléments et l’état mixte par ses propriétés, émet les changements et fournit dans son emplacement :
 
-- les Items actuels ;
-- le Mixed state ;
-- les Actions pour ajouter, supprimer, remplacer et mettre à jour partiellement ;
-- l’Action de modification de Visibility d’un Item.
+- les éléments actuels ;
+- des actions pour ajouter, supprimer, remplacer et modifier partiellement ;
+- une action pour changer la visibilité d’un élément.
 
-## Exemple
-
-```vue
-<script setup lang="ts">
-import { PropertyListRoot, useEditorPropertyList } from '@open-pencil/vue'
-
-const fills = useEditorPropertyList('fills')
-</script>
-
-<template>
-  <PropertyListRoot
-    prop-key="fills"
-    :items="fills.items.value"
-    :mixed="fills.isMixed.value"
-    @add="fills.actions.add"
-    @remove="fills.actions.remove"
-    v-slot="{ items, actions }"
-  >
-    <div v-for="(fill, index) in items" :key="index">
-      <button @click="actions.remove(index)">Supprimer</button>
-    </div>
-    <button @click="actions.add(defaultFill)">Ajouter un Fill</button>
-  </PropertyListRoot>
-</template>
-```
-
-<SdkComponentAPI :components="data.components" />
+La connexion à la sélection et à l’historique passe par `useEditorPropertyList()` ou un adaptateur de l’application.
 
 ## Voir aussi
 
-- [Référence API](../)
+- [PropertyListItem](./property-list-item)
+- [usePropertyList](../advanced/use-property-list)
