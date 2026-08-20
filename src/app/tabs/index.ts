@@ -25,6 +25,7 @@ import {
   createActiveStorageAdapter,
   type StorageDocument
 } from '@/app/integrations/storage'
+import { activeCloudConnectionProfile } from '@/app/integrations/storage/cloud/profiles'
 import {
   cacheRecentFileThumbnail,
   loadCachedRecentFileThumbnail,
@@ -272,10 +273,18 @@ function watchOpenedFigCover(path: string, store: EditorStore): void {
   )
 }
 
-function findStorageTab(providerId: string, documentId: string): Tab | undefined {
+function findStorageTab(
+  providerId: string,
+  documentId: string,
+  connectionId?: string
+): Tab | undefined {
   return tabsRef.value.find((tab) => {
     const binding = tab.store.getStorageBinding()
-    return binding?.providerId === providerId && binding.documentId === documentId
+    return (
+      binding?.providerId === providerId &&
+      binding.documentId === documentId &&
+      binding.connectionId === connectionId
+    )
   })
 }
 
@@ -294,7 +303,8 @@ function failPreparation(
 
 export async function openStorageDocumentInNewTab(document: StorageDocument): Promise<void> {
   const providerId = activeStorageProviderID.value
-  const existing = findStorageTab(providerId, document.id)
+  const cloudProfile = providerId === 'openpencil-cloud' ? activeCloudConnectionProfile() : null
+  const existing = findStorageTab(providerId, document.id, cloudProfile?.id)
   if (existing) {
     switchTab(existing.id)
     rememberRecentStorageDocument(providerId, document.id, document.name)
@@ -336,6 +346,8 @@ export async function openStorageDocumentInNewTab(document: StorageDocument): Pr
       )
       await seedStorageCanvasFromRemote({
         providerId,
+        connectionId: cloudProfile?.id,
+        workspaceId: cloudProfile?.selectedWorkspaceId ?? undefined,
         canvasId: document.id,
         name: document.name,
         updatedAt: document.updatedAt,
@@ -356,7 +368,19 @@ export async function openStorageDocumentInNewTab(document: StorageDocument): Pr
       store,
       imported,
       async () => {
-        store.setStorageDocumentSource({ providerId, documentId: document.id }, document.name)
+        store.setStorageDocumentSource(
+          {
+            providerId,
+            documentId: document.id,
+            ...(cloudProfile
+              ? {
+                  connectionId: cloudProfile.id,
+                  workspaceId: cloudProfile.selectedWorkspaceId ?? undefined
+                }
+              : {})
+          },
+          document.name
+        )
         if (providerId === 'openpencil-cloud') {
           const access = await getCloudDocumentAccess(store)
           store.setAccessMode(access.sources.includes('owner') ? 'owner' : access.permission)
