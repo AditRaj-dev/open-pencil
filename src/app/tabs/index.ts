@@ -32,6 +32,7 @@ import {
   rememberRecentStorageDocument
 } from '@/app/recent-files'
 import { toast } from '@/app/shell/ui'
+import { storageCanvasId } from '@/app/storage/id'
 import { getLocalCanvasStore } from '@/app/storage/local-store'
 import { seedStorageCanvasFromRemote } from '@/app/storage/sync/persist'
 import { createFileOpenCoordinator } from '@/app/tabs/open/coordinator'
@@ -304,6 +305,11 @@ function failPreparation(
 export async function openStorageDocumentInNewTab(document: StorageDocument): Promise<void> {
   const providerId = activeStorageProviderID.value
   const cloudProfile = providerId === 'openpencil-cloud' ? activeCloudConnectionProfile() : null
+  const canvasId = storageCanvasId({
+    providerId,
+    connectionId: cloudProfile?.id,
+    documentId: document.id
+  })
   const existing = findStorageTab(providerId, document.id, cloudProfile?.id)
   if (existing) {
     switchTab(existing.id)
@@ -321,9 +327,9 @@ export async function openStorageDocumentInNewTab(document: StorageDocument): Pr
   try {
     load.update({ phase: 'reading', detail: document.name })
     const local = getLocalCanvasStore()
-    const localMetadata = await local.getMeta(document.id)
+    const localMetadata = await local.getMeta(canvasId)
     load.signal.throwIfAborted()
-    const localBytes = localMetadata?.hasFig ? await local.readFig(document.id) : null
+    const localBytes = localMetadata?.hasFig ? await local.readFig(canvasId) : null
     load.signal.throwIfAborted()
     const localIsAuthoritative =
       localMetadata?.syncStatus !== 'synced' ||
@@ -348,7 +354,8 @@ export async function openStorageDocumentInNewTab(document: StorageDocument): Pr
         providerId,
         connectionId: cloudProfile?.id,
         workspaceId: cloudProfile?.selectedWorkspaceId ?? undefined,
-        canvasId: document.id,
+        canvasId,
+        documentId: document.id,
         name: document.name,
         updatedAt: document.updatedAt,
         figBytes: bytes,
