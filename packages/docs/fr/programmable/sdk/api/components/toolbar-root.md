@@ -1,13 +1,14 @@
 ---
 title: ToolbarRoot
-description: Headless component pour Tools et Active tool.
+description: Composant sans styles pour les outils et l’outil actif.
 ---
 
 # ToolbarRoot
 
-`ToolbarRoot` fournit les Tools disponibles, l’Active tool et l’Action permettant de le changer. L’application rend ses propres Buttons et définit Layout et Styles de la Toolbar.
+`ToolbarRoot` fournit les outils disponibles, l’outil actif et l’action qui permet d’en changer. L’application affiche ses propres boutons et définit la disposition et les styles de la barre.
 
 ## Voir aussi
 
-- [useEditorCommands](../composables/use-editor-commands)
-- [useSelectionCapabilities](../composables/use-selection-capabilities)
+- [ToolbarItem](./toolbar-item)
+- [useToolbar](../advanced/use-toolbar)
+- [useToolbarState](../advanced/use-toolbar-state)

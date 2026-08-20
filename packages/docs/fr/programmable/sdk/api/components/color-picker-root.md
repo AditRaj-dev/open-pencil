@@ -1,36 +1,15 @@
 ---
 title: ColorPickerRoot
-description: Headless component pour créer un Color picker.
+description: Composant sans styles pour créer un sélecteur de couleur.
 ---
-
-<script setup lang="ts">
-import { data } from '#docs-api/components/color-picker-root.data'
-</script>
 
 # ColorPickerRoot
 
-`ColorPickerRoot` fournit les Slots nécessaires à un Color picker :
+`ColorPickerRoot` coordonne couleur HSV, teinte, transparence et saisie hexadécimale. L’application fournit la présentation par ses emplacements.
 
-- `trigger` avec le Style du Color swatch ;
-- un Default trigger si l’application n’en fournit pas ;
-- `default` avec le `color` actuel et la Function `update()`.
-
-## Exemple
-
-```vue
-<ColorPickerRoot :color="color" @update="color = $event">
-  <template #trigger="{ style }">
-    <button class="size-6 rounded border" :style="style" />
-  </template>
-
-  <template #default="{ color, update }">
-    <MyColorEditor :color="color" @change="update" />
-  </template>
-</ColorPickerRoot>
-```
-
-<SdkComponentAPI :components="data.components" />
+Utilisez-le lorsque vous avez besoin de toute la logique du sélecteur sans les styles de l’application OpenPencil.
 
 ## Voir aussi
 
 - [ColorInputRoot](./color-input-root)
+- [useOkHCL](../advanced/use-okhcl)

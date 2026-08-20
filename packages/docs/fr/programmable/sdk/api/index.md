@@ -1,20 +1,20 @@
 ---
-title: Référence API
-description: Components, composables et Advanced APIs de @open-pencil/vue.
+title: Référence de l’API
+description: Composants, composables et API avancées de @open-pencil/vue.
 ---
 
-# Référence API
+# Référence de l’API
 
-La référence du SDK Vue est divisée en trois parties.
+La référence du SDK Vue se divise en trois domaines.
 
 <SdkCardGroup>
-  <SdkCard title="Components" to="/programmable/sdk/api/components/" description="Headless components comme CanvasRoot, ToolbarRoot, FontPickerRoot et NumberField." />
-  <SdkCard title="Composables" to="/programmable/sdk/api/composables/" description="State et Actions pour Editor context, Canvas, Selection, Commands et panneaux Properties." />
-  <SdkCard title="Advanced API" to="/programmable/sdk/api/advanced/" description="Context APIs Low-level et Functions spécialisées pour les Integrations personnalisées." />
+  <SdkCard title="Composants" to="/programmable/sdk/api/components/" description="Composants sans styles comme CanvasRoot, ToolbarRoot, FontPickerRoot et NumberField." />
+  <SdkCard title="Composables" to="/programmable/sdk/api/composables/" description="État et actions pour l’éditeur, la zone de travail, la sélection, les commandes et les propriétés." />
+  <SdkCard title="API avancées" to="/programmable/sdk/api/advanced/" description="Contextes de bas niveau et fonctions spécialisées pour les intégrations propres." />
 </SdkCardGroup>
 
-## Point de départ
+## Par où commencer
 
-- **Components** pour les Structures et Controls réutilisables de l’Editor UI.
-- **Composables** pour Editor state et Actions.
-- **Advanced API** pour les Integrations spécialisées nécessitant un accès direct au Low-level State ou Context.
+- **Composants** pour les structures et contrôles réutilisables de l’interface.
+- **Composables** pour l’état et les actions de l’éditeur.
+- **API avancées** pour les intégrations qui nécessitent un accès direct à l’état ou au contexte de bas niveau.

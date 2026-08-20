@@ -1,21 +1,15 @@
 ---
 title: AppearanceControlsRoot
-description: Headless component pour Opacity, Visibility et Corner radius.
+description: Composant sans styles pour l’opacité, la visibilité et le rayon des angles.
 ---
-
-<script setup lang="ts">
-import { data } from '#docs-api/components/appearance-controls-root.data'
-</script>
 
 # AppearanceControlsRoot
 
-`AppearanceControlsRoot` fournit via son Slot l’API renvoyée par `useAppearance()`.
+`AppearanceControlsRoot` expose dans son emplacement l’API renvoyée par `useAppearance()`.
 
-Les Fields personnalisés pour Opacity, Visibility et Corner radius peuvent réutiliser State et Actions du SDK.
-
-<SdkComponentAPI :components="data.components" />
+Les champs propres à l’application peuvent réutiliser l’état et les actions du SDK sans adopter une interface imposée.
 
 ## Voir aussi
 
 - [useAppearance](../composables/use-appearance)
-- [Panneaux Properties](../../guides/property-panels)
+- [Panneaux de propriétés](../../guides/property-panels)

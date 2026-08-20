@@ -1,14 +1,10 @@
 ---
 title: CanvasRoot
-description: Headless component pour le Context du canvas OpenPencil.
+description: Composant sans styles qui fournit le contexte de la zone de travail.
 ---
 
 # CanvasRoot
 
-`CanvasRoot` fournit le Canvas context à ses Children. Le SDK gère l’intégration avec l’Editor ; l’application définit Layout et Styles.
+`CanvasRoot` fournit le contexte à ses composants descendants. Le SDK gère l’intégration avec l’éditeur ; l’application choisit disposition et styles.
 
-## Voir aussi
-
-- [useCanvas](../composables/use-canvas)
-- [useCanvasInput](../composables/use-canvas-input)
-- [useTextEdit](../composables/use-text-edit)
+Utilisez [CanvasSurface](./canvas-surface) à l’intérieur ou accédez au contexte avec [useCanvasContext](../advanced/use-canvas-context).

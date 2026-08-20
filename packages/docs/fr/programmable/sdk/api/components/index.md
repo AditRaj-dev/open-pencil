@@ -1,43 +1,39 @@
 ---
-title: Components
-description: Référence des Headless components de @open-pencil/vue.
+title: Composants
+description: Référence des composants sans styles de @open-pencil/vue.
 ---
 
-# Components
+# Composants
 
-`@open-pencil/vue` fournit des Headless components pour le canvas, la navigation, les panneaux Properties et les Inputs spécialisés.
+`@open-pencil/vue` fournit des composants sans styles pour la zone de travail, la navigation, les panneaux de propriétés et les champs spécialisés.
 
-## Editor
+## Zone de travail
 
-<SdkCardGroup>
-  <SdkCard title="CanvasRoot" to="/programmable/sdk/api/components/canvas-root" description="Context et Structure du canvas." />
-  <SdkCard title="CanvasSurface" to="/programmable/sdk/api/components/canvas-surface" description="Élément canvas dans CanvasRoot." />
-  <SdkCard title="LayerTreeRoot" to="/programmable/sdk/api/components/layer-tree-root" description="Layer tree géré par le SDK." />
-  <SdkCard title="LayerTreeItem" to="/programmable/sdk/api/components/layer-tree-item" description="Un Item du Layer tree." />
-  <SdkCard title="ToolbarRoot" to="/programmable/sdk/api/components/toolbar-root" description="State et Actions d’une Toolbar." />
-  <SdkCard title="ToolbarItem" to="/programmable/sdk/api/components/toolbar-item" description="Un Tool de la Toolbar." />
-  <SdkCard title="PageListRoot" to="/programmable/sdk/api/components/page-list-root" description="Page list gérée par le SDK." />
-</SdkCardGroup>
+- [CanvasRoot](./canvas-root) — contexte de la zone de travail.
+- [CanvasSurface](./canvas-surface) — surface de rendu.
 
-## Panneaux Properties
+## Navigation
 
-<SdkCardGroup>
-  <SdkCard title="PropertyListRoot" to="/programmable/sdk/api/components/property-list-root" description="Controlled list pour Array properties." />
-  <SdkCard title="PropertyListItem" to="/programmable/sdk/api/components/property-list-item" description="Un Fill, Stroke ou Effect." />
-  <SdkCard title="PositionControlsRoot" to="/programmable/sdk/api/components/position-controls-root" description="Position, Size et Transform." />
-  <SdkCard title="LayoutControlsRoot" to="/programmable/sdk/api/components/layout-controls-root" description="Auto layout et Sizing." />
-  <SdkCard title="AppearanceControlsRoot" to="/programmable/sdk/api/components/appearance-controls-root" description="Opacity, Visibility et Corner radius." />
-  <SdkCard title="TypographyControlsRoot" to="/programmable/sdk/api/components/typography-controls-root" description="Font, Alignment et Text formatting." />
-</SdkCardGroup>
+- [PageListRoot](./page-list-root) — pages et actions.
+- [LayerTreeRoot](./layer-tree-root) — arbre des calques.
+- [LayerTreeItem](./layer-tree-item) — ligne de l’arbre.
+- [ToolbarRoot](./toolbar-root) — état et actions de la barre d’outils.
+- [ToolbarItem](./toolbar-item) — outil individuel.
 
-## Pickers et Inputs
+## Panneaux de propriétés
 
-<SdkCardGroup>
-  <SdkCard title="ColorPickerRoot" to="/programmable/sdk/api/components/color-picker-root" description="Color picker sans Styles imposés." />
-  <SdkCard title="ColorInputRoot" to="/programmable/sdk/api/components/color-input-root" description="State et Actions d’un Color input." />
-  <SdkCard title="FontPickerRoot" to="/programmable/sdk/api/components/font-picker-root" description="Font picker avec Search." />
-  <SdkCard title="GradientEditorRoot" to="/programmable/sdk/api/components/gradient-editor-root" description="Context du Gradient editor." />
-  <SdkCard title="GradientEditorBar" to="/programmable/sdk/api/components/gradient-editor-bar" description="Gradient bar interactif." />
-  <SdkCard title="GradientEditorStop" to="/programmable/sdk/api/components/gradient-editor-stop" description="Un Gradient stop." />
-  <SdkCard title="NumberField" to="/programmable/sdk/api/components/number-field" description="Field numérique avec Scrubbing, Expressions et Keyboard stepping." />
-</SdkCardGroup>
+- [PropertyListRoot](./property-list-root) — liste contrôlée de propriétés.
+- [PropertyListItem](./property-list-item) — remplissage, contour ou effet.
+- [PositionControlsRoot](./position-controls-root) — position, taille et transformation.
+- [LayoutControlsRoot](./layout-controls-root) — disposition automatique.
+- [AppearanceControlsRoot](./appearance-controls-root) — opacité, visibilité et angles.
+- [TypographyControlsRoot](./typography-controls-root) — police, alignement et mise en forme.
+
+## Couleur, dégradés et polices
+
+- [ColorInputRoot](./color-input-root) — champ de couleur.
+- [ColorPickerRoot](./color-picker-root) — sélecteur de couleur.
+- [GradientEditorRoot](./gradient-editor-root) — édition des dégradés.
+- [GradientEditorBar](./gradient-editor-bar) — barre de dégradé.
+- [GradientEditorStop](./gradient-editor-stop) — point de dégradé.
+- [FontPickerRoot](./font-picker-root) — sélecteur de polices.
