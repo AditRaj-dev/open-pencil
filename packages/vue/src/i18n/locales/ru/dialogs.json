@@ -308,5 +308,11 @@
   "harnessToolPermissions": "Разрешения инструментов",
   "harnessPermissionReads": "Спрашивать перед изменениями и командами",
   "harnessPermissionEdits": "Спрашивать перед командами",
-  "harnessPermissionAll": "Разрешить все инструменты"
+  "harnessPermissionAll": "Разрешить все инструменты",
+  "harnessCompanion": "Harness companion",
+  "harnessCompanionInstalled": "Installed · {version}",
+  "harnessCompanionIncompatible": "Version {version} is incompatible.",
+  "harnessCompanionMissing": "Not installed · {command}",
+  "harnessCompanionCheck": "Check again",
+  "harnessCompanionChecking": "Checking…"
 }

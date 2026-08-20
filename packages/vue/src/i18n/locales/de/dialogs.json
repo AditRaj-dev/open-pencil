@@ -308,5 +308,11 @@
   "harnessToolPermissions": "Tool-Berechtigungen",
   "harnessPermissionReads": "Vor Änderungen und Befehlen fragen",
   "harnessPermissionEdits": "Vor Befehlen fragen",
-  "harnessPermissionAll": "Alle Tools zulassen"
+  "harnessPermissionAll": "Alle Tools zulassen",
+  "harnessCompanion": "Harness companion",
+  "harnessCompanionInstalled": "Installed · {version}",
+  "harnessCompanionIncompatible": "Version {version} is incompatible.",
+  "harnessCompanionMissing": "Not installed · {command}",
+  "harnessCompanionCheck": "Check again",
+  "harnessCompanionChecking": "Checking…"
 }

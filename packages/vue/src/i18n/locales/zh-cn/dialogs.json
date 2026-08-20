@@ -308,5 +308,11 @@
   "harnessToolPermissions": "工具权限",
   "harnessPermissionReads": "编辑和执行命令前询问",
   "harnessPermissionEdits": "执行命令前询问",
-  "harnessPermissionAll": "允许所有工具"
+  "harnessPermissionAll": "允许所有工具",
+  "harnessCompanion": "Harness companion",
+  "harnessCompanionInstalled": "Installed · {version}",
+  "harnessCompanionIncompatible": "Version {version} is incompatible.",
+  "harnessCompanionMissing": "Not installed · {command}",
+  "harnessCompanionCheck": "Check again",
+  "harnessCompanionChecking": "Checking…"
 }
