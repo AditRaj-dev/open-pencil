@@ -1,38 +1,16 @@
 ---
 title: useVariablesEditor
-description: Préparer le State d’un Variables dialog et de TanStack Table.
+description: Préparer l’état d’un dialogue de variables et d’une table TanStack.
 ---
 
 # useVariablesEditor
 
-`useVariablesEditor()` relie les éléments nécessaires à un Variables dialog ou à un écran d’édition personnalisé :
+`useVariablesEditor()` combine collections, modes, filtre, renommage et colonnes afin de construire un éditeur de variables complet.
 
-- Dialog state ;
-- Table columns ;
-- intégration TanStack Vue Table ;
-- Functions pour Collections et Modes.
-
-## Utilisation
-
-```ts
-const variables = useVariablesEditor({
-  colorInput: ColorInput,
-  icons,
-  fallbackIcon,
-  deleteIcon,
-})
-```
-
-## Values
-
-Le résultat contient le Low-level state du Dialog et de la Table, ainsi que :
-
-- `columns`
-- `table`
-- `hasCollections`
-
-`useVariablesEditor()` convient lorsqu’un seul composable doit fournir la Table integration et les Action handlers.
+Utilisez `useVariables()` pour les opérations de bas niveau sans dialogue ni table.
 
 ## Voir aussi
 
-- [Référence API](../)
+- [useVariables](../advanced/use-variables)
+- [useVariablesDialogState](../advanced/use-variables-dialog-state)
+- [useVariablesTable](../advanced/use-variables-table)

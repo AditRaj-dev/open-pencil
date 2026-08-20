@@ -1,15 +1,14 @@
 ---
 title: usePropScrub
-description: Preview et Commit d’une Property numérique pendant Scrubbing.
+description: Prévisualiser et valider une propriété numérique pendant le glissement.
 ---
 
 # usePropScrub
 
-`usePropScrub(editor)` met à jour une Property pendant le Drag puis écrit la modification finale dans Undo history à la fin de l’Interaction.
+`usePropScrub(editor)` actualise une propriété pendant le glissement et écrit la valeur finale dans l’historique à la fin de l’interaction.
 
-Le composable convient aux Numeric controls qui changent les Properties des objets sélectionnés via Scrubbing.
+Il convient aux champs numériques modifiés par glissement.
 
 ## Voir aussi
 
-- [NumberField](/programmable/sdk/api/components/number-field)
 - [useNodeProps](./use-node-props)

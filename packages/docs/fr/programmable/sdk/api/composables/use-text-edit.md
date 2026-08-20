@@ -1,42 +1,17 @@
 ---
 title: useTextEdit
-description: Gérer DOM text input, IME, Formatting et synchronisation des objets texte.
+description: Relier l’édition directe de texte à une zone de travail propre.
 ---
 
 # useTextEdit
 
-`useTextEdit()` connecte le DOM input à l’édition de texte du canvas de l’Editor.
+`useTextEdit(options)` coordonne focus, saisie, composition IME, sélection, presse-papiers et sortie du mode d’édition.
 
-Le composable coordonne :
+Utilisez-le dans le composant qui contient la zone de travail, généralement avec `useCanvas()` et `useCanvasInput()`.
 
-- la saisie via `textarea` ;
-- les IME ;
-- le clignotement du Caret ;
-- Delete et Backspace ;
-- les Commands Bold, Italic et Underline ;
-- l’écriture des modifications dans SceneGraph.
-
-## Utilisation
-
-```ts
-useTextEdit(canvasRef, editor)
-```
-
-Utilisez-le dans le Component qui contient le canvas, généralement avec `useCanvas()` et `useCanvasInput()`.
-
-## Raccourcis de Formatting
-
-Pendant l’édition de texte, `useTextEdit()` traite les raccourcis Bold, Italic et Underline.
-
-## Synchronisation
-
-Pendant la saisie, la Function met à jour le texte et les Style runs dans SceneGraph.
-
-## Notes
-
-Ce composable intègre l’édition de texte au canvas. Il ne s’adresse pas aux Fields texte ordinaires.
+L’éditeur conserve le texte et ses plages de mise en forme dans une seule opération d’annulation.
 
 ## Voir aussi
 
-- [useCanvas](./use-canvas)
 - [useCanvasInput](./use-canvas-input)
+- [Modifier du texte](/user-guide/text-editing)

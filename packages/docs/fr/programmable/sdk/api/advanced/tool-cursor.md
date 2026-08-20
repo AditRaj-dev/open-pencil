@@ -1,13 +1,13 @@
 ---
 title: toolCursor
-description: Déterminer le CSS cursor de l’Editor tool actif.
+description: Obtenir le curseur CSS correspondant à l’outil actif.
 ---
 
 # toolCursor
 
-`toolCursor(tool, override?)` renvoie le CSS cursor d’un Tool. `override` permet d’imposer un autre Value.
+`toolCursor(tool, override?)` renvoie le curseur CSS d’un outil. `override` peut remplacer le résultat.
 
-La Function maintient des Cursors cohérents pour chaque Tool dans un canvas ou une Toolbar personnalisés.
+Utilisez cette fonction pour conserver des curseurs cohérents dans une zone de travail ou une barre propres.
 
 ## Voir aussi
 
