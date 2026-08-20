@@ -1,63 +1,46 @@
 ---
-title: Analyser des designs
-description: Examiner Colors, Typography, Spacing et Structures répétées dans des fichiers `.fig`.
+title: Analyser des documents avec la CLI
+description: Détecter couleurs, typographies, espacements et structures répétées.
 ---
 
-# Analyser des designs
+# Analyser des documents avec la CLI
 
-Les Commands `analyze` examinent un document complet depuis le terminal. Elles affichent Colors et Text styles, les écarts de Spacing et les Structures répétées qui pourraient devenir des Components.
+Les sous-commandes `analyze` examinent le document complet et aident à repérer les incohérences ou les structures qui pourraient devenir des composants.
 
-## Colors
-
-```sh
-openpencil analyze colors design.fig
-```
-
-Compte chaque Color du document et affiche un Histogram :
-
-```text
-#1d1b20  ██████████████████████████████ 17155×
-#49454f  ██████████████████████████████ 9814×
-#ffffff  ██████████████████████████████ 8620×
-#6750a4  ██████████████████████████████ 3967×
-```
-
-## Typography
+## Couleurs
 
 ```sh
-openpencil analyze typography design.fig
+bun open-pencil analyze colors design.fig
 ```
 
-Liste les combinaisons Font family, Size et Style avec leur fréquence afin de repérer les Text styles isolés.
+Regroupe les couleurs des remplissages et contours, compte leurs utilisations et révèle les teintes presque identiques.
 
-## Spacing
+## Typographie
 
 ```sh
-openpencil analyze spacing design.fig
+bun open-pencil analyze typography design.fig
 ```
 
-Examine Gap et Padding des Auto-layout Frames. Une valeur `13px` au milieu d’une échelle `8/16/24` devient ainsi visible.
+Énumère les combinaisons de famille, taille et style avec leur fréquence afin d’identifier les styles isolés.
 
-## Clusters
+## Espacement
 
 ```sh
-openpencil analyze clusters design.fig
+bun open-pencil analyze spacing design.fig
 ```
 
-Recherche des Node structures répétées pouvant être regroupées en Components :
+Examine espacements et marges intérieures des cadres à disposition automatique. Une valeur `13px` au milieu d’une échelle `8/16/24` devient ainsi visible.
 
-```text
-3771× frame "container" (100% match)
-     size: 40×40, structure: Frame > [Frame]
-
-2982× instance "Checkboxes" (100% match)
-     size: 48×48, structure: Instance > [Frame]
-```
-
-## JSON output
+## Structures répétées
 
 ```sh
-openpencil analyze colors design.fig --json
+bun open-pencil analyze clusters design.fig
 ```
 
-Toutes les Analyze commands acceptent `--json`. La sortie peut être traitée avec `jq`, vérifiée dans la CI ou utilisée dans des Scripts appliquant des règles de Design tokens.
+Recherche des hiérarchies similaires susceptibles de devenir des composants et affiche leur correspondance, leur taille et leur structure.
+
+## Sortie JSON
+
+Ajoutez `--json` pour traiter les résultats en CI, produire des rapports ou appliquer vos propres règles.
+
+Ces analyses ne modifient pas le fichier. Pour les transformations, utilisez [`eval`](./scripting).

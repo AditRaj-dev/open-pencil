@@ -1,110 +1,49 @@
 ---
-title: JSX renderer
-description: Créer des designs de manière déclarative en JSX et les exporter en JSX ou HTML avec Tailwind.
+title: Moteur JSX
+description: Créer des designs à partir de JSX et exporter une sélection en JSX avec Tailwind.
 ---
 
-# JSX renderer
+# Moteur JSX
 
-OpenPencil crée un Design tree à partir de JSX. Cette syntaxe déclarative et compacte convient aux AI agents, aux Scripts et à la génération reproductible de designs.
-
-JSX sert aussi de représentation lisible d’un design existant. Les modifications apparaissent comme un Code diff ordinaire, ce qui facilite Review et Version control.
-
-## Créer un design
-
-Le Tool `render`, disponible dans AI Chat, MCP et CLI `eval`, accepte du JSX :
+OpenPencil convertit du JSX déclaratif en arbre de design. Le même système est disponible dans le chat avec l’AI, MCP et `eval`.
 
 ```jsx
-<Frame name="Card" w={320} h="hug" flex="col" gap={16} p={24} bg="#FFF" rounded={16}>
+<Frame flex="col" gap={16} p={24} w={320} bg="#ffffff" radius={16}>
   <Text size={18} weight="bold">Card Title</Text>
-  <Text size={14} color="#666">Description text</Text>
+  <Text color="#667085">Description</Text>
+  <Button>Continue</Button>
 </Frame>
 ```
 
-Dans MCP et AI Chat, le JSX string est transmis directement à `render`. Pour l’autre sens, la CLI utilise `export` : [Exporter un design en JSX](./cli/exporting).
-
 ## Éléments
 
-| Élément | Résultat | Alias |
-|---------|----------|-------|
-| `<Frame>` | Frame avec Auto layout facultatif | `<View>` |
-| `<Rectangle>` | Rectangle | `<Rect>` |
-| `<Ellipse>` | Ellipse ou Circle | |
-| `<Text>` | Objet texte ; les Children deviennent son contenu | |
-| `<Line>` | Line | |
-| `<Star>` | Star | |
-| `<Polygon>` | Polygon | |
-| `<Vector>` | Vector path | |
-| `<Group>` | Group | |
-| `<Section>` | Section | |
+| JSX | Résultat |
+|-----|----------|
+| `<Frame>` | Cadre, éventuellement avec disposition automatique |
+| `<Text>` | Objet texte |
+| `<Rectangle>` | Rectangle |
+| `<Ellipse>` | Ellipse |
+| `<Image>` | Forme avec remplissage d’image |
+| Composant enregistré | Arbre réutilisable défini par l’application |
 
-## Style props
+## Disposition
 
-Les formes courtes suivent les conventions de Tailwind.
+- `flex="row"` ou `flex="col"` active la disposition automatique.
+- `gap` règle l’espacement.
+- `p`, `px`, `py`, `pt`, `pr`, `pb` et `pl` règlent les marges intérieures.
+- `align` et `justify` règlent l’alignement.
+- `wrap` autorise le retour à la ligne.
 
-### Layout
+## Taille et position
 
-| Prop | Signification |
-|------|---------------|
-| `flex` | `"row"` ou `"col"` ; active Auto layout |
-| `gap` | Espace entre Children |
-| `wrap` | Place les Children sur d’autres lignes |
-| `rowGap` | Espace entre les lignes avec Wrap |
-| `justify` | `"start"`, `"end"`, `"center"`, `"between"` |
-| `items` | `"start"`, `"end"`, `"center"`, `"stretch"` |
-| `p`, `px`, `py`, `pt`, `pr`, `pb`, `pl` | Padding |
+- `w` et `h` acceptent des nombres, `"fill"` ou `"hug"`.
+- `minW`, `maxW`, `minH` et `maxH` posent des limites.
+- `x` et `y` définissent la position hors du flux.
 
-### Size et Position
+## Apparence et typographie
 
-| Prop | Signification |
-|------|---------------|
-| `w`, `h` | Width ou Height sous forme de nombre, `"fill"` ou `"hug"` |
-| `minW`, `maxW`, `minH`, `maxH` | Limites de taille |
-| `x`, `y` | Position |
+`bg`, `fill`, `color`, `stroke`, `strokeWidth`, `opacity`, `radius` et `shadow` contrôlent l’apparence. `size`, `font`, `weight`, `lineHeight`, `letterSpacing` et `align` contrôlent le texte. Ces noms restent en anglais car ils font partie de l’API JSX.
 
-### Appearance
+## Exporter vers JSX
 
-| Prop | Signification |
-|------|---------------|
-| `bg` | Background fill sous forme de Hex color |
-| `fill` | Alias de `bg` |
-| `stroke` | Stroke color |
-| `strokeWidth` | Stroke weight, 1 par défaut |
-| `rounded` | Corner radius ; coins séparés via `roundedTL`, `roundedTR`, `roundedBL`, `roundedBR` |
-| `cornerSmoothing` | Continuous corner smoothing de 0 à 1 |
-| `opacity` | Valeur de 0 à 1 |
-| `shadow` | Drop shadow, par exemple `"0 4 8 #00000040"` |
-| `blur` | Layer blur radius |
-| `rotate` | Rotation en degrés |
-| `blendMode` | Blend mode |
-| `overflow` | `"hidden"` ou `"visible"` |
-
-### Typography
-
-| Prop | Signification |
-|------|---------------|
-| `size` / `fontSize` | Font size |
-| `font` / `fontFamily` | Font family |
-| `weight` / `fontWeight` | `"bold"`, `"medium"`, `"normal"` ou nombre |
-| `color` | Text color |
-| `textAlign` | `"left"`, `"center"`, `"right"`, `"justified"` |
-
-## Exporter du JSX
-
-```sh
-openpencil export design.fig -f jsx                   # JSX OpenPencil
-openpencil export design.fig -f jsx --style tailwind  # HTML avec Tailwind classes
-```
-
-Le design exporté peut être modifié comme du Code puis rendu à nouveau.
-
-## Diffs
-
-```diff
- <Frame name="Card" w={320} flex="col" gap={16} p={24} bg="#FFF">
--  <Text size={18} weight="bold">Old Title</Text>
-+  <Text size={24} weight="bold" color="#1D1B20">New Title</Text>
-   <Text size={14} color="#666">Description</Text>
- </Frame>
-```
-
-Cette représentation permet de relire les changements dans les Pull requests et de les conserver dans Version control.
+**Copier comme → JSX** convertit la sélection en JSX et classes Tailwind. La sortie tente de préserver hiérarchie, disposition, dimensions, couleurs, typographie et bordures comme point de départ d’une implémentation.
