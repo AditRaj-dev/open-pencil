@@ -1,78 +1,36 @@
 ---
-title: AI Chat
-description: AI Assistant intégré avec plus de 90 Tools pour créer et modifier des designs.
+title: Chat avec l’AI
+description: Assistant intégré avec plus de 90 outils pour créer, modifier et analyser des designs.
 ---
 
-# AI Chat
+# Chat avec l’AI
 
-Appuyez sur <kbd>⌘</kbd><kbd>J</kbd> ou <kbd>Ctrl</kbd><kbd>J</kbd>. L’Assistant peut créer des Shapes, modifier des Styles, configurer le Layout, travailler avec des Components et analyser le document.
+Appuyez sur <kbd>⌘</kbd><kbd>J</kbd> ou <kbd>Ctrl</kbd><kbd>J</kbd>. L’assistant peut créer des formes, modifier des styles, configurer des dispositions, travailler avec les composants et analyser le document.
 
-## Configuration
+## Configurer les modèles
 
-1. Ouvrez AI Chat.
-2. Sélectionnez le Settings icon.
-3. Ajoutez un Model et configurez Provider, Model ID, Credentials et Capabilities.
-4. Enregistrez le Model et attribuez-le à **Design agent**.
+1. Ouvrez le chat.
+2. Sélectionnez l’icône des réglages.
+3. Ajoutez un profil et configurez la connexion, l’identifiant du modèle, les identifiants d’accès et les capacités.
 
-Plusieurs Models peuvent être enregistrés et attribués séparément au Design, aux Reviews, aux Tasks rapides et à l’Image input. Les Models partageant une Provider connection réutilisent le même Credential stocké de manière sécurisée.
+Plusieurs profils peuvent être enregistrés et attribués séparément au design, aux revues, aux tâches rapides et aux images. Les profils qui partagent une connexion réutilisent le même secret, conservé de manière sécurisée.
 
-### Providers
+## Fournisseurs
 
-| Provider | Exemples | Configuration |
-|----------|----------|---------------|
-| **OpenRouter** | Claude, GPT, Gemini, DeepSeek, Qwen et autres | API key de [openrouter.ai](https://openrouter.ai) |
-| **Anthropic** | Claude Sonnet 4.6, Claude Opus 4.6 | API key de [console.anthropic.com](https://console.anthropic.com) |
-| **OpenAI** | GPT-5.3 Codex, GPT-4.1, o3, o4-mini | API key de [platform.openai.com](https://platform.openai.com) |
-| **Google AI** | Gemini 3.1 Pro, Gemini 3 Flash | API key de [aistudio.google.dev](https://aistudio.google.dev) |
-| **Z.ai** | GLM-5.1, GLM-5, GLM-4.7 et famille GLM-4.5 | API key selon la [documentation Z.ai](https://docs.z.ai/devpack/quick-start) |
-| **MiniMax** | MiniMax M3, M2.7, M2.7-highspeed, M2.5 et M2.1 | API key de [platform.minimax.io](https://platform.minimax.io/user-center/basic-information/interface-key) |
-| **OpenAI-compatible** | Endpoint au format OpenAI API | Base URL et Key propres ; Completions ou Responses API |
-| **Anthropic-compatible** | Endpoint au format Anthropic API | Base URL et Key propres |
+OpenPencil prend en charge les connexions compatibles avec OpenAI et Anthropic, ainsi qu’OpenRouter, Google, Z.ai et des fournisseurs locaux.
 
-OpenPencil n’utilise aucun Backend intermédiaire pour ces connexions. Les Requests sont envoyées directement au Provider. Dans le Browser, ses CORS policies s’appliquent. La fiabilité des Streaming tool calls varie également selon les Model deployments. Consultez la [compatibilité BYOK](/programmable/byok-provider-compatibility) pour les mesures et étapes de reproduction.
+Aucun serveur intermédiaire n’est utilisé. Les requêtes sont envoyées directement au fournisseur ; dans le navigateur, ses règles CORS s’appliquent. La fiabilité des appels d’outils en diffusion continue peut varier selon les déploiements. Consultez la [compatibilité BYOK](/programmable/byok-provider-compatibility).
 
-### Connexions MCP externes
+## Agents ACP et MCP distant
 
-Les ACP agents de l’application de bureau peuvent utiliser des serveurs [Model Context Protocol](https://modelcontextprotocol.io/) distants et approuvés. Dans **Settings → MCP connections**, ajoutez un Streamable HTTP endpoint nommé, enregistrez éventuellement un Bearer token et activez la Connection.
+L’application de bureau peut lancer des agents ACP et les connecter à des serveurs distants de confiance compatibles avec [Model Context Protocol](https://modelcontextprotocol.io/). Dans **Réglages → Connexions MCP**, ajoutez un point d’accès HTTP diffusé, un nom et, si nécessaire, un jeton Bearer.
 
-Le Token est conservé dans le Credential backend configuré, et non dans les Settings ordinaires. Il n’est résolu qu’au démarrage de l’ACP session.
+Le jeton est conservé dans le stockage sécurisé des identifiants, pas dans les réglages ordinaires, et n’est récupéré qu’au démarrage de la session ACP.
 
-Les Remote servers doivent utiliser HTTPS. Les Loopback HTTP endpoints sont acceptés pour le développement local. N’activez qu’un Server de confiance : ses Tools peuvent lire des données externes ou effectuer des Actions avec les Credentials fournis. Le Design MCP server intégré est connecté automatiquement et ne doit pas être ajouté ici.
+## Outils
 
-## Tools
+Les outils couvrent lecture, création, modification, structure, variables, vecteurs, analyse, description, génération de code et images de stock. Chaque appel agit sur l’éditeur actif et participe à l’historique d’annulation lorsque cela s’applique.
 
-AI Chat dispose de plus de 90 Tools :
+## Confidentialité et coût
 
-- **Create :** Frames, Shapes, Text, Components et Pages ; JSX pour les Layouts complexes ;
-- **Style :** Fills, Strokes, Effects, Opacity, Corner radius et Blend modes ;
-- **Layout :** Auto layout, Grid, Alignment, Spacing et Sizing ;
-- **Components :** Components, Instances, Component sets et Overrides ;
-- **Variables :** Variables, Collections, Modes et Fill bindings ;
-- **Query :** rechercher des Nodes et XPath selectors, lire Properties, Pages, Fonts et Selection ;
-- **Inspect :** `get_jsx`, `diff_jsx` et `describe` pour Structure, Role et Design issues ;
-- **Analyze :** Color palette, Typography, Spacing et Clusters ;
-- **Export :** PNG, SVG et JSX avec Tailwind classes, ainsi que `export_image` pour la vérification visuelle ;
-- **Vector :** Boolean operations et Path manipulation.
-
-## Vérification visuelle
-
-Après une modification, l’Assistant peut rendre le résultat avec `export_image` et le comparer à la demande. Il détecte ainsi les erreurs de Layout, les éléments manquants et les Colors incorrectes.
-
-## Exemples
-
-- « Crée une Card avec un titre, une description et un Button bleu. »
-- « Utilise le même Corner radius pour tous les Buttons de cette Page. »
-- « Quels Fonts ce fichier utilise-t-il ? »
-- « Remplace le Background du Frame sélectionné par un Gradient bleu et violet. »
-- « Exporte le Frame sélectionné en SVG. »
-- « Trouve tous les objets texte dont la Font size est inférieure à 12. »
-- « Décris la fonction du Component sélectionné. »
-- « Affiche le JSX de ce Frame. »
-
-## Conseils
-
-- Sélectionnez les objets avant la demande ; l’Assistant connaît la Selection.
-- Indiquez précisément Colors, Sizes et Positions.
-- Un message peut modifier plusieurs objets.
-- Les changements AI peuvent être annulés avec Undo.
-- Le Layout est recalculé après chaque Tool call.
+Les requêtes sont envoyées au fournisseur configuré. Vérifiez ses conditions, sa politique de données et ses tarifs avant d’envoyer des documents sensibles. OpenPencil ne fournit pas de crédits de modèles.
