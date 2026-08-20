@@ -1,16 +1,15 @@
 ---
 title: useToolbarState
-description: Mostrar las Categories de una Toolbar por Pages en Viewports pequeños.
+description: Estado reactivo de las herramientas disponibles y la herramienta activa.
 ---
 
 # useToolbarState
 
-`useToolbarState()` devuelve el State de la Category actual y las Functions `goPrev()` y `goNext()`. Permite cambiar entre Groups de Tools en pantallas pequeñas.
+`useToolbarState()` devuelve la lista de herramientas, la activa y la acción para cambiarla.
 
-Usa el composable para crear una Toolbar responsive basada en `ToolbarRoot`.
+Use este composable si necesita la lógica de la barra sin `ToolbarRoot`.
 
-## Consulta también
+## Véase también
 
 - [ToolbarRoot](../components/toolbar-root)
-- [ToolbarItem](../components/toolbar-item)
 - [useToolbar](./use-toolbar)

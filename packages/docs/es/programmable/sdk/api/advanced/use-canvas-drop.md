@@ -1,16 +1,15 @@
 ---
 title: useCanvasDrop
-description: Procesar Drag and drop de Image files sobre el canvas.
+description: Gestionar archivos y datos soltados sobre el lienzo.
 ---
 
 # useCanvasDrop
 
-`useCanvasDrop(canvasRef, editor)` conecta los Events `dragenter`, `dragover`, `dragleave` y `drop` con el canvas. Los Image files compatibles se añaden al documento en la Position adecuada.
+`useCanvasDrop(options)` conecta los eventos de arrastrar y soltar con la importación del editor.
 
-Usa el composable en un Canvas component propio si debe importar Images mediante Drag and drop.
+Convierte la posición del puntero a coordenadas del lienzo, valida los tipos admitidos e importa imágenes, SVG u otros datos compatibles en el punto indicado.
 
-## Consulta también
+## Véase también
 
-- [CanvasRoot](../components/canvas-root)
-- [CanvasSurface](../components/canvas-surface)
 - [extractImageFilesFromClipboard](./extract-image-files-from-clipboard)
+- [useCanvasInput](../composables/use-canvas-input)
