@@ -5,6 +5,7 @@ import { computeDescendantVisualBounds } from '@open-pencil/scene-graph/geometry
 
 import type { RenderOverlays, SkiaRenderer } from '#core/canvas/renderer'
 import type { EditorState } from '#core/editor/types'
+import { emitNavigationTrace } from '#core/profiler'
 
 import { drawChromePass, drawLabelPass, drawOverlayPass } from './overlay-pass'
 import { renderSceneBacking, updateSceneBackingPreviewState } from './retained-backing'
@@ -140,6 +141,13 @@ export function render(
   sceneVersion = -1,
   layer: RenderLayer = 'full'
 ): void {
+  emitNavigationTrace('render:start', {
+    layer,
+    sceneVersion,
+    panX: r.panX,
+    panY: r.panY,
+    zoom: r.zoom
+  })
   r.syncFontGeneration()
   const p = r.profiler
   p.beginFrame()
@@ -231,6 +239,17 @@ export function render(
 
   p.setNodeCounts(r._nodeCount, r._culledCount)
   p.endFrame()
+  emitNavigationTrace('render:end', {
+    layer,
+    sceneVersion,
+    panX: r.panX,
+    panY: r.panY,
+    zoom: r.zoom,
+    flushMs: flushDuration,
+    nodes: r._nodeCount,
+    culledNodes: r._culledCount,
+    backingCrisp: !r.sceneBackingNeedsCrispRender
+  })
 }
 
 function renderSceneContent(
