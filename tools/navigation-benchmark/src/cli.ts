@@ -30,7 +30,7 @@ if (command === 'compare') {
 }
 if (command !== 'run') {
   console.log(
-    'Usage: bun tools/navigation-benchmark/src/cli.ts run --url URL --gesture FILE [--mode cdp|dom] [--scenario light|large-flat|raster-stress|current-document] [--output DIR]\n       bun tools/navigation-benchmark/src/cli.ts compare --baseline METRICS --candidate METRICS [--output FILE]'
+    'Usage: bun tools/navigation-benchmark/src/cli.ts run --url URL --gesture FILE [--mode cdp|dom] [--scenario light|large-flat|raster-stress|current-document] [--no-trace] [--cpu-profile] [--output DIR]\n       bun tools/navigation-benchmark/src/cli.ts compare --baseline METRICS --candidate METRICS [--output FILE]'
   )
   process.exit(command ? 1 : 0)
 }
@@ -39,6 +39,8 @@ const url = argument('--url')
 const gesturePath = argument('--gesture')
 const mode = argument('--mode', 'cdp') as ReplayMode
 const scenario = argument('--scenario', 'light') as NavigationScenario
+const traceEnabled = !process.argv.includes('--no-trace')
+const cpuProfile = process.argv.includes('--cpu-profile')
 const output = resolve(argument('--output', 'artifacts/navigation-benchmark'))
 if (mode !== 'cdp' && mode !== 'dom') throw new Error(`Unsupported replay mode: ${mode}`)
 if (!['light', 'large-flat', 'raster-stress', 'current-document'].includes(scenario)) {
@@ -47,7 +49,10 @@ if (!['light', 'large-flat', 'raster-stress', 'current-document'].includes(scena
 
 await mkdir(output, { recursive: true })
 const input = await readRecording(gesturePath)
-const browser = await chromium.launch({ headless: true })
+const browser = await chromium.launch({
+  headless: true,
+  args: ['--enable-unsafe-swiftshader']
+})
 const context = await browser.newContext({
   viewport: { width: 1280, height: 800 },
   deviceScaleFactor: 2
@@ -60,6 +65,7 @@ try {
   )
   await page.locator('[data-test-id="canvas-element"][data-ready="1"]').waitFor({ timeout: 30_000 })
   await setupScenario(page, scenario)
+  await page.waitForTimeout(750)
   await page.evaluate((viewport) => {
     const store = window.openPencil?.getStore?.()
     if (!store) throw new Error('OpenPencil store not available')
@@ -68,15 +74,16 @@ try {
     store.state.zoom = viewport.zoom
     store.requestRepaint()
   }, input.initialViewport)
+  await page.waitForTimeout(500)
   await page.evaluate(
     (name) => window.openPencil?.test?.navigation?.startRecording(name),
     input.name
   )
 
-  const trace = await startChromiumTrace(page)
+  const trace = traceEnabled ? await startChromiumTrace(page, { cpuProfile }) : null
   await replay(page, input, mode)
   await page.waitForTimeout(750)
-  await trace.stop(resolve(output, 'trace.json.gz'))
+  await trace?.stop(resolve(output, 'trace.json.gz'))
 
   const recording = await page.evaluate(
     () => window.openPencil?.test?.navigation?.stopRecording() as NavigationRecordingFile
@@ -86,6 +93,8 @@ try {
     url,
     mode,
     scenario,
+    traceEnabled,
+    cpuProfile,
     gesturePath: resolve(gesturePath),
     browserVersion: await browser.version(),
     platform: process.platform,
