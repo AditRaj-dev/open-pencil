@@ -334,6 +334,27 @@ onMounted(() => {
         />
       </ProviderSettingsField>
 
+      <div class="rounded border border-border bg-panel-field p-2.5 text-[10px] text-muted">
+        <p class="font-medium text-surface">
+          {{
+            isACP
+              ? dialogs.localACPAgents
+              : isHarness
+                ? dialogs.harnessProviders
+                : dialogs.directModelProviders
+          }}
+        </p>
+        <p>
+          {{
+            isACP
+              ? dialogs.acpGuidance
+              : isHarness
+                ? dialogs.harnessGuidance
+                : dialogs.directModelGuidance
+          }}
+        </p>
+      </div>
+
       <div
         v-if="isHarness"
         class="rounded border border-border bg-panel-field p-2.5 text-[10px] text-muted"
