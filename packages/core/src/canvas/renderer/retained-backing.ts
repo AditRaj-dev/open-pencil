@@ -339,27 +339,6 @@ function cachedSubtreePicture(
   return picture
 }
 
-function subtreeHasCacheableEffects(graph: SceneGraph, childId: string): boolean {
-  const pending = [childId]
-  while (pending.length > 0) {
-    const nodeId = pending.pop()
-    if (!nodeId) continue
-    const node = graph.getNode(nodeId)
-    if (!node?.visible) continue
-    const visibleEffects = node.effects.filter((effect) => effect.visible)
-    if (
-      visibleEffects.length > 0 &&
-      visibleEffects.every(
-        (effect) => effect.type === 'DROP_SHADOW' || effect.type === 'INNER_SHADOW'
-      )
-    ) {
-      return true
-    }
-    pending.push(...node.childIds)
-  }
-  return false
-}
-
 function renderBackingChild(
   r: SkiaRenderer,
   graph: SceneGraph,
@@ -381,7 +360,11 @@ function renderBackingChild(
   canvas.translate(backing.panX, backing.panY)
   canvas.scale(r.zoom, r.zoom)
   const previousRenderingSceneBacking = r.renderingSceneBacking
-  if (subtreeHasCacheableEffects(graph, childId)) {
+  const child = graph.getNode(childId)
+  const hasCacheableEffects = child?.effects.some(
+    (effect) => effect.visible && (effect.type === 'DROP_SHADOW' || effect.type === 'INNER_SHADOW')
+  )
+  if (hasCacheableEffects) {
     r.renderingSceneBacking = true
     try {
       r.renderNode(canvas, graph, childId, {})
