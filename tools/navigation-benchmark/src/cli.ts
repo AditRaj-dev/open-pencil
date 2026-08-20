@@ -30,7 +30,7 @@ if (command === 'compare') {
 }
 if (command !== 'run') {
   console.log(
-    'Usage: bun tools/navigation-benchmark/src/cli.ts run --url URL --gesture FILE [--mode cdp|dom] [--scenario light|large-flat|raster-stress|current-document] [--no-trace] [--cpu-profile] [--software-gpu] [--output DIR]\n       bun tools/navigation-benchmark/src/cli.ts compare --baseline METRICS --candidate METRICS [--output FILE]'
+    'Usage: bun tools/navigation-benchmark/src/cli.ts run --url URL --gesture FILE [--mode cdp|dom] [--scenario light|large-flat|raster-stress|current-document] [--document FILE] [--no-trace] [--cpu-profile] [--software-gpu] [--output DIR]\n       bun tools/navigation-benchmark/src/cli.ts compare --baseline METRICS --candidate METRICS [--output FILE]'
   )
   process.exit(command ? 1 : 0)
 }
@@ -39,6 +39,7 @@ const url = argument('--url')
 const gesturePath = argument('--gesture')
 const mode = argument('--mode', 'cdp') as ReplayMode
 const scenario = argument('--scenario', 'light') as NavigationScenario
+const documentPath = process.argv.includes('--document') ? resolve(argument('--document')) : null
 const traceEnabled = !process.argv.includes('--no-trace')
 const cpuProfile = process.argv.includes('--cpu-profile')
 const softwareGpu = process.argv.includes('--software-gpu')
@@ -46,6 +47,13 @@ const output = resolve(argument('--output', 'artifacts/navigation-benchmark'))
 if (mode !== 'cdp' && mode !== 'dom') throw new Error(`Unsupported replay mode: ${mode}`)
 if (!['light', 'large-flat', 'raster-stress', 'current-document'].includes(scenario)) {
   throw new Error(`Unsupported scenario: ${scenario}`)
+}
+
+if (scenario === 'current-document' && !documentPath) {
+  throw new Error('--document is required with --scenario current-document')
+}
+if (scenario !== 'current-document' && documentPath) {
+  throw new Error('--document requires --scenario current-document')
 }
 
 await mkdir(output, { recursive: true })
@@ -64,6 +72,17 @@ const context = await browser.newContext({
   deviceScaleFactor: 2
 })
 const page = await context.newPage()
+const documentURLPath = '/__navigation-benchmark-document.fig'
+if (documentPath) {
+  const documentBytes = await readFile(documentPath)
+  await page.route(`**${documentURLPath}`, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/octet-stream',
+      body: documentBytes
+    })
+  )
+}
 
 try {
   await page.goto(
@@ -85,16 +104,39 @@ try {
     throw new Error(`Hardware GPU benchmark requested but Chromium uses ${glInfo.renderer}`)
   }
   await page.locator('[data-test-id="canvas-element"][data-ready="1"]').waitFor({ timeout: 30_000 })
-  await setupScenario(page, scenario)
-  await page.waitForTimeout(750)
-  await page.evaluate((viewport) => {
-    const store = window.openPencil?.getStore?.()
-    if (!store) throw new Error('OpenPencil store not available')
-    store.state.panX = viewport.panX
-    store.state.panY = viewport.panY
-    store.state.zoom = viewport.zoom
-    store.requestRepaint()
-  }, input.initialViewport)
+  if (documentPath) {
+    await page.evaluate((path) => window.openPencil?.openFile?.(path), documentURLPath)
+    await page.waitForFunction(
+      () => {
+        const store = window.openPencil?.getStore?.()
+        return (
+          store != null &&
+          !store.state.loading &&
+          store.graph.getChildren(store.state.currentPageId).length > 0
+        )
+      },
+      undefined,
+      { timeout: 90_000 }
+    )
+    await page.evaluate(() => {
+      const store = window.openPencil?.getStore?.()
+      if (!store) throw new Error('OpenPencil store not available after opening benchmark document')
+      store.zoomToFit()
+    })
+  } else {
+    await setupScenario(page, scenario)
+  }
+  await page.waitForTimeout(1_500)
+  if (!documentPath) {
+    await page.evaluate((viewport) => {
+      const store = window.openPencil?.getStore?.()
+      if (!store) throw new Error('OpenPencil store not available')
+      store.state.panX = viewport.panX
+      store.state.panY = viewport.panY
+      store.state.zoom = viewport.zoom
+      store.requestRepaint()
+    }, input.initialViewport)
+  }
   await page.waitForTimeout(500)
   await page.evaluate(
     (name) => window.openPencil?.test?.navigation?.startRecording(name),
@@ -118,6 +160,7 @@ try {
     cpuProfile,
     softwareGpu,
     glInfo,
+    documentPath,
     gesturePath: resolve(gesturePath),
     browserVersion: await browser.version(),
     platform: process.platform,

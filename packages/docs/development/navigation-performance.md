@@ -44,6 +44,23 @@ OpenPencil emits User Timing marks under `openpencil:*`, including wheel receipt
 
 Record at least slow pan, momentum pan, direction reversal, slow pinch, fast pinch in/out, pinch reversal, diagonal pan, and the personally observed failing gesture. Recordings from actual hardware must use `source: "macos-trackpad"`; generated fixtures use `source: "synthetic"`.
 
+## Benchmark a real `.fig` fixture
+
+Use `current-document` with an explicit browser-served fixture path. The runner waits for loading and page population, applies layout through the normal document-open path, zooms to fit, and lets fonts/images/initial backing settle before recording:
+
+```sh
+bun run benchmark:navigation \
+  --url http://localhost:1420/ \
+  --gesture tests/fixtures/navigation/gestures/synthetic-pinch-reversal.json \
+  --mode dom \
+  --scenario current-document \
+  --document tests/fixtures/gold-preview.fig \
+  --no-trace \
+  --output artifacts/navigation-benchmark/gold-preview
+```
+
+`environment.json` records the resolved local document path so reports cannot silently mix generated and real-document runs. The runner serves the exact local bytes through an isolated Playwright route, so production Vite preview does not return its SPA fallback for non-public test fixtures.
+
 ## Replay with Chromium tracing
 
 ```sh
