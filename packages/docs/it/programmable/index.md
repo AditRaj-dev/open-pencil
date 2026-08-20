@@ -1,49 +1,43 @@
 ---
 layout: doc
-title: AI e automazione
-description: Automatizzare OpenPencil con AI Chat, CLI, JSX, MCP e APIs.
+title: Automazione e API
+description: AI, MCP, CLI, JSX e Figma Plugin API per automatizzare i design.
 ---
 
-# AI e automazione
+# Automazione e API
 
-OpenPencil tratta i file di design come dati strutturati. Le operazioni dell’editor — creare Shapes, modificare Fills, configurare Auto layout o esportare Assets — sono disponibili anche da CLI, AI agents e APIs.
+OpenPencil tratta i file di design come dati strutturati. Le operazioni dell’editor — creare forme, modificare riempimenti, configurare la disposizione automatica o esportare risorse — sono disponibili anche tramite CLI, agenti AI e API.
 
-Interfaccia e automazione usano lo stesso Core. Un’operazione si comporta quindi allo stesso modo se avviata dalla UI, da uno Script o da un Agent.
+## Chat con AI
 
-## AI Chat
+L’assistente integrato esegue oltre 90 strumenti. Un’istruzione può modificare le ombre di più pulsanti, creare un componente con variante scura o esportare tutti i frame di una pagina in scala 2×.
 
-L’Assistant integrato può eseguire più di 90 Tools. Un’istruzione può modificare le Shadows di più Buttons, creare un Component con Dark variant oppure esportare tutti i Frames di una Page a Scale 2×.
+[Chat con AI →](./ai-chat)
 
-[AI Chat →](./ai-chat)
+## MCP
 
-## Collaboration
-
-OpenPencil sincronizza i documenti P2P tramite WebRTC. È sufficiente condividere il Room link; non servono account o server centrale. Live cursors e Follow mode mostrano gli altri partecipanti. Yjs CRDT unisce le modifiche simultanee.
-
-[Collaboration →](./collaboration)
-
-## JSX renderer
-
-Una UI può essere descritta in modo dichiarativo con JSX. Una singola chiamata crea un Tree completo di Frames, Text, Auto layout, Fills e Strokes.
-
-Nella direzione opposta, OpenPencil esporta una Selection come JSX oppure HTML con Tailwind classes. Il risultato può diventare la base per Implementation, Code review o un ulteriore passaggio AI.
-
-[JSX renderer →](./jsx-renderer)
-
-## CLI
-
-La CLI esamina, esporta e analizza file `.fig` senza aprire l’editor. Elenca Pages e Nodes, cerca oggetti, estrae Design tokens e renderizza PNG. Per l’automazione offre JSON output.
-
-Tramite RPC può anche controllare il documento aperto nell’applicazione desktop.
-
-[Esaminare file](./cli/inspecting) · [Export](./cli/exporting) · [Analizzare design](./cli/analyzing) · [Scripts](./cli/scripting)
-
-## Server MCP
-
-Claude Code, Cursor, Windsurf e altri MCP clients possono usare gli stessi 90 Tools di AI Chat. Il server supporta stdio e HTTP con Sessions.
+Claude Code, Cursor, Windsurf e altri client MCP possono usare gli stessi strumenti. Il server supporta stdio e HTTP con sessioni indipendenti.
 
 [Server MCP →](/programmable/mcp-server)
 
-## Piattaforma aperta
+## CLI
 
-OpenPencil è pubblicato con licenza MIT, salva i documenti localmente e fornisce accesso programmatico alle proprie operazioni. I file `.fig` possono essere esaminati, trasformati, elaborati nella CI o forniti come Context a un LLM senza dipendere da uno specifico Hosting provider.
+La CLI esamina, esporta e analizza file `.fig` senza aprire l’editor. Può elencare pagine e oggetti, cercare contenuti, estrarre variabili di design e generare PNG. `--json` facilita l’integrazione con CI.
+
+[CLI →](./cli/inspecting)
+
+## JSX
+
+Un’interfaccia può essere descritta in modo dichiarativo con JSX. Una chiamata crea un albero completo di frame, testo, disposizioni, riempimenti e contorni.
+
+OpenPencil può anche esportare una selezione come JSX o HTML con classi Tailwind, utile come base per implementazione e revisione del codice.
+
+[Motore JSX →](./jsx-renderer)
+
+## Figma Plugin API
+
+Il comando `eval` esegue JavaScript con un oggetto globale `figma` compatibile. Permette di interrogare e modificare documenti e salvare il risultato.
+
+[Scripting con `eval` →](./cli/scripting)
+
+OpenPencil ha licenza MIT e conserva i documenti localmente. I file `.fig` possono essere esaminati, trasformati, elaborati in CI o forniti come contesto a un modello senza dipendere da uno specifico servizio di hosting.

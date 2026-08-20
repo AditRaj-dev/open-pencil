@@ -1,75 +1,36 @@
 ---
-title: Modificare Vectors
-description: Modificare Anchors, Bezier handles e Segments e usare Pen tool in Edit mode.
+title: Modifica vettoriale
+description: Modificare punti, maniglie di Bézier e segmenti di un tracciato.
 ---
 
-# Modificare Vectors
+# Modifica vettoriale
 
-Vector edit mode modifica la geometria di un Path: Position degli Anchors, forma dei Segments e Bezier handles. Non trasforma l’intero oggetto, ma il Path stesso.
+## Entrare e uscire
 
-## Aprire Edit mode
+1. Seleziona un oggetto vettoriale con Selezione.
+2. Fai doppio clic sulla curva o premi <kbd>Enter</kbd>.
+3. Premi <kbd>Escape</kbd> per tornare alla selezione normale.
 
-1. Seleziona un Vector object con Select tool.
-2. Fai Double-click sulla Curve.
+In questa modalità contorno e punti sono modificabili direttamente. Gli angoli del riquadro di selezione non ridimensionano né ruotano l’oggetto.
 
-Premi <kbd>Escape</kbd> o cambia contesto per uscire.
+## Punti
 
-## Comportamento
+Fai clic su un punto per selezionarlo; usa <kbd>Shift</kbd> per aggiungerlo o rimuoverlo dalla selezione. Trascina per spostarlo. I segmenti collegati si aggiornano durante il movimento.
 
-- Il normale Transform bounding box viene nascosto.
-- Anchors, Segments e Handles possono essere selezionati e modificati.
-- Gli angoli del Bounding box non attivano Resize o Rotation.
+Premi <kbd>Delete</kbd> o <kbd>Backspace</kbd> per eliminare i punti selezionati.
 
-## Operazioni di base
-
-### Spostare un Anchor
-
-Trascina l’Anchor. I Segments collegati e la forma del Path vengono aggiornati durante il Drag.
-
-### Modificare un Bezier handle
-
-Trascina l’Handle di un Anchor. Il comportamento dipende dalla sua Handle composition corrente.
-
-## Modifiers
+## Maniglie di Bézier
 
 | Comportamento | macOS | Windows / Linux |
 |---------------|-------|-----------------|
-| Continuous | <kbd>Cmd</kbd> + Drag | <kbd>Ctrl</kbd> + Drag |
-| Corner, Handles indipendenti | <kbd>Option</kbd> + Drag | <kbd>Alt</kbd> + Drag |
-| Mantieni Direction, modifica solo Length | <kbd>Shift</kbd> + Drag | <kbd>Shift</kbd> + Drag |
+| Curva continua | <kbd>⌘</kbd> + trascina | <kbd>Ctrl</kbd> + trascina |
+| Angolo, maniglie indipendenti | <kbd>Option</kbd> + trascina | <kbd>Alt</kbd> + trascina |
+| Mantieni direzione, cambia lunghezza | <kbd>Shift</kbd> + trascina | <kbd>Shift</kbd> + trascina |
 
-### Continuous
+## Segmenti
 
-Con <kbd>Cmd</kbd> o <kbd>Ctrl</kbd>, l’Active handle rimane allineato all’Handle opposto. Cambia solo la sua Length e la Curve mantiene una transizione fluida.
+Fai clic su un segmento per selezionarlo. Trascinalo per incurvarlo; OpenPencil crea le maniglie necessarie. Fai doppio clic per aggiungere un punto.
 
-### Corner
+## Continuare tracciati aperti
 
-Con <kbd>Option</kbd> o <kbd>Alt</kbd>, l’Active handle viene modificato indipendentemente. L’Handle opposto resta fermo, consentendo un Corner netto.
-
-### Mantieni Direction
-
-Per Anchors con Composition **Continuous** o **Symmetric**, <kbd>Shift</kbd> conserva la Direction presente prima del Drag. Cambia solo la Length di uno o due Handles, in base alla Composition.
-
-## Bend tramite Drag dell’Anchor
-
-Quando un Anchor viene trascinato con <kbd>Cmd</kbd> o <kbd>Ctrl</kbd>, OpenPencil sceglie il Target handle in base alla Direction del Segment collegato, non alla distanza dal punto vicino.
-
-Questo comportamento funziona anche sugli Anchors ramificati di un Vector network. Dopo la scelta, lo stesso Target handle resta attivo fino alla fine del Drag.
-
-## Pen tool in Edit mode
-
-Con Pen tool attivo:
-
-- Click su un Segment inserisce un Anchor e divide il Segment;
-- Click sull’Endpoint di un Path aperto riprende il disegno;
-- <kbd>Option</kbd>/<kbd>Alt</kbd> + Click elimina un Anchor se la Topology lo consente.
-
-Consulta [Pen tool](./pen-tool) per creare e chiudere Paths.
-
-## Esempio
-
-1. Disegna uno Shape con Pen tool.
-2. Apri la Curve con Double-click.
-3. Sposta gli Anchors per regolare il profilo.
-4. Modifica gli Handles con <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>, <kbd>Option</kbd>/<kbd>Alt</kbd> o <kbd>Shift</kbd>.
-5. Premi <kbd>Escape</kbd>.
+Seleziona un’estremità e usa Penna per prolungare il tracciato. Fai clic sull’estremità opposta per chiudere la forma.
