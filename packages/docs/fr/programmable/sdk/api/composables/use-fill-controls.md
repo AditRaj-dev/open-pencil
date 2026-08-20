@@ -1,30 +1,15 @@
 ---
 title: useFillControls
-description: Default value d’un nouveau Fill dans le panneau Properties.
+description: Gérer les remplissages de la sélection actuelle.
 ---
 
 # useFillControls
 
-`useFillControls()` fournit le Default fill qu’un panneau utilise lors de l’ajout d’un Fill.
+`useFillControls()` fournit les remplissages, l’état mixte, un remplissage par défaut et les actions pour ajouter, supprimer, remplacer, modifier et changer la visibilité.
 
-## Utilisation
-
-```ts
-import { useFillControls } from '@open-pencil/vue'
-
-const fills = useFillControls()
-```
-
-## Value
-
-- `defaultFill`
-
-### Ajouter un Fill
-
-```ts
-propertyList.add(fills.defaultFill)
-```
+Il intègre aussi les liaisons aux variables de couleur lorsque nécessaire.
 
 ## Voir aussi
 
 - [PropertyListRoot](../components/property-list-root)
+- [useColorVariableBinding](../advanced/use-color-variable-binding)

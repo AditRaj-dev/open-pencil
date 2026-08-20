@@ -1,52 +1,13 @@
 ---
 title: useAppearance
-description: Gérer Visibility, Opacity et Corner radius de la Selection actuelle.
+description: Lire et modifier opacité, visibilité et rayons des angles.
 ---
 
 # useAppearance
 
-`useAppearance()` fournit State et Actions pour l’Appearance des objets sélectionnés :
-
-- Visibility ;
-- Opacity ;
-- Corner radius ;
-- Corner radii indépendants.
-
-## Utilisation
-
-```ts
-import { useAppearance } from '@open-pencil/vue'
-
-const appearance = useAppearance()
-```
-
-## Exemple
-
-```ts
-const {
-  visibilityState,
-  opacityPercent,
-  cornerRadiusValue,
-  toggleVisibility,
-  toggleIndependentCorners,
-} = useAppearance()
-```
-
-### Modifier Visibility
-
-```ts
-appearance.toggleVisibility()
-```
-
-### Modifier les Corner radii indépendants
-
-```ts
-appearance.updateCornerProp('topLeftRadius', 12)
-appearance.commitCornerProp('topLeftRadius', 12, 8)
-```
+`useAppearance()` fournit les valeurs et actions d’apparence de la sélection : opacité, visibilité, rayon commun ou par angle et valeurs mixtes.
 
 ## Voir aussi
 
-- [Référence API](../)
-- [useLayout](./use-layout)
-- [useTypography](./use-typography)
+- [AppearanceControlsRoot](../components/appearance-controls-root)
+- [useNodeProps](../advanced/use-node-props)
