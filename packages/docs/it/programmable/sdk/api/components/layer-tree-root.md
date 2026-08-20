@@ -1,14 +1,16 @@
 ---
 title: LayerTreeRoot
-description: Headless component per Structure e Actions di un Layer tree.
+description: Componente senza stile per struttura e azioni di un albero dei livelli.
 ---
 
 # LayerTreeRoot
 
-`LayerTreeRoot` fornisce Tree items, Selection, Expanded state e Actions per navigare la gerarchia del documento.
+`LayerTreeRoot` fornisce elementi, selezione, rami espansi e azioni per navigare nella gerarchia del documento.
 
-Il SDK gestisce dati e Interactions. L’applicazione renderizza Rows personalizzate e definisce gli Styles.
+Abbinalo a `LayerTreeItem` o rappresenta righe personalizzate nel suo spazio.
 
 ## Vedi anche
 
-- [useSelectionState](../composables/use-selection-state)
+- [LayerTreeItem](./layer-tree-item)
+- [useLayerTree](../advanced/use-layer-tree)
+- [useLayerDrag](../advanced/use-layer-drag)

@@ -1,16 +1,16 @@
 ---
 title: CanvasSurface
-description: Elemento canvas collegato al CanvasRoot più vicino.
+description: Superficie di rendering dell’editor all’interno di CanvasRoot.
 ---
 
 # CanvasSurface
 
-`CanvasSurface` renderizza l’elemento `<canvas>` usato dal SDK renderer.
+`CanvasSurface` crea l’elemento `<canvas>` e collega dimensioni, motore di rendering e input.
 
-Dentro `CanvasRoot`, il SDK gestisce Refs e Renderer integration, mentre l’applicazione controlla Layout e Styles.
+Dentro `CanvasRoot`, l’SDK gestisce riferimenti e integrazione; l’applicazione controlla disposizione e stili.
 
 ## Vedi anche
 
 - [CanvasRoot](./canvas-root)
-- [useCanvasContext](../advanced/use-canvas-context)
 - [useCanvas](../composables/use-canvas)
+- [useCanvasInput](../composables/use-canvas-input)
