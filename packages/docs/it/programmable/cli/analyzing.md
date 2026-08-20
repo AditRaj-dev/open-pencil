@@ -1,63 +1,30 @@
 ---
-title: Analizzare design
-description: Esaminare Colors, Typography, Spacing e Structures ripetute nei file `.fig`.
+title: Analizzare documenti con la CLI
+description: Individuare colori, tipografie, spaziature e strutture ripetute.
 ---
 
-# Analizzare design
+# Analizzare documenti con la CLI
 
-Le Commands `analyze` esaminano un documento completo dal terminale. Mostrano Colors e Text styles, differenze di Spacing e Structures ripetute che potrebbero diventare Components.
+I sottocomandi `analyze` esaminano l’intero documento e aiutano a trovare incoerenze o strutture candidate a diventare componenti.
 
-## Colors
+## Colori
 
-```sh
-openpencil analyze colors design.fig
-```
+`analyze colors` raggruppa i colori di riempimenti e contorni, ne conta gli utilizzi e rivela tonalità quasi identiche.
 
-Conta ogni Color nel documento e mostra un Histogram:
+## Tipografia
 
-```text
-#1d1b20  ██████████████████████████████ 17155×
-#49454f  ██████████████████████████████ 9814×
-#ffffff  ██████████████████████████████ 8620×
-#6750a4  ██████████████████████████████ 3967×
-```
+`analyze typography` elenca le combinazioni di famiglia, dimensione e stile con la relativa frequenza, così da individuare stili isolati.
 
-## Typography
+## Spaziatura
 
-```sh
-openpencil analyze typography design.fig
-```
+`analyze spacing` esamina spaziature e margini interni dei frame con disposizione automatica. Rende visibile, per esempio, un valore `13px` in una scala `8/16/24`.
 
-Elenca le combinazioni Font family, Size e Style con la relativa frequenza, così da individuare Text styles isolati.
+## Strutture ripetute
 
-## Spacing
+`analyze clusters` cerca gerarchie simili che potrebbero diventare componenti e mostra corrispondenza, dimensione e struttura.
 
-```sh
-openpencil analyze spacing design.fig
-```
+## Output JSON
 
-Esamina Gap e Padding degli Auto-layout Frames. Un valore `13px` in una scala `8/16/24` diventa così visibile.
+Aggiungi `--json` per elaborare i risultati in CI, generare report o applicare regole personalizzate.
 
-## Clusters
-
-```sh
-openpencil analyze clusters design.fig
-```
-
-Cerca Node structures ripetute che potrebbero essere raggruppate come Components:
-
-```text
-3771× frame "container" (100% match)
-     size: 40×40, structure: Frame > [Frame]
-
-2982× instance "Checkboxes" (100% match)
-     size: 48×48, structure: Instance > [Frame]
-```
-
-## JSON output
-
-```sh
-openpencil analyze colors design.fig --json
-```
-
-Tutte le Analyze commands supportano `--json`. L’output può essere elaborato con `jq`, verificato nella CI o usato in Scripts che applicano regole sui Design tokens.
+Queste analisi non modificano il file. Per le trasformazioni usa [`eval`](./scripting).
