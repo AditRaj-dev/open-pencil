@@ -1,77 +1,48 @@
 ---
-title: Dessiner des Shapes
-description: Créer des Rectangles, Ellipses, Lines, Frames, Sections, Polygons et Stars dans OpenPencil.
+title: Dessiner des formes
+description: Créer des rectangles, ellipses, lignes, cadres, sections, polygones et étoiles.
 ---
 
-# Dessiner des Shapes
+# Dessiner des formes
 
-La Toolbar inférieure contient les Tools de création des Shapes, Frames et Sections. Sélectionnez un Tool, puis faites un Drag sur le canvas.
+La barre inférieure contient les outils de création de formes, cadres et sections. Sélectionnez-en un, puis faites glisser la zone de travail.
 
-## Tools
+## Outils
 
-| Tool | Raccourci | Fonction |
-|------|-----------|----------|
-| Rectangle | <kbd>R</kbd> | Crée un Rectangle |
-| Ellipse | <kbd>O</kbd> | Crée une Ellipse |
-| Line | <kbd>L</kbd> | Crée une Line |
-| Frame | <kbd>F</kbd> | Crée un Frame servant de conteneur |
-| Section | <kbd>S</kbd> | Crée une Section et intègre les objets superposés |
+| Outil | Touche | Résultat |
+|-------|--------|----------|
+| Rectangle | <kbd>R</kbd> | Rectangle |
+| Ellipse | <kbd>O</kbd> | Ellipse |
+| Ligne | <kbd>L</kbd> | Ligne |
+| Cadre | <kbd>F</kbd> | Conteneur d’autres objets |
+| Section | <kbd>S</kbd> | Conteneur de premier niveau |
 
-## Menu Shapes
-
-Il contient également :
-
-- **Polygon :** trois côtés par défaut ;
-- **Star :** cinq branches par défaut.
+Polygone et Étoile sont disponibles dans le menu des formes.
 
 ## Conserver les proportions
 
-Maintenez <kbd>Shift</kbd> pendant le Drag :
+Avec <kbd>Shift</kbd>, un rectangle devient carré, une ellipse devient cercle et une ligne s’aligne sur 0°, 45° ou 90°.
 
-- Rectangle devient un carré ;
-- Ellipse devient un cercle ;
-- Line s’aligne sur 0°, 45° et 90°.
+## Propriétés
 
-## Properties
+### Remplissage
 
-### Fill
+Couleur unie, dégradé linéaire, radial, angulaire ou diamant, et image.
 
-Un Shape peut utiliser une Solid color, un Gradient linear/radial/angular/diamond ou un Image fill.
+### Contour
 
-### Stroke
+Épaisseur commune ou par côté, couleur, alignement intérieur/centré/extérieur, extrémités, jointures et tirets.
 
-- **Weight :** uniforme ou indépendant pour Top, Right, Bottom et Left
-- **Color :** Solid color avec Opacity
-- **Alignment :** Inside, Center ou Outside avec Clipping compatible Figma
-- **Cap :** None, Round, Square ou Arrow
-- **Join :** Miter, Bevel ou Round
-- **Dash :** alternance de longueurs Dash et Gap
+### Rayon des angles
 
-### Corner radius
+Commun ou indépendant pour rectangles, cadres, composants et instances.
 
-Rectangles, Frames, Components et Instances acceptent un Radius commun ou propre à chaque coin.
+### Effets
 
-### Effects
+Ombres extérieure et intérieure, flou du calque, d’arrière-plan ou de premier plan.
 
-- **Drop shadow :** Offset, Blur radius, Spread et Color
-- **Inner shadow :** mêmes réglages à l’intérieur du Shape
-- **Layer blur :** floute tout l’objet
-- **Background blur :** floute le contenu derrière l’objet
-- **Foreground blur :** floute le contenu devant l’objet
+## Cadres et sections
 
-## Frames et Sections
+Un cadre est un conteneur. Les objets déposés à l’intérieur deviennent ses enfants. Le découpage est désactivé par défaut. Les cadres prennent en charge la [disposition automatique](./auto-layout).
 
-Les **Frames** sont des conteneurs. Les Shapes déplacés à l’intérieur deviennent leurs Children. Ils prennent aussi en charge [Auto layout](./auto-layout).
-
-Les **Sections** organisent les objets au niveau supérieur et intègrent automatiquement les Siblings superposés.
-
-## Raccourcis
-
-| Action | macOS | Windows / Linux |
-|--------|-------|-----------------|
-| Rectangle | <kbd>R</kbd> | <kbd>R</kbd> |
-| Ellipse | <kbd>O</kbd> | <kbd>O</kbd> |
-| Line | <kbd>L</kbd> | <kbd>L</kbd> |
-| Frame | <kbd>F</kbd> | <kbd>F</kbd> |
-| Section | <kbd>S</kbd> | <kbd>S</kbd> |
-| Carré ou cercle | <kbd>Shift</kbd> + Drag | <kbd>Shift</kbd> + Drag |
+Une section est un conteneur de premier niveau qui adopte automatiquement les objets qu’elle recouvre lors de sa création.

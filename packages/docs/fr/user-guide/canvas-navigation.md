@@ -1,50 +1,28 @@
 ---
-title: Navigation sur le canvas
-description: Déplacer le Viewport, utiliser Zoom et Hand tool dans OpenPencil.
+title: Navigation dans la zone de travail
+description: Déplacer la vue, zoomer et utiliser l’outil Main.
 ---
 
-# Navigation sur le canvas
+# Navigation dans la zone de travail
 
-Le canvas est sans limites. Pan et Zoom permettent d’atteindre toutes les zones du document.
+La zone de travail est illimitée. Le déplacement et le zoom permettent d’atteindre n’importe quelle partie du document.
 
-## Pan
+## Déplacer la vue
 
-Déplacez la zone visible sans modifier les objets :
+- Maintenez <kbd>Space</kbd> et faites glisser la zone de travail.
+- Faites glisser avec le bouton central de la souris.
+- Faites glisser deux doigts sur le pavé tactile.
 
-- maintenez <kbd>Space</kbd> et faites un Drag sur le canvas ;
-- utilisez le Button central de la souris ;
-- faites défiler deux doigts sur le Trackpad.
+## Outil Main
 
-## Hand tool
-
-Appuyez sur <kbd>H</kbd>. Tant que Hand tool est actif, tout Drag sur le canvas déplace le Viewport sans maintenir <kbd>Space</kbd>.
-
-Sélectionnez un autre Tool, par exemple Select avec <kbd>V</kbd>, pour quitter.
+Appuyez sur <kbd>H</kbd>. Tant qu’il est actif, tout glissement déplace la vue sans maintenir <kbd>Space</kbd>. Appuyez sur <kbd>V</kbd> pour revenir à Sélection.
 
 ## Zoom
 
-Zoom se centre sur la Position du Pointer :
-
-- <kbd>Ctrl</kbd> + Scroll ou <kbd>⌘</kbd> + Scroll sur macOS ;
-- Pinch gesture sur le Trackpad ;
-- raccourcis du tableau.
-
-Les Gestures sur les panneaux Layers et Properties ne sont pas transmis au canvas. Ils ne modifient donc ni le Zoom de l’éditeur ni celui de la page du Browser.
-
-## Raccourcis
+Le zoom est centré sur le pointeur. Utilisez <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + molette, le pincement ou les raccourcis.
 
 | Action | macOS | Windows / Linux |
 |--------|-------|-----------------|
-| Pan | <kbd>Space</kbd> + Drag | <kbd>Space</kbd> + Drag |
-| Hand tool | <kbd>H</kbd> | <kbd>H</kbd> |
-| Zoom in | <kbd>⌘</kbd><kbd>+</kbd> | <kbd>Ctrl</kbd><kbd>+</kbd> |
-| Zoom out | <kbd>⌘</kbd><kbd>−</kbd> | <kbd>Ctrl</kbd><kbd>−</kbd> |
 | 100 % | <kbd>⌘</kbd><kbd>0</kbd> | <kbd>Ctrl</kbd><kbd>0</kbd> |
-| Fit | <kbd>⌘</kbd><kbd>1</kbd> | <kbd>Ctrl</kbd><kbd>1</kbd> |
-| Zoom to selection | <kbd>⌘</kbd><kbd>2</kbd> | <kbd>Ctrl</kbd><kbd>2</kbd> |
-
-## Conseils
-
-- Placez le Pointer sur la zone à conserver au centre avant de zoomer.
-- Hand tool reste actif jusqu’à la sélection d’un autre Tool.
-- Consultez [Sélectionner et transformer](./selection-and-manipulation) pour modifier des objets.
+| Ajuster le document | <kbd>⌘</kbd><kbd>1</kbd> | <kbd>Ctrl</kbd><kbd>1</kbd> |
+| Zoomer sur la sélection | <kbd>⌘</kbd><kbd>2</kbd> | <kbd>Ctrl</kbd><kbd>2</kbd> |
