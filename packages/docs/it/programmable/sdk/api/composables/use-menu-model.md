@@ -1,22 +1,15 @@
 ---
 title: useMenuModel
-description: Creare modelli di Menu per Application e canvas dall’Editor state.
+description: Creare modelli di menu dalle azioni dell’editor.
 ---
 
 # useMenuModel
 
-`useMenuModel()` crea Menu pronti da renderizzare usando Editor commands e Selection.
+`useMenuModel()` trasforma il registro dei comandi in voci, separatori e sottomenu che l’applicazione può rappresentare con la propria libreria UI.
 
-```ts
-const { appMenu, canvasMenu, selectionLabelMenu } = useMenuModel()
-```
-
-- `appMenu` raggruppa Edit, View, Object e Arrange.
-- `canvasMenu` include Options dipendenti dallo State, come Move to page.
-- `selectionLabelMenu` restituisce Labels Hide/Show e Lock/Unlock appropriati.
+Etichette, scorciatoie, stato disabilitato ed esecuzione provengono da una fonte comune.
 
 ## Vedi anche
 
 - [useEditorCommands](./use-editor-commands)
-- [useSelectionState](./use-selection-state)
-- [useSelectionCapabilities](./use-selection-capabilities)
+- [Menu contestuale](/user-guide/context-menu)

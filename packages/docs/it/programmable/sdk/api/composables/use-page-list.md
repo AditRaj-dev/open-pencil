@@ -1,26 +1,13 @@
 ---
 title: usePageList
-description: Leggere, cambiare, creare, eliminare e rinominare Pages.
+description: Stato e azioni per un elenco di pagine.
 ---
 
 # usePageList
 
-`usePageList()` fornisce State e Actions per una Page list:
-
-- `pages`
-- `currentPageId`
-- `switchPage`
-- `addPage`
-- `deletePage`
-- `renamePage`
-
-```ts
-const { pages, currentPageId, switchPage, addPage } = usePageList()
-switchPage(pageId)
-addPage()
-```
+`usePageList()` fornisce pagine, pagina attiva, identificatore della pagina in fase di rinomina, azioni di creazione/apertura/rinomina/eliminazione e gestione del focus.
 
 ## Vedi anche
 
 - [PageListRoot](../components/page-list-root)
-- [useMenuModel](./use-menu-model)
+- [useInlineRename](../advanced/use-inline-rename)

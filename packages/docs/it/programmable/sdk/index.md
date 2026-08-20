@@ -9,7 +9,7 @@ description: Crea editor basati su OpenPencil con componenti senza stile e compo
 
 Puoi integrare OpenPencil in altri prodotti, strumenti interni o editor specializzati senza adottare l'interfaccia predefinita dell'applicazione.
 
-L'app OpenPencil è soltanto una delle interfacce realizzate con questo toolkit. L'SDK ti permette di crearne una tua.
+L’app OpenPencil è soltanto una delle interfacce realizzate con questo insieme di strumenti. L’SDK permette di crearne una personalizzata.
 
 L'SDK fornisce:
 

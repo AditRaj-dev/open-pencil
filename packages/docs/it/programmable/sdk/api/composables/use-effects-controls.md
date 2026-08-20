@@ -1,20 +1,15 @@
 ---
 title: useEffectsControls
-description: Gestire Shadows e Blur effects in un pannello Effects.
+description: Gestire gli effetti della selezione corrente.
 ---
 
 # useEffectsControls
 
-`useEffectsControls()` fornisce Default values, configurazione Shadows/Blur, State degli Items espansi, Preview durante Scrubbing, Commit del Value finale e modifica di Type e Color.
+`useEffectsControls()` fornisce effetti, stato misto, valori predefiniti e azioni per aggiungere, eliminare, sostituire, modificare e cambiare visibilità.
 
-```ts
-const { effectOptions, createDefaultEffect, toggleExpand, scrubEffect, commitEffect } = useEffectsControls()
-
-const effect = createDefaultEffect()
-scrubEffect(node, index, { radius: 12 })
-commitEffect(node, index, { radius: 12 })
-```
+Espone anche configurazione di ombre e sfocature, anteprima durante il trascinamento e conferma finale nella cronologia.
 
 ## Vedi anche
 
 - [PropertyListRoot](../components/property-list-root)
+- [usePropertyList](../advanced/use-property-list)

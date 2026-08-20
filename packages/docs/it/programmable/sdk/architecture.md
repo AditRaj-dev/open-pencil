@@ -7,7 +7,7 @@ description: Struttura del pacchetto, confini dell'API pubblica e principi di pr
 
 `@open-pencil/vue` collega `@open-pencil/core` a Vue.
 
-Il modello dell'editor rimane in core. Questo pacchetto aggiunge:
+Il modello dell’editor rimane nel nucleo. Questo pacchetto aggiunge:
 
 - la dependency injection con Vue;
 - composable reattivi;
@@ -99,14 +99,14 @@ Passa allo spazio soltanto le proprietà necessarie oppure usa direttamente il c
 ### SDK
 
 - integrazione con l'editor;
-- logica headless riutilizzabile;
+- logica riutilizzabile senza stile;
 - struttura dell'interfaccia riutilizzabile e indipendente dallo stile;
 - integrazione con il rendering dell'area di lavoro.
 
 ### Applicazione
 
 - stile;
-- layout generale;
+- disposizione generale;
 - routing;
 - apertura, salvataggio e altre operazioni sui file;
 - notifiche, menu e comportamento specifico dell'applicazione.
