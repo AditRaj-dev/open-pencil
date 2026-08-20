@@ -57,6 +57,8 @@ bun run benchmark:navigation \
 
 `--mode cdp` sends browser input through the Chrome DevTools Protocol. `--mode dom` deterministically dispatches events inside the page and is useful for scheduler/correctness debugging. Neither mode is represented as physical WKWebView input.
 
+Use `--no-trace` for the lowest-overhead metrics pass. Run a separate diagnostic pass with tracing enabled, and add `--cpu-profile` only when stack sampling is needed: CPU profiling can perturb the timing being measured.
+
 Open the trace:
 
 ```sh
