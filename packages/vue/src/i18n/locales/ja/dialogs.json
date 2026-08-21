@@ -351,8 +351,8 @@
   "mcpStatus_running": "Running",
   "mcpStatus_stopped": "Stopped",
   "mcpStatus_error": "Error",
-  "settingsRecovery": "Recovery",
-  "settingsRecoveryDescription": "Control local crash-recovery copies for unsaved documents.",
-  "preserveUnsavedWork": "Automatically preserve unsaved work",
-  "preserveUnsavedWorkDescription": "Store local recovery copies so documents can be restored after an unexpected shutdown."
+  "settingsRecovery": "復元",
+  "settingsRecoveryDescription": "未保存ドキュメントのローカル復元コピーを管理します。",
+  "preserveUnsavedWork": "未保存の作業を自動的に保持",
+  "preserveUnsavedWorkDescription": "予期しない終了後にドキュメントを復元できるよう、ローカルコピーを保存します。"
 }
