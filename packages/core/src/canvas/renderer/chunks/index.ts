@@ -276,3 +276,11 @@ export class RenderChunkIndex {
     this.chunkIdsByNode.clear()
   }
 }
+
+export {
+  deleteRecordedRenderChunks,
+  drawRecordedRenderChunks,
+  drawRenderChunkDirect,
+  recordRenderChunk
+} from './record'
+export type { RecordedRenderChunk } from './record'

@@ -232,6 +232,31 @@ function renderChildren(
     renderChildIds(r, canvas, graph, node.childIds, overlays, absX, absY, hasTransformedAncestor)
   }
 }
+export function renderNodeSelf(
+  r: SkiaRenderer,
+  canvas: Canvas,
+  graph: SceneGraph,
+  nodeId: string,
+  overlays: RenderOverlays = {}
+): void {
+  const node = graph.getNode(nodeId)
+  if (
+    !node ||
+    node.internalOnly ||
+    !node.visible ||
+    node.isMask ||
+    fontManager.isNodeBlocked(nodeId)
+  ) {
+    return
+  }
+  canvas.save()
+  canvas.translate(node.x, node.y)
+  applyNodeTransforms(r, canvas, node, nodeId, overlays)
+  renderNodeContent(r, canvas, graph, node, nodeId, overlays)
+  drawLayoutGrids(r, canvas, node)
+  canvas.restore()
+}
+
 export function renderNode(
   r: SkiaRenderer,
   canvas: Canvas,
