@@ -15,6 +15,7 @@ export interface NavigationRecording {
     canvasWidth: number
     canvasHeight: number
   }
+  sceneRenderer: 'existing' | 'tiled'
   initialViewport: { panX: number; panY: number; zoom: number }
   wheel: RecordedWheelSample[]
   trace: NavigationTraceEvent[]
@@ -29,7 +30,8 @@ export interface NavigationRecorder {
 export function startNavigationRecorder(
   canvas: HTMLCanvasElement,
   name: string,
-  initialViewport: Viewport
+  initialViewport: Viewport,
+  sceneRenderer: NavigationRecording['sceneRenderer']
 ): NavigationRecorder {
   const startedAt = performance.now()
   const wheel: RecordedWheelSample[] = []
@@ -98,6 +100,7 @@ export function startNavigationRecorder(
           canvasWidth: rect.width,
           canvasHeight: rect.height
         },
+        sceneRenderer,
         initialViewport,
         wheel,
         trace

@@ -8,6 +8,8 @@ export {
   tileWorldSize
 } from './geometry'
 export type { TileKey, TileWorldBounds } from './geometry'
+export { TiledSceneController } from './controller'
+export type { TiledSceneFrameResult } from './controller'
 export { planTiles } from './planner'
 export type { TilePlan, TilePlanOptions } from './planner'
 export { TileImageCache } from './cache'

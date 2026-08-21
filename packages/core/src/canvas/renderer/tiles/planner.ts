@@ -15,6 +15,7 @@ export interface TilePlanOptions {
   navigationGeneration: number
   contentGeneration: number
   estimateCost: (key: TileKey) => number
+  globalFallbackAvailable?: boolean
 }
 
 export interface TilePlan {
@@ -49,8 +50,8 @@ export function planTiles(cache: TileImageCache, options: TilePlanOptions): Tile
       key,
       navigationGeneration: options.navigationGeneration,
       contentGeneration: options.contentGeneration,
-      priority: tile ? 'visible' : 'mandatory',
-      fallbackAvailable: tile !== null,
+      priority: tile || options.globalFallbackAvailable ? 'visible' : 'mandatory',
+      fallbackAvailable: tile !== null || options.globalFallbackAvailable === true,
       estimatedCost: options.estimateCost(key)
     })
   }

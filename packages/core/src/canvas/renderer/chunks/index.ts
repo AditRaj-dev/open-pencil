@@ -2,13 +2,11 @@ import RBush from 'rbush'
 
 import type { SceneGraph, SceneNode } from '@open-pencil/scene-graph'
 import { getWorldMatrix } from '@open-pencil/scene-graph/coordinate'
-import {
-  computeDescendantVisualBounds,
-  effectOverflow,
-  strokeOverflow
-} from '@open-pencil/scene-graph/geometry'
+import { computeDescendantVisualBounds } from '@open-pencil/scene-graph/geometry'
 import type { Mat3 } from '@open-pencil/scene-graph/matrix'
 import Matrix from '@open-pencil/scene-graph/matrix'
+
+import { worldNodeVisualBounds } from '#core/canvas/renderer/visual-bounds'
 
 export type RenderChunkKind = 'self' | 'subtree'
 
@@ -68,29 +66,6 @@ function shouldSplit(graph: SceneGraph, node: SceneNode, descendantCount: number
 function estimateCost(nodeCount: number, node: SceneNode): number {
   const visibleEffects = node.effects.filter((effect) => effect.visible).length
   return nodeCount + visibleEffects * 8
-}
-
-function selfBounds(graph: SceneGraph, node: SceneNode) {
-  const stroke = strokeOverflow(node.strokes)
-  const effects = effectOverflow(node.effects)
-  const points = Matrix.mapPoints(getWorldMatrix(node, graph), [
-    -stroke - effects.left,
-    -stroke - effects.top,
-    node.width + stroke + effects.right,
-    -stroke - effects.top,
-    node.width + stroke + effects.right,
-    node.height + stroke + effects.bottom,
-    -stroke - effects.left,
-    node.height + stroke + effects.bottom
-  ])
-  const xs = [points[0], points[2], points[4], points[6]]
-  const ys = [points[1], points[3], points[5], points[7]]
-  return {
-    minX: Math.min(...xs),
-    minY: Math.min(...ys),
-    maxX: Math.max(...xs),
-    maxY: Math.max(...ys)
-  }
 }
 
 function subtreeBounds(graph: SceneGraph, nodeId: string) {
@@ -156,7 +131,7 @@ function buildChunks(graph: SceneGraph, nodeIds: string[], counts: Map<string, n
     const descendantCount = counts.get(nodeId) ?? 1
     const split = shouldSplit(graph, node, descendantCount)
     const kind: RenderChunkKind = split ? 'self' : 'subtree'
-    const bounds = split ? selfBounds(graph, node) : subtreeBounds(graph, nodeId)
+    const bounds = split ? worldNodeVisualBounds(graph, node) : subtreeBounds(graph, nodeId)
     if (bounds) {
       const nodeCount = split ? 1 : descendantCount
       chunks.push({
@@ -250,7 +225,8 @@ export class RenderChunkIndex {
       const chunk = this.chunks.get(id)
       if (!chunk) continue
       this.tree.remove(chunk)
-      const bounds = chunk.kind === 'self' ? selfBounds(graph, node) : subtreeBounds(graph, nodeId)
+      const bounds =
+        chunk.kind === 'self' ? worldNodeVisualBounds(graph, node) : subtreeBounds(graph, nodeId)
       if (!bounds) continue
       Object.assign(chunk, bounds)
       this.tree.insert(chunk)

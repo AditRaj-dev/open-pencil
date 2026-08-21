@@ -42,6 +42,11 @@ export function renderTile(
   canvas.clear(renderer.ck.TRANSPARENT)
   canvas.scale(key.level, key.level)
   canvas.translate(-bounds.minX, -bounds.minY)
+  canvas.clipRect(
+    renderer.ck.LTRBRect(bounds.minX, bounds.minY, bounds.maxX, bounds.maxY),
+    renderer.ck.ClipOp.Intersect,
+    false
+  )
 
   try {
     const drawStartedAt = performance.now()
