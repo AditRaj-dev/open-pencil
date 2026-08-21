@@ -4,14 +4,13 @@ import type { SceneGraph } from '@open-pencil/scene-graph'
 
 import type { SkiaRenderer } from '#core/canvas/renderer'
 import {
-  deleteRecordedRenderChunks,
-  drawRenderChunkDirect,
-  recordRenderChunk,
   type RenderChunk,
-  type RenderChunkIndex
+  type RenderChunkIndex,
+  type RenderChunkPictureCache
 } from '#core/canvas/renderer/chunks'
 
-import { TILE_DEVICE_SIZE, type TileKey, tileWorldBounds } from './geometry'
+import { type TileKey, tileWorldBounds } from './geometry'
+import type { TileSurfacePool } from './surface-pool'
 
 export interface RenderedTile {
   key: TileKey
@@ -19,52 +18,57 @@ export interface RenderedTile {
   chunkCount: number
   estimatedCost: number
   renderMs: number
+  allocationMs: number
+  drawMs: number
+  flushMs: number
+  snapshotMs: number
 }
 
 export function renderTile(
   renderer: SkiaRenderer,
   graph: SceneGraph,
   index: RenderChunkIndex,
-  key: TileKey
+  key: TileKey,
+  pictureCache: RenderChunkPictureCache,
+  surfacePool: TileSurfacePool
 ): RenderedTile {
   const startedAt = performance.now()
   const bounds = tileWorldBounds(key)
   const chunks = index.search(bounds)
-  const surface = renderer.surface.makeSurface({
-    width: TILE_DEVICE_SIZE,
-    height: TILE_DEVICE_SIZE,
-    colorType: renderer.ck.ColorType.RGBA_8888,
-    alphaType: renderer.ck.AlphaType.Premul,
-    colorSpace: renderer.ck.ColorSpace.SRGB
-  })
+  const allocationStartedAt = performance.now()
+  const surface = surfacePool.acquire(renderer)
+  const allocationMs = performance.now() - allocationStartedAt
   const canvas = surface.getCanvas()
   canvas.clear(renderer.ck.TRANSPARENT)
   canvas.scale(key.level, key.level)
   canvas.translate(-bounds.minX, -bounds.minY)
 
-  const recorded = new Map<string, ReturnType<typeof recordRenderChunk>>()
   try {
+    const drawStartedAt = performance.now()
     for (const chunk of chunks) {
-      if (chunk.interruptible) {
-        const picture = recordRenderChunk(renderer, graph, chunk)
-        recorded.set(chunk.id, picture)
-        canvas.drawPicture(picture.picture)
-      } else {
-        drawRenderChunkDirect(renderer, canvas, graph, chunk)
-      }
+      const picture = pictureCache.get(renderer, graph, chunk)
+      canvas.drawPicture(picture)
     }
+    const drawMs = performance.now() - drawStartedAt
+    const flushStartedAt = performance.now()
     surface.flush()
+    const flushMs = performance.now() - flushStartedAt
+    const snapshotStartedAt = performance.now()
     const image = surface.makeImageSnapshot()
+    const snapshotMs = performance.now() - snapshotStartedAt
     return {
       key,
       image,
       chunkCount: chunks.length,
       estimatedCost: chunks.reduce((total, chunk) => total + chunk.estimatedCost, 0),
-      renderMs: performance.now() - startedAt
+      renderMs: performance.now() - startedAt,
+      allocationMs,
+      drawMs,
+      flushMs,
+      snapshotMs
     }
   } finally {
-    deleteRecordedRenderChunks([...recorded.values()])
-    surface.delete()
+    surfacePool.release(surface)
   }
 }
 
