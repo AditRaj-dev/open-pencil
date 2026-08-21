@@ -110,6 +110,31 @@ export function createEditor(options?: EditorOptions) {
     })
   }
 
+  function setNavigationPhase(phase: EditorState['navigation']['phase'], inputAt = 0) {
+    const previous = { ...state.navigation }
+    const active = phase === 'pan' || phase === 'zoom' || phase === 'momentum'
+    const wasActive =
+      previous.phase === 'pan' || previous.phase === 'zoom' || previous.phase === 'momentum'
+    state.navigation = {
+      phase,
+      generation: active && !wasActive ? previous.generation + 1 : previous.generation,
+      lastInputAt: inputAt || previous.lastInputAt
+    }
+    if (
+      state.navigation.phase !== previous.phase ||
+      state.navigation.generation !== previous.generation ||
+      state.navigation.lastInputAt !== previous.lastInputAt
+    ) {
+      emitNavigationTrace('navigation:phase', {
+        phase: state.navigation.phase,
+        previousPhase: previous.phase,
+        generation: state.navigation.generation,
+        lastInputAt: state.navigation.lastInputAt
+      })
+      emitEditorEvent('navigation:changed', state.navigation, previous)
+    }
+  }
+
   function setSelectedIds(ids: Set<string>) {
     const previous = [...state.selectedIds]
     state.selectedIds = ids
@@ -167,6 +192,7 @@ export function createEditor(options?: EditorOptions) {
     emitEditorEvent,
     setSelectedIds,
     setActiveTool,
+    setNavigationPhase,
     runLayoutForNode,
     subscribeToGraph
   }
@@ -255,6 +281,7 @@ export function createEditor(options?: EditorOptions) {
     requestRepaint,
     onEditorEvent,
     setCanvasKit,
+    setNavigationPhase,
     removeCanvasRenderer,
     replaceGraph,
     subscribeToGraph,

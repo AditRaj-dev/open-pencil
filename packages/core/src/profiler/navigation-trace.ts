@@ -10,6 +10,7 @@ export type NavigationTraceEventName =
   | 'backing:crisp'
   | 'animation:frame'
   | 'main:long-task'
+  | 'navigation:phase'
 
 export interface NavigationTraceEvent {
   name: NavigationTraceEventName

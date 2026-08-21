@@ -50,6 +50,8 @@ export function renderFromEditorState(
   r.pageColor = state.pageColor
   r.rulerTheme = state.rulerTheme ?? null
   r.pageId = state.currentPageId
+  r.navigationPhase = state.navigation.phase
+  r.navigationGeneration = state.navigation.generation
   render(
     r,
     graph,

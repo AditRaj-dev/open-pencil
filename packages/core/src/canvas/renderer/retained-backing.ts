@@ -553,6 +553,17 @@ export function renderSceneBacking(
   sceneVersion: number
 ): boolean {
   if (r.sceneBackingAllocationFailed) return false
+  const navigationActive =
+    r.navigationPhase === 'pan' ||
+    r.navigationPhase === 'zoom' ||
+    r.navigationPhase === 'momentum' ||
+    r.navigationPhase === 'settling'
+  if (navigationActive && r.sceneBacking) {
+    r.sceneBackingBuild?.surface.delete()
+    r.sceneBackingBuild = null
+    r.sceneBackingNeedsCrispRender = true
+    return drawSceneBacking(r, canvas, sceneVersion, true, graph.positionPreviewVersion)
+  }
   const positionPreviewVersion = graph.positionPreviewVersion
   const allowStaleZoom = now() < r.sceneBackingPreviewUntil
   const hasCoverage = backingCoverageContainsLiveViewport(
