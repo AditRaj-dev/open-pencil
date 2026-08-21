@@ -1,16 +1,6 @@
-export interface WheelSample {
-  timeMs: number
-  deltaX: number
-  deltaY: number
-  deltaMode: number
-  ctrlKey: boolean
-  metaKey: boolean
-  shiftKey: boolean
-  clientX: number
-  clientY: number
-  cancelable: boolean
-  directionInvertedFromDevice?: boolean
-}
+import type { RecordedWheelSample } from '@open-pencil/core/profiler'
+
+export type WheelSample = RecordedWheelSample
 
 export interface TraceEvent {
   name: string

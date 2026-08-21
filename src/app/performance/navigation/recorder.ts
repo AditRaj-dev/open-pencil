@@ -1,19 +1,5 @@
-import type { NavigationTraceEvent } from '@open-pencil/core/profiler'
+import type { NavigationTraceEvent, RecordedWheelSample } from '@open-pencil/core/profiler'
 import { subscribeNavigationTrace } from '@open-pencil/core/profiler'
-
-export interface RecordedWheelSample {
-  timeMs: number
-  deltaX: number
-  deltaY: number
-  deltaMode: number
-  ctrlKey: boolean
-  metaKey: boolean
-  shiftKey: boolean
-  clientX: number
-  clientY: number
-  cancelable: boolean
-  directionInvertedFromDevice?: boolean
-}
 
 export interface NavigationRecording {
   schemaVersion: 1
