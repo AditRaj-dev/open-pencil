@@ -42,6 +42,8 @@ test('gold-preview render chunks stay bounded and spatial queries stay selective
       nodesVisited: stats.nodesVisited,
       chunksBuilt: stats.chunksBuilt,
       maximumChunkNodes: stats.maximumChunkNodes,
+      maximumAtomicChunkNodes: stats.maximumAtomicChunkNodes,
+      oversizedAtomicChunks: stats.oversizedAtomicChunks,
       buildMs,
       queryResults: found.length,
       queryMs
@@ -51,6 +53,7 @@ test('gold-preview render chunks stay bounded and spatial queries stay selective
   expect(stats.nodesVisited).toBeGreaterThan(300)
   expect(stats.maximumChunkNodes).toBeLessThanOrEqual(32)
   expect(stats.chunksBuilt).toBeLessThan(stats.nodesVisited)
+  expect(stats.oversizedAtomicChunks).toBe(0)
   expect(found.length).toBeLessThan(stats.chunksBuilt)
   expect(buildMs).toBeLessThan(1_000)
   expect(queryMs).toBeLessThan(20)
