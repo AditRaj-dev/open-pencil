@@ -90,7 +90,6 @@ export class TileScheduler {
     let jobsExecuted = 0
     while (this.jobs.length > 0) {
       const job = this.jobs[0]
-      if (!job) break
       const elapsed = this.now() - frameStart
       const mandatory = job.priority === 'mandatory' && !job.fallbackAvailable
       if (jobsExecuted > 0 && elapsed >= this.budgetMs) break

@@ -30,6 +30,7 @@ const recordingSchema = v.object({
   source: v.picklist(['macos-trackpad', 'synthetic']),
   recordedAt: v.string(),
   environment: v.record(v.string(), v.union([v.string(), v.number()])),
+  sceneRenderer: v.optional(v.picklist(['existing', 'tiled']), 'existing'),
   initialViewport: v.object({ panX: v.number(), panY: v.number(), zoom: v.number() }),
   wheel: v.array(wheelSampleSchema),
   trace: v.array(traceEventSchema)

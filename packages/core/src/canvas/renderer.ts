@@ -22,7 +22,6 @@ import type { FontResolutionSnapshot } from '#core/text/resolver'
 
 import { LabelCache } from './labels/cache'
 import * as LabelHitTest from './labels/hit-test'
-import { LabelParagraphCache } from './labels/paragraph-cache'
 import * as RenderColors from './renderer/colors'
 import * as RendererFonts from './renderer/fonts'
 import { destroyRenderer } from './renderer/lifecycle'
@@ -62,6 +61,7 @@ export interface PendingFontNode {
 }
 
 import type { EffectRasterCacheEntry } from './renderer/effect-raster-cache'
+import { TiledSceneController } from './renderer/tiles'
 import type { RenderOverlays, RulerTheme } from './renderer/types'
 
 export class SkiaRenderer {
@@ -154,6 +154,10 @@ export class SkiaRenderer {
   sceneBackingLastViewportEventAt = 0
   navigationPhase: EditorState['navigation']['phase'] = 'idle'
   navigationGeneration = 0
+  tiledSceneEnabled = false
+  tracksSceneSettlement = true
+  tiledScenePending = false
+  tiledSceneCovered = false
   lastSceneViewport: { panX: number; panY: number; zoom: number } | null = null
   nodePictureCache = new Map<string, SkPicture | null>()
   nodePictureCacheGenerations = new Map<string, number>()
@@ -164,7 +168,7 @@ export class SkiaRenderer {
   subtreePictureCachePositionPreviewVersion = -1
   subtreePictureCacheFontGeneration = -1
   readonly labelCache = new LabelCache()
-  readonly labelParagraphCache = new LabelParagraphCache()
+  readonly tiledScene = new TiledSceneController()
   readonly profiler: RenderProfiler
 
   declare rulerBgPaint: Paint
@@ -630,7 +634,7 @@ export class SkiaRenderer {
   }
 
   isNodeFontLoaded(node: SceneNode): boolean {
-    return RenderText.isNodeFontLoaded(this, node)
+    return this.nodeFontReadiness(node) === 'ready'
   }
 
   buildTextPicture(node: SceneNode): Uint8Array | null {

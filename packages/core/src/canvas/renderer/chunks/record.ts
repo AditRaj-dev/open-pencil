@@ -1,30 +1,22 @@
-import type { Canvas, Picture } from 'canvaskit-wasm'
+import type { Canvas, SkPicture } from 'canvaskit-wasm'
 
 import type { SceneGraph, SceneNode } from '@open-pencil/scene-graph'
 import { getWorldMatrix } from '@open-pencil/scene-graph/coordinate'
 import Matrix from '@open-pencil/scene-graph/matrix'
 
 import type { SkiaRenderer } from '#core/canvas/renderer'
-import { makeSmoothRRectPath, nodeHasRadius, nodeHasSmoothCorners } from '#core/canvas/shapes'
+import { clipNodeShape, nodeHasRadius } from '#core/canvas/shapes'
 
 import type { RenderChunk } from './index'
 
 export interface RecordedRenderChunk {
   chunk: RenderChunk
-  picture: Picture
+  picture: SkPicture
 }
 
 function clipAncestor(r: SkiaRenderer, canvas: Canvas, graph: SceneGraph, node: SceneNode): void {
   canvas.concat(getWorldMatrix(node, graph))
-  if (nodeHasSmoothCorners(node)) {
-    const path = makeSmoothRRectPath(r, node)
-    canvas.clipPath(path, r.ck.ClipOp.Intersect, true)
-    path.delete()
-  } else if (nodeHasRadius(node)) {
-    canvas.clipRRect(r.makeRRect(node), r.ck.ClipOp.Intersect, true)
-  } else {
-    canvas.clipRect(r.ck.LTRBRect(0, 0, node.width, node.height), r.ck.ClipOp.Intersect, true)
-  }
+  clipNodeShape(r, canvas, node, r.ck.LTRBRect(0, 0, node.width, node.height), nodeHasRadius(node))
   const inverse = Matrix.invert(getWorldMatrix(node, graph))
   if (inverse) canvas.concat(inverse)
 }
@@ -46,12 +38,7 @@ function drawChunkContent(
   canvas.restore()
 }
 
-export function drawRenderChunkDirect(
-  renderer: SkiaRenderer,
-  canvas: Canvas,
-  graph: SceneGraph,
-  chunk: RenderChunk
-): void {
+function withChunkViewport(renderer: SkiaRenderer, chunk: RenderChunk, draw: () => void): void {
   const previousViewport = renderer.worldViewport
   renderer.worldViewport = {
     x: chunk.minX,
@@ -60,10 +47,19 @@ export function drawRenderChunkDirect(
     h: chunk.maxY - chunk.minY
   }
   try {
-    drawChunkContent(renderer, canvas, graph, chunk)
+    draw()
   } finally {
     renderer.worldViewport = previousViewport
   }
+}
+
+export function drawRenderChunkDirect(
+  renderer: SkiaRenderer,
+  canvas: Canvas,
+  graph: SceneGraph,
+  chunk: RenderChunk
+): void {
+  withChunkViewport(renderer, chunk, () => drawChunkContent(renderer, canvas, graph, chunk))
 }
 
 export function recordRenderChunk(
@@ -75,18 +71,7 @@ export function recordRenderChunk(
   const canvas = recorder.beginRecording(
     renderer.ck.LTRBRect(chunk.minX, chunk.minY, chunk.maxX, chunk.maxY)
   )
-  const previousViewport = renderer.worldViewport
-  renderer.worldViewport = {
-    x: chunk.minX,
-    y: chunk.minY,
-    w: chunk.maxX - chunk.minX,
-    h: chunk.maxY - chunk.minY
-  }
-  try {
-    drawChunkContent(renderer, canvas, graph, chunk)
-  } finally {
-    renderer.worldViewport = previousViewport
-  }
+  withChunkViewport(renderer, chunk, () => drawChunkContent(renderer, canvas, graph, chunk))
   const picture = recorder.finishRecordingAsPicture()
   recorder.delete()
   return { chunk, picture }

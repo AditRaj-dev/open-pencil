@@ -16,6 +16,26 @@ describe('navigation benchmark metrics', () => {
     })
   })
 
+  test('uses tiled coverage rather than fallback backing for tiled settlement', () => {
+    const recording: NavigationRecordingFile = {
+      schemaVersion: 1,
+      name: 'tiled',
+      source: 'synthetic',
+      recordedAt: '',
+      environment: {},
+      sceneRenderer: 'tiled',
+      initialViewport: { panX: 0, panY: 0, zoom: 1 },
+      wheel: [],
+      trace: [
+        { name: 'wheel:received', timestamp: 10, detail: {} },
+        { name: 'backing:crisp', timestamp: 20, detail: {} },
+        { name: 'tiles:coverage-complete', timestamp: 140, detail: {} }
+      ]
+    }
+
+    expect(computeNavigationMetrics(recording).finalInputToCrispMs).toBe(130)
+  })
+
   test('correlates input, viewport, render, and crisp backing events', () => {
     const recording: NavigationRecordingFile = {
       schemaVersion: 1,
@@ -23,6 +43,7 @@ describe('navigation benchmark metrics', () => {
       source: 'synthetic',
       recordedAt: '',
       environment: {},
+      sceneRenderer: 'existing',
       initialViewport: { panX: 0, panY: 0, zoom: 1 },
       wheel: [
         {
