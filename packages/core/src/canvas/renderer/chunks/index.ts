@@ -7,14 +7,22 @@ import {
   effectOverflow,
   strokeOverflow
 } from '@open-pencil/scene-graph/geometry'
+import type { Mat3 } from '@open-pencil/scene-graph/matrix'
 import Matrix from '@open-pencil/scene-graph/matrix'
 
 export type RenderChunkKind = 'self' | 'subtree'
+
+export interface RenderChunkContext {
+  parentTransform: Mat3
+  ancestorClipIds: string[]
+}
 
 export interface RenderChunk {
   id: string
   nodeId: string
   kind: RenderChunkKind
+  context: RenderChunkContext
+  interruptible: boolean
   painterOrder: number
   minX: number
   minY: number
@@ -28,12 +36,33 @@ export interface RenderChunkBuildStats {
   nodesVisited: number
   chunksBuilt: number
   maximumChunkNodes: number
+  maximumAtomicChunkNodes: number
+  oversizedAtomicChunks: number
 }
 
 const MAX_CHUNK_NODES = 32
 
-function shouldSplit(node: SceneNode, descendantCount: number): boolean {
-  return node.childIds.length > 0 && descendantCount > MAX_CHUNK_NODES
+function requiresAtomicSubtree(graph: SceneGraph, node: SceneNode): boolean {
+  const isolated =
+    node.opacity < 1 ||
+    (node.blendMode !== 'NORMAL' && node.blendMode !== 'PASS_THROUGH') ||
+    node.effects.some(
+      (effect) =>
+        effect.visible &&
+        (effect.type === 'LAYER_BLUR' ||
+          effect.type === 'FOREGROUND_BLUR' ||
+          effect.type === 'BACKGROUND_BLUR')
+    )
+  const hasMasks = node.childIds.some((childId) => graph.getNode(childId)?.isMask === true)
+  return isolated || hasMasks
+}
+
+function shouldSplit(graph: SceneGraph, node: SceneNode, descendantCount: number): boolean {
+  return (
+    node.childIds.length > 0 &&
+    descendantCount > MAX_CHUNK_NODES &&
+    !requiresAtomicSubtree(graph, node)
+  )
 }
 
 function estimateCost(nodeCount: number, node: SceneNode): number {
@@ -72,6 +101,24 @@ function subtreeBounds(graph: SceneGraph, nodeId: string) {
   )
 }
 
+function clipAncestorIds(graph: SceneGraph, node: SceneNode): string[] {
+  const ids: string[] = []
+  let parent = node.parentId ? graph.getNode(node.parentId) : undefined
+  while (parent) {
+    if (parent.clipsContent) ids.unshift(parent.id)
+    parent = parent.parentId ? graph.getNode(parent.parentId) : undefined
+  }
+  return ids
+}
+
+function chunkContext(graph: SceneGraph, node: SceneNode): RenderChunkContext {
+  const parent = node.parentId ? graph.getNode(node.parentId) : undefined
+  return {
+    parentTransform: parent ? getWorldMatrix(parent, graph) : Matrix.identity(),
+    ancestorClipIds: clipAncestorIds(graph, node)
+  }
+}
+
 function countDescendants(graph: SceneGraph, nodeIds: string[]) {
   const counts = new Map<string, number>()
   let visited = 0
@@ -107,7 +154,7 @@ function buildChunks(graph: SceneGraph, nodeIds: string[], counts: Map<string, n
     const node = graph.getNode(nodeId)
     if (!node?.visible) continue
     const descendantCount = counts.get(nodeId) ?? 1
-    const split = shouldSplit(node, descendantCount)
+    const split = shouldSplit(graph, node, descendantCount)
     const kind: RenderChunkKind = split ? 'self' : 'subtree'
     const bounds = split ? selfBounds(graph, node) : subtreeBounds(graph, nodeId)
     if (bounds) {
@@ -116,6 +163,8 @@ function buildChunks(graph: SceneGraph, nodeIds: string[], counts: Map<string, n
         id: `${nodeId}:${kind}`,
         nodeId,
         kind,
+        context: chunkContext(graph, node),
+        interruptible: split || !requiresAtomicSubtree(graph, node),
         painterOrder: painterOrder++,
         ...bounds,
         nodeCount,
@@ -142,7 +191,18 @@ export class RenderChunkIndex {
   ): { index: RenderChunkIndex; stats: RenderChunkBuildStats } {
     const index = new RenderChunkIndex()
     const page = graph.getNode(pageId)
-    if (!page) return { index, stats: { nodesVisited: 0, chunksBuilt: 0, maximumChunkNodes: 0 } }
+    if (!page) {
+      return {
+        index,
+        stats: {
+          nodesVisited: 0,
+          chunksBuilt: 0,
+          maximumChunkNodes: 0,
+          maximumAtomicChunkNodes: 0,
+          oversizedAtomicChunks: 0
+        }
+      }
+    }
 
     const { counts, visited } = countDescendants(graph, page.childIds)
     const chunks = buildChunks(graph, page.childIds, counts)
@@ -152,7 +212,14 @@ export class RenderChunkIndex {
       stats: {
         nodesVisited: visited,
         chunksBuilt: chunks.length,
-        maximumChunkNodes: chunks.reduce((maximum, chunk) => Math.max(maximum, chunk.nodeCount), 0)
+        maximumChunkNodes: chunks.reduce((maximum, chunk) => Math.max(maximum, chunk.nodeCount), 0),
+        maximumAtomicChunkNodes: chunks.reduce(
+          (maximum, chunk) => (chunk.interruptible ? maximum : Math.max(maximum, chunk.nodeCount)),
+          0
+        ),
+        oversizedAtomicChunks: chunks.filter(
+          (chunk) => !chunk.interruptible && chunk.nodeCount > MAX_CHUNK_NODES
+        ).length
       }
     }
   }
