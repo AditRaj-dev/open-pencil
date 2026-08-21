@@ -71,9 +71,6 @@ export function recordRenderChunk(
   graph: SceneGraph,
   chunk: RenderChunk
 ): RecordedRenderChunk {
-  if (!chunk.interruptible) {
-    throw new Error(`Atomic render chunk ${chunk.id} must be drawn into its destination surface`)
-  }
   const recorder = new renderer.ck.PictureRecorder()
   const canvas = recorder.beginRecording(
     renderer.ck.LTRBRect(chunk.minX, chunk.minY, chunk.maxX, chunk.maxY)
