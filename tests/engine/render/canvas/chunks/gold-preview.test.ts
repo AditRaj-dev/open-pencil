@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 
 import { initCodec, parseFigFile } from '@open-pencil/core'
 
-import { RenderChunkIndex } from '#core/canvas/renderer/render-chunk-index'
+import { RenderChunkIndex } from '#core/canvas/renderer/chunks'
 
 import { expectDefined } from '#tests/helpers/assert'
 import { repoPath } from '#tests/helpers/paths'
@@ -37,7 +37,7 @@ test('gold-preview render chunks stay bounded and spatial queries stay selective
     : []
   const queryMs = performance.now() - queryStartedAt
 
-  console.log(
+  console.debug(
     JSON.stringify({
       nodesVisited: stats.nodesVisited,
       chunksBuilt: stats.chunksBuilt,

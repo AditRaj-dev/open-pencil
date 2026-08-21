@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test'
 
 import { SceneGraph } from '@open-pencil/scene-graph'
 
-import { RenderChunkIndex } from '#core/canvas/renderer/render-chunk-index'
+import { RenderChunkIndex } from '#core/canvas/renderer/chunks'
 
 function graphWithNodes(count: number): { graph: SceneGraph; pageId: string } {
   const graph = new SceneGraph()
