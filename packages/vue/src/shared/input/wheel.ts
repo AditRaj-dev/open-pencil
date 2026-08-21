@@ -1,5 +1,5 @@
 import { useEventListener } from '@vueuse/core'
-import type { Ref } from 'vue'
+import { onScopeDispose, type Ref } from 'vue'
 
 import type { Editor } from '@open-pencil/core/editor'
 import { emitNavigationTrace } from '@open-pencil/core/profiler'
@@ -50,6 +50,7 @@ export function wheelPanDelta(event: WheelPanInput): WheelPanDelta {
 }
 
 const WHEEL_ZOOM_SPEED = 1.25
+const NAVIGATION_SETTLE_DELAY_MS = 120
 
 function wheelDeltaModeScale(event: WheelEvent) {
   if (event.deltaMode === 1) return 0.05
@@ -69,6 +70,18 @@ export function setupWheelPanZoom(canvasRef: Ref<HTMLCanvasElement | null>, edit
     zoomCenterX: 0,
     zoomCenterY: 0,
     hasZoom: false
+  }
+
+  let settleTimer: ReturnType<typeof setTimeout> | null = null
+
+  function scheduleSettle() {
+    if (settleTimer !== null) clearTimeout(settleTimer)
+    editor.setNavigationPhase('settling', performance.now())
+    settleTimer = setTimeout(() => {
+      settleTimer = null
+      editor.setNavigationPhase('idle', performance.now())
+      editor.requestRepaint()
+    }, NAVIGATION_SETTLE_DELAY_MS)
   }
 
   function flushWheel() {
@@ -92,6 +105,7 @@ export function setupWheelPanZoom(canvasRef: Ref<HTMLCanvasElement | null>, edit
     wheelAccum.deltaY = 0
     wheelAccum.zoomScale = 1
     wheelAccum.hasZoom = false
+    scheduleSettle()
   }
 
   const wheelScheduler = createRafScheduler(flushWheel)
@@ -111,6 +125,8 @@ export function setupWheelPanZoom(canvasRef: Ref<HTMLCanvasElement | null>, edit
       clientY: event.clientY,
       trusted: event.isTrusted
     })
+
+    editor.setNavigationPhase(isWheelZoom(event) ? 'zoom' : 'pan', performance.now())
 
     if (isWheelZoom(event)) {
       const rect = canvas.getBoundingClientRect()
@@ -135,4 +151,8 @@ export function setupWheelPanZoom(canvasRef: Ref<HTMLCanvasElement | null>, edit
     },
     { passive: false }
   )
+
+  onScopeDispose(() => {
+    if (settleTimer !== null) clearTimeout(settleTimer)
+  })
 }

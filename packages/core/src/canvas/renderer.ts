@@ -152,6 +152,8 @@ export class SkiaRenderer {
   sceneBackingAverageRecordMs = 40
   sceneBackingAverageViewportIntervalMs = 80
   sceneBackingLastViewportEventAt = 0
+  navigationPhase: EditorState['navigation']['phase'] = 'idle'
+  navigationGeneration = 0
   lastSceneViewport: { panX: number; panY: number; zoom: number } | null = null
   nodePictureCache = new Map<string, SkPicture | null>()
   nodePictureCacheGenerations = new Map<string, number>()
