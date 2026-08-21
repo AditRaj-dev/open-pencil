@@ -76,7 +76,9 @@ export const appPreferences = useLocalStorage<AppPreferences>(
 )
 
 export function updateRecoveryEnabled(enabled: boolean): void {
-  appPreferences.value = { ...appPreferences.value, recovery: { enabled } }
+  const preferences = structuredClone(appPreferences.value)
+  preferences.recovery.enabled = enabled
+  appPreferences.value = preferences
 }
 
 export function updateSnappingPreferences(changes: Partial<SnappingPreferences>): void {

@@ -41,6 +41,7 @@ export function createDocumentRecovery({
   let requestedVersion = protectedVersion
   let lifecycleGeneration = 0
   let writing: Promise<void> | null = null
+  let cleanup: Promise<void> = Promise.resolve()
   let disposed = false
 
   async function runWrites(generation: number): Promise<void> {
@@ -62,6 +63,7 @@ export function createDocumentRecovery({
   }
 
   async function persistNow(): Promise<void> {
+    await cleanup
     if (disposed || hasWritableSource() || !isEnabled()) return
     requestedVersion = state.sceneVersion
     if (requestedVersion === protectedVersion) return
@@ -91,13 +93,16 @@ export function createDocumentRecovery({
         return
       }
       lifecycleGeneration++
+      const cleanupGeneration = lifecycleGeneration
+      const snapshotId = id
       requestedVersion = state.sceneVersion
       protectedVersion = state.sceneVersion
       const activeWrite = writing
-      void (activeWrite ?? Promise.resolve())
-        .then(() => store.remove(id))
-        .then(() => {
-          persistedVersion = null
+      cleanup = cleanup
+        .then(async () => {
+          await activeWrite
+          await store.remove(snapshotId)
+          if (cleanupGeneration === lifecycleGeneration) persistedVersion = null
           return undefined
         })
         .catch((error) => console.warn('[Recovery] Failed to disable recovery:', error))
@@ -107,7 +112,7 @@ export function createDocumentRecovery({
 
   async function invalidateActiveWrite(): Promise<void> {
     lifecycleGeneration++
-    await writing
+    await Promise.all([writing, cleanup])
   }
 
   return {

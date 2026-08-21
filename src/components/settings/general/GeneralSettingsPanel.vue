@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useI18n } from '@open-pencil/vue'
 
-import { setRecoveryEnabled } from '@/app/document/recovery/preferences'
+import { recoveryEnabled, setRecoveryEnabled } from '@/app/document/recovery/preferences'
 import { setSnappingPreference } from '@/app/settings/preferences/apply'
 import { appPreferences } from '@/app/settings/preferences/store'
 import AppSwitch from '@/components/ui/AppSwitch.vue'
@@ -10,7 +10,7 @@ import AppSwitch from '@/components/ui/AppSwitch.vue'
 const { dialogs } = useI18n()
 
 const preserveUnsavedWork = computed({
-  get: () => appPreferences.value.recovery.enabled,
+  get: () => recoveryEnabled.value,
   set: setRecoveryEnabled
 })
 

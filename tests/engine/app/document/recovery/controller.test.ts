@@ -23,9 +23,28 @@ function deferredWriteStore() {
   return { store, release: () => release?.() }
 }
 
-function setup(buildFigFile = async () => new Uint8Array([1, 2, 3]), initialEnabled = true) {
+function deferredRemoveStore() {
+  const memory = createMemoryRecoveryStore()
+  let release: (() => void) | null = null
+  const store: RecoveryStore = {
+    ...memory,
+    async remove(id: string) {
+      await new Promise<void>((resolve) => {
+        release = resolve
+      })
+      await memory.remove(id)
+    }
+  }
+  return { store, release: () => release?.() }
+}
+
+function setup(
+  buildFigFile = async () => new Uint8Array([1, 2, 3]),
+  initialEnabled = true,
+  injectedStore?: RecoveryStore
+) {
   const state = reactive({ ...createDefaultEditorState('page-1'), documentName: 'Agent draft' })
-  const store = createMemoryRecoveryStore()
+  const store = injectedStore ?? createMemoryRecoveryStore()
   let writable = false
   const enabled = ref(initialEnabled)
   const recovery = createDocumentRecovery({
@@ -89,6 +108,25 @@ describe('document recovery controller', () => {
     state.sceneVersion = 3
     await recovery.persistNow()
     expect((await store.read('recovery-1'))?.sceneVersion).toBe(3)
+    recovery.disposeRecovery()
+  })
+
+  test('waits for disable cleanup before writing after re-enable', async () => {
+    const deferred = deferredRemoveStore()
+    const { state, store, recovery, setEnabled } = setup(undefined, true, deferred.store)
+    state.sceneVersion = 1
+    await recovery.persistNow()
+
+    setEnabled(false)
+    setEnabled(true)
+    state.sceneVersion = 2
+    const nextWrite = recovery.persistNow()
+    await Promise.resolve()
+    expect((await store.read('recovery-1'))?.sceneVersion).toBe(1)
+
+    deferred.release()
+    await nextWrite
+    expect((await store.read('recovery-1'))?.sceneVersion).toBe(2)
     recovery.disposeRecovery()
   })
 
