@@ -281,6 +281,12 @@ export class SkiaRenderer {
   ) => void
   declare drawSectionTitles: (canvas: Canvas, graph: SceneGraph) => void
   declare drawComponentLabels: (canvas: Canvas, graph: SceneGraph) => void
+  declare renderNodeSelf: (
+    canvas: Canvas,
+    graph: SceneGraph,
+    nodeId: string,
+    overlays?: RenderOverlays
+  ) => void
   declare renderNode: (
     canvas: Canvas,
     graph: SceneGraph,
