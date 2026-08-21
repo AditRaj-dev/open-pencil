@@ -8,7 +8,8 @@ export { emitNavigationTrace, subscribeNavigationTrace } from './navigation-trac
 export type {
   NavigationTraceEvent,
   NavigationTraceEventName,
-  NavigationTraceListener
+  NavigationTraceListener,
+  RecordedWheelSample
 } from './navigation-trace'
 export { CaptureStack, toSpeedscopeJSON } from './frame/capture'
 export type { NodeProfile, FrameCapture } from './frame/capture'

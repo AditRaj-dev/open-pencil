@@ -17,6 +17,20 @@ export interface NavigationTraceEvent {
   detail: Record<string, number | string | boolean | null>
 }
 
+export interface RecordedWheelSample {
+  timeMs: number
+  deltaX: number
+  deltaY: number
+  deltaMode: number
+  ctrlKey: boolean
+  metaKey: boolean
+  shiftKey: boolean
+  clientX: number
+  clientY: number
+  cancelable: boolean
+  directionInvertedFromDevice?: boolean
+}
+
 export type NavigationTraceListener = (event: NavigationTraceEvent) => void
 
 const listeners = new Set<NavigationTraceListener>()
