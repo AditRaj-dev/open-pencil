@@ -126,7 +126,7 @@ try {
   } else {
     await setupScenario(page, scenario)
   }
-  await page.waitForTimeout(1_500)
+  await page.evaluate(() => window.openPencil?.test?.navigation?.waitForSettlement())
   if (!documentPath) {
     await page.evaluate((viewport) => {
       const store = window.openPencil?.getStore?.()
@@ -137,7 +137,7 @@ try {
       store.requestRepaint()
     }, input.initialViewport)
   }
-  await page.waitForTimeout(500)
+  await page.evaluate(() => window.openPencil?.test?.navigation?.waitForSettlement())
   await page.evaluate(
     (name) => window.openPencil?.test?.navigation?.startRecording(name),
     input.name
@@ -145,7 +145,7 @@ try {
 
   const trace = traceEnabled ? await startChromiumTrace(page, { cpuProfile }) : null
   await replay(page, input, mode)
-  await page.waitForTimeout(750)
+  await page.evaluate(() => window.openPencil?.test?.navigation?.waitForSettlement())
   await trace?.stop(resolve(output, 'trace.json.gz'))
 
   const recording = await page.evaluate(

@@ -11,6 +11,7 @@ export type NavigationTraceEventName =
   | 'animation:frame'
   | 'main:long-task'
   | 'navigation:phase'
+  | 'tiles:coverage-complete'
 
 export interface NavigationTraceEvent {
   name: NavigationTraceEventName

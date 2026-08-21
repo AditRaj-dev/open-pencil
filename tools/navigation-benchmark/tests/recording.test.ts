@@ -11,6 +11,7 @@ describe('navigation recording validation', () => {
         source: 'synthetic',
         recordedAt: '',
         environment: {},
+        sceneRenderer: 'existing',
         initialViewport: { panX: 0, panY: 0, zoom: 1 },
         trace: [],
         wheel: [

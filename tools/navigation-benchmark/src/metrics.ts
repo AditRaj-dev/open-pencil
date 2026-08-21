@@ -134,10 +134,14 @@ export function computeNavigationMetrics(recording: NavigationRecordingFile): Na
     const next = nextTimestamp(trace, event.timestamp, 'render:end')
     return next === null ? [] : [next - event.timestamp]
   })
-  const crispCandidates = [
-    ...events(trace, 'backing:crisp'),
-    ...rendered.filter((event) => event.detail.backingCrisp === true)
-  ].sort((a, b) => a.timestamp - b.timestamp)
+  const crispCandidates = (
+    recording.sceneRenderer === 'tiled'
+      ? events(trace, 'tiles:coverage-complete')
+      : [
+          ...events(trace, 'backing:crisp'),
+          ...rendered.filter((event) => event.detail.backingCrisp === true)
+        ]
+  ).sort((a, b) => a.timestamp - b.timestamp)
   const crisp = crispCandidates.find((event) => event.timestamp >= finalInput)
   const longTaskDurations = events(trace, 'main:long-task').flatMap((event) => {
     const duration = numeric(event, 'durationMs')

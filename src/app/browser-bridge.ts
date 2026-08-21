@@ -4,6 +4,7 @@ import type { CollabReturn } from '@/app/collab/context'
 import type { EditorStore } from '@/app/editor/session/create'
 import { createNavigationBenchmarkHooks } from '@/app/performance/navigation/hooks'
 import type { NavigationBenchmarkHooks } from '@/app/performance/navigation/hooks'
+import { appRuntimeConfig } from '@/app/runtime/config'
 import { IS_BROWSER } from '@/constants'
 
 export interface OpenPencilTestHooks {
@@ -47,7 +48,7 @@ function windowAPI(): OpenPencilWindowAPI {
 export function setOpenPencilStore(store: EditorStore) {
   activeStore = store
   const api = windowAPI()
-  if (new URLSearchParams(window.location.search).has('navigation-benchmark')) {
+  if (appRuntimeConfig.navigationBenchmark) {
     const testHooks = (api.test ??= {})
     testHooks.navigation = createNavigationBenchmarkHooks(store)
   }
@@ -55,7 +56,7 @@ export function setOpenPencilStore(store: EditorStore) {
 
 export function exposeCollaborationActions(collab: CollabReturn) {
   if (!IS_BROWSER || !import.meta.env.DEV) return
-  if (!new URLSearchParams(window.location.search).has('test')) return
+  if (!appRuntimeConfig.test) return
   const testHooks = (windowAPI().test ??= {})
   testHooks.collab = {
     connect: collab.connect,

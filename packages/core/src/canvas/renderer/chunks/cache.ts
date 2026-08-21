@@ -1,4 +1,4 @@
-import type { Picture } from 'canvaskit-wasm'
+import type { SkPicture } from 'canvaskit-wasm'
 
 import type { SceneGraph } from '@open-pencil/scene-graph'
 
@@ -8,14 +8,14 @@ import type { RenderChunk } from './index'
 import { recordRenderChunk } from './record'
 
 interface CachedChunkPicture {
-  picture: Picture
+  picture: SkPicture
   fontGeneration: number
 }
 
 export class RenderChunkPictureCache {
   private readonly entries = new Map<string, CachedChunkPicture>()
 
-  get(renderer: SkiaRenderer, graph: SceneGraph, chunk: RenderChunk): Picture {
+  get(renderer: SkiaRenderer, graph: SceneGraph, chunk: RenderChunk): SkPicture {
     const cached = this.entries.get(chunk.id)
     if (cached?.fontGeneration === renderer.fontGeneration) return cached.picture
     cached?.picture.delete()

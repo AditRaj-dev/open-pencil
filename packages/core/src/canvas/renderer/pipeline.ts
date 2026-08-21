@@ -193,13 +193,38 @@ export function render(
     canvas.scale(r.dpr, r.dpr)
 
     p.beginPhase('render:scene')
+    let renderedScene = false
+    if (layer === 'scene' && !requiresUncachedSceneRender && r.tiledSceneEnabled) {
+      canvas.save()
+      canvas.translate(r.panX, r.panY)
+      canvas.scale(r.zoom, r.zoom)
+      renderSceneContent(
+        r,
+        canvas,
+        graph,
+        overlays,
+        sceneVersion,
+        canUsePicture,
+        cacheMissReason,
+        requiresUncachedSceneRender
+      )
+      canvas.restore()
+      const tiled = r.tiledScene.renderFrame(r, canvas, graph, sceneVersion, r.navigationGeneration)
+      r.tiledScenePending = tiled.pending
+      r.tiledSceneCovered = tiled.covered
+      renderedScene = true
+      p.setScenePictureMode('hit', tiled.covered ? 'tiled' : 'tiled-fallback')
+    }
     if (
+      !renderedScene &&
       layer === 'scene' &&
       !requiresUncachedSceneRender &&
       renderSceneBacking(r, canvas, graph, sceneVersion)
     ) {
+      renderedScene = true
       p.setScenePictureMode('hit', 'backing')
-    } else {
+    }
+    if (!renderedScene) {
       canvas.translate(r.panX, r.panY)
       canvas.scale(r.zoom, r.zoom)
       renderSceneContent(
