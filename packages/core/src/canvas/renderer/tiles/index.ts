@@ -8,5 +8,6 @@ export {
   tileWorldSize
 } from './geometry'
 export type { TileKey, TileWorldBounds } from './geometry'
+export { TileSurfacePool } from './surface-pool'
 export { deleteRenderedTile, renderTile, tileChunks } from './render'
 export type { RenderedTile } from './render'

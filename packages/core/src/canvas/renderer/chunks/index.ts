@@ -277,6 +277,7 @@ export class RenderChunkIndex {
   }
 }
 
+export { RenderChunkPictureCache } from './cache'
 export {
   deleteRecordedRenderChunks,
   drawRecordedRenderChunks,

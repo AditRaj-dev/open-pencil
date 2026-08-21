@@ -6,7 +6,6 @@ import { initCanvasKit } from '#cli/headless'
 import { SkiaRenderer } from '#core/canvas'
 import {
   deleteRecordedRenderChunks,
-  drawRenderChunkDirect,
   recordRenderChunk,
   RenderChunkIndex
 } from '#core/canvas/renderer/chunks'
@@ -25,16 +24,10 @@ function renderPixels(renderer: SkiaRenderer, graph: SceneGraph, pageId: string,
   if (chunked) {
     const { index } = RenderChunkIndex.build(graph, pageId)
     const chunks = index.search({ minX: 0, minY: 0, maxX: 320, maxY: 240 })
-    const recorded = chunks
-      .filter((chunk) => chunk.interruptible)
-      .map((chunk) => recordRenderChunk(renderer, graph, chunk))
+    const recorded = chunks.map((chunk) => recordRenderChunk(renderer, graph, chunk))
     for (const chunk of chunks) {
-      if (chunk.interruptible) {
-        const picture = recorded.find((entry) => entry.chunk.id === chunk.id)?.picture
-        if (picture) canvas.drawPicture(picture)
-      } else {
-        drawRenderChunkDirect(renderer, canvas, graph, chunk)
-      }
+      const picture = recorded.find((entry) => entry.chunk.id === chunk.id)?.picture
+      if (picture) canvas.drawPicture(picture)
     }
     deleteRecordedRenderChunks(recorded)
     index.dispose()
@@ -109,7 +102,7 @@ describe('recorded render chunks', () => {
     expect(renderPair(graph, page.id)).toBeLessThan(0.01)
   })
 
-  test('rejects recording atomic compositing chunks', () => {
+  test('records atomic chunks as indivisible destination-dependent command pictures', () => {
     const graph = new SceneGraph()
     const page = expectDefined(graph.getPages()[0], 'page')
     const group = graph.createNode('FRAME', page.id, { opacity: 0.5 })
@@ -122,7 +115,9 @@ describe('recorded render chunks', () => {
       const { index } = RenderChunkIndex.build(graph, page.id)
       const chunk = index.getChunksForNode(group.id)[0]
       if (!chunk) throw new Error('Expected atomic chunk')
-      expect(() => recordRenderChunk(renderer, graph, chunk)).toThrow('must be drawn')
+      const recorded = recordRenderChunk(renderer, graph, chunk)
+      expect(recorded.picture).toBeDefined()
+      recorded.picture.delete()
       index.dispose()
     } finally {
       renderer.destroy()

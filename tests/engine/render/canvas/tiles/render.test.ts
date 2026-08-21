@@ -4,11 +4,12 @@ import { SceneGraph } from '@open-pencil/scene-graph'
 
 import { initCanvasKit } from '#cli/headless'
 import { SkiaRenderer } from '#core/canvas'
-import { RenderChunkIndex } from '#core/canvas/renderer/chunks'
+import { RenderChunkIndex, RenderChunkPictureCache } from '#core/canvas/renderer/chunks'
 import {
   deleteRenderedTile,
   renderTile,
   TILE_DEVICE_SIZE,
+  TileSurfacePool,
   tileKeysForWorldBounds,
   tileWorldBounds
 } from '#core/canvas/renderer/tiles'
@@ -85,6 +86,8 @@ describe('tile rendering', () => {
       maxX: 320,
       maxY: 240
     })
+    const pictureCache = new RenderChunkPictureCache()
+    const surfacePool = new TileSurfacePool()
     try {
       direct.surface.getCanvas().clear(ck.WHITE)
       direct.renderSceneToCanvas(direct.surface.getCanvas(), graph, page.id)
@@ -93,7 +96,9 @@ describe('tile rendering', () => {
 
       const tiledCanvas = tiled.surface.getCanvas()
       tiledCanvas.clear(ck.WHITE)
-      const rendered = keys.map((key) => renderTile(tileFactory, graph, index, key))
+      const rendered = keys.map((key) =>
+        renderTile(tileFactory, graph, index, key, pictureCache, surfacePool)
+      )
       for (const tile of rendered) {
         const bounds = tileWorldBounds(tile.key)
         tiledCanvas.drawImageRectOptions(
@@ -118,6 +123,8 @@ describe('tile rendering', () => {
       tiledImage.delete()
       for (const tile of rendered) deleteRenderedTile(tile)
     } finally {
+      surfacePool.clear()
+      pictureCache.clear()
       index.dispose()
       direct.destroy()
       tiled.destroy()
