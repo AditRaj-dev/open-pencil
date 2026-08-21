@@ -1,0 +1,211 @@
+import RBush from 'rbush'
+
+import type { SceneGraph, SceneNode } from '@open-pencil/scene-graph'
+import { getWorldMatrix } from '@open-pencil/scene-graph/coordinate'
+import {
+  computeDescendantVisualBounds,
+  effectOverflow,
+  strokeOverflow
+} from '@open-pencil/scene-graph/geometry'
+import Matrix from '@open-pencil/scene-graph/matrix'
+
+export type RenderChunkKind = 'self' | 'subtree'
+
+export interface RenderChunk {
+  id: string
+  nodeId: string
+  kind: RenderChunkKind
+  painterOrder: number
+  minX: number
+  minY: number
+  maxX: number
+  maxY: number
+  nodeCount: number
+  estimatedCost: number
+}
+
+export interface RenderChunkBuildStats {
+  nodesVisited: number
+  chunksBuilt: number
+  maximumChunkNodes: number
+}
+
+const MAX_CHUNK_NODES = 32
+
+function shouldSplit(node: SceneNode, descendantCount: number): boolean {
+  return node.childIds.length > 0 && descendantCount > MAX_CHUNK_NODES
+}
+
+function estimateCost(nodeCount: number, node: SceneNode): number {
+  const visibleEffects = node.effects.filter((effect) => effect.visible).length
+  return nodeCount + visibleEffects * 8
+}
+
+function selfBounds(graph: SceneGraph, node: SceneNode) {
+  const stroke = strokeOverflow(node.strokes)
+  const effects = effectOverflow(node.effects)
+  const points = Matrix.mapPoints(getWorldMatrix(node, graph), [
+    -stroke - effects.left,
+    -stroke - effects.top,
+    node.width + stroke + effects.right,
+    -stroke - effects.top,
+    node.width + stroke + effects.right,
+    node.height + stroke + effects.bottom,
+    -stroke - effects.left,
+    node.height + stroke + effects.bottom
+  ])
+  const xs = [points[0], points[2], points[4], points[6]]
+  const ys = [points[1], points[3], points[5], points[7]]
+  return {
+    minX: Math.min(...xs),
+    minY: Math.min(...ys),
+    maxX: Math.max(...xs),
+    maxY: Math.max(...ys)
+  }
+}
+
+function subtreeBounds(graph: SceneGraph, nodeId: string) {
+  return computeDescendantVisualBounds(
+    [nodeId],
+    (id) => graph.getNode(id),
+    (id) => graph.getAbsolutePosition(id)
+  )
+}
+
+function countDescendants(graph: SceneGraph, nodeIds: string[]) {
+  const counts = new Map<string, number>()
+  let visited = 0
+  const stack: Array<{ nodeId: string; expanded: boolean }> = nodeIds.map((nodeId) => ({
+    nodeId,
+    expanded: false
+  }))
+  while (stack.length > 0) {
+    const entry = stack.pop()
+    if (!entry) continue
+    const node = graph.getNode(entry.nodeId)
+    if (!node?.visible) continue
+    if (!entry.expanded) {
+      visited++
+      stack.push({ nodeId: entry.nodeId, expanded: true })
+      for (const childId of node.childIds) stack.push({ nodeId: childId, expanded: false })
+      continue
+    }
+    let count = 1
+    for (const childId of node.childIds) count += counts.get(childId) ?? 0
+    counts.set(node.id, count)
+  }
+  return { counts, visited }
+}
+
+function buildChunks(graph: SceneGraph, nodeIds: string[], counts: Map<string, number>) {
+  const chunks: RenderChunk[] = []
+  let painterOrder = 0
+  const stack = [...nodeIds].reverse()
+  while (stack.length > 0) {
+    const nodeId = stack.pop()
+    if (!nodeId) continue
+    const node = graph.getNode(nodeId)
+    if (!node?.visible) continue
+    const descendantCount = counts.get(nodeId) ?? 1
+    const split = shouldSplit(node, descendantCount)
+    const kind: RenderChunkKind = split ? 'self' : 'subtree'
+    const bounds = split ? selfBounds(graph, node) : subtreeBounds(graph, nodeId)
+    if (bounds) {
+      const nodeCount = split ? 1 : descendantCount
+      chunks.push({
+        id: `${nodeId}:${kind}`,
+        nodeId,
+        kind,
+        painterOrder: painterOrder++,
+        ...bounds,
+        nodeCount,
+        estimatedCost: estimateCost(nodeCount, node)
+      })
+    }
+    if (!split) continue
+    for (let childIndex = node.childIds.length - 1; childIndex >= 0; childIndex--) {
+      const childId = node.childIds[childIndex]
+      if (childId) stack.push(childId)
+    }
+  }
+  return chunks
+}
+
+export class RenderChunkIndex {
+  private readonly tree = new RBush<RenderChunk>()
+  private readonly chunks = new Map<string, RenderChunk>()
+  private readonly chunkIdsByNode = new Map<string, Set<string>>()
+
+  static build(
+    graph: SceneGraph,
+    pageId: string
+  ): { index: RenderChunkIndex; stats: RenderChunkBuildStats } {
+    const index = new RenderChunkIndex()
+    const page = graph.getNode(pageId)
+    if (!page) return { index, stats: { nodesVisited: 0, chunksBuilt: 0, maximumChunkNodes: 0 } }
+
+    const { counts, visited } = countDescendants(graph, page.childIds)
+    const chunks = buildChunks(graph, page.childIds, counts)
+    index.bulkLoad(chunks)
+    return {
+      index,
+      stats: {
+        nodesVisited: visited,
+        chunksBuilt: chunks.length,
+        maximumChunkNodes: chunks.reduce((maximum, chunk) => Math.max(maximum, chunk.nodeCount), 0)
+      }
+    }
+  }
+
+  bulkLoad(chunks: RenderChunk[]): void {
+    this.tree.clear()
+    this.chunks.clear()
+    this.chunkIdsByNode.clear()
+    this.tree.load(chunks)
+    for (const chunk of chunks) {
+      this.chunks.set(chunk.id, chunk)
+      const ids = this.chunkIdsByNode.get(chunk.nodeId) ?? new Set<string>()
+      ids.add(chunk.id)
+      this.chunkIdsByNode.set(chunk.nodeId, ids)
+    }
+  }
+
+  search(bounds: Pick<RenderChunk, 'minX' | 'minY' | 'maxX' | 'maxY'>): RenderChunk[] {
+    return this.tree.search(bounds).sort((a, b) => a.painterOrder - b.painterOrder)
+  }
+
+  updateNode(graph: SceneGraph, nodeId: string): number {
+    const ids = this.chunkIdsByNode.get(nodeId)
+    const node = graph.getNode(nodeId)
+    if (!ids || !node) return 0
+    let updated = 0
+    for (const id of ids) {
+      const chunk = this.chunks.get(id)
+      if (!chunk) continue
+      this.tree.remove(chunk)
+      const bounds = chunk.kind === 'self' ? selfBounds(graph, node) : subtreeBounds(graph, nodeId)
+      if (!bounds) continue
+      Object.assign(chunk, bounds)
+      this.tree.insert(chunk)
+      updated++
+    }
+    return updated
+  }
+
+  getChunksForNode(nodeId: string): RenderChunk[] {
+    return [...(this.chunkIdsByNode.get(nodeId) ?? [])].flatMap((id) => {
+      const chunk = this.chunks.get(id)
+      return chunk ? [chunk] : []
+    })
+  }
+
+  size(): number {
+    return this.chunks.size
+  }
+
+  dispose(): void {
+    this.tree.clear()
+    this.chunks.clear()
+    this.chunkIdsByNode.clear()
+  }
+}
