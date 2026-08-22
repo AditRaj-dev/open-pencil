@@ -3,11 +3,13 @@ import type { Canvas, Path } from 'canvaskit-wasm'
 
 import {
   getAbsolutePositionFull,
+  getWorldMatrix,
   type SceneNode,
   type SceneGraph,
   type Fill
 } from '@open-pencil/scene-graph'
 import { computeDescendantVisualBounds } from '@open-pencil/scene-graph/geometry'
+import Matrix from '@open-pencil/scene-graph/matrix'
 import type { Color } from '@open-pencil/scene-graph/primitives'
 
 import { DROP_HIGHLIGHT_ALPHA, DROP_HIGHLIGHT_STROKE, SECTION_CORNER_RADIUS } from '#core/constants'
@@ -257,6 +259,56 @@ export function renderNodeSelf(
   canvas.restore()
 }
 
+function viewportLayerBounds(
+  r: SkiaRenderer,
+  graph: SceneGraph,
+  node: SceneNode,
+  padding: number
+): Float32Array | null {
+  if (!r.boundEffectLayersToViewport) return null
+  const inverse = Matrix.invert(getWorldMatrix(node, graph))
+  if (!inverse) return null
+  const viewport = r.worldViewport
+  const points = Matrix.mapPoints(inverse, [
+    viewport.x,
+    viewport.y,
+    viewport.x + viewport.w,
+    viewport.y,
+    viewport.x + viewport.w,
+    viewport.y + viewport.h,
+    viewport.x,
+    viewport.y + viewport.h
+  ])
+  const xs = [points[0], points[2], points[4], points[6]]
+  const ys = [points[1], points[3], points[5], points[7]]
+  return r.ck.LTRBRect(
+    Math.min(...xs) - padding,
+    Math.min(...ys) - padding,
+    Math.max(...xs) + padding,
+    Math.max(...ys) + padding
+  )
+}
+
+function nodeIsolationLayerBounds(
+  r: SkiaRenderer,
+  graph: SceneGraph,
+  node: SceneNode,
+  nodeId: string,
+  absX: number,
+  absY: number
+): Float32Array {
+  const viewportBounds = viewportLayerBounds(r, graph, node, 0)
+  if (viewportBounds) return viewportBounds
+  const bounds = computeDescendantVisualBounds(
+    [nodeId],
+    (id) => graph.getNode(id) ?? undefined,
+    (id) => graph.getAbsolutePosition(id)
+  )
+  return bounds
+    ? r.ck.LTRBRect(bounds.minX - absX, bounds.minY - absY, bounds.maxX - absX, bounds.maxY - absY)
+    : r.ck.LTRBRect(0, 0, node.width, node.height)
+}
+
 export function renderNode(
   r: SkiaRenderer,
   canvas: Canvas,
@@ -296,19 +348,7 @@ export function renderNode(
 
   const needsNodeLayer = node.opacity < 1 || needsIsolatedBlendLayer(node.blendMode)
   if (needsNodeLayer) {
-    const bounds = computeDescendantVisualBounds(
-      [nodeId],
-      (id) => graph.getNode(id) ?? undefined,
-      (id) => graph.getAbsolutePosition(id)
-    )
-    const layerBounds = bounds
-      ? r.ck.LTRBRect(
-          bounds.minX - absX,
-          bounds.minY - absY,
-          bounds.maxX - absX,
-          bounds.maxY - absY
-        )
-      : r.ck.LTRBRect(0, 0, node.width, node.height)
+    const layerBounds = nodeIsolationLayerBounds(r, graph, node, nodeId, absX, absY)
     r.opacityPaint.setAlphaf(node.opacity)
     r.opacityPaint.setBlendMode(figmaBlendModeToSkia(r.ck, node.blendMode))
     canvas.saveLayer(r.opacityPaint, layerBounds)
@@ -327,7 +367,13 @@ export function renderNode(
     const blurPadding = layerBlur.radius * 2
     canvas.saveLayer(
       r.effectLayerPaint,
-      r.ck.LTRBRect(-blurPadding, -blurPadding, node.width + blurPadding, node.height + blurPadding)
+      viewportLayerBounds(r, graph, node, blurPadding) ??
+        r.ck.LTRBRect(
+          -blurPadding,
+          -blurPadding,
+          node.width + blurPadding,
+          node.height + blurPadding
+        )
     )
   }
 

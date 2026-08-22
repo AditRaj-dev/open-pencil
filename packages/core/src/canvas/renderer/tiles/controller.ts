@@ -14,6 +14,7 @@ import { TileScheduler, type TileJob, type TileSchedulerMetrics } from './schedu
 import { TileSurfacePool } from './surface-pool'
 
 const TILE_FRAME_BUDGET_MS = 5
+const MAXIMUM_TILE_JOBS_PER_FRAME = 4
 const TILE_OVERSCAN = 1
 
 export interface TiledSceneFrameResult {
@@ -32,11 +33,15 @@ export class TiledSceneController {
     nodeId: string
     previousBounds: TileWorldBounds[]
   }> = []
-  private lastCoveredNavigationGeneration = -1
+  private lastCoveredGeneration = ''
   private readonly pictureCache = new RenderChunkPictureCache()
   private readonly tileCache = new TileImageCache()
   private readonly surfacePool = new TileSurfacePool()
-  private readonly scheduler = new TileScheduler({ budgetMs: TILE_FRAME_BUDGET_MS })
+  private readonly scheduler = new TileScheduler({
+    budgetMs: TILE_FRAME_BUDGET_MS,
+    maximumJobsPerFrame: MAXIMUM_TILE_JOBS_PER_FRAME
+  })
+  private readonly measuredCosts = new Map<string, number>()
 
   invalidateNode(nodeId: string): void {
     const chunks = this.index?.getChunksDependingOnNode(nodeId) ?? []
@@ -78,8 +83,9 @@ export class TiledSceneController {
       navigationGeneration,
       contentGeneration,
       estimateCost: (key) =>
+        this.measuredCosts.get(this.costKey(key)) ??
         tileChunks(index, key).reduce((total, chunk) => total + chunk.estimatedCost, 0),
-      globalFallbackAvailable: this.navigationActive
+      globalFallbackAvailable: true
     })
     if (!this.navigationActive) this.scheduler.enqueue(plan.jobs)
     canvas.save()
@@ -109,17 +115,15 @@ export class TiledSceneController {
       skippedWithFallback: metrics.skippedWithFallback,
       deadlineOverrunMs: metrics.deadlineOverrunMs,
       overBudgetJobs: metrics.overBudgetJobs,
+      maximumJobRenderMs: metrics.maximumJobRenderMs,
       staleJobsDiscarded: metrics.staleJobsDiscarded,
       tileCacheBytes: this.tileCache.byteSize(),
       tileCacheEntries: this.tileCache.size(),
       covered
     })
-    if (
-      covered &&
-      !this.navigationActive &&
-      this.lastCoveredNavigationGeneration !== navigationGeneration
-    ) {
-      this.lastCoveredNavigationGeneration = navigationGeneration
+    const coveredGeneration = `${navigationGeneration}:${contentGeneration}`
+    if (covered && !this.navigationActive && this.lastCoveredGeneration !== coveredGeneration) {
+      this.lastCoveredGeneration = coveredGeneration
       emitNavigationTrace('tiles:coverage-complete', {
         level,
         sceneVersion: contentGeneration,
@@ -140,8 +144,9 @@ export class TiledSceneController {
     this.index = null
     this.pageId = null
     this.contentGeneration = -1
-    this.lastCoveredNavigationGeneration = -1
+    this.lastCoveredGeneration = ''
     this.pendingInvalidations = []
+    this.measuredCosts.clear()
     this.pictureCache.clear()
     this.tileCache.clear()
   }
@@ -230,6 +235,7 @@ export class TiledSceneController {
       skippedWithFallback: jobs.filter((job) => job.fallbackAvailable).length,
       deadlineOverrunMs: 0,
       overBudgetJobs: 0,
+      maximumJobRenderMs: 0,
       staleJobsDiscarded: 0
     }
   }
@@ -248,6 +254,8 @@ export class TiledSceneController {
       return { renderMs: 0, overBudget: false }
     }
     const tile = renderTile(renderer, graph, index, job.key, this.pictureCache, this.surfacePool)
+    const previousCost = this.measuredCosts.get(this.costKey(job.key)) ?? tile.renderMs
+    this.measuredCosts.set(this.costKey(job.key), previousCost * 0.7 + tile.renderMs * 0.3)
     if (
       job.navigationGeneration !== this.navigationGeneration ||
       job.contentGeneration !== this.contentGeneration
@@ -257,6 +265,10 @@ export class TiledSceneController {
     }
     this.tileCache.install(tile, job.contentGeneration)
     return { renderMs: tile.renderMs, overBudget: tile.renderMs > TILE_FRAME_BUDGET_MS }
+  }
+
+  private costKey(key: TileJob['key']): string {
+    return `${key.level}:${key.x}:${key.y}`
   }
 
   private drawVisibleTiles(
@@ -295,6 +307,7 @@ export class TiledSceneController {
         skippedWithFallback: 0,
         deadlineOverrunMs: 0,
         overBudgetJobs: 0,
+        maximumJobRenderMs: 0,
         staleJobsDiscarded: 0
       }
     }
