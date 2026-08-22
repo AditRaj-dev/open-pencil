@@ -38,6 +38,20 @@ describe('tile image cache', () => {
     expect(second.image.delete).toHaveBeenCalledTimes(1)
   })
 
+  test('invalidates intersecting tiles and advances unaffected generations', () => {
+    const cache = new TileImageCache()
+    const first = tile(0)
+    const second = tile(1)
+    cache.install(first, 1)
+    cache.install(second, 1)
+
+    expect(cache.invalidateBounds('page', { minX: 300, minY: 10, maxX: 340, maxY: 40 }, 2)).toBe(1)
+    expect(cache.get(first.key)?.contentGeneration).toBe(2)
+    expect(cache.get(second.key)).toBeNull()
+    expect(second.image.delete).toHaveBeenCalledTimes(1)
+    cache.clear()
+  })
+
   test('evicts least recently used tiles within its byte budget', () => {
     const bytes = 256 * 256 * 4
     const cache = new TileImageCache(bytes * 2)
