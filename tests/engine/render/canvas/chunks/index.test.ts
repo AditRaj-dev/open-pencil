@@ -63,6 +63,24 @@ describe('render chunk spatial index', () => {
     index.dispose()
   })
 
+  test('indexes subtree descendants and transform ancestors as chunk dependencies', () => {
+    const graph = new SceneGraph()
+    const page = graph.getPages()[0]
+    if (!page) throw new Error('Expected default page')
+    const ancestor = graph.createNode('FRAME', page.id, { x: 20, y: 20 })
+    const root = graph.createNode('FRAME', ancestor.id)
+    const child = graph.createNode('RECTANGLE', root.id)
+    const { index } = RenderChunkIndex.build(graph, page.id)
+    try {
+      expect(index.getChunksDependingOnNode(child.id).map((chunk) => chunk.nodeId)).toContain(
+        ancestor.id
+      )
+      expect(index.getChunksDependingOnNode(ancestor.id).length).toBeGreaterThan(0)
+    } finally {
+      index.dispose()
+    }
+  })
+
   test('keeps a small top-level subtree as one retained chunk', () => {
     const { graph, pageId } = graphWithNodes(20)
     const { index, stats } = RenderChunkIndex.build(graph, pageId)

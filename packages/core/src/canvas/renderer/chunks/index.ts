@@ -159,6 +159,7 @@ export class RenderChunkIndex {
   private readonly tree = new RBush<RenderChunk>()
   private readonly chunks = new Map<string, RenderChunk>()
   private readonly chunkIdsByNode = new Map<string, Set<string>>()
+  private readonly chunkIdsByDependency = new Map<string, Set<string>>()
 
   static build(
     graph: SceneGraph,
@@ -181,7 +182,7 @@ export class RenderChunkIndex {
 
     const { counts, visited } = countDescendants(graph, page.childIds)
     const chunks = buildChunks(graph, page.childIds, counts)
-    index.bulkLoad(chunks)
+    index.bulkLoad(chunks, graph)
     return {
       index,
       stats: {
@@ -199,16 +200,18 @@ export class RenderChunkIndex {
     }
   }
 
-  bulkLoad(chunks: RenderChunk[]): void {
+  bulkLoad(chunks: RenderChunk[], graph?: SceneGraph): void {
     this.tree.clear()
     this.chunks.clear()
     this.chunkIdsByNode.clear()
+    this.chunkIdsByDependency.clear()
     this.tree.load(chunks)
     for (const chunk of chunks) {
       this.chunks.set(chunk.id, chunk)
       const ids = this.chunkIdsByNode.get(chunk.nodeId) ?? new Set<string>()
       ids.add(chunk.id)
       this.chunkIdsByNode.set(chunk.nodeId, ids)
+      if (graph) this.indexDependencies(graph, chunk)
     }
   }
 
@@ -228,7 +231,7 @@ export class RenderChunkIndex {
       const bounds =
         chunk.kind === 'self' ? worldNodeVisualBounds(graph, node) : subtreeBounds(graph, nodeId)
       if (!bounds) continue
-      Object.assign(chunk, bounds)
+      Object.assign(chunk, bounds, { context: chunkContext(graph, node) })
       this.tree.insert(chunk)
       updated++
     }
@@ -242,6 +245,39 @@ export class RenderChunkIndex {
     })
   }
 
+  getChunksDependingOnNode(nodeId: string): RenderChunk[] {
+    return [...(this.chunkIdsByDependency.get(nodeId) ?? [])].flatMap((id) => {
+      const chunk = this.chunks.get(id)
+      return chunk ? [chunk] : []
+    })
+  }
+
+  private indexDependencies(graph: SceneGraph, chunk: RenderChunk): void {
+    const dependencies = new Set<string>()
+    let ancestor = graph.getNode(chunk.nodeId)
+    while (ancestor) {
+      dependencies.add(ancestor.id)
+      ancestor = ancestor.parentId ? graph.getNode(ancestor.parentId) : undefined
+    }
+    if (chunk.kind === 'subtree') {
+      const pending = [chunk.nodeId]
+      const visited = new Set<string>()
+      while (pending.length > 0) {
+        const id = pending.pop()
+        if (!id || visited.has(id)) continue
+        visited.add(id)
+        dependencies.add(id)
+        const node = graph.getNode(id)
+        if (node) pending.push(...node.childIds)
+      }
+    }
+    for (const dependencyId of dependencies) {
+      const ids = this.chunkIdsByDependency.get(dependencyId) ?? new Set<string>()
+      ids.add(chunk.id)
+      this.chunkIdsByDependency.set(dependencyId, ids)
+    }
+  }
+
   size(): number {
     return this.chunks.size
   }
@@ -250,6 +286,7 @@ export class RenderChunkIndex {
     this.tree.clear()
     this.chunks.clear()
     this.chunkIdsByNode.clear()
+    this.chunkIdsByDependency.clear()
   }
 }
 

@@ -53,6 +53,36 @@ export class TileImageCache {
     }
   }
 
+  invalidateBounds(
+    pageId: string,
+    bounds: { minX: number; minY: number; maxX: number; maxY: number },
+    contentGeneration: number
+  ): number {
+    let invalidated = 0
+    for (const [id, entry] of this.entries) {
+      if (entry.key.pageId !== pageId) continue
+      const size = 256 / entry.key.level
+      const minX = entry.key.x * size
+      const minY = entry.key.y * size
+      if (
+        minX >= bounds.maxX ||
+        minY >= bounds.maxY ||
+        minX + size <= bounds.minX ||
+        minY + size <= bounds.minY
+      ) {
+        entry.contentGeneration = contentGeneration
+        continue
+      }
+      this.delete(id)
+      invalidated++
+    }
+    return invalidated
+  }
+
+  advanceGeneration(contentGeneration: number): void {
+    for (const entry of this.entries.values()) entry.contentGeneration = contentGeneration
+  }
+
   clear(): void {
     for (const entry of this.entries.values()) entry.image.delete()
     this.entries.clear()

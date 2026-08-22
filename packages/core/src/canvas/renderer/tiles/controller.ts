@@ -7,7 +7,7 @@ import { RenderChunkIndex, RenderChunkPictureCache } from '#core/canvas/renderer
 import { emitNavigationTrace } from '#core/profiler'
 
 import { TileImageCache } from './cache'
-import { TILE_DEVICE_SIZE, tileLevel, tileWorldBounds } from './geometry'
+import { TILE_DEVICE_SIZE, tileLevel, tileWorldBounds, type TileWorldBounds } from './geometry'
 import { planTiles } from './planner'
 import { deleteRenderedTile, renderTile, tileChunks } from './render'
 import { TileScheduler, type TileJob, type TileSchedulerMetrics } from './scheduler'
@@ -28,11 +28,27 @@ export class TiledSceneController {
   private contentGeneration = -1
   private navigationGeneration = -1
   private navigationActive = false
+  private pendingInvalidations: Array<{
+    nodeId: string
+    previousBounds: TileWorldBounds[]
+  }> = []
   private lastCoveredNavigationGeneration = -1
   private readonly pictureCache = new RenderChunkPictureCache()
   private readonly tileCache = new TileImageCache()
   private readonly surfacePool = new TileSurfacePool()
   private readonly scheduler = new TileScheduler({ budgetMs: TILE_FRAME_BUDGET_MS })
+
+  invalidateNode(nodeId: string): void {
+    const chunks = this.index?.getChunksDependingOnNode(nodeId) ?? []
+    this.pendingInvalidations.push({
+      nodeId,
+      previousBounds: chunks.map(({ minX, minY, maxX, maxY }) => ({ minX, minY, maxX, maxY }))
+    })
+  }
+
+  invalidateStructure(): void {
+    this.invalidate()
+  }
 
   renderFrame(
     renderer: SkiaRenderer,
@@ -42,21 +58,8 @@ export class TiledSceneController {
     navigationGeneration: number
   ): TiledSceneFrameResult {
     this.navigationGeneration = navigationGeneration
-    this.navigationActive =
-      renderer.navigationPhase === 'pan' ||
-      renderer.navigationPhase === 'zoom' ||
-      renderer.navigationPhase === 'momentum' ||
-      renderer.navigationPhase === 'settling'
-    this.scheduler.setGeneration(navigationGeneration, contentGeneration)
-    if (
-      this.index &&
-      (this.pageId !== renderer.pageId || this.contentGeneration !== contentGeneration)
-    ) {
-      this.invalidate()
-    }
-    if (!this.navigationActive && this.index === null && renderer.pageId) {
-      this.ensureIndex(graph, renderer.pageId, contentGeneration)
-    }
+    this.navigationActive = this.isNavigationActive(renderer)
+    this.prepareGeneration(renderer, graph, contentGeneration, navigationGeneration)
     const index = this.index
     if (!index || !renderer.pageId) return this.emptyResult()
 
@@ -138,6 +141,7 @@ export class TiledSceneController {
     this.pageId = null
     this.contentGeneration = -1
     this.lastCoveredNavigationGeneration = -1
+    this.pendingInvalidations = []
     this.pictureCache.clear()
     this.tileCache.clear()
   }
@@ -145,6 +149,59 @@ export class TiledSceneController {
   destroy(): void {
     this.invalidate()
     this.surfacePool.clear()
+  }
+
+  private isNavigationActive(renderer: SkiaRenderer): boolean {
+    return (
+      renderer.navigationPhase === 'pan' ||
+      renderer.navigationPhase === 'zoom' ||
+      renderer.navigationPhase === 'momentum' ||
+      renderer.navigationPhase === 'settling'
+    )
+  }
+
+  private prepareGeneration(
+    renderer: SkiaRenderer,
+    graph: SceneGraph,
+    contentGeneration: number,
+    navigationGeneration: number
+  ): void {
+    this.scheduler.setGeneration(navigationGeneration, contentGeneration)
+    if (
+      this.index &&
+      this.pageId === renderer.pageId &&
+      this.contentGeneration !== contentGeneration &&
+      this.pendingInvalidations.length > 0
+    ) {
+      this.applyPendingInvalidations(graph, contentGeneration)
+    }
+    if (
+      this.index &&
+      (this.pageId !== renderer.pageId || this.contentGeneration !== contentGeneration)
+    ) {
+      this.invalidate()
+    }
+    if (!this.navigationActive && this.index === null && renderer.pageId) {
+      this.ensureIndex(graph, renderer.pageId, contentGeneration)
+    }
+  }
+
+  private applyPendingInvalidations(graph: SceneGraph, contentGeneration: number): void {
+    const index = this.index
+    if (!index || !this.pageId) return
+    this.tileCache.advanceGeneration(contentGeneration)
+    for (const invalidation of this.pendingInvalidations) {
+      const before = invalidation.previousBounds
+      const chunks = index.getChunksDependingOnNode(invalidation.nodeId)
+      for (const chunk of chunks) this.pictureCache.invalidate(chunk.id)
+      for (const chunk of chunks) index.updateNode(graph, chunk.nodeId)
+      const after = index.getChunksDependingOnNode(invalidation.nodeId)
+      for (const bounds of [...before, ...after]) {
+        this.tileCache.invalidateBounds(this.pageId, bounds, contentGeneration)
+      }
+    }
+    this.pendingInvalidations = []
+    this.contentGeneration = contentGeneration
   }
 
   private ensureIndex(graph: SceneGraph, pageId: string | null, contentGeneration: number): void {
