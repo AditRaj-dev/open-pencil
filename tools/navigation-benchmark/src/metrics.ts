@@ -44,7 +44,7 @@ function renderPairs(trace: readonly TraceEvent[]): Array<{ start: TraceEvent; e
   const pairs: Array<{ start: TraceEvent; end: TraceEvent }> = []
   for (const event of trace) {
     if (event.name === 'render:start') pending.push(event)
-    if (event.name === 'render:end') {
+    if (event.name === 'render:end' && event.detail.layer !== 'tiled-scheduler') {
       const start = pending.shift()
       if (start) pairs.push({ start, end: event })
     }
@@ -143,6 +143,18 @@ export function computeNavigationMetrics(recording: NavigationRecordingFile): Na
         ]
   ).sort((a, b) => a.timestamp - b.timestamp)
   const crisp = crispCandidates.find((event) => event.timestamp >= finalInput)
+  const schedulerEvents = events(trace, 'render:end').filter(
+    (event) => event.detail.layer === 'tiled-scheduler'
+  )
+  const schedulerNumbers = (key: string) =>
+    schedulerEvents.flatMap((event) => {
+      const value = numeric(event, key)
+      return value === null ? [] : [value]
+    })
+  const schedulerCompleted = schedulerEvents.map(
+    (event) =>
+      (numeric(event, 'mandatoryCompleted') ?? 0) + (numeric(event, 'interruptibleCompleted') ?? 0)
+  )
   const longTaskDurations = events(trace, 'main:long-task').flatMap((event) => {
     const duration = numeric(event, 'durationMs')
     return duration === null ? [] : [duration]
@@ -161,6 +173,13 @@ export function computeNavigationMetrics(recording: NavigationRecordingFile): Na
     zoomAnchorDriftPx: distribution(zoomAnchorDrift(trace, recording)),
     maximumJumpPx: round(maximumViewportJump(trace)),
     finalInputToCrispMs: crisp ? round(crisp.timestamp - finalInput) : null,
+    scheduler: {
+      frameCount: schedulerEvents.length,
+      maximumJobsPerFrame: Math.max(0, ...schedulerCompleted),
+      maximumJobRenderMs: round(Math.max(0, ...schedulerNumbers('maximumJobRenderMs'))),
+      overBudgetJobs: schedulerNumbers('overBudgetJobs').reduce((sum, value) => sum + value, 0),
+      maximumDeadlineOverrunMs: round(Math.max(0, ...schedulerNumbers('deadlineOverrunMs')))
+    },
     longTasks: {
       count: longTaskDurations.length,
       totalMs: round(longTaskDurations.reduce((sum, duration) => sum + duration, 0)),

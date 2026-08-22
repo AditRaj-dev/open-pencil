@@ -47,16 +47,22 @@ describe('tile scheduler', () => {
     expect(scheduler.pending()).toBe(1)
   })
 
-  test('skips an estimated over-budget refresh when a fallback exists', () => {
-    const scheduler = new TileScheduler({ budgetMs: 5, now: () => 0 })
+  test('runs one estimated over-budget fallback refresh and keeps later work queued', () => {
+    let clock = 0
+    const scheduler = new TileScheduler({ budgetMs: 5, now: () => clock })
     scheduler.setGeneration(1, 1)
-    scheduler.enqueue([job(0, 'visible', { fallbackAvailable: true, estimatedCost: 10 })])
+    scheduler.enqueue([
+      job(0, 'visible', { fallbackAvailable: true, estimatedCost: 10 }),
+      job(1, 'visible', { fallbackAvailable: true, estimatedCost: 10 })
+    ])
     const metrics = scheduler.runFrame(() => {
-      throw new Error('fallback job should not execute')
+      clock += 8
+      return { renderMs: 8, overBudget: true }
     })
 
-    expect(metrics.skippedWithFallback).toBe(1)
-    expect(metrics.remaining).toBe(0)
+    expect(metrics.interruptibleCompleted).toBe(1)
+    expect(metrics.overBudgetJobs).toBe(1)
+    expect(metrics.remaining).toBe(1)
   })
 
   test('spreads multiple mandatory holes across frames after an over-budget job', () => {

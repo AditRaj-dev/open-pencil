@@ -33,6 +33,13 @@ export interface NavigationMetrics {
   zoomAnchorDriftPx: Distribution
   maximumJumpPx: number
   finalInputToCrispMs: number | null
+  scheduler: {
+    frameCount: number
+    maximumJobsPerFrame: number
+    maximumJobRenderMs: number
+    overBudgetJobs: number
+    maximumDeadlineOverrunMs: number
+  }
   longTasks: { count: number; totalMs: number; maximumMs: number }
   missedDisplayFrames: { over8Ms: number; over16Ms: number; over33Ms: number; over50Ms: number }
   renderGaps: { over8Ms: number; over16Ms: number; over33Ms: number; over50Ms: number }

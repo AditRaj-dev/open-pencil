@@ -113,7 +113,17 @@ function createParityGraph() {
     height: 120,
     opacity: 0.55,
     blendMode: 'MULTIPLY',
-    fills: []
+    fills: [],
+    effects: [
+      {
+        type: 'FOREGROUND_BLUR',
+        visible: true,
+        radius: 12,
+        spread: 0,
+        offset: { x: 0, y: 0 },
+        color: { r: 0, g: 0, b: 0, a: 1 }
+      }
+    ]
   })
   graph.createNode('RECTANGLE', translucent.id, {
     x: 5,
@@ -229,7 +239,7 @@ describe('tile rendering', () => {
       controller.invalidateNode(changed.id)
       graph.updateNode(changed.id, { x: 30, fills: color(0, 1, 0) })
       const refreshed = controller.renderFrame(renderer, surface.getCanvas(), graph, 2, 0)
-      expect(refreshed.metrics.mandatoryCompleted).toBe(1)
+      expect(refreshed.metrics.interruptibleCompleted).toBe(1)
       expect(refreshed.covered).toBe(true)
     } finally {
       controller.destroy()
