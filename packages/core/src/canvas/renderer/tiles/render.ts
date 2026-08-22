@@ -39,7 +39,14 @@ export function renderTile(
   const surface = surfacePool.acquire(renderer)
   const allocationMs = performance.now() - allocationStartedAt
   const canvas = surface.getCanvas()
-  canvas.clear(renderer.ck.TRANSPARENT)
+  canvas.clear(
+    renderer.ck.Color4f(
+      renderer.pageColor.r,
+      renderer.pageColor.g,
+      renderer.pageColor.b,
+      renderer.pageColor.a
+    )
+  )
   canvas.scale(key.level, key.level)
   canvas.translate(-bounds.minX, -bounds.minY)
   canvas.clipRect(
