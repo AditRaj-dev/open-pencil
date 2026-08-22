@@ -40,6 +40,10 @@ const gesturePath = argument('--gesture')
 const mode = argument('--mode', 'cdp') as ReplayMode
 const scenario = argument('--scenario', 'light') as NavigationScenario
 const documentPath = process.argv.includes('--document') ? resolve(argument('--document')) : null
+const mutationNodeId = process.argv.includes('--mutate-node') ? argument('--mutate-node') : null
+const mutationOpacity = process.argv.includes('--mutate-opacity')
+  ? Number(argument('--mutate-opacity'))
+  : null
 const traceEnabled = !process.argv.includes('--no-trace')
 const cpuProfile = process.argv.includes('--cpu-profile')
 const softwareGpu = process.argv.includes('--software-gpu')
@@ -54,6 +58,10 @@ if (scenario === 'current-document' && !documentPath) {
 }
 if (scenario !== 'current-document' && documentPath) {
   throw new Error('--document requires --scenario current-document')
+}
+
+if (mutationOpacity !== null && (!Number.isFinite(mutationOpacity) || !mutationNodeId)) {
+  throw new Error('--mutate-opacity requires a finite value and --mutate-node')
 }
 
 await mkdir(output, { recursive: true })
@@ -144,7 +152,20 @@ try {
   )
 
   const trace = traceEnabled ? await startChromiumTrace(page, { cpuProfile }) : null
-  await replay(page, input, mode)
+  if (mutationNodeId && mutationOpacity !== null) {
+    await page.evaluate(
+      ({ nodeId, opacity }) => {
+        const store = window.openPencil?.getStore?.()
+        if (!store) throw new Error('OpenPencil store not available for benchmark mutation')
+        if (!store.graph.getNode(nodeId))
+          throw new Error(`Benchmark mutation node not found: ${nodeId}`)
+        store.graph.updateNode(nodeId, { opacity })
+      },
+      { nodeId: mutationNodeId, opacity: mutationOpacity }
+    )
+  } else {
+    await replay(page, input, mode)
+  }
   await page.evaluate(() => window.openPencil?.test?.navigation?.waitForSettlement())
   await trace?.stop(resolve(output, 'trace.json.gz'))
 
@@ -161,6 +182,8 @@ try {
     softwareGpu,
     glInfo,
     documentPath,
+    mutationNodeId,
+    mutationOpacity,
     gesturePath: resolve(gesturePath),
     browserVersion: await browser.version(),
     platform: process.platform,

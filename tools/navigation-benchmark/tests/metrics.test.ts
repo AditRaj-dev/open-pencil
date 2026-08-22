@@ -75,12 +75,32 @@ describe('navigation benchmark metrics', () => {
           }
         },
         { name: 'render:start', timestamp: 6, detail: {} },
-        { name: 'render:end', timestamp: 10, detail: { panX: -10, panY: -10, zoom: 1.1 } },
+        {
+          name: 'render:end',
+          timestamp: 10,
+          detail: { layer: 'scene', panX: -10, panY: -10, zoom: 1.1 }
+        },
         { name: 'animation:frame', timestamp: 16, detail: {} },
         { name: 'render:start', timestamp: 20, detail: {} },
-        { name: 'render:end', timestamp: 30, detail: { panX: -12, panY: -10, zoom: 1.1 } },
+        {
+          name: 'render:end',
+          timestamp: 30,
+          detail: { layer: 'scene', panX: -12, panY: -10, zoom: 1.1 }
+        },
         { name: 'animation:frame', timestamp: 32, detail: {} },
         { name: 'main:long-task', timestamp: 33, detail: { durationMs: 60 } },
+        {
+          name: 'render:end',
+          timestamp: 35,
+          detail: {
+            layer: 'tiled-scheduler',
+            mandatoryCompleted: 0,
+            interruptibleCompleted: 4,
+            maximumJobRenderMs: 1.5,
+            overBudgetJobs: 0,
+            deadlineOverrunMs: 0
+          }
+        },
         { name: 'backing:crisp', timestamp: 40, detail: {} }
       ]
     }
@@ -95,5 +115,12 @@ describe('navigation benchmark metrics', () => {
     expect(metrics.zoomAnchorDriftPx.max).toBe(0)
     expect(metrics.maximumJumpPx).toBe(2)
     expect(metrics.finalInputToCrispMs).toBe(40)
+    expect(metrics.scheduler).toEqual({
+      frameCount: 1,
+      maximumJobsPerFrame: 4,
+      maximumJobRenderMs: 1.5,
+      overBudgetJobs: 0,
+      maximumDeadlineOverrunMs: 0
+    })
   })
 })

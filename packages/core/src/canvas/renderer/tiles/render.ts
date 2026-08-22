@@ -6,7 +6,8 @@ import type { SkiaRenderer } from '#core/canvas/renderer'
 import {
   type RenderChunk,
   type RenderChunkIndex,
-  type RenderChunkPictureCache
+  type RenderChunkPictureCache,
+  drawRenderChunkDirect
 } from '#core/canvas/renderer/chunks'
 
 import { type TileKey, tileWorldBounds } from './geometry'
@@ -22,6 +23,17 @@ export interface RenderedTile {
   drawMs: number
   flushMs: number
   snapshotMs: number
+}
+
+function isBoundedAtomicBlurChunk(graph: SceneGraph, chunk: RenderChunk): boolean {
+  if (chunk.interruptible || chunk.kind !== 'subtree') return false
+  const node = graph.getNode(chunk.nodeId)
+  return (
+    node?.effects.some(
+      (effect) =>
+        effect.visible && (effect.type === 'LAYER_BLUR' || effect.type === 'FOREGROUND_BLUR')
+    ) === true
+  )
 }
 
 export function renderTile(
@@ -58,6 +70,16 @@ export function renderTile(
   try {
     const drawStartedAt = performance.now()
     for (const chunk of chunks) {
+      if (isBoundedAtomicBlurChunk(graph, chunk)) {
+        const previous = renderer.boundEffectLayersToViewport
+        renderer.boundEffectLayersToViewport = true
+        try {
+          drawRenderChunkDirect(renderer, canvas, graph, chunk)
+        } finally {
+          renderer.boundEffectLayersToViewport = previous
+        }
+        continue
+      }
       const picture = pictureCache.get(renderer, graph, chunk)
       canvas.drawPicture(picture)
     }

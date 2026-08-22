@@ -194,6 +194,7 @@ export class SkiaRenderer {
   rulerTheme: RulerTheme | null = null
   pageId: string | null = null
 
+  boundEffectLayersToViewport = false
   worldViewport = { x: 0, y: 0, w: 0, h: 0 }
   _nodeCount = 0
   _culledCount = 0
