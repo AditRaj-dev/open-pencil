@@ -82,7 +82,6 @@ export class TiledSceneController {
     canvas.save()
     canvas.translate(renderer.panX, renderer.panY)
     canvas.scale(renderer.zoom, renderer.zoom)
-    this.drawVisibleTiles(renderer, canvas, plan.visible)
     const metrics = this.navigationActive
       ? this.deferActiveJobs(plan.jobs)
       : this.runScheduledFrame(renderer, graph, index)
@@ -208,17 +207,23 @@ export class TiledSceneController {
     canvas: Canvas,
     visible: ReturnType<typeof planTiles>['visible']
   ): void {
-    for (const { key, tile } of visible) {
-      if (!tile) continue
-      const bounds = tileWorldBounds(key)
-      canvas.drawImageRectOptions(
-        tile.image,
-        renderer.ck.LTRBRect(0, 0, TILE_DEVICE_SIZE, TILE_DEVICE_SIZE),
-        renderer.ck.LTRBRect(bounds.minX, bounds.minY, bounds.maxX, bounds.maxY),
-        renderer.ck.FilterMode.Linear,
-        renderer.ck.MipmapMode.None,
-        null
-      )
+    renderer.opacityPaint.setAlphaf(1)
+    renderer.opacityPaint.setBlendMode(renderer.ck.BlendMode.Src)
+    try {
+      for (const { key, tile } of visible) {
+        if (!tile) continue
+        const bounds = tileWorldBounds(key)
+        canvas.drawImageRectOptions(
+          tile.image,
+          renderer.ck.LTRBRect(0, 0, TILE_DEVICE_SIZE, TILE_DEVICE_SIZE),
+          renderer.ck.LTRBRect(bounds.minX, bounds.minY, bounds.maxX, bounds.maxY),
+          renderer.ck.FilterMode.Linear,
+          renderer.ck.MipmapMode.None,
+          renderer.opacityPaint
+        )
+      }
+    } finally {
+      renderer.opacityPaint.setBlendMode(renderer.ck.BlendMode.SrcOver)
     }
   }
 
