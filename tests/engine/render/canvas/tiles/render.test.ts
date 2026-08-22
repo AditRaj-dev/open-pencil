@@ -192,6 +192,51 @@ function createParityGraph() {
 }
 
 describe('tile rendering', () => {
+  test('refreshes only tiles intersecting an updated isolated chunk', () => {
+    const graph = new SceneGraph()
+    const page = expectDefined(graph.getPages()[0], 'page')
+    const changed = graph.createNode('RECTANGLE', page.id, {
+      x: 20,
+      y: 20,
+      width: 40,
+      height: 40,
+      fills: color(1, 0, 0)
+    })
+    graph.createNode('RECTANGLE', page.id, {
+      x: 540,
+      y: 20,
+      width: 40,
+      height: 40,
+      fills: color(0, 0, 1)
+    })
+    const surface = expectDefined(ck.MakeSurface(640, 240), 'selective invalidation surface')
+    const renderer = new SkiaRenderer(ck, surface)
+    const controller = new TiledSceneController()
+    renderer.pageId = page.id
+    renderer.pageColor = { r: 1, g: 1, b: 1, a: 1 }
+    renderer.viewportWidth = 640
+    renderer.viewportHeight = 240
+    renderer.dpr = 1
+    renderer.zoom = 1
+    renderer.navigationPhase = 'idle'
+    try {
+      let initial = controller.renderFrame(renderer, surface.getCanvas(), graph, 1, 0)
+      for (let frame = 0; frame < 10 && initial.pending; frame++) {
+        initial = controller.renderFrame(renderer, surface.getCanvas(), graph, 1, 0)
+      }
+      expect(initial.covered).toBe(true)
+
+      controller.invalidateNode(changed.id)
+      graph.updateNode(changed.id, { x: 30, fills: color(0, 1, 0) })
+      const refreshed = controller.renderFrame(renderer, surface.getCanvas(), graph, 2, 0)
+      expect(refreshed.metrics.mandatoryCompleted).toBe(1)
+      expect(refreshed.covered).toBe(true)
+    } finally {
+      controller.destroy()
+      renderer.destroy()
+    }
+  })
+
   test('live controller progressively replaces fallback pixels without changing the scene', () => {
     const { graph, page } = createParityGraph()
     const directSurface = expectDefined(ck.MakeSurface(320, 240), 'direct controller surface')

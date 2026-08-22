@@ -7,11 +7,18 @@ import { createGraphEventSubscription } from '#core/editor/graph-events'
 
 function createRenderer() {
   const invalidated: string[] = []
-  const renderer: Pick<SkiaRenderer, 'invalidateVectorPath' | 'invalidateNodePicture'> & {
+  const renderer: Pick<
+    SkiaRenderer,
+    'invalidateVectorPath' | 'invalidateNodePicture' | 'tiledScene'
+  > & {
     invalidated: string[]
   } = {
     invalidateVectorPath: () => undefined,
     invalidateNodePicture: (nodeId: string) => invalidated.push(nodeId),
+    tiledScene: {
+      invalidateNode: () => undefined,
+      invalidateStructure: () => undefined
+    } as SkiaRenderer['tiledScene'],
     invalidated
   }
   return renderer
