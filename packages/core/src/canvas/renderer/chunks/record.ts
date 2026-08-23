@@ -68,13 +68,16 @@ export function recordRenderChunk(
   chunk: RenderChunk
 ): RecordedRenderChunk {
   const recorder = new renderer.ck.PictureRecorder()
-  const canvas = recorder.beginRecording(
-    renderer.ck.LTRBRect(chunk.minX, chunk.minY, chunk.maxX, chunk.maxY)
-  )
-  withChunkViewport(renderer, chunk, () => drawChunkContent(renderer, canvas, graph, chunk))
-  const picture = recorder.finishRecordingAsPicture()
-  recorder.delete()
-  return { chunk, picture }
+  try {
+    const canvas = recorder.beginRecording(
+      renderer.ck.LTRBRect(chunk.minX, chunk.minY, chunk.maxX, chunk.maxY)
+    )
+    withChunkViewport(renderer, chunk, () => drawChunkContent(renderer, canvas, graph, chunk))
+    const picture = recorder.finishRecordingAsPicture()
+    return { chunk, picture }
+  } finally {
+    recorder.delete()
+  }
 }
 
 export function drawRecordedRenderChunks(canvas: Canvas, chunks: RecordedRenderChunk[]): void {

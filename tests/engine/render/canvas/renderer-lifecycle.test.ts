@@ -55,12 +55,22 @@ function createRenderer() {
     scenePicture: null,
     sceneBacking: null,
     sceneBackingBuild: null,
+    tiledScene: { destroy: mock() } as SkiaRenderer['tiledScene'],
     _flashPaint: null,
     profiler: { destroy: mock() } as Partial<SkiaRenderer['profiler']> as SkiaRenderer['profiler'],
     surface: deletable<Surface>()
   }
   return renderer as SkiaRenderer
 }
+
+test('destroyRenderer releases tiled resources before deleting the main surface', () => {
+  const renderer = createRenderer()
+
+  destroyRenderer(renderer)
+
+  expect(renderer.tiledScene.destroy).toHaveBeenCalledTimes(1)
+  expect(renderer.surface.delete).toHaveBeenCalledTimes(1)
+})
 
 test('destroyRenderer deletes all renderer-owned paints and label fonts', () => {
   const renderer = createRenderer()

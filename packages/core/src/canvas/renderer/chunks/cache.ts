@@ -19,6 +19,7 @@ export class RenderChunkPictureCache {
     const cached = this.entries.get(chunk.id)
     if (cached?.fontGeneration === renderer.fontGeneration) return cached.picture
     cached?.picture.delete()
+    this.entries.delete(chunk.id)
     const recorded = recordRenderChunk(renderer, graph, chunk)
     this.entries.set(chunk.id, {
       picture: recorded.picture,

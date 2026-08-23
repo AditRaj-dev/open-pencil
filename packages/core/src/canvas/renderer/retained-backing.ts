@@ -291,32 +291,36 @@ function cachedSubtreePicture(
   }
 
   cached?.picture.delete()
+  r.subtreePictureCache.delete(childId)
   const bounds = computeRetainedSubtreeBounds(graph, childId)
   if (!bounds) return null
 
   const recorder = new r.ck.PictureRecorder()
-  const recCanvas = recorder.beginRecording(
-    r.ck.LTRBRect(bounds.minX, bounds.minY, bounds.maxX, bounds.maxY)
-  )
   const prevViewport = r.worldViewport
-  r.worldViewport = {
-    x: bounds.minX,
-    y: bounds.minY,
-    w: bounds.maxX - bounds.minX,
-    h: bounds.maxY - bounds.minY
+  try {
+    const recCanvas = recorder.beginRecording(
+      r.ck.LTRBRect(bounds.minX, bounds.minY, bounds.maxX, bounds.maxY)
+    )
+    r.worldViewport = {
+      x: bounds.minX,
+      y: bounds.minY,
+      w: bounds.maxX - bounds.minX,
+      h: bounds.maxY - bounds.minY
+    }
+    r.renderNode(recCanvas, graph, childId, {})
+    const picture = recorder.finishRecordingAsPicture()
+    r.subtreePictureCache.set(childId, {
+      picture,
+      pageId: r.pageId,
+      sceneVersion,
+      positionPreviewVersion: graph.positionPreviewVersion,
+      fontGeneration: r.fontGeneration
+    })
+    return picture
+  } finally {
+    r.worldViewport = prevViewport
+    recorder.delete()
   }
-  r.renderNode(recCanvas, graph, childId, {})
-  r.worldViewport = prevViewport
-  const picture = recorder.finishRecordingAsPicture()
-  recorder.delete()
-  r.subtreePictureCache.set(childId, {
-    picture,
-    pageId: r.pageId,
-    sceneVersion,
-    positionPreviewVersion: graph.positionPreviewVersion,
-    fontGeneration: r.fontGeneration
-  })
-  return picture
 }
 
 function renderBackingChild(
@@ -336,28 +340,32 @@ function renderBackingChild(
     h: backing.worldHeight
   }
   canvas.save()
-  canvas.scale(r.dpr, r.dpr)
-  canvas.translate(backing.panX, backing.panY)
-  canvas.scale(r.zoom, r.zoom)
-  const previousRenderingSceneBacking = r.renderingSceneBacking
-  const child = graph.getNode(childId)
-  const hasCacheableEffects = child?.effects.some(
-    (effect) => effect.visible && (effect.type === 'DROP_SHADOW' || effect.type === 'INNER_SHADOW')
-  )
-  if (hasCacheableEffects) {
-    r.renderingSceneBacking = true
-    try {
-      r.renderNode(canvas, graph, childId, {})
-    } finally {
-      r.renderingSceneBacking = previousRenderingSceneBacking
+  try {
+    canvas.scale(r.dpr, r.dpr)
+    canvas.translate(backing.panX, backing.panY)
+    canvas.scale(r.zoom, r.zoom)
+    const previousRenderingSceneBacking = r.renderingSceneBacking
+    const child = graph.getNode(childId)
+    const hasCacheableEffects = child?.effects.some(
+      (effect) =>
+        effect.visible && (effect.type === 'DROP_SHADOW' || effect.type === 'INNER_SHADOW')
+    )
+    if (hasCacheableEffects) {
+      r.renderingSceneBacking = true
+      try {
+        r.renderNode(canvas, graph, childId, {})
+      } finally {
+        r.renderingSceneBacking = previousRenderingSceneBacking
+      }
+    } else {
+      const picture = cachedSubtreePicture(r, graph, childId, sceneVersion)
+      if (picture) canvas.drawPicture(picture)
+      else r.renderNode(canvas, graph, childId, {})
     }
-  } else {
-    const picture = cachedSubtreePicture(r, graph, childId, sceneVersion)
-    if (picture) canvas.drawPicture(picture)
-    else r.renderNode(canvas, graph, childId, {})
+  } finally {
+    canvas.restore()
+    r.worldViewport = prevViewport
   }
-  canvas.restore()
-  r.worldViewport = prevViewport
 }
 
 function sceneBackingMetrics(backing: ReturnType<typeof sceneBackingGeometry>) {
@@ -480,10 +488,14 @@ function stepSceneBackingBuild(r: SkiaRenderer, sceneVersion: number): boolean {
 
   if (build.index < build.childIds.length) return true
 
-  build.surface.flush()
-  const image = build.surface.makeImageSnapshot()
-  build.surface.delete()
-  r.sceneBackingBuild = null
+  let image: CKImage
+  try {
+    build.surface.flush()
+    image = build.surface.makeImageSnapshot()
+  } finally {
+    build.surface.delete()
+    r.sceneBackingBuild = null
+  }
   installSceneBackingImage(r, image, build.sceneVersion, build.positionPreviewVersion, backing)
   emitNavigationTrace('backing:crisp', {
     buildMs: now() - build.startedAt,
@@ -503,27 +515,30 @@ function recordSceneBacking(r: SkiaRenderer, graph: SceneGraph, sceneVersion: nu
   const surface = createSceneBackingSurface(r, backing.width, backing.height)
   if (!surface) return
   const canvas = surface.getCanvas()
-  canvas.clear(r.ck.Color4f(r.pageColor.r, r.pageColor.g, r.pageColor.b, 1))
-  const pageNode = graph.getNode(r.pageId ?? graph.rootId)
-  if (pageNode) {
-    for (const childId of pageNode.childIds) {
-      renderBackingChild(r, graph, surface, childId, backing, sceneVersion)
+  try {
+    canvas.clear(r.ck.Color4f(r.pageColor.r, r.pageColor.g, r.pageColor.b, 1))
+    const pageNode = graph.getNode(r.pageId ?? graph.rootId)
+    if (pageNode) {
+      for (const childId of pageNode.childIds) {
+        renderBackingChild(r, graph, surface, childId, backing, sceneVersion)
+      }
     }
+    surface.flush()
+    const image = surface.makeImageSnapshot()
+    installSceneBackingImage(r, image, sceneVersion, graph.positionPreviewVersion, backing)
+    const recordMs = now() - startedAt
+    emitNavigationTrace('backing:crisp', {
+      buildMs: recordMs,
+      childCount: pageNode?.childIds.length ?? 0,
+      zoom: backing.zoom
+    })
+    r.sceneBackingAverageRecordMs = smoothAverage(
+      r.sceneBackingAverageRecordMs,
+      clamp(recordMs, 1, 1_000)
+    )
+  } finally {
+    surface.delete()
   }
-  surface.flush()
-  const image = surface.makeImageSnapshot()
-  surface.delete()
-  installSceneBackingImage(r, image, sceneVersion, graph.positionPreviewVersion, backing)
-  const recordMs = now() - startedAt
-  emitNavigationTrace('backing:crisp', {
-    buildMs: recordMs,
-    childCount: pageNode?.childIds.length ?? 0,
-    zoom: backing.zoom
-  })
-  r.sceneBackingAverageRecordMs = smoothAverage(
-    r.sceneBackingAverageRecordMs,
-    clamp(recordMs, 1, 1_000)
-  )
 }
 
 export function renderSceneBacking(

@@ -40,7 +40,7 @@ export interface RenderChunkBuildStats {
 
 const MAX_CHUNK_NODES = 32
 
-function requiresAtomicSubtree(graph: SceneGraph, node: SceneNode): boolean {
+export function nodeRequiresAtomicChunk(graph: SceneGraph, node: SceneNode): boolean {
   const isolated =
     node.opacity < 1 ||
     (node.blendMode !== 'NORMAL' && node.blendMode !== 'PASS_THROUGH') ||
@@ -59,7 +59,7 @@ function shouldSplit(graph: SceneGraph, node: SceneNode, descendantCount: number
   return (
     node.childIds.length > 0 &&
     descendantCount > MAX_CHUNK_NODES &&
-    !requiresAtomicSubtree(graph, node)
+    !nodeRequiresAtomicChunk(graph, node)
   )
 }
 
@@ -139,7 +139,7 @@ function buildChunks(graph: SceneGraph, nodeIds: string[], counts: Map<string, n
         nodeId,
         kind,
         context: chunkContext(graph, node),
-        interruptible: split || !requiresAtomicSubtree(graph, node),
+        interruptible: split || !nodeRequiresAtomicChunk(graph, node),
         painterOrder: painterOrder++,
         ...bounds,
         nodeCount,

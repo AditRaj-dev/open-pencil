@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'bun:test'
+import { describe, expect, mock, test } from 'bun:test'
 
 import { SceneGraph } from '@open-pencil/scene-graph'
 
@@ -16,8 +16,8 @@ function createRenderer() {
     invalidateVectorPath: () => undefined,
     invalidateNodePicture: (nodeId: string) => invalidated.push(nodeId),
     tiledScene: {
-      invalidateNode: () => undefined,
-      invalidateStructure: () => undefined
+      invalidateNode: mock(),
+      invalidateStructure: mock()
     } as SkiaRenderer['tiledScene'],
     invalidated
   }
@@ -63,6 +63,29 @@ describe('graph event picture invalidation integration', () => {
     renderer.invalidated.length = 0
     graph.deleteNode(node.id)
     expect(renderer.invalidated).toContain(node.id)
+  })
+
+  test('isolation changes are evaluated against live tiled chunk topology', () => {
+    const { graph, renderer } = setup()
+    const page = graph.getPages()[0]
+    if (!page) throw new Error('Expected default page')
+    const node = graph.createNode('RECTANGLE', page.id)
+    ;(renderer.tiledScene.invalidateNode as ReturnType<typeof mock>).mockClear()
+
+    graph.updateNode(node.id, {
+      effects: [
+        {
+          type: 'LAYER_BLUR',
+          visible: true,
+          radius: 10,
+          spread: 0,
+          offset: { x: 0, y: 0 },
+          color: { r: 0, g: 0, b: 0, a: 1 }
+        }
+      ]
+    })
+
+    expect(renderer.tiledScene.invalidateNode).toHaveBeenCalledWith(node.id, graph)
   })
 
   test('reparenting invalidates the moved subtree root', () => {

@@ -51,23 +51,24 @@ export function renderTile(
   const surface = surfacePool.acquire(renderer)
   const allocationMs = performance.now() - allocationStartedAt
   const canvas = surface.getCanvas()
-  canvas.clear(
-    renderer.ck.Color4f(
-      renderer.pageColor.r,
-      renderer.pageColor.g,
-      renderer.pageColor.b,
-      renderer.pageColor.a
-    )
-  )
-  canvas.scale(key.level, key.level)
-  canvas.translate(-bounds.minX, -bounds.minY)
-  canvas.clipRect(
-    renderer.ck.LTRBRect(bounds.minX, bounds.minY, bounds.maxX, bounds.maxY),
-    renderer.ck.ClipOp.Intersect,
-    false
-  )
-
+  canvas.save()
   try {
+    canvas.clear(
+      renderer.ck.Color4f(
+        renderer.pageColor.r,
+        renderer.pageColor.g,
+        renderer.pageColor.b,
+        renderer.pageColor.a
+      )
+    )
+    canvas.scale(key.level, key.level)
+    canvas.translate(-bounds.minX, -bounds.minY)
+    canvas.clipRect(
+      renderer.ck.LTRBRect(bounds.minX, bounds.minY, bounds.maxX, bounds.maxY),
+      renderer.ck.ClipOp.Intersect,
+      false
+    )
+
     const drawStartedAt = performance.now()
     for (const chunk of chunks) {
       if (isBoundedAtomicBlurChunk(graph, chunk)) {
@@ -102,6 +103,7 @@ export function renderTile(
       snapshotMs
     }
   } finally {
+    canvas.restore()
     surfacePool.release(surface)
   }
 }
