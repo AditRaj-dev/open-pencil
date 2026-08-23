@@ -29,6 +29,7 @@ export class TiledSceneController {
   private contentGeneration = -1
   private navigationGeneration = -1
   private navigationActive = false
+  private cancelledJobs = 0
   private pendingInvalidations: Array<{
     nodeId: string
     previousBounds: TileWorldBounds[]
@@ -94,6 +95,8 @@ export class TiledSceneController {
     const metrics = this.navigationActive
       ? this.deferActiveJobs(plan.jobs)
       : this.runScheduledFrame(renderer, graph, index)
+    metrics.cancelledJobs += this.cancelledJobs
+    this.cancelledJobs = 0
     const refreshed = planTiles(this.tileCache, {
       pageId: renderer.pageId,
       level,
@@ -117,6 +120,7 @@ export class TiledSceneController {
       overBudgetJobs: metrics.overBudgetJobs,
       maximumJobRenderMs: metrics.maximumJobRenderMs,
       staleJobsDiscarded: metrics.staleJobsDiscarded,
+      cancelledJobs: metrics.cancelledJobs,
       tileCacheBytes: this.tileCache.byteSize(),
       tileCacheEntries: this.tileCache.size(),
       covered
@@ -171,7 +175,7 @@ export class TiledSceneController {
     contentGeneration: number,
     navigationGeneration: number
   ): void {
-    this.scheduler.setGeneration(navigationGeneration, contentGeneration)
+    this.cancelledJobs += this.scheduler.setGeneration(navigationGeneration, contentGeneration)
     if (
       this.index &&
       this.pageId === renderer.pageId &&
@@ -236,7 +240,8 @@ export class TiledSceneController {
       deadlineOverrunMs: 0,
       overBudgetJobs: 0,
       maximumJobRenderMs: 0,
-      staleJobsDiscarded: 0
+      staleJobsDiscarded: 0,
+      cancelledJobs: 0
     }
   }
 
@@ -308,7 +313,8 @@ export class TiledSceneController {
         deadlineOverrunMs: 0,
         overBudgetJobs: 0,
         maximumJobRenderMs: 0,
-        staleJobsDiscarded: 0
+        staleJobsDiscarded: 0,
+        cancelledJobs: 0
       }
     }
   }
