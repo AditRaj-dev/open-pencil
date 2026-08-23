@@ -535,32 +535,35 @@ export function renderShape(
       colorSpace: r.ck.ColorSpace.SRGB
     })
     const rasterCanvas = surface.getCanvas()
-    rasterCanvas.clear(r.ck.TRANSPARENT)
-    rasterCanvas.scale(scale, scale)
-    rasterCanvas.translate(margin, margin)
-    r.renderShapeUncached(rasterCanvas, node, graph)
-    surface.flush()
-    const image = surface.makeImageSnapshot()
-    surface.delete()
-    installEffectRaster(r.effectRasterCache, node.id, {
-      image,
-      left: -margin,
-      top: -margin,
-      width,
-      height,
-      scale,
-      pixels: image.width() * image.height(),
-      fontGeneration: r.fontGeneration
-    })
-    canvas.drawImageRectOptions(
-      image,
-      r.ck.LTRBRect(0, 0, image.width(), image.height()),
-      r.ck.LTRBRect(-margin, -margin, node.width + margin, node.height + margin),
-      r.ck.FilterMode.Linear,
-      r.ck.MipmapMode.None,
-      null
-    )
-    return
+    try {
+      rasterCanvas.clear(r.ck.TRANSPARENT)
+      rasterCanvas.scale(scale, scale)
+      rasterCanvas.translate(margin, margin)
+      r.renderShapeUncached(rasterCanvas, node, graph)
+      surface.flush()
+      const image = surface.makeImageSnapshot()
+      installEffectRaster(r.effectRasterCache, node.id, {
+        image,
+        left: -margin,
+        top: -margin,
+        width,
+        height,
+        scale,
+        pixels: image.width() * image.height(),
+        fontGeneration: r.fontGeneration
+      })
+      canvas.drawImageRectOptions(
+        image,
+        r.ck.LTRBRect(0, 0, image.width(), image.height()),
+        r.ck.LTRBRect(-margin, -margin, node.width + margin, node.height + margin),
+        r.ck.FilterMode.Linear,
+        r.ck.MipmapMode.None,
+        null
+      )
+      return
+    } finally {
+      surface.delete()
+    }
   }
 
   const cached = r.nodePictureCache.get(node.id)
@@ -575,13 +578,16 @@ export function renderShape(
 
   const bounds = r.ck.LTRBRect(-margin, -margin, node.width + margin, node.height + margin)
   const recorder = new r.ck.PictureRecorder()
-  const recCanvas = recorder.beginRecording(bounds)
-  r.renderShapeUncached(recCanvas, node, graph)
-  const picture = recorder.finishRecordingAsPicture()
-  recorder.delete()
-  r.nodePictureCache.set(node.id, picture)
-  r.nodePictureCacheGenerations.set(node.id, r.fontGeneration)
-  canvas.drawPicture(picture)
+  try {
+    const recCanvas = recorder.beginRecording(bounds)
+    r.renderShapeUncached(recCanvas, node, graph)
+    const picture = recorder.finishRecordingAsPicture()
+    r.nodePictureCache.set(node.id, picture)
+    r.nodePictureCacheGenerations.set(node.id, r.fontGeneration)
+    canvas.drawPicture(picture)
+  } finally {
+    recorder.delete()
+  }
 }
 
 function getShadowShapeChild(node: SceneNode, graph: SceneGraph): SceneNode | null {

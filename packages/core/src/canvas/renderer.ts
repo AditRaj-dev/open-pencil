@@ -482,6 +482,7 @@ export class SkiaRenderer {
   }
 
   replaceSurface(surface: Surface): void {
+    this.tiledScene.destroy()
     this.surface.delete()
     this.surface = surface
     this.sceneBackingAllocationFailed = false

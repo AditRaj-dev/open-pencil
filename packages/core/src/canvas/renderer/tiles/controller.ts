@@ -3,7 +3,11 @@ import type { Canvas } from 'canvaskit-wasm'
 import type { SceneGraph } from '@open-pencil/scene-graph'
 
 import type { SkiaRenderer } from '#core/canvas/renderer'
-import { RenderChunkIndex, RenderChunkPictureCache } from '#core/canvas/renderer/chunks'
+import {
+  nodeRequiresAtomicChunk,
+  RenderChunkIndex,
+  RenderChunkPictureCache
+} from '#core/canvas/renderer/chunks'
 import { emitNavigationTrace } from '#core/profiler'
 
 import { TileImageCache } from './cache'
@@ -44,8 +48,18 @@ export class TiledSceneController {
   })
   private readonly measuredCosts = new Map<string, number>()
 
-  invalidateNode(nodeId: string): void {
+  invalidateNode(nodeId: string, graph?: SceneGraph): void {
     const chunks = this.index?.getChunksDependingOnNode(nodeId) ?? []
+    const owningChunks = this.index?.getChunksForNode(nodeId) ?? []
+    const node = graph?.getNode(nodeId)
+    if (
+      graph &&
+      node &&
+      owningChunks.some((chunk) => chunk.interruptible === nodeRequiresAtomicChunk(graph, node))
+    ) {
+      this.invalidateStructure()
+      return
+    }
     this.pendingInvalidations.push({
       nodeId,
       previousBounds: chunks.map(({ minX, minY, maxX, maxY }) => ({ minX, minY, maxX, maxY }))
@@ -144,6 +158,7 @@ export class TiledSceneController {
   }
 
   invalidate(): void {
+    this.cancelledJobs += this.scheduler.clear()
     this.index?.dispose()
     this.index = null
     this.pageId = null
@@ -157,6 +172,9 @@ export class TiledSceneController {
 
   destroy(): void {
     this.invalidate()
+    this.cancelledJobs = 0
+    this.navigationGeneration = -1
+    this.navigationActive = false
     this.surfacePool.clear()
   }
 

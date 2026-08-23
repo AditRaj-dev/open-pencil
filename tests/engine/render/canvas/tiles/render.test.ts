@@ -202,6 +202,39 @@ function createParityGraph() {
 }
 
 describe('tile rendering', () => {
+  test('restores pooled tile canvas transforms before the surface is reused', () => {
+    const graph = new SceneGraph()
+    const page = expectDefined(graph.getPages()[0], 'page')
+    graph.createNode('RECTANGLE', page.id, {
+      x: 20,
+      y: 20,
+      width: 80,
+      height: 80,
+      fills: color(1, 0, 0)
+    })
+    const surface = expectDefined(ck.MakeSurface(320, 240), 'renderer surface')
+    const renderer = new SkiaRenderer(ck, surface)
+    renderer.pageColor = { r: 1, g: 1, b: 1, a: 1 }
+    const { index } = RenderChunkIndex.build(graph, page.id)
+    const pictureCache = new RenderChunkPictureCache()
+    const surfacePool = new TileSurfacePool()
+    const key = { pageId: page.id, level: 1, x: 0, y: 0 }
+    try {
+      const first = renderTile(renderer, graph, index, key, pictureCache, surfacePool)
+      const second = renderTile(renderer, graph, index, key, pictureCache, surfacePool)
+      const firstPixels = pixels(first.image, TILE_DEVICE_SIZE, TILE_DEVICE_SIZE)
+      const secondPixels = pixels(second.image, TILE_DEVICE_SIZE, TILE_DEVICE_SIZE)
+      expect(firstPixels.every((value, index) => value === secondPixels[index])).toBe(true)
+      deleteRenderedTile(first)
+      deleteRenderedTile(second)
+    } finally {
+      surfacePool.clear()
+      pictureCache.clear()
+      index.dispose()
+      renderer.destroy()
+    }
+  })
+
   test('cancels obsolete refresh jobs and performs no exact work during navigation', () => {
     const graph = new SceneGraph()
     const page = expectDefined(graph.getPages()[0], 'page')
