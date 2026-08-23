@@ -98,7 +98,7 @@ describe('tile scheduler', () => {
     const scheduler = new TileScheduler({ budgetMs: 5, now: () => 0 })
     scheduler.setGeneration(1, 1)
     scheduler.enqueue([job(0, 'visible'), job(1, 'visible')])
-    scheduler.setGeneration(2, 1)
+    expect(scheduler.setGeneration(2, 1)).toBe(2)
 
     expect(scheduler.pending()).toBe(0)
   })

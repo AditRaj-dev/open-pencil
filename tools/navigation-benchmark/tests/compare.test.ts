@@ -23,7 +23,8 @@ function metrics(displayP95: number, crispMs: number): NavigationMetrics {
       maximumJobsPerFrame: 0,
       maximumJobRenderMs: 0,
       overBudgetJobs: 0,
-      maximumDeadlineOverrunMs: 0
+      maximumDeadlineOverrunMs: 0,
+      cancelledJobs: 0
     },
     longTasks: { count: 0, totalMs: 0, maximumMs: 0 },
     missedDisplayFrames: { over8Ms: 0, over16Ms: 0, over33Ms: 0, over50Ms: 0 },

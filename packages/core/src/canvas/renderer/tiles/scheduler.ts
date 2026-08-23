@@ -25,6 +25,7 @@ export interface TileSchedulerMetrics {
   overBudgetJobs: number
   maximumJobRenderMs: number
   staleJobsDiscarded: number
+  cancelledJobs: number
 }
 
 export interface TileSchedulerOptions {
@@ -53,7 +54,8 @@ export class TileScheduler {
     this.maximumJobsPerFrame = options.maximumJobsPerFrame ?? Number.POSITIVE_INFINITY
   }
 
-  setGeneration(navigationGeneration: number, contentGeneration: number): void {
+  setGeneration(navigationGeneration: number, contentGeneration: number): number {
+    const previousCount = this.jobs.length
     this.navigationGeneration = navigationGeneration
     this.contentGeneration = contentGeneration
     this.jobs = this.jobs.filter(
@@ -61,6 +63,7 @@ export class TileScheduler {
         job.navigationGeneration === navigationGeneration &&
         job.contentGeneration === contentGeneration
     )
+    return previousCount - this.jobs.length
   }
 
   enqueue(jobs: TileJob[]): void {
@@ -89,7 +92,8 @@ export class TileScheduler {
       deadlineOverrunMs: 0,
       overBudgetJobs: 0,
       maximumJobRenderMs: 0,
-      staleJobsDiscarded: 0
+      staleJobsDiscarded: 0,
+      cancelledJobs: 0
     }
 
     let jobsExecuted = 0

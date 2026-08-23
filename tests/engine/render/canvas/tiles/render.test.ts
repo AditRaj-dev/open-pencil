@@ -202,6 +202,44 @@ function createParityGraph() {
 }
 
 describe('tile rendering', () => {
+  test('cancels obsolete refresh jobs and performs no exact work during navigation', () => {
+    const graph = new SceneGraph()
+    const page = expectDefined(graph.getPages()[0], 'page')
+    for (let index = 0; index < 48; index++) {
+      graph.createNode('RECTANGLE', page.id, {
+        x: (index % 12) * 100,
+        y: Math.floor(index / 12) * 100,
+        width: 80,
+        height: 80,
+        fills: color(0.2, 0.4, 0.8)
+      })
+    }
+    const surface = expectDefined(ck.MakeSurface(1280, 800), 'cancellation surface')
+    const renderer = new SkiaRenderer(ck, surface)
+    const controller = new TiledSceneController()
+    renderer.pageId = page.id
+    renderer.pageColor = { r: 1, g: 1, b: 1, a: 1 }
+    renderer.viewportWidth = 1280
+    renderer.viewportHeight = 800
+    renderer.dpr = 1
+    renderer.zoom = 1
+    renderer.navigationPhase = 'idle'
+    try {
+      const initial = controller.renderFrame(renderer, surface.getCanvas(), graph, 1, 0)
+      expect(initial.pending).toBe(true)
+
+      renderer.navigationPhase = 'zoom'
+      renderer.navigationGeneration = 1
+      const navigating = controller.renderFrame(renderer, surface.getCanvas(), graph, 1, 1)
+      expect(navigating.metrics.cancelledJobs).toBeGreaterThan(0)
+      expect(navigating.metrics.mandatoryCompleted).toBe(0)
+      expect(navigating.metrics.interruptibleCompleted).toBe(0)
+    } finally {
+      controller.destroy()
+      renderer.destroy()
+    }
+  })
+
   test('refreshes only tiles intersecting an updated isolated chunk', () => {
     const graph = new SceneGraph()
     const page = expectDefined(graph.getPages()[0], 'page')
