@@ -8,7 +8,7 @@ import { createVectorEditSelectionActions } from './selection'
 import type { VectorEditState } from './types'
 
 export function createVectorEditActions(editor: Editor, state: VectorEditState) {
-  const { getNodeEditState, applyNodeEditToNode, enterNodeEditMode, exitNodeEditMode } =
+  const { getNodeEditState, commitNodeEditChanges, enterNodeEditMode, exitNodeEditMode } =
     createVectorEditLifecycle(editor, state)
   const {
     nodeEditSelectVertex,
@@ -30,7 +30,10 @@ export function createVectorEditActions(editor: Editor, state: VectorEditState) 
     getNodeEditState,
     setNodeEditNetwork,
     getLiveNetwork,
-    applyNodeEditToNode,
+    commitNodeEditChanges: () => {
+      const editState = getNodeEditState()
+      if (editState) commitNodeEditChanges(editState)
+    },
     enterNodeEditMode,
     exitNodeEditMode,
     nodeEditSelectVertex,

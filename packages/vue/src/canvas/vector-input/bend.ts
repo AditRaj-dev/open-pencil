@@ -22,6 +22,7 @@ export type CanvasNodeEditMethods = Partial<{
     targetSegmentIndex: number | null,
     targetTangentField: 'tangentStart' | 'tangentEnd' | null
   ) => void
+  commitNodeEditChanges: () => void
   nodeEditZeroVertexHandles: (vertexIndex: number) => void
   nodeEditConnectEndpoints: (a: number, b: number) => void
   enterNodeEditMode: (nodeId: string) => void

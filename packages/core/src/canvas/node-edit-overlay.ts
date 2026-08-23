@@ -92,7 +92,7 @@ export function drawNodeEditOverlay(
   drawLiveShape(r, canvas, graph, editState.nodeId, vertices, segments, regions)
 
   // Draw technical stroke outline over the shape
-  drawTechStroke(r, canvas, vertices, segments, regions)
+  drawTechStroke(r, canvas, graph, editState.nodeId, vertices, segments, regions)
 
   // Draw tangent handle lines + diamonds for vertices with visible handles
   drawEditHandles(
@@ -291,26 +291,32 @@ function getNodeEditPaints(r: SkiaRenderer) {
 function drawTechStroke(
   r: SkiaRenderer,
   canvas: Canvas,
+  graph: SceneGraph,
+  nodeId: string,
   vertices: VectorVertex[],
   segments: VectorSegment[],
   regions: VectorRegion[]
 ): void {
   const { techStrokePaint } = getNodeEditPaints(r)
-  const network = { vertices, segments, regions }
-  const paths = vectorNetworkToPath(r.ck, network)
+  const node = graph.getNode(nodeId)
+  if (!node) return
+  const world = getWorldMatrix(node, graph)
+  const inverse = Matrix.invert(world)
+  if (!inverse) return
+  const localNetwork = transformVectorNetwork(inverse, { vertices, segments, regions })
+  const paths = vectorNetworkToPath(r.ck, localNetwork)
 
-  // Set stroke width to compensate for canvas scale so it's always 1px on screen
+  // Keep the technical outline in the same coordinate space as the live shape.
   techStrokePaint.setStrokeWidth(1 / r.zoom)
 
   canvas.save()
   canvas.translate(r.panX, r.panY)
   canvas.scale(r.zoom, r.zoom)
-
+  canvas.concat(world)
   for (const p of paths) {
     canvas.drawPath(p, techStrokePaint)
     p.delete()
   }
-
   canvas.restore()
 }
 

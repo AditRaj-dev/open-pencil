@@ -7,9 +7,9 @@ import type { SceneNode, VectorNetwork } from '@open-pencil/scene-graph'
 import { getWorldMatrix } from '@open-pencil/scene-graph/coordinate'
 import Matrix from '@open-pencil/scene-graph/matrix'
 
-import { createVectorEditHistoryActions } from '@/app/editor/vector-edit/history'
-import { createVectorEditLifecycle } from '@/app/editor/vector-edit/lifecycle'
-import type { VectorEditState } from '@/app/editor/vector-edit/types'
+import { createVectorEditHistoryActions } from '@/app/editor/vector/history'
+import { createVectorEditLifecycle } from '@/app/editor/vector/lifecycle'
+import type { VectorEditState } from '@/app/editor/vector/types'
 
 import { expectDefined, getNodeOrThrow } from '#tests/helpers/assert'
 
@@ -220,6 +220,27 @@ describe('vector edit with rotated ancestors', () => {
     expect(undoLabels).toEqual(['Edit vector'])
   })
 
+  test('committing one drag rebases the active edit session for the next drag', () => {
+    const { graph, vector, state, lifecycle, undoLabels } = setup(0, 0)
+    lifecycle.enterNodeEditMode(vector.id)
+    const first = expectDefined(state.nodeEditState)
+    first.vertices[0] = { ...expectDefined(first.vertices[0]), x: 25, y: 10 }
+
+    lifecycle.commitNodeEditChanges(first)
+
+    const committed = getNodeOrThrow(graph, vector.id)
+    expect(state.nodeEditState).toBe(first)
+    expect(undoLabels).toEqual(['Edit vector'])
+    expect(expectDefined(first.origAbsNetwork.vertices[0]).x).toBeCloseTo(25, 5)
+    expect(expectDefined(first.origAbsNetwork.vertices[0]).y).toBeCloseTo(10, 5)
+    expect(committed).toBeDefined()
+
+    first.vertices[0] = { ...expectDefined(first.vertices[0]), x: 40, y: 20 }
+    lifecycle.commitNodeEditChanges(first)
+    expect(undoLabels).toEqual(['Edit vector', 'Edit vector'])
+    expect(expectDefined(first.origAbsNetwork.vertices[0]).x).toBeCloseTo(40, 5)
+    expect(expectDefined(first.origAbsNetwork.vertices[0]).y).toBeCloseTo(20, 5)
+  })
   test('tangents rotate with the node on enter', () => {
     const { state, lifecycle, vector } = setup(0, 90)
     lifecycle.enterNodeEditMode(vector.id)

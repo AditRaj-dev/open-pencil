@@ -1,18 +1,18 @@
+import type { DragEditHandle, DragEditNode, DragState } from '#vue/shared/input/types'
 import {
   getNodeEditState,
   hitTestEditHandle,
   hitTestEditVertex,
   isEndpoint
-} from '#vue/shared/input/node-edit/hit-test'
-import { applyNodeEditSnap } from '#vue/shared/input/node-edit/snap'
-import type { DragEditHandle, DragEditNode, DragState } from '#vue/shared/input/types'
+} from '#vue/shared/input/vector/hit-test'
+import { applyNodeEditSnap } from '#vue/shared/input/vector/snap'
 
 export {
   getNodeEditState,
   hitTestEditHandle,
   isEndpoint,
   NODE_HIT_THRESHOLD
-} from '#vue/shared/input/node-edit/hit-test'
+} from '#vue/shared/input/vector/hit-test'
 import type { Editor } from '@open-pencil/core/editor'
 import type { Vector } from '@open-pencil/scene-graph/primitives'
 
