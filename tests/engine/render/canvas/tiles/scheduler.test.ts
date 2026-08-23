@@ -94,6 +94,15 @@ describe('tile scheduler', () => {
     expect(metrics.deadlineOverrunMs).toBe(7)
   })
 
+  test('clears queued work explicitly for same-generation structural replacement', () => {
+    const scheduler = new TileScheduler({ budgetMs: 5, now: () => 0 })
+    scheduler.setGeneration(1, 1)
+    scheduler.enqueue([job(0, 'visible'), job(1, 'visible')])
+
+    expect(scheduler.clear()).toBe(2)
+    expect(scheduler.pending()).toBe(0)
+  })
+
   test('cancels queued work from obsolete navigation generations', () => {
     const scheduler = new TileScheduler({ budgetMs: 5, now: () => 0 })
     scheduler.setGeneration(1, 1)

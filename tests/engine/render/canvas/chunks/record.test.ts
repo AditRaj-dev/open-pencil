@@ -1,9 +1,10 @@
-import { beforeAll, describe, expect, test } from 'bun:test'
+import { beforeAll, describe, expect, mock, test } from 'bun:test'
 
 import { SceneGraph } from '@open-pencil/scene-graph'
 
 import { initCanvasKit } from '#cli/headless'
 import { SkiaRenderer } from '#core/canvas'
+import type { RenderChunk } from '#core/canvas/renderer/chunks'
 import {
   deleteRecordedRenderChunks,
   recordRenderChunk,
@@ -75,6 +76,46 @@ function color(r: number, g: number, b: number) {
 }
 
 describe('recorded render chunks', () => {
+  test('deletes the native picture recorder when chunk rendering throws', () => {
+    const recorder = {
+      beginRecording: mock(() => ({ save: mock(), concat: mock() })),
+      finishRecordingAsPicture: mock(),
+      delete: mock()
+    }
+    const renderer = {
+      ck: {
+        PictureRecorder: function PictureRecorder() {
+          return recorder
+        },
+        LTRBRect: mock(() => new Float32Array(4))
+      },
+      worldViewport: { x: 0, y: 0, w: 10, h: 10 },
+      renderNode: mock(() => {
+        throw new Error('render failed')
+      })
+    } as SkiaRenderer
+    const graph = new SceneGraph()
+    const page = expectDefined(graph.getPages()[0], 'page')
+    const node = graph.createNode('RECTANGLE', page.id)
+    const chunk: RenderChunk = {
+      id: `${node.id}:subtree`,
+      nodeId: node.id,
+      kind: 'subtree',
+      context: { parentTransform: [1, 0, 0, 0, 1, 0, 0, 0, 1], ancestorClipIds: [] },
+      interruptible: true,
+      painterOrder: 0,
+      minX: 0,
+      minY: 0,
+      maxX: 10,
+      maxY: 10,
+      nodeCount: 1,
+      estimatedCost: 1
+    }
+
+    expect(() => recordRenderChunk(renderer, graph, chunk)).toThrow('render failed')
+    expect(recorder.delete).toHaveBeenCalledTimes(1)
+  })
+
   test('match direct rendering for split nested transforms and rounded clips', () => {
     const graph = new SceneGraph()
     const page = expectDefined(graph.getPages()[0], 'page')

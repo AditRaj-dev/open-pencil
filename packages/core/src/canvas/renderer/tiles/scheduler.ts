@@ -137,6 +137,12 @@ export class TileScheduler {
     return metrics
   }
 
+  clear(): number {
+    const count = this.jobs.length
+    this.jobs = []
+    return count
+  }
+
   pending(): number {
     return this.jobs.length
   }

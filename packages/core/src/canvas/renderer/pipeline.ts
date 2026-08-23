@@ -337,44 +337,48 @@ function recordScenePicture(
   sceneVersion: number
 ): void {
   r.scenePicture?.delete()
+  r.scenePicture = null
   const prevViewport = r.worldViewport
   r.worldViewport = { x: -1e6, y: -1e6, w: 2e6, h: 2e6 }
   const recorder = new r.ck.PictureRecorder()
-  const pageNode = graph.getNode(r.pageId ?? graph.rootId)
-  const sceneContentBounds = pageNode
-    ? computeDescendantVisualBounds(
-        pageNode.childIds,
-        (id) => graph.getNode(id),
-        (id) => graph.getAbsolutePosition(id)
-      )
-    : null
-  const sceneBounds = sceneContentBounds
-    ? {
-        x: sceneContentBounds.minX,
-        y: sceneContentBounds.minY,
-        width: sceneContentBounds.maxX - sceneContentBounds.minX,
-        height: sceneContentBounds.maxY - sceneContentBounds.minY
+  try {
+    const pageNode = graph.getNode(r.pageId ?? graph.rootId)
+    const sceneContentBounds = pageNode
+      ? computeDescendantVisualBounds(
+          pageNode.childIds,
+          (id) => graph.getNode(id),
+          (id) => graph.getAbsolutePosition(id)
+        )
+      : null
+    const sceneBounds = sceneContentBounds
+      ? {
+          x: sceneContentBounds.minX,
+          y: sceneContentBounds.minY,
+          width: sceneContentBounds.maxX - sceneContentBounds.minX,
+          height: sceneContentBounds.maxY - sceneContentBounds.minY
+        }
+      : { x: 0, y: 0, width: 1, height: 1 }
+    const padding = 1024
+    const bounds = r.ck.LTRBRect(
+      sceneBounds.x - padding,
+      sceneBounds.y - padding,
+      sceneBounds.x + sceneBounds.width + padding,
+      sceneBounds.y + sceneBounds.height + padding
+    )
+    const recCanvas = recorder.beginRecording(bounds)
+    if (pageNode) {
+      for (const childId of pageNode.childIds) {
+        r.renderNode(recCanvas, graph, childId, {})
       }
-    : { x: 0, y: 0, width: 1, height: 1 }
-  const padding = 1024
-  const bounds = r.ck.LTRBRect(
-    sceneBounds.x - padding,
-    sceneBounds.y - padding,
-    sceneBounds.x + sceneBounds.width + padding,
-    sceneBounds.y + sceneBounds.height + padding
-  )
-  const recCanvas = recorder.beginRecording(bounds)
-  if (pageNode) {
-    for (const childId of pageNode.childIds) {
-      r.renderNode(recCanvas, graph, childId, {})
     }
+    r.scenePicture = recorder.finishRecordingAsPicture()
+    r.scenePictureVersion = sceneVersion
+    r.scenePictureFontGeneration = r.fontGeneration
+    r.scenePicturePositionPreviewVersion = graph.positionPreviewVersion
+    r.scenePicturePageId = r.pageId
+    canvas.drawPicture(r.scenePicture)
+  } finally {
+    recorder.delete()
+    r.worldViewport = prevViewport
   }
-  r.scenePicture = recorder.finishRecordingAsPicture()
-  recorder.delete()
-  r.worldViewport = prevViewport
-  r.scenePictureVersion = sceneVersion
-  r.scenePictureFontGeneration = r.fontGeneration
-  r.scenePicturePositionPreviewVersion = graph.positionPreviewVersion
-  r.scenePicturePageId = r.pageId
-  canvas.drawPicture(r.scenePicture)
 }

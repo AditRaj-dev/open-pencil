@@ -253,6 +253,7 @@ export function createEditor(options?: EditorOptions) {
     state.layoutInsertIndicator = null
     state.dropTargetId = null
     pages.clearPageViewports()
+    for (const renderer of _renderers) renderer.tiledScene.invalidateStructure()
     emitEditorEvent('graph:replaced', _graph)
     if (previousPageId !== state.currentPageId) {
       emitEditorEvent('page:changed', state.currentPageId, previousPageId)

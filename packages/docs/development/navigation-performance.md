@@ -8,10 +8,10 @@ Every run writes:
 
 - `trace.json.gz`: Chromium tracing data for Perfetto or Chrome tracing tools.
 - `recording.json`: wheel samples plus OpenPencil input, viewport, render, and retained-backing events.
-- `metrics.json`: frame pacing, input latency, zoom-anchor drift, viewport jumps, and time to a crisp backing.
+- `metrics.json`: frame pacing, input latency, zoom-anchor drift, viewport jumps, exact active-renderer settlement, and tiled scheduler throughput/cancellation when enabled.
 - `environment.json`: browser, runtime, replay mode, and source gesture information.
 
-OpenPencil emits User Timing marks under `openpencil:*`, including wheel receipt/flush, viewport mutation, render start/end, backing preview/build, and crisp-backing completion. The recording also runs a continuous `requestAnimationFrame` heartbeat and observes browser Long Tasks, so display stalls remain visible even when OpenPencil does not render.
+OpenPencil emits User Timing marks under `openpencil:*`, including wheel receipt/flush, viewport mutation, render start/end, backing preview/build, crisp-backing completion, and exact tiled coverage. The recording also runs a continuous `requestAnimationFrame` heartbeat and observes browser Long Tasks, so display stalls remain visible even when OpenPencil does not render.
 
 ## Record a physical macOS trackpad gesture
 
@@ -46,7 +46,7 @@ Record at least slow pan, momentum pan, direction reversal, slow pinch, fast pin
 
 ## Benchmark a real `.fig` fixture
 
-Use `current-document` with an explicit browser-served fixture path. The runner waits for loading and page population, applies layout through the normal document-open path, zooms to fit, and lets fonts/images/initial backing settle before recording:
+Use `current-document` with an explicit browser-served fixture path. The runner waits for loading and page population, applies layout through the normal document-open path, zooms to fit, and waits on the active renderer's explicit settlement contract before recording:
 
 ```sh
 bun run benchmark:navigation \
@@ -110,7 +110,31 @@ The report includes:
 - Wheel-to-viewport and wheel-to-render-end latency.
 - Maximum zoom focal-point drift in screen pixels.
 - Maximum presented viewport displacement between rendered frames.
-- Final input to crisp retained-backing completion.
+- Final input to exact active-renderer settlement: crisp retained backing for the existing renderer or exact visible tile coverage for tiled mode.
+- Tiled scheduler frame count, maximum jobs per frame, maximum measured job submission, over-budget jobs, deadline overrun, and cancelled obsolete jobs.
+
+The runner contains no warmup or settlement sleeps. `waitForSettlement()` requires an idle navigation lifecycle and renderer-owned exact coverage; its timeout rejects the benchmark and reports renderer state.
+
+### Benchmark content mutation and cancellation
+
+Use the exact imported node ID plus a deterministic property mutation to measure selective refresh:
+
+```sh
+bun run benchmark:navigation \
+  --url 'http://localhost:1420/?renderer=tiled' \
+  --gesture tests/fixtures/navigation/gestures/synthetic-repeated-pinch-reversal.json \
+  --mode dom \
+  --scenario current-document \
+  --document tests/fixtures/gold-preview.fig \
+  --mutate-node '0:5' \
+  --mutate-opacity 0.11 \
+  --no-trace \
+  --output artifacts/navigation-benchmark/gold-preview-mutation
+```
+
+Add `--replay-after-mutation` to wait until refresh is observably pending and then replay the gesture before exact settlement. This measures generation cancellation and final-viewport prioritization without a fixed delay.
+
+Mutation-only and combined runs record their mutation parameters in `environment.json`. For tiled runs, inspect `scheduler.cancelledJobs`, `maximumJobsPerFrame`, `maximumJobRenderMs`, `overBudgetJobs`, and `maximumDeadlineOverrunMs`.
 
 Averages alone are not acceptance criteria. Inspect p95/p99, maximum stalls, contiguous missed frames, motion discontinuities, and crisp-settlement latency.
 
