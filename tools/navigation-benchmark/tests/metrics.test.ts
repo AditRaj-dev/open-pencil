@@ -98,7 +98,8 @@ describe('navigation benchmark metrics', () => {
             interruptibleCompleted: 4,
             maximumJobRenderMs: 1.5,
             overBudgetJobs: 0,
-            deadlineOverrunMs: 0
+            deadlineOverrunMs: 0,
+            cancelledJobs: 3
           }
         },
         { name: 'backing:crisp', timestamp: 40, detail: {} }
@@ -120,7 +121,8 @@ describe('navigation benchmark metrics', () => {
       maximumJobsPerFrame: 4,
       maximumJobRenderMs: 1.5,
       overBudgetJobs: 0,
-      maximumDeadlineOverrunMs: 0
+      maximumDeadlineOverrunMs: 0,
+      cancelledJobs: 3
     })
   })
 })

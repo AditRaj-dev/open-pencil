@@ -39,6 +39,7 @@ export interface NavigationMetrics {
     maximumJobRenderMs: number
     overBudgetJobs: number
     maximumDeadlineOverrunMs: number
+    cancelledJobs: number
   }
   longTasks: { count: number; totalMs: number; maximumMs: number }
   missedDisplayFrames: { over8Ms: number; over16Ms: number; over33Ms: number; over50Ms: number }

@@ -178,7 +178,8 @@ export function computeNavigationMetrics(recording: NavigationRecordingFile): Na
       maximumJobsPerFrame: Math.max(0, ...schedulerCompleted),
       maximumJobRenderMs: round(Math.max(0, ...schedulerNumbers('maximumJobRenderMs'))),
       overBudgetJobs: schedulerNumbers('overBudgetJobs').reduce((sum, value) => sum + value, 0),
-      maximumDeadlineOverrunMs: round(Math.max(0, ...schedulerNumbers('deadlineOverrunMs')))
+      maximumDeadlineOverrunMs: round(Math.max(0, ...schedulerNumbers('deadlineOverrunMs'))),
+      cancelledJobs: schedulerNumbers('cancelledJobs').reduce((sum, value) => sum + value, 0)
     },
     longTasks: {
       count: longTaskDurations.length,

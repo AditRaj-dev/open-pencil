@@ -44,6 +44,7 @@ const mutationNodeId = process.argv.includes('--mutate-node') ? argument('--muta
 const mutationOpacity = process.argv.includes('--mutate-opacity')
   ? Number(argument('--mutate-opacity'))
   : null
+const replayAfterMutation = process.argv.includes('--replay-after-mutation')
 const traceEnabled = !process.argv.includes('--no-trace')
 const cpuProfile = process.argv.includes('--cpu-profile')
 const softwareGpu = process.argv.includes('--software-gpu')
@@ -153,6 +154,9 @@ try {
 
   const trace = traceEnabled ? await startChromiumTrace(page, { cpuProfile }) : null
   if (mutationNodeId && mutationOpacity !== null) {
+    const previousSceneVersion = await page.evaluate(
+      () => window.openPencil?.getStore?.().state.sceneVersion ?? -1
+    )
     await page.evaluate(
       ({ nodeId, opacity }) => {
         const store = window.openPencil?.getStore?.()
@@ -163,6 +167,19 @@ try {
       },
       { nodeId: mutationNodeId, opacity: mutationOpacity }
     )
+    if (replayAfterMutation) {
+      await page.waitForFunction((sceneVersion) => {
+        const store = window.openPencil?.getStore?.()
+        return (
+          store != null &&
+          store.state.sceneVersion > sceneVersion &&
+          store.canvasRenderers.some(
+            (renderer) => renderer.tracksSceneSettlement && renderer.tiledScenePending
+          )
+        )
+      }, previousSceneVersion)
+      await replay(page, input, mode)
+    }
   } else {
     await replay(page, input, mode)
   }
@@ -184,6 +201,7 @@ try {
     documentPath,
     mutationNodeId,
     mutationOpacity,
+    replayAfterMutation,
     gesturePath: resolve(gesturePath),
     browserVersion: await browser.version(),
     platform: process.platform,
