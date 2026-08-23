@@ -394,6 +394,12 @@ export function useCanvasInput(
   }
 
   function cancelPointerInteraction() {
+    if (drag.value?.type === 'edit-node' || drag.value?.type === 'edit-handle') {
+      const methods = editor as Editor & {
+        nodeEditCancelDrag?: () => void
+      }
+      methods.nodeEditCancelDrag?.()
+    }
     drag.value = null
     cursorOverride.value = null
     clearTransientInteractionFeedback()

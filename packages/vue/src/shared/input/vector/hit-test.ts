@@ -46,6 +46,7 @@ function getHandleVisibleVertices(editor: Editor): Set<number> {
   for (const key of es.selectedHandles) {
     const [siStr, tf] = key.split(':')
     const seg = es.segments[Number(siStr)]
+    if (!seg) continue
     seed.add(tf === 'tangentStart' ? seg.start : seg.end)
   }
   const visible = new Set(seed)

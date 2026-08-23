@@ -39,7 +39,9 @@ export function handleNodeEditPointerUp(drag: Ref<DragState | null>, editor: Edi
   const current = drag.value
   if (!current) return false
   if (current.type === 'bend-handle') {
+    editor.setSnapGuides([])
     if (current.lockedMode === null) methods.nodeEditZeroVertexHandles?.(current.vertexIndex)
+    methods.commitNodeEditChanges?.()
     drag.value = null
     return true
   }

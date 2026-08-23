@@ -26,6 +26,16 @@ export function createVectorEditActions(editor: Editor, state: VectorEditState) 
   const { nodeEditConnectEndpoints, nodeEditAddVertex, nodeEditRemoveVertex } =
     createVectorEditNetworkActions(editor, state, getNodeEditState)
 
+  function cancelNodeEditDrag() {
+    const editState = getNodeEditState()
+    if (!editState) return
+    const previous = editState.history.at(-1)
+    if (!previous) return
+    setNodeEditNetwork(editState, previous)
+    editState.history.pop()
+    editor.requestRender()
+  }
+
   return {
     getNodeEditState,
     setNodeEditNetwork,
@@ -33,6 +43,10 @@ export function createVectorEditActions(editor: Editor, state: VectorEditState) 
     commitNodeEditChanges: () => {
       const editState = getNodeEditState()
       if (editState) commitNodeEditChanges(editState)
+    },
+    nodeEditCancelDrag: () => {
+      const editState = getNodeEditState()
+      if (editState) cancelNodeEditDrag()
     },
     enterNodeEditMode,
     exitNodeEditMode,

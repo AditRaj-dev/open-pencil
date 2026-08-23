@@ -60,6 +60,7 @@ export function createVectorEditSelectionActions(editor: Editor, state: VectorEd
       const [siStr, tf] = key.split(':')
       const si = Number(siStr)
       const seg = live.segments[si]
+      if (!seg) continue
       if (tf === 'tangentStart') seg.tangentStart = { x: 0, y: 0 }
       else seg.tangentEnd = { x: 0, y: 0 }
     }
