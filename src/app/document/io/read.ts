@@ -47,6 +47,7 @@ export function createOpenActions({
 }: OpenFigFileOptions) {
   async function openFigFile(file: File, handle?: FileSystemFileHandle, path?: string) {
     const load = preparationController.begin({ kind: 'document-open', subject: file.name })
+    let succeeded = false
     try {
       load.update({ phase: 'reading', detail: file.name })
       await yieldToUI()
@@ -60,6 +61,7 @@ export function createOpenActions({
       await fitCurrentPageToViewport()
       load.update({ phase: 'preparing-render', detail: state.documentName })
       editor.requestRender()
+      succeeded = true
     } catch (e) {
       if (load.signal.aborted) return
       const diagnostic = describeDiagnosticError(e)
@@ -82,7 +84,7 @@ export function createOpenActions({
         })
       )
     } finally {
-      load.complete()
+      if (succeeded) load.complete()
     }
   }
 

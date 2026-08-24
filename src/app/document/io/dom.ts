@@ -61,7 +61,12 @@ export function createDOMOpenActions({
     await yieldToUI()
     const pageName = options.documentName ?? 'DOM Import'
     load.update({ phase: 'decoding', detail: pageName })
-    const graph = await browserHTMLToSceneGraph(html, { cssText: options.cssText, pageName })
+    const graph = await browserHTMLToSceneGraph(html, {
+      cssText: options.cssText,
+      pageName,
+      signal: load.signal
+    })
+    load.signal.throwIfAborted()
     await yieldToUI()
     await applyImportedDocument(editor, graph, load)
     state.documentName = pageName

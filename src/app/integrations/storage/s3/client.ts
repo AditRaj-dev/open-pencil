@@ -250,9 +250,11 @@ export type DownloadProgress = { receivedBytes: number; totalBytes: number | nul
 export async function getObject(
   config: S3CompatibleConfig,
   key: string,
-  onProgress?: (progress: DownloadProgress) => void
+  onProgress?: (progress: DownloadProgress) => void,
+  signal?: AbortSignal
 ): Promise<Uint8Array | null> {
-  const res = await s3Request(config, objectURL(config, key), { method: 'GET' })
+  signal?.throwIfAborted()
+  const res = await s3Request(config, objectURL(config, key), { method: 'GET', signal })
   if (res.status === 404) return null
   if (!onProgress || !res.body) {
     return new Uint8Array(await res.arrayBuffer())
@@ -266,6 +268,7 @@ export async function getObject(
   let receivedBytes = 0
   for (;;) {
     const { done, value } = await reader.read()
+    signal?.throwIfAborted()
     if (done) break
     chunks.push(value)
     receivedBytes += value.byteLength

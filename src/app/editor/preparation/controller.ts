@@ -1,3 +1,5 @@
+import { withTimeout } from 'es-toolkit/promise'
+
 import type { EditorPreparationEventEmitter } from '@/app/editor/preparation/events'
 import type {
   BeginEditorPreparation,
@@ -8,6 +10,17 @@ import type {
 } from '@/app/editor/preparation/types'
 import type { AppEditorState } from '@/app/editor/session/types'
 
+const PRESENTATION_TIMEOUT_MS = 10_000
+
+interface PresentationWaiter {
+  sceneVersion: number
+  resolve: () => void
+}
+
+export interface EditorPreparationControllerOptions {
+  presentationTimeoutMs?: number
+}
+
 export interface EditorPreparationController {
   begin(options: BeginEditorPreparation): EditorPreparationHandle
   acknowledgePresentation(sceneVersion: number): void
@@ -17,13 +30,15 @@ export interface EditorPreparationController {
 
 export function createEditorPreparationController(
   state: AppEditorState,
-  events?: EditorPreparationEventEmitter
+  events?: EditorPreparationEventEmitter,
+  options: EditorPreparationControllerOptions = {}
 ): EditorPreparationController {
+  const presentationTimeoutMs = options.presentationTimeoutMs ?? PRESENTATION_TIMEOUT_MS
   let nextId = 0
   let activeAbort: AbortController | null = null
   let activeCancel: ((reason: EditorPreparationCancelReason) => void) | null = null
   let presentedSceneVersion = -1
-  const presentationWaiters = new Map<number, { sceneVersion: number; resolve: () => void }>()
+  const presentationWaiters = new Map<number, PresentationWaiter>()
 
   const isActive = (id: number) => state.preparation?.id === id
 
@@ -112,9 +127,13 @@ export function createEditorPreparationController(
     },
     waitForPresentation(id, sceneVersion) {
       if (!isActive(id) || presentedSceneVersion >= sceneVersion) return Promise.resolve()
-      return new Promise<void>((resolve) => {
-        presentationWaiters.set(id, { sceneVersion, resolve })
-      })
+      return withTimeout(
+        () =>
+          new Promise<void>((resolve) => {
+            presentationWaiters.set(id, { sceneVersion, resolve })
+          }),
+        presentationTimeoutMs
+      ).finally(() => presentationWaiters.delete(id))
     },
     dispose() {
       activeCancel?.('tab-closed')

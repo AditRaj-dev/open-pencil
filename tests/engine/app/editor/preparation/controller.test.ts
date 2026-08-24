@@ -77,6 +77,20 @@ describe('editor preparation controller', () => {
     expect(presented).toBe(true)
     handle.complete()
   })
+  test('times out when a committed scene is never presented', async () => {
+    const state = createInitialAppEditorState('page')
+    const controller = createEditorPreparationController(state, undefined, {
+      presentationTimeoutMs: 1
+    })
+    const handle = controller.begin({ kind: 'page-switch' })
+
+    await expect(controller.waitForPresentation(handle.id, 7)).rejects.toHaveProperty(
+      'message',
+      'The operation was timed out'
+    )
+    handle.fail({ code: 'render-failed', message: 'Timed out', retryable: true })
+    expect(state.preparation).toBeNull()
+  })
   test('dispose aborts the active tab-local preparation', () => {
     const state = createInitialAppEditorState('page')
     const controller = createEditorPreparationController(state)
