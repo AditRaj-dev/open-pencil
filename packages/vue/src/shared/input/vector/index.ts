@@ -15,6 +15,7 @@ export {
 } from '#vue/shared/input/vector/hit-test'
 import type { Editor } from '@open-pencil/core/editor'
 import { vectorHandleId } from '@open-pencil/core/vector'
+import type { Vector } from '@open-pencil/scene-graph/primitives'
 
 type NodeEditEditor = Partial<{
   nodeEditSelectVertex: (vertexIndex: number, addToSelection: boolean) => void
