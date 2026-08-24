@@ -48,7 +48,12 @@ export function computeHandleVisibleVertices(
   for (const key of selectedHandles) {
     const [siStr, tf] = key.split(':')
     const segmentIndex = Number(siStr)
-    if (!Number.isInteger(segmentIndex) || segmentIndex < 0 || segmentIndex >= segments.length)
+    if (
+      !/^(?:0|[1-9]\d*)$/.test(siStr) ||
+      !Number.isSafeInteger(segmentIndex) ||
+      segmentIndex >= segments.length ||
+      (tf !== 'tangentStart' && tf !== 'tangentEnd')
+    )
       continue
     const seg = segments[segmentIndex]
     seed.add(tf === 'tangentStart' ? seg.start : seg.end)

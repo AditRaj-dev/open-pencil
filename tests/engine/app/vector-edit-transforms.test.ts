@@ -88,7 +88,11 @@ function worldVertices(graph: SceneGraph, nodeId: string) {
 describe('vector edit graph ownership', () => {
   test('ignores stale selected handle indices', () => {
     expect(
-      computeHandleVisibleVertices(new Set(), new Set(['99:tangentStart', 'bad']), [])
+      computeHandleVisibleVertices(
+        new Set(),
+        new Set(['99:tangentStart', 'bad', ':tangentStart', '0:invalid']),
+        []
+      )
     ).toEqual(new Set())
     expect(drawNodeEditOverlay).toBeDefined()
   })
