@@ -249,8 +249,10 @@ export class FontManager {
   async loadRemoteFont(
     family: string,
     style = 'Regular',
-    characters = ''
+    characters = '',
+    signal?: AbortSignal
   ): Promise<ArrayBuffer | null> {
+    signal?.throwIfAborted()
     if (typeof fetch === 'undefined') return null
     const coverage = this.remoteCoverage.get(`${family}|${style}`)
     if (
@@ -266,7 +268,7 @@ export class FontManager {
       )
       const normalized = normalizeFontFamily(family)
       const families = normalized === family ? [family] : [family, normalized]
-      const resolved = await this.webFonts.fetchFont(families, style, requestedCharacters)
+      const resolved = await this.webFonts.fetchFont(families, style, requestedCharacters, signal)
       if (!resolved || resolved.buffers.length === 0) return null
       const primary = resolved.buffers[0]
       await this.writeDownloadedFont(family, style, primary, requestedCharacters)
@@ -279,12 +281,19 @@ export class FontManager {
       }
       return registered
     } catch (e) {
+      if (signal?.aborted) throw e
       console.warn(`Web font fetch failed for "${family}" ${style}:`, e)
       return null
     }
   }
 
-  async loadFont(family: string, style = 'Regular', characters = ''): Promise<ArrayBuffer | null> {
+  async loadFont(
+    family: string,
+    style = 'Regular',
+    characters = '',
+    signal?: AbortSignal
+  ): Promise<ArrayBuffer | null> {
+    signal?.throwIfAborted()
     const loaded = this.loadedData(family, style)
     if (loaded) {
       this.registerFontInCanvasKit(family, loaded)
@@ -295,14 +304,14 @@ export class FontManager {
         Array.from(characters).some((character) => !remoteCoverage.has(character))
       )
       return missingRemoteCoverage
-        ? ((await this.loadRemoteFont(family, style, characters)) ?? loaded)
+        ? ((await this.loadRemoteFont(family, style, characters, signal)) ?? loaded)
         : loaded
     }
 
     return (
       (await this.loadLocalFont(family, style)) ??
       (await this.loadCachedFont(family, style, characters)) ??
-      (await this.loadRemoteFont(family, style, characters))
+      (await this.loadRemoteFont(family, style, characters, signal))
     )
   }
 

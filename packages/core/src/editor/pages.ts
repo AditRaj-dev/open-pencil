@@ -56,7 +56,7 @@ export function createPageActions(ctx: EditorContext) {
     throwIfAborted(signal)
     const worker = populationWorker()
     const workerGeneration = populationWorkerGeneration
-    const workerResult = worker ? await worker.populate(pageId) : null
+    const workerResult = worker ? await worker.populate(pageId, signal) : null
     throwIfAborted(signal)
     if (
       workerGeneration !== populationWorkerGeneration ||
@@ -90,7 +90,7 @@ export function createPageActions(ctx: EditorContext) {
       const results = await Promise.all(
         toLoad.map(async ([family, style]) => {
           throwIfAborted(options.signal)
-          const result = await ctx.loadFont(family, style, requirements.characters)
+          const result = await ctx.loadFont(family, style, requirements.characters, options.signal)
           throwIfAborted(options.signal)
           completedFaces++
           options.onProgress?.({

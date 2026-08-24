@@ -14,6 +14,11 @@ import { bindClipboardNotifications } from '@/app/editor/clipboard/notifications
 import { loadFont } from '@/app/editor/fonts'
 import { createCanvasPaneRegistry } from '@/app/editor/panes/registry'
 import { createEditorPreparationController } from '@/app/editor/preparation/controller'
+import {
+  createEditorPreparationEvents,
+  type EditorPreparationEventName,
+  type EditorPreparationEvents
+} from '@/app/editor/preparation/events'
 import type { EditorPreparationHandle } from '@/app/editor/preparation/types'
 import {
   createEditorComputedRefs,
@@ -54,7 +59,8 @@ export function createEditorStore(initialGraph?: SceneGraph) {
   }
 
   const { selectedNodes, selectedNode, layerTree } = createEditorComputedRefs(editor, state)
-  const preparationController = createEditorPreparationController(state)
+  const preparationEvents = createEditorPreparationEvents()
+  const preparationController = createEditorPreparationController(state, preparationEvents)
   const modules = createEditorStoreModules(editor, state, io, viewportSize, preparationController)
 
   // ─── Public API ───────────────────────────────────────────────
@@ -105,9 +111,18 @@ export function createEditorStore(initialGraph?: SceneGraph) {
         await preparationController.waitForPresentation(preparation.id, editor.state.sceneVersion)
       }
     } catch (error) {
-      if (!preparation.signal.aborted) throw error
+      if (!preparation.signal.aborted) {
+        if (ownsPreparation) {
+          preparation.fail({
+            code: 'layout-failed',
+            message: error instanceof Error ? error.message : String(error),
+            retryable: true
+          })
+        }
+        throw error
+      }
     } finally {
-      if (ownsPreparation) preparation.finish()
+      if (ownsPreparation) preparation.complete()
     }
   }
 
@@ -115,6 +130,12 @@ export function createEditorStore(initialGraph?: SceneGraph) {
     ...editor,
     state,
     preparationController,
+    onPreparationEvent<Event extends EditorPreparationEventName>(
+      event: Event,
+      handler: EditorPreparationEvents[Event]
+    ) {
+      return preparationEvents.on(event, handler)
+    },
     panes,
     selectedNodes,
     selectedNode,

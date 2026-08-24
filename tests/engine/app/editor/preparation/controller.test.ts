@@ -1,6 +1,8 @@
 import { describe, expect, test } from 'bun:test'
 
 import { createEditorPreparationController } from '@/app/editor/preparation/controller'
+import { createEditorPreparationEvents } from '@/app/editor/preparation/events'
+import type { EditorPreparationResult } from '@/app/editor/preparation/types'
 import { createInitialAppEditorState } from '@/app/editor/session/types'
 
 describe('editor preparation controller', () => {
@@ -26,21 +28,30 @@ describe('editor preparation controller', () => {
       startedAt: expect.any(Number)
     })
 
-    load.finish()
+    load.complete()
     expect(state.preparation).toBeNull()
   })
 
   test('aborts and ignores an obsolete preparation handle', () => {
     const state = createInitialAppEditorState('page')
-    const controller = createEditorPreparationController(state)
+    const events = createEditorPreparationEvents()
+    const results: EditorPreparationResult[] = []
+    events.on('preparation:finished', (result) => results.push(result))
+    const controller = createEditorPreparationController(state, events)
     const first = controller.begin({ kind: 'document-open' })
     const second = controller.begin({ kind: 'page-switch', phase: 'populating-page' })
 
     expect(first.signal.aborted).toBe(true)
+    expect(results).toContainEqual({
+      id: first.id,
+      kind: 'document-open',
+      status: 'cancelled',
+      reason: 'superseded'
+    })
     first.update({ phase: 'layout', detail: 'obsolete' })
-    first.finish()
+    first.complete()
     expect(state.preparation?.id).toBe(second.id)
-    second.finish()
+    second.complete()
     expect(state.preparation).toBeNull()
   })
 
@@ -64,7 +75,7 @@ describe('editor preparation controller', () => {
     controller.acknowledgePresentation(7)
     await waiting
     expect(presented).toBe(true)
-    handle.finish()
+    handle.complete()
   })
   test('dispose aborts the active tab-local preparation', () => {
     const state = createInitialAppEditorState('page')
