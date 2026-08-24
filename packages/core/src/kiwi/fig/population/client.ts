@@ -1,6 +1,7 @@
 import type { SceneGraph } from '@open-pencil/scene-graph'
 
 import { getLazyFigImportContext } from '#core/kiwi/fig/lazy-import'
+import type { FigSessionResponse } from '#core/kiwi/fig/session/protocol'
 import { randomHex } from '#core/random'
 
 import { applyFigPopulationDelta, type FigPopulationDelta } from './delta'
@@ -33,13 +34,17 @@ function emitTelemetry(detail: FigPopulationWorkerTelemetry): void {
   globalThis.dispatchEvent(new CustomEvent('openpencil:fig-population-worker', { detail }))
 }
 
-export function registerFigPopulationWorker(graph: SceneGraph, worker: Worker): void {
+export function registerFigPopulationWorker(
+  graph: SceneGraph,
+  worker: Worker,
+  port?: MessagePort
+): void {
   if (graph.nodes.size > MAX_FIG_POPULATION_WORKER_NODES) {
     emitTelemetry({ event: 'fallback', reason: 'oversized' })
     worker.terminate()
     return
   }
-  const client = createPopulationWorkerClient(graph, worker)
+  const client = createPopulationWorkerClient(graph, worker, port)
   populationWorkers.set(graph, client)
   emitTelemetry({ event: 'registered' })
 }
@@ -66,7 +71,11 @@ export function createFigPopulationWorker(graph: SceneGraph): FigPopulationWorke
   return populationWorkers.get(graph) ?? null
 }
 
-function createPopulationWorkerClient(graph: SceneGraph, worker: Worker): FigPopulationWorker {
+function createPopulationWorkerClient(
+  graph: SceneGraph,
+  worker: Worker,
+  port?: MessagePort
+): FigPopulationWorker {
   const pending = new Map<
     string,
     {
@@ -115,8 +124,7 @@ function createPopulationWorkerClient(graph: SceneGraph, worker: Worker): FigPop
     reparented: invalidate,
     reordered: invalidate
   })
-  worker.onmessage = (event: MessageEvent<WorkerResult>) => {
-    const result = event.data
+  const receive = (result: WorkerResult) => {
     if (result.type === 'population-error') return fail()
     const request = pending.get(result.requestId)
     if (!request) return
@@ -150,6 +158,13 @@ function createPopulationWorkerClient(graph: SceneGraph, worker: Worker): FigPop
       deleted: result.delta.deleted.length
     })
   }
+  if (port) {
+    port.onmessage = (event: MessageEvent<FigSessionResponse>) =>
+      receive(event.data as WorkerResult)
+    port.start()
+  } else {
+    worker.onmessage = (event: MessageEvent<WorkerResult>) => receive(event.data)
+  }
   worker.onerror = () => fail()
   return {
     populate(pageId, signal) {
@@ -175,13 +190,16 @@ function createPopulationWorkerClient(graph: SceneGraph, worker: Worker): FigPop
           startedAt: performance.now(),
           timeout
         })
-        worker.postMessage({ type: 'populate', requestId, baseRevision, pageId }, [])
+        if (port) port.postMessage({ type: 'populate', requestId, baseRevision, pageId })
+        else worker.postMessage({ type: 'populate', requestId, baseRevision, pageId }, [])
       })
     },
     terminate() {
       if (disposed) return
       disposed = true
       emitTelemetry({ event: 'terminated' })
+      port?.postMessage({ type: 'dispose' })
+      port?.close()
       fail(false)
     }
   }
