@@ -30,6 +30,10 @@ export class TileImageCache {
     return entry
   }
 
+  getIfPresent(key: TileKey): CachedTile | null {
+    return this.entries.get(tileKeyString(key)) ?? null
+  }
+
   install(tile: RenderedTile, contentGeneration: number): CachedTile {
     const id = tileKeyString(tile.key)
     this.delete(id)

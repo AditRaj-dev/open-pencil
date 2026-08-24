@@ -90,18 +90,22 @@ export class TiledSceneController {
       maxX: (-renderer.panX + renderer.viewportWidth) / renderer.zoom,
       maxY: (-renderer.panY + renderer.viewportHeight) / renderer.zoom
     }
-    const plan = planTiles(this.tileCache, {
-      pageId: renderer.pageId,
-      level,
-      viewport,
-      overscanTiles: TILE_OVERSCAN,
-      navigationGeneration,
-      contentGeneration,
-      estimateCost: (key) =>
-        this.measuredCosts.get(this.costKey(key)) ??
-        tileChunks(index, key).reduce((total, chunk) => total + chunk.estimatedCost, 0),
-      globalFallbackAvailable: true
-    })
+    const plan = planTiles(
+      this.tileCache,
+      {
+        pageId: renderer.pageId,
+        level,
+        viewport,
+        overscanTiles: TILE_OVERSCAN,
+        navigationGeneration,
+        contentGeneration,
+        estimateCost: (key) =>
+          this.measuredCosts.get(this.costKey(key)) ??
+          tileChunks(index, key).reduce((total, chunk) => total + chunk.estimatedCost, 0),
+        globalFallbackAvailable: true
+      },
+      this.navigationActive
+    )
     if (!this.navigationActive) this.scheduler.enqueue(plan.jobs)
     canvas.save()
     canvas.translate(renderer.panX, renderer.panY)
@@ -111,16 +115,22 @@ export class TiledSceneController {
       : this.runScheduledFrame(renderer, graph, index)
     metrics.cancelledJobs += this.cancelledJobs
     this.cancelledJobs = 0
-    const refreshed = planTiles(this.tileCache, {
-      pageId: renderer.pageId,
-      level,
-      viewport,
-      overscanTiles: 0,
-      navigationGeneration,
-      contentGeneration,
-      estimateCost: () => 0
-    })
-    this.drawVisibleTiles(renderer, canvas, refreshed.visible)
+    const refreshed = planTiles(
+      this.tileCache,
+      {
+        pageId: renderer.pageId,
+        level,
+        viewport,
+        overscanTiles: 0,
+        navigationGeneration,
+        contentGeneration,
+        estimateCost: () => 0
+      },
+      this.navigationActive
+    )
+    const presentedTileCount = this.navigationActive
+      ? 0
+      : this.drawVisibleTiles(renderer, canvas, refreshed.visible)
     canvas.restore()
     const covered = refreshed.visible.every(({ tile }) => tile !== null)
     emitNavigationTrace('render:end', {
@@ -137,6 +147,8 @@ export class TiledSceneController {
       cancelledJobs: metrics.cancelledJobs,
       tileCacheBytes: this.tileCache.byteSize(),
       tileCacheEntries: this.tileCache.size(),
+      visibleTileCount: refreshed.visible.length,
+      presentedTileCount,
       covered
     })
     const coveredGeneration = `${navigationGeneration}:${contentGeneration}`
@@ -298,7 +310,8 @@ export class TiledSceneController {
     renderer: SkiaRenderer,
     canvas: Canvas,
     visible: ReturnType<typeof planTiles>['visible']
-  ): void {
+  ): number {
+    let presented = 0
     renderer.opacityPaint.setAlphaf(1)
     renderer.opacityPaint.setBlendMode(renderer.ck.BlendMode.Src)
     try {
@@ -313,10 +326,12 @@ export class TiledSceneController {
           renderer.ck.MipmapMode.None,
           renderer.opacityPaint
         )
+        presented++
       }
     } finally {
       renderer.opacityPaint.setBlendMode(renderer.ck.BlendMode.SrcOver)
     }
+    return presented
   }
 
   private emptyResult(): TiledSceneFrameResult {

@@ -56,6 +56,7 @@ function createRenderer() {
     sceneBacking: null,
     sceneBackingBuild: null,
     tiledScene: { destroy: mock() } as SkiaRenderer['tiledScene'],
+    labelParagraphCache: { clear: mock() } as SkiaRenderer['labelParagraphCache'],
     _flashPaint: null,
     profiler: { destroy: mock() } as Partial<SkiaRenderer['profiler']> as SkiaRenderer['profiler'],
     surface: deletable<Surface>()
