@@ -67,6 +67,7 @@ export function planTiles(
       estimatedCost: options.estimateCost(key)
     })
   }
+  if (jobs.length > 0) return { jobs, visible }
   for (const key of overscanKeys) {
     if (visibleIds.has(tileKeyString(key))) continue
     const tile = cache.get(key)

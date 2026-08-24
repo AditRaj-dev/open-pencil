@@ -14,11 +14,16 @@ import { TileImageCache } from './cache'
 import { TILE_DEVICE_SIZE, tileLevel, tileWorldBounds, type TileWorldBounds } from './geometry'
 import { planTiles } from './planner'
 import { deleteRenderedTile, renderTile, tileChunks } from './render'
-import { TileScheduler, type TileJob, type TileSchedulerMetrics } from './scheduler'
+import {
+  emptyTileSchedulerMetrics,
+  TileScheduler,
+  type TileJob,
+  type TileSchedulerMetrics
+} from './scheduler'
 import { TileSurfacePool } from './surface-pool'
 
 const TILE_FRAME_BUDGET_MS = 5
-const MAXIMUM_TILE_JOBS_PER_FRAME = 4
+const MAXIMUM_TILE_JOBS_PER_FRAME = 32
 const TILE_OVERSCAN = 1
 
 export interface TiledSceneFrameResult {
@@ -145,6 +150,11 @@ export class TiledSceneController {
       maximumJobRenderMs: metrics.maximumJobRenderMs,
       staleJobsDiscarded: metrics.staleJobsDiscarded,
       cancelledJobs: metrics.cancelledJobs,
+      tileAllocationMs: metrics.totalAllocationMs,
+      tileDrawMs: metrics.totalDrawMs,
+      tileFlushMs: metrics.totalFlushMs,
+      tileSnapshotMs: metrics.totalSnapshotMs,
+      tileChunks: metrics.totalChunks,
       tileCacheBytes: this.tileCache.byteSize(),
       tileCacheEntries: this.tileCache.size(),
       visibleTileCount: refreshed.visible.length,
@@ -271,7 +281,12 @@ export class TiledSceneController {
       overBudgetJobs: 0,
       maximumJobRenderMs: 0,
       staleJobsDiscarded: 0,
-      cancelledJobs: 0
+      cancelledJobs: 0,
+      totalAllocationMs: 0,
+      totalDrawMs: 0,
+      totalFlushMs: 0,
+      totalSnapshotMs: 0,
+      totalChunks: 0
     }
   }
 
@@ -296,10 +311,22 @@ export class TiledSceneController {
       job.contentGeneration !== this.contentGeneration
     ) {
       deleteRenderedTile(tile)
-      return { renderMs: tile.renderMs, overBudget: tile.renderMs > TILE_FRAME_BUDGET_MS }
+      return this.jobResult(tile)
     }
     this.tileCache.install(tile, job.contentGeneration)
-    return { renderMs: tile.renderMs, overBudget: tile.renderMs > TILE_FRAME_BUDGET_MS }
+    return this.jobResult(tile)
+  }
+
+  private jobResult(tile: ReturnType<typeof renderTile>) {
+    return {
+      renderMs: tile.renderMs,
+      overBudget: tile.renderMs > TILE_FRAME_BUDGET_MS,
+      allocationMs: tile.allocationMs,
+      drawMs: tile.drawMs,
+      flushMs: tile.flushMs,
+      snapshotMs: tile.snapshotMs,
+      chunkCount: tile.chunkCount
+    }
   }
 
   private costKey(key: TileJob['key']): string {
@@ -338,17 +365,7 @@ export class TiledSceneController {
     return {
       covered: false,
       pending: false,
-      metrics: {
-        mandatoryCompleted: 0,
-        interruptibleCompleted: 0,
-        remaining: 0,
-        skippedWithFallback: 0,
-        deadlineOverrunMs: 0,
-        overBudgetJobs: 0,
-        maximumJobRenderMs: 0,
-        staleJobsDiscarded: 0,
-        cancelledJobs: 0
-      }
+      metrics: emptyTileSchedulerMetrics()
     }
   }
 }

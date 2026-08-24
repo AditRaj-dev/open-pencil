@@ -94,6 +94,25 @@ describe('tile scheduler', () => {
     expect(metrics.deadlineOverrunMs).toBe(7)
   })
 
+  test('uses the measured deadline rather than an arbitrary cheap-job cap', () => {
+    let now = 0
+    const scheduler = new TileScheduler({ budgetMs: 5, maximumJobsPerFrame: 32, now: () => now })
+    scheduler.setGeneration(1, 1)
+    scheduler.enqueue(
+      Array.from({ length: 40 }, (_, x) =>
+        job(x, 'visible', { fallbackAvailable: true, estimatedCost: 0.2 })
+      )
+    )
+
+    const metrics = scheduler.runFrame(() => {
+      now += 0.2
+      return { renderMs: 0.2, overBudget: false }
+    })
+
+    expect(metrics.interruptibleCompleted).toBe(24)
+    expect(metrics.remaining).toBe(16)
+    expect(metrics.deadlineOverrunMs).toBe(0)
+  })
   test('clears queued work explicitly for same-generation structural replacement', () => {
     const scheduler = new TileScheduler({ budgetMs: 5, now: () => 0 })
     scheduler.setGeneration(1, 1)
