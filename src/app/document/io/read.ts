@@ -7,13 +7,15 @@ import { readFigDocument } from '@/app/document/io/fig'
 import { applyImportedDocument } from '@/app/document/io/imported-document'
 import { readReloadSource } from '@/app/document/io/reload-source'
 import { captureReloadState, restoreReloadState } from '@/app/document/io/reload-state'
+import { beginDocumentLoad } from '@/app/document/loading/session'
+import type { DocumentLoadingState } from '@/app/document/loading/session'
 import { notificationMessages } from '@/app/i18n/notifications'
 import { toast } from '@/app/shell/ui'
 
-type OpenDocumentState = EditorState & {
-  documentName: string
-  loading: boolean
-}
+type OpenDocumentState = EditorState &
+  DocumentLoadingState & {
+    documentName: string
+  }
 
 type ReloadDocumentState = EditorState & { documentName: string }
 
@@ -44,15 +46,19 @@ export function createOpenActions({
   fitCurrentPageToViewport
 }: OpenFigFileOptions) {
   async function openFigFile(file: File, handle?: FileSystemFileHandle, path?: string) {
+    const load = beginDocumentLoad(state)
     try {
-      state.loading = true
+      load.update({ phase: 'reading', detail: file.name })
       await yieldToUI()
+      load.update({ phase: 'decoding', detail: file.name })
       const imported = await readFigDocument(file, editor)
       await yieldToUI()
-      await applyImportedDocument(editor, imported)
+      load.update({ phase: 'materializing', detail: file.name })
+      await applyImportedDocument(editor, imported, load)
       state.documentName = file.name.replace(/\.fig$/i, '')
       setDocumentSource(file.name, 'fig', handle, path)
       await fitCurrentPageToViewport()
+      load.update({ phase: 'preparing-render', detail: state.documentName })
       editor.requestRender()
     } catch (e) {
       recordDocumentFailure({
@@ -68,7 +74,7 @@ export function createOpenActions({
         })
       )
     } finally {
-      state.loading = false
+      load.finish()
     }
   }
 
