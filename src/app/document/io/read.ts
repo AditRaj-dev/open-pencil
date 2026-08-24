@@ -7,15 +7,13 @@ import { readFigDocument } from '@/app/document/io/fig'
 import { applyImportedDocument } from '@/app/document/io/imported-document'
 import { readReloadSource } from '@/app/document/io/reload-source'
 import { captureReloadState, restoreReloadState } from '@/app/document/io/reload-state'
-import { beginDocumentLoad } from '@/app/document/loading/session'
-import type { DocumentLoadingState } from '@/app/document/loading/session'
+import type { EditorPreparationController } from '@/app/editor/preparation/controller'
 import { notificationMessages } from '@/app/i18n/notifications'
 import { toast } from '@/app/shell/ui'
 
-type OpenDocumentState = EditorState &
-  DocumentLoadingState & {
-    documentName: string
-  }
+type OpenDocumentState = EditorState & {
+  documentName: string
+}
 
 type ReloadDocumentState = EditorState & { documentName: string }
 
@@ -29,6 +27,7 @@ type OpenFigFileOptions = {
     path?: string
   ) => void
   fitCurrentPageToViewport: () => Promise<void>
+  preparationController: EditorPreparationController
 }
 
 type ReloadActionsOptions = {
@@ -43,10 +42,11 @@ export function createOpenActions({
   editor,
   state,
   setDocumentSource,
-  fitCurrentPageToViewport
+  fitCurrentPageToViewport,
+  preparationController
 }: OpenFigFileOptions) {
   async function openFigFile(file: File, handle?: FileSystemFileHandle, path?: string) {
-    const load = beginDocumentLoad(state)
+    const load = preparationController.begin({ kind: 'document-open', subject: file.name })
     try {
       load.update({ phase: 'reading', detail: file.name })
       await yieldToUI()

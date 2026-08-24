@@ -11,9 +11,9 @@ import type { SceneGraph } from '@open-pencil/scene-graph'
 import { setOpenPencilStore } from '@/app/browser-bridge'
 import { readFigDocument } from '@/app/document/io/fig'
 import type { DocumentSourceIdentity } from '@/app/document/io/types'
-import { beginDocumentLoad, type DocumentLoadSession } from '@/app/document/loading/session'
 import { getRecoveryStore, type RecoverySnapshotMeta } from '@/app/document/recovery'
 import { setActiveEditorStore } from '@/app/editor/active-store'
+import type { EditorPreparationHandle as DocumentLoadSession } from '@/app/editor/preparation/types'
 import { createEditorStore } from '@/app/editor/session'
 import type { EditorStore } from '@/app/editor/session'
 import {
@@ -216,10 +216,7 @@ async function showImportedGraph(
   store.clearSelection()
   const pageId = store.graph.getPages()[0]?.id ?? store.graph.rootId
   load?.update({ phase: 'populating-page', detail: store.graph.getNode(pageId)?.name ?? null })
-  await store.switchPage(pageId, {
-    preserveLoading: load !== undefined,
-    onProgress: (progress) => load?.update(progress)
-  })
+  await store.switchPage(pageId, { preparation: load })
   load?.update({ phase: 'preparing-render', detail: store.state.documentName })
   await store.fitCurrentPageToViewport()
 }
@@ -284,7 +281,10 @@ export async function openStorageDocumentInNewTab(document: StorageDocument): Pr
 
   const { store, created } = reusableTabStore()
   store.state.documentName = document.name
-  const load = beginDocumentLoad(store.state)
+  const load = store.preparationController.begin({
+    kind: 'storage-open',
+    subject: document.name
+  })
   try {
     load.update({ phase: 'reading', detail: document.name })
     const local = getLocalCanvasStore()
@@ -363,7 +363,10 @@ export async function openFileInNewTab(
 
     const { store, created } = reusableTabStore()
     store.state.documentName = file.name.replace(/\.[^.]+$/i, '')
-    const load = isDOMImportFile(file) ? null : beginDocumentLoad(store.state)
+    const load = store.preparationController.begin({
+      kind: isDOMImportFile(file) ? 'dom-import' : 'document-open',
+      subject: file.name
+    })
 
     const completion = Promise.withResolvers<undefined>()
     void completion.promise.catch(() => undefined)
@@ -381,18 +384,18 @@ export async function openFileInNewTab(
   const { completion, pendingOpen, store, created, load } = decision
   try {
     if (isDOMImportFile(file)) {
-      await store.openDOMFile(file, { handle, path })
+      await store.openDOMFile(file, { handle, path, preparation: load })
       completion.resolve(undefined)
       return
     }
 
     await yieldToUI()
-    load?.update({ phase: 'reading', detail: file.name })
+    load.update({ phase: 'reading', detail: file.name })
     const isFig = file.name.toLowerCase().endsWith('.fig')
     let imported: SceneGraph
     let sourceFormat: string
     if (isFig) {
-      load?.update({ phase: 'decoding', detail: file.name })
+      load.update({ phase: 'decoding', detail: file.name })
       imported = await readFigForTab(file, store)
       sourceFormat = 'fig'
     } else {
@@ -414,7 +417,7 @@ export async function openFileInNewTab(
         store.setDocumentSource(file.name, sourceFormat, handle, path)
         if (isFig && path) watchOpenedFigCover(path, store)
       },
-      load ?? undefined
+      load
     )
     if (isFig && path) {
       void cacheOpenedFigCover(path, store).catch((error) => {
@@ -430,7 +433,7 @@ export async function openFileInNewTab(
     }
     throw error
   } finally {
-    load?.finish()
+    load.finish()
     fileOpenCoordinator.remove(pendingOpen)
   }
 }
@@ -448,7 +451,10 @@ export async function restoreRecoverySnapshot(id: string): Promise<void> {
   if (!snapshot) throw new Error('Recovery snapshot is no longer available')
 
   const { store } = reusableTabStore()
-  const load = beginDocumentLoad(store.state)
+  const load = store.preparationController.begin({
+    kind: 'recovery-restore',
+    subject: snapshot.documentName
+  })
   try {
     load.update({ phase: 'reading', detail: snapshot.documentName })
     const fileBytes = new Uint8Array(snapshot.figBytes)

@@ -18,7 +18,6 @@ function showFigPageManifest(editor: Editor, pages: readonly FigPageManifestEntr
   }
 
   editor.replaceGraph(graph)
-  editor.state.loading = true
 }
 
 export function readFigDocument(file: File, editor: Editor) {

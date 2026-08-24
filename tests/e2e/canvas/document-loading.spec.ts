@@ -6,13 +6,18 @@ test('shows staged and determinate document loading progress in the existing can
   await editor.page.evaluate(() => {
     const store = window.openPencil?.getStore?.()
     if (!store) throw new Error('OpenPencil store not initialized')
-    store.state.loading = true
-    store.state.documentLoadProgress = {
+    const load = store.preparationController.begin({
+      kind: 'document-open',
+      phase: 'resolving-fonts',
+      subject: 'example.fig'
+    })
+    load.update({
       phase: 'resolving-fonts',
       detail: 'Geist SemiBold',
       completed: 7,
-      total: 12
-    }
+      total: 12,
+      unit: 'fonts'
+    })
   })
 
   const loader = editor.page.getByTestId('canvas-loading')
@@ -26,8 +31,7 @@ test('shows staged and determinate document loading progress in the existing can
   await editor.page.evaluate(() => {
     const store = window.openPencil?.getStore?.()
     if (!store) return
-    store.state.documentLoadProgress = null
-    store.state.loading = false
+    store.preparationController.dispose()
   })
   await expect(loader).toBeHidden()
 })
