@@ -60,6 +60,8 @@ export const allTabs = computed(() =>
     id: t.id,
     name: t.store.state.documentName,
     isHome: t.kind === 'home',
+    isPreparing: t.store.state.preparation !== null,
+    preparationProgress: t.store.state.preparation?.progress ?? null,
     isActive: t.id === activeTabId.value
   }))
 )
