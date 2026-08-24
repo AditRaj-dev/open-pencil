@@ -110,10 +110,11 @@ The report includes:
 - Wheel-to-viewport and wheel-to-render-end latency.
 - Maximum zoom focal-point drift in screen pixels.
 - Maximum presented viewport displacement between rendered frames.
-- Final input to exact active-renderer settlement: crisp retained backing for the existing renderer or exact visible tile coverage for tiled mode.
+- Final input to exact retained-presentation settlement.
+- Optional final input to exact background tile coverage when `--wait-for-background-tiles` is requested.
 - Tiled scheduler frame count, maximum jobs per frame, maximum measured job submission, over-budget jobs, deadline overrun, and cancelled obsolete jobs.
 
-The runner contains no warmup or settlement sleeps. `waitForSettlement()` requires an idle navigation lifecycle and renderer-owned exact coverage; its timeout rejects the benchmark and reports renderer state.
+The runner contains no warmup or settlement sleeps. `waitForSettlement()` requires an idle navigation lifecycle and crisp retained presentation; its timeout rejects the benchmark and reports renderer state. Experimental tile cache completion is separate and only awaited with `--wait-for-background-tiles`.
 
 ### Benchmark content mutation and cancellation
 

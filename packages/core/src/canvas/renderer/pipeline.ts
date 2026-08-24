@@ -135,6 +135,47 @@ function measure<T>(fn: () => T): { value: T; duration: number } {
   return { value, duration: now() - start }
 }
 
+function tiledScenePictureDetail(retainedPresentation: boolean, covered: boolean): string {
+  if (retainedPresentation) return 'tiled-retained-presentation'
+  return covered ? 'tiled' : 'tiled-fallback'
+}
+
+function renderTiledScene(
+  r: SkiaRenderer,
+  canvas: Canvas,
+  graph: SceneGraph,
+  overlays: RenderOverlays,
+  sceneVersion: number,
+  canUsePicture: boolean,
+  cacheMissReason: string,
+  requiresUncachedSceneRender: boolean
+): void {
+  const retainedPresentation = renderSceneBacking(r, canvas, graph, sceneVersion)
+  if (!retainedPresentation) {
+    canvas.save()
+    canvas.translate(r.panX, r.panY)
+    canvas.scale(r.zoom, r.zoom)
+    renderSceneContent(
+      r,
+      canvas,
+      graph,
+      overlays,
+      sceneVersion,
+      canUsePicture,
+      cacheMissReason,
+      requiresUncachedSceneRender
+    )
+    canvas.restore()
+  }
+  const tiled = r.tiledScene.renderFrame(r, canvas, graph, sceneVersion, r.navigationGeneration)
+  r.tiledScenePending = tiled.pending
+  r.tiledSceneCovered = tiled.covered
+  r.profiler.setScenePictureMode(
+    'hit',
+    tiledScenePictureDetail(retainedPresentation, tiled.covered)
+  )
+}
+
 export function render(
   r: SkiaRenderer,
   graph: SceneGraph,
@@ -195,10 +236,7 @@ export function render(
     p.beginPhase('render:scene')
     let renderedScene = false
     if (layer === 'scene' && !requiresUncachedSceneRender && r.tiledSceneEnabled) {
-      canvas.save()
-      canvas.translate(r.panX, r.panY)
-      canvas.scale(r.zoom, r.zoom)
-      renderSceneContent(
+      renderTiledScene(
         r,
         canvas,
         graph,
@@ -208,12 +246,7 @@ export function render(
         cacheMissReason,
         requiresUncachedSceneRender
       )
-      canvas.restore()
-      const tiled = r.tiledScene.renderFrame(r, canvas, graph, sceneVersion, r.navigationGeneration)
-      r.tiledScenePending = tiled.pending
-      r.tiledSceneCovered = tiled.covered
       renderedScene = true
-      p.setScenePictureMode('hit', tiled.covered ? 'tiled' : 'tiled-fallback')
     }
     if (
       !renderedScene &&

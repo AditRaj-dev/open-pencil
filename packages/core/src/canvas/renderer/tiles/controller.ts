@@ -11,19 +11,20 @@ import {
 import { emitNavigationTrace } from '#core/profiler'
 
 import { TileImageCache } from './cache'
-import { TILE_DEVICE_SIZE, tileLevel, tileWorldBounds, type TileWorldBounds } from './geometry'
+import { tileLevel, type TileWorldBounds } from './geometry'
 import { planTiles } from './planner'
 import { deleteRenderedTile, renderTile, tileChunks } from './render'
 import { TileScheduler, type TileJob, type TileSchedulerMetrics } from './scheduler'
 import { TileSurfacePool } from './surface-pool'
 
 const TILE_FRAME_BUDGET_MS = 5
-const MAXIMUM_TILE_JOBS_PER_FRAME = 4
+const MAXIMUM_TILE_JOBS_PER_FRAME = 1
 const TILE_OVERSCAN = 1
 
 export interface TiledSceneFrameResult {
   covered: boolean
   pending: boolean
+  presentedTiles: number
   metrics: TileSchedulerMetrics
 }
 
@@ -84,11 +85,9 @@ export class TiledSceneController {
     if (!index || !renderer.pageId) return this.emptyResult()
 
     const level = tileLevel(renderer.zoom * renderer.dpr)
-    const viewport = {
-      minX: -renderer.panX / renderer.zoom,
-      minY: -renderer.panY / renderer.zoom,
-      maxX: (-renderer.panX + renderer.viewportWidth) / renderer.zoom,
-      maxY: (-renderer.panY + renderer.viewportHeight) / renderer.zoom
+    const viewport = this.viewportBounds(renderer)
+    if (this.navigationActive) {
+      return this.renderNavigationFrame(renderer, contentGeneration)
     }
     const plan = planTiles(this.tileCache, {
       pageId: renderer.pageId,
@@ -102,13 +101,11 @@ export class TiledSceneController {
         tileChunks(index, key).reduce((total, chunk) => total + chunk.estimatedCost, 0),
       globalFallbackAvailable: true
     })
-    if (!this.navigationActive) this.scheduler.enqueue(plan.jobs)
+    this.scheduler.enqueue(plan.jobs)
     canvas.save()
     canvas.translate(renderer.panX, renderer.panY)
     canvas.scale(renderer.zoom, renderer.zoom)
-    const metrics = this.navigationActive
-      ? this.deferActiveJobs(plan.jobs)
-      : this.runScheduledFrame(renderer, graph, index)
+    const metrics = this.runScheduledFrame(renderer, graph, index)
     metrics.cancelledJobs += this.cancelledJobs
     this.cancelledJobs = 0
     const refreshed = planTiles(this.tileCache, {
@@ -120,7 +117,7 @@ export class TiledSceneController {
       contentGeneration,
       estimateCost: () => 0
     })
-    this.drawVisibleTiles(renderer, canvas, refreshed.visible)
+    const presentedTiles = 0
     canvas.restore()
     const covered = refreshed.visible.every(({ tile }) => tile !== null)
     emitNavigationTrace('render:end', {
@@ -137,10 +134,11 @@ export class TiledSceneController {
       cancelledJobs: metrics.cancelledJobs,
       tileCacheBytes: this.tileCache.byteSize(),
       tileCacheEntries: this.tileCache.size(),
+      presentedTiles,
       covered
     })
     const coveredGeneration = `${navigationGeneration}:${contentGeneration}`
-    if (covered && !this.navigationActive && this.lastCoveredGeneration !== coveredGeneration) {
+    if (covered && this.lastCoveredGeneration !== coveredGeneration) {
       this.lastCoveredGeneration = coveredGeneration
       emitNavigationTrace('tiles:coverage-complete', {
         level,
@@ -152,7 +150,8 @@ export class TiledSceneController {
     }
     return {
       covered,
-      pending: this.scheduler.pending() > 0 || (!covered && !this.navigationActive),
+      pending: this.scheduler.pending() > 0 || !covered,
+      presentedTiles,
       metrics
     }
   }
@@ -176,6 +175,43 @@ export class TiledSceneController {
     this.navigationGeneration = -1
     this.navigationActive = false
     this.surfacePool.clear()
+  }
+
+  private renderNavigationFrame(
+    renderer: SkiaRenderer,
+    contentGeneration: number
+  ): TiledSceneFrameResult {
+    const covered = renderer.tiledSceneCovered
+    const metrics = this.deferActiveJobs([])
+    metrics.cancelledJobs += this.cancelledJobs
+    this.cancelledJobs = 0
+    emitNavigationTrace('render:end', {
+      layer: 'tiled-scheduler',
+      sceneVersion: contentGeneration,
+      mandatoryCompleted: 0,
+      interruptibleCompleted: 0,
+      remaining: 0,
+      skippedWithFallback: 0,
+      deadlineOverrunMs: 0,
+      overBudgetJobs: 0,
+      maximumJobRenderMs: 0,
+      staleJobsDiscarded: 0,
+      cancelledJobs: metrics.cancelledJobs,
+      tileCacheBytes: this.tileCache.byteSize(),
+      tileCacheEntries: this.tileCache.size(),
+      presentedTiles: 0,
+      covered
+    })
+    return { covered, pending: false, presentedTiles: 0, metrics }
+  }
+
+  private viewportBounds(renderer: SkiaRenderer): TileWorldBounds {
+    return {
+      minX: -renderer.panX / renderer.zoom,
+      minY: -renderer.panY / renderer.zoom,
+      maxX: (-renderer.panX + renderer.viewportWidth) / renderer.zoom,
+      maxY: (-renderer.panY + renderer.viewportHeight) / renderer.zoom
+    }
   }
 
   private isNavigationActive(renderer: SkiaRenderer): boolean {
@@ -294,35 +330,11 @@ export class TiledSceneController {
     return `${key.level}:${key.x}:${key.y}`
   }
 
-  private drawVisibleTiles(
-    renderer: SkiaRenderer,
-    canvas: Canvas,
-    visible: ReturnType<typeof planTiles>['visible']
-  ): void {
-    renderer.opacityPaint.setAlphaf(1)
-    renderer.opacityPaint.setBlendMode(renderer.ck.BlendMode.Src)
-    try {
-      for (const { key, tile } of visible) {
-        if (!tile) continue
-        const bounds = tileWorldBounds(key)
-        canvas.drawImageRectOptions(
-          tile.image,
-          renderer.ck.LTRBRect(0, 0, TILE_DEVICE_SIZE, TILE_DEVICE_SIZE),
-          renderer.ck.LTRBRect(bounds.minX, bounds.minY, bounds.maxX, bounds.maxY),
-          renderer.ck.FilterMode.Linear,
-          renderer.ck.MipmapMode.None,
-          renderer.opacityPaint
-        )
-      }
-    } finally {
-      renderer.opacityPaint.setBlendMode(renderer.ck.BlendMode.SrcOver)
-    }
-  }
-
   private emptyResult(): TiledSceneFrameResult {
     return {
       covered: false,
       pending: false,
+      presentedTiles: 0,
       metrics: {
         mandatoryCompleted: 0,
         interruptibleCompleted: 0,
