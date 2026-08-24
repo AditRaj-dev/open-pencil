@@ -18,6 +18,23 @@ describe('browser web font fetch', () => {
     )
   })
 
+  test('allows same-origin application resources through the temporary font proxy', async () => {
+    const previousWindow = globalThis.window
+    Object.defineProperty(globalThis, 'window', {
+      configurable: true,
+      value: { location: { origin: 'http://127.0.0.1:4301' } }
+    })
+    const fontFetch = createBrowserWebFontFetch(
+      mock(async () => new Response(new Uint8Array([1]))) as typeof fetch
+    )
+    try {
+      await expect(fontFetch('http://127.0.0.1:4301/gold-preview.fig')).resolves.toBeInstanceOf(
+        Response
+      )
+    } finally {
+      Object.defineProperty(globalThis, 'window', { configurable: true, value: previousWindow })
+    }
+  })
   test('returns bounded responses from approved provider hosts', async () => {
     const fontFetch = createBrowserWebFontFetch(
       mock(

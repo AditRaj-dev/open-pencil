@@ -1,4 +1,5 @@
 import type { FetchFunction } from '@/app/http/types'
+import { IS_BROWSER } from '@/constants'
 
 const MAX_WEB_FONT_RESPONSE_BYTES = 8 * 1024 * 1024
 const ALLOWED_WEB_FONT_HOSTS = new Set([
@@ -13,7 +14,8 @@ export function createBrowserWebFontFetch(nativeFetch: typeof globalThis.fetch):
   return async (input, init) => {
     const request = new Request(input, init)
     const url = new URL(request.url)
-    if (url.protocol !== 'https:' || !ALLOWED_WEB_FONT_HOSTS.has(url.hostname)) {
+    const sameOrigin = IS_BROWSER && url.origin === window.location.origin
+    if (!sameOrigin && (url.protocol !== 'https:' || !ALLOWED_WEB_FONT_HOSTS.has(url.hostname))) {
       throw new Error(`Unsupported web font host: ${url.hostname}`)
     }
 
