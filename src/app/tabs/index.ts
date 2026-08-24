@@ -9,6 +9,7 @@ import { computeAllLayouts } from '@open-pencil/core/layout'
 import type { SceneGraph } from '@open-pencil/scene-graph'
 
 import { setOpenPencilStore } from '@/app/browser-bridge'
+import { describeDiagnosticError, recordStorageFailure } from '@/app/diagnostics'
 import { readFigDocument } from '@/app/document/io/fig'
 import type { DocumentSourceIdentity } from '@/app/document/io/types'
 import { getRecoveryStore, type RecoverySnapshotMeta } from '@/app/document/recovery'
@@ -16,6 +17,7 @@ import { setActiveEditorStore } from '@/app/editor/active-store'
 import type { EditorPreparationHandle as DocumentLoadSession } from '@/app/editor/preparation/types'
 import { createEditorStore } from '@/app/editor/session'
 import type { EditorStore } from '@/app/editor/session'
+import { notificationMessages } from '@/app/i18n/notifications'
 import {
   activeStorageProviderID,
   createActiveStorageAdapter,
@@ -26,6 +28,7 @@ import {
   loadCachedRecentFileThumbnail,
   rememberRecentStorageDocument
 } from '@/app/recent-files'
+import { toast } from '@/app/shell/ui'
 import { getLocalCanvasStore } from '@/app/storage/local-store'
 import { seedStorageCanvasFromRemote } from '@/app/storage/sync/persist'
 import { createFileOpenCoordinator } from '@/app/tabs/open/coordinator'
@@ -291,7 +294,9 @@ export async function openStorageDocumentInNewTab(document: StorageDocument): Pr
     load.update({ phase: 'reading', detail: document.name })
     const local = getLocalCanvasStore()
     const localMetadata = await local.getMeta(document.id)
+    load.signal.throwIfAborted()
     const localBytes = localMetadata?.hasFig ? await local.readFig(document.id) : null
+    load.signal.throwIfAborted()
     const localIsAuthoritative =
       localMetadata?.syncStatus !== 'synced' ||
       !document.metadataAuthoritative ||
@@ -299,7 +304,18 @@ export async function openStorageDocumentInNewTab(document: StorageDocument): Pr
     let bytes = localBytes && localIsAuthoritative ? localBytes : null
 
     if (!bytes) {
-      bytes = await createActiveStorageAdapter(providerId).getDocument(document.id)
+      bytes = await createActiveStorageAdapter(providerId).getDocument(
+        document.id,
+        (progress) =>
+          load.update({
+            phase: 'reading',
+            detail: document.name,
+            completed: progress.transferredBytes,
+            total: progress.totalBytes,
+            unit: 'bytes'
+          }),
+        load.signal
+      )
       await seedStorageCanvasFromRemote({
         providerId,
         canvasId: document.id,
@@ -307,6 +323,7 @@ export async function openStorageDocumentInNewTab(document: StorageDocument): Pr
         updatedAt: document.updatedAt,
         figBytes: bytes
       })
+      load.signal.throwIfAborted()
     }
 
     const fileBytes = new Uint8Array(bytes.byteLength)
@@ -325,11 +342,19 @@ export async function openStorageDocumentInNewTab(document: StorageDocument): Pr
     rememberRecentStorageDocument(providerId, document.id, document.name)
   } catch (error) {
     if (!load.signal.aborted) {
+      const diagnostic = describeDiagnosticError(error)
       load.fail({
         code: 'read-failed',
         message: error instanceof Error ? error.message : String(error),
-        retryable: true
+        retryable: diagnostic.retryable ?? true
       })
+      recordStorageFailure({ operation: 'download', ...diagnostic })
+      toast.error(
+        notificationMessages.get().openFileFailed({
+          name: document.name,
+          error: error instanceof Error ? error.message : String(error)
+        })
+      )
     }
     if (created) {
       const tab = getTabForStore(store)

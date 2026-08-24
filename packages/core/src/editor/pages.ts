@@ -1,3 +1,5 @@
+import { limitAsync } from 'es-toolkit/promise'
+
 import type { Color } from '@open-pencil/scene-graph/primitives'
 
 import { populateLazyFigImportRoots } from '#core/kiwi/fig/lazy-import'
@@ -35,6 +37,8 @@ export type SwitchPageOptions = PreparePageOptions
 function throwIfAborted(signal?: AbortSignal): void {
   signal?.throwIfAborted()
 }
+
+const MAX_CONCURRENT_FONT_LOADS = 4
 
 export function createPageActions(ctx: EditorContext) {
   const pageViewportStore = createPageViewportStore(ctx)
@@ -87,21 +91,20 @@ export function createPageActions(ctx: EditorContext) {
     fontManager.blockNodesUntilFontsResolve(childIds)
     try {
       let completedFaces = 0
-      const results = await Promise.all(
-        toLoad.map(async ([family, style]) => {
-          throwIfAborted(options.signal)
-          const result = await ctx.loadFont(family, style, requirements.characters, options.signal)
-          throwIfAborted(options.signal)
-          completedFaces++
-          options.onProgress?.({
-            phase: 'resolving-fonts',
-            detail: `${family} ${style}`,
-            completed: completedFaces,
-            total: toLoad.length
-          })
-          return result
+      const loadFace = limitAsync(async ([family, style]: [string, string]) => {
+        throwIfAborted(options.signal)
+        const result = await ctx.loadFont(family, style, requirements.characters, options.signal)
+        throwIfAborted(options.signal)
+        completedFaces++
+        options.onProgress?.({
+          phase: 'resolving-fonts',
+          detail: `${family} ${style}`,
+          completed: completedFaces,
+          total: toLoad.length
         })
-      )
+        return result
+      }, MAX_CONCURRENT_FONT_LOADS)
+      const results = await Promise.all(toLoad.map(loadFace))
       throwIfAborted(options.signal)
       const requiredFallbacks = missingGraphFontScripts(requirements)
       options.onProgress?.({
