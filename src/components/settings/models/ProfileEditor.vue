@@ -359,10 +359,7 @@ void refreshKeyStatus()
           />
         </ProviderSettingsField>
 
-        <ProviderSettingsField
-          v-if="draft.providerID === 'openai-compatible'"
-          :label="ai.apiType"
-        >
+        <ProviderSettingsField v-if="draft.providerID === 'openai-compatible'" :label="ai.apiType">
           <AppSelect
             v-model="draft.customAPIType"
             :label="ai.apiType"
@@ -410,9 +407,7 @@ void refreshKeyStatus()
             <div>
               <p class="text-[11px] font-medium text-surface">{{ ai.modelCapabilities }}</p>
               <p class="mt-0.5 text-[10px] text-muted">
-                {{
-                  knownModel ? ai.modelCapabilitiesDetected : ai.modelCapabilitiesManual
-                }}
+                {{ knownModel ? ai.modelCapabilitiesDetected : ai.modelCapabilitiesManual }}
               </p>
             </div>
 
@@ -420,18 +415,14 @@ void refreshKeyStatus()
               <div class="flex items-center justify-between gap-3">
                 <span class="text-[11px] text-muted">{{ ai.modelCapabilityTools }}</span>
                 <span v-if="knownModel" class="text-[10px] text-surface">
-                  {{
-                    knownCapabilities.includes('tools') ? common.supported : common.unsupported
-                  }}
+                  {{ knownCapabilities.includes('tools') ? common.supported : common.unsupported }}
                 </span>
                 <AppSwitch v-else v-model="toolsEnabled" :label="ai.modelCapabilityTools" />
               </div>
               <div class="flex items-center justify-between gap-3">
                 <span class="text-[11px] text-muted">{{ ai.modelCapabilityVision }}</span>
                 <span v-if="knownModel" class="text-[10px] text-surface">
-                  {{
-                    knownCapabilities.includes('vision') ? common.supported : common.unsupported
-                  }}
+                  {{ knownCapabilities.includes('vision') ? common.supported : common.unsupported }}
                 </span>
                 <AppSwitch v-else v-model="visionEnabled" :label="ai.modelCapabilityVision" />
               </div>

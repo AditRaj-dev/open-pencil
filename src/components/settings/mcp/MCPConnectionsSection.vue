@@ -163,7 +163,9 @@ onMounted(() => {
         :saved="tokenStatus === 'configured'"
         kind="api"
         :placeholder="
-          tokenStatus === 'configured' ? credentials.keySavedReplace : automation.mcpBearerTokenPlaceholder
+          tokenStatus === 'configured'
+            ? credentials.keySavedReplace
+            : automation.mcpBearerTokenPlaceholder
         "
         @clear="clearCredential"
       />

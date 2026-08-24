@@ -68,9 +68,7 @@ const sourceOptions = computed(() => [
 const readOnly = computed(() => source.value === 'tailwind-jsx')
 const dirty = computed(() => draft.value !== baseline.value)
 const editorLabel = computed(() =>
-  source.value === 'html-css'
-    ? code.value.codeEditorHTMLCSSLabel
-    : code.value.codeEditorDesignLabel
+  source.value === 'html-css' ? code.value.codeEditorHTMLCSSLabel : code.value.codeEditorDesignLabel
 )
 const statusTone = computed(() => {
   if (status.value === 'error') return 'error'
