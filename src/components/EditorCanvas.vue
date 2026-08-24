@@ -62,7 +62,9 @@ const { updateCursor } = useCanvasCollaborationAwareness(store, collab)
 const { selectAtContextPoint } = createCanvasContextSelection(canvasRef, store)
 
 const shouldSuspendRender = () =>
-  store.state.preparation !== null && store.state.preparation.phase !== 'preparing-render'
+  store.state.preparation !== null &&
+  store.state.preparation.kind !== 'font-retry' &&
+  store.state.preparation.phase !== 'preparing-render'
 
 useCanvas(sceneCanvasRef, store, {
   layer: 'scene',
@@ -215,7 +217,10 @@ const cursor = computed(() => toolCursor(store.state.activeTool, cursorOverride.
             </PopoverContent>
           </PopoverPortal>
         </PopoverRoot>
-        <PreparationOverlay v-if="store.state.preparation" :preparation="store.state.preparation" />
+        <PreparationOverlay
+          v-if="store.state.preparation && store.state.preparation.kind !== 'font-retry'"
+          :preparation="store.state.preparation"
+        />
       </div>
     </ContextMenuTrigger>
 
