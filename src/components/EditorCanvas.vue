@@ -31,6 +31,7 @@ import IconLucidePanelLeft from '~icons/lucide/panel-left'
 import IconLucidePanelRight from '~icons/lucide/panel-right'
 import IconLucidePanelTop from '~icons/lucide/panel-top'
 import CanvasMenu from './canvas/CanvasMenu.vue'
+import PreparationOverlay from '@/components/preparation/canvas/Overlay.vue'
 import NumberField from './inputs/NumberField.vue'
 
 const { paneId } = defineProps<{
@@ -41,26 +42,6 @@ const store = useEditorStore()
 const collab = useCollabInjected()
 const sceneCanvasRef = ref<HTMLCanvasElement | null>(null)
 const canvasRef = ref<HTMLCanvasElement | null>(null)
-
-const preparation = computed(() => store.state.preparation)
-const loadingProgressValue = computed(() => {
-  const progress = preparation.value?.progress
-  if (!progress || progress.total <= 0) return null
-  return Math.round((progress.completed / progress.total) * 100)
-})
-const loadingPhaseLabels = {
-  reading: 'Reading document',
-  decoding: 'Decoding Figma document',
-  materializing: 'Preparing layers',
-  'populating-page': 'Preparing page',
-  'resolving-fonts': 'Resolving fonts',
-  'resolving-fallbacks': 'Finalizing typography',
-  layout: 'Computing layout',
-  'preparing-render': 'Preparing canvas'
-} as const
-const loadingLabel = computed(() =>
-  preparation.value ? loadingPhaseLabels[preparation.value.phase] : 'Loading…'
-)
 
 const isActivePane = computed(() => !paneId || store.activePaneId.value === paneId)
 
@@ -234,46 +215,7 @@ const cursor = computed(() => toolCursor(store.state.activeTool, cursorOverride.
             </PopoverContent>
           </PopoverPortal>
         </PopoverRoot>
-        <Transition leave-active-class="transition-opacity duration-300" leave-to-class="opacity-0">
-          <div
-            v-if="store.state.preparation"
-            data-test-id="canvas-loading"
-            role="status"
-            aria-live="polite"
-            :aria-label="loadingLabel"
-            class="absolute inset-0 z-50 flex items-center justify-center bg-canvas"
-          >
-            <div class="flex w-72 flex-col items-center gap-3 text-center">
-              <icon-lucide-pencil-line class="size-8 text-surface opacity-45" />
-              <div class="space-y-1">
-                <p class="text-sm font-medium text-surface/80">{{ loadingLabel }}</p>
-                <p v-if="preparation?.detail" class="truncate text-xs text-surface/45">
-                  {{ preparation.detail }}
-                </p>
-              </div>
-              <div
-                class="h-0.5 w-25 overflow-hidden rounded-full bg-surface/8"
-                :role="loadingProgressValue === null ? undefined : 'progressbar'"
-                :aria-valuemin="loadingProgressValue === null ? undefined : 0"
-                :aria-valuemax="loadingProgressValue === null ? undefined : 100"
-                :aria-valuenow="loadingProgressValue ?? undefined"
-              >
-                <div
-                  v-if="loadingProgressValue === null"
-                  class="h-full w-2/5 animate-[slide_1s_ease-in-out_infinite] rounded-full bg-surface/25"
-                />
-                <div
-                  v-else
-                  class="h-full rounded-full bg-surface/35 transition-[width] duration-150"
-                  :style="{ width: `${loadingProgressValue}%` }"
-                />
-              </div>
-              <p v-if="loadingProgressValue !== null" class="text-xs tabular-nums text-surface/45">
-                {{ preparation?.progress?.completed }} of {{ preparation?.progress?.total }}
-              </p>
-            </div>
-          </div>
-        </Transition>
+        <PreparationOverlay v-if="store.state.preparation" :preparation="store.state.preparation" />
       </div>
     </ContextMenuTrigger>
 
