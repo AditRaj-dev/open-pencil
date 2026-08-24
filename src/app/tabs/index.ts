@@ -193,8 +193,8 @@ function reusableTabStore(): { store: EditorStore; created: boolean } {
   return { store: createTab().store, created: true }
 }
 
-async function readFigForTab(file: File, store: EditorStore): Promise<SceneGraph> {
-  const imported = await readFigDocument(file, store)
+async function readFigForTab(file: File, signal?: AbortSignal): Promise<SceneGraph> {
+  const imported = await readFigDocument(file, signal)
   const firstPageId = imported.getPages()[0]?.id
   if (firstPageId) computeAllLayouts(imported, firstPageId)
   const coverPageId = findFigThumbnailPageId(imported.getPages())
@@ -315,7 +315,7 @@ export async function openStorageDocumentInNewTab(document: StorageDocument): Pr
       type: 'application/octet-stream'
     })
     load.update({ phase: 'decoding', detail: document.name })
-    const imported = await readFigForTab(file, store)
+    const imported = await readFigForTab(file, load.signal)
     await showImportedGraph(
       store,
       imported,
@@ -324,13 +324,20 @@ export async function openStorageDocumentInNewTab(document: StorageDocument): Pr
     )
     rememberRecentStorageDocument(providerId, document.id, document.name)
   } catch (error) {
+    if (!load.signal.aborted) {
+      load.fail({
+        code: 'read-failed',
+        message: error instanceof Error ? error.message : String(error),
+        retryable: true
+      })
+    }
     if (created) {
       const tab = getTabForStore(store)
       if (tab) await closeTab(tab.id)
     }
     throw error
   } finally {
-    load.finish()
+    load.complete()
   }
 }
 
@@ -398,7 +405,7 @@ export async function openFileInNewTab(
     let sourceFormat: string
     if (isFig) {
       load.update({ phase: 'decoding', detail: file.name })
-      imported = await readFigForTab(file, store)
+      imported = await readFigForTab(file, load.signal)
       sourceFormat = 'fig'
     } else {
       const result = await io.readDocument({
@@ -428,6 +435,13 @@ export async function openFileInNewTab(
     }
     completion.resolve(undefined)
   } catch (error) {
+    if (!load.signal.aborted) {
+      load.fail({
+        code: 'decode-failed',
+        message: error instanceof Error ? error.message : String(error),
+        retryable: true
+      })
+    }
     completion.reject(error)
     if (created) {
       const tab = getTabForStore(store)
@@ -435,7 +449,7 @@ export async function openFileInNewTab(
     }
     throw error
   } finally {
-    load.finish()
+    load.complete()
     fileOpenCoordinator.remove(pendingOpen)
   }
 }
@@ -464,7 +478,7 @@ export async function restoreRecoverySnapshot(id: string): Promise<void> {
       type: 'application/octet-stream'
     })
     load.update({ phase: 'decoding', detail: snapshot.documentName })
-    const imported = await readFigForTab(file, store)
+    const imported = await readFigForTab(file, load.signal)
 
     await showImportedGraph(
       store,
@@ -475,8 +489,17 @@ export async function restoreRecoverySnapshot(id: string): Promise<void> {
       },
       load
     )
+  } catch (error) {
+    if (!load.signal.aborted) {
+      load.fail({
+        code: 'decode-failed',
+        message: error instanceof Error ? error.message : String(error),
+        retryable: true
+      })
+    }
+    throw error
   } finally {
-    load.finish()
+    load.complete()
   }
 }
 

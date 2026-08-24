@@ -1,5 +1,8 @@
+import type { EditorPreparationEventEmitter } from '@/app/editor/preparation/events'
 import type {
   BeginEditorPreparation,
+  EditorPreparationCancelReason,
+  EditorPreparationFailure,
   EditorPreparationHandle,
   EditorPreparationUpdate
 } from '@/app/editor/preparation/types'
@@ -13,10 +16,12 @@ export interface EditorPreparationController {
 }
 
 export function createEditorPreparationController(
-  state: AppEditorState
+  state: AppEditorState,
+  events?: EditorPreparationEventEmitter
 ): EditorPreparationController {
   let nextId = 0
   let activeAbort: AbortController | null = null
+  let activeCancel: ((reason: EditorPreparationCancelReason) => void) | null = null
   let presentedSceneVersion = -1
   const presentationWaiters = new Map<number, { sceneVersion: number; resolve: () => void }>()
 
@@ -24,28 +29,37 @@ export function createEditorPreparationController(
 
   return {
     begin(options) {
-      activeAbort?.abort()
-      presentationWaiters.get(state.preparation?.id ?? -1)?.resolve()
+      activeCancel?.('superseded')
       const abort = new AbortController()
       activeAbort = abort
       const id = ++nextId
+      const kind = options.kind
       state.preparation = {
         id,
-        kind: options.kind,
+        kind,
         phase: options.phase ?? 'reading',
         subject: options.subject ?? null,
         detail: null,
         progress: null,
         startedAt: performance.now()
       }
+      events?.emit('preparation:started', state.preparation)
 
-      const finish = () => {
+      const clear = () => {
         presentationWaiters.get(id)?.resolve()
         presentationWaiters.delete(id)
-        if (!isActive(id)) return
-        state.preparation = null
+        if (isActive(id)) state.preparation = null
         if (activeAbort === abort) activeAbort = null
+        if (activeCancel === cancel) activeCancel = null
       }
+
+      const cancel = (reason: EditorPreparationCancelReason = 'user') => {
+        if (!isActive(id)) return
+        abort.abort()
+        clear()
+        events?.emit('preparation:finished', { id, kind, status: 'cancelled', reason })
+      }
+      activeCancel = cancel
 
       return {
         id,
@@ -58,10 +72,10 @@ export function createEditorPreparationController(
             update.total !== undefined &&
             update.total !== null &&
             update.total > 0
-          const current = state.preparation
-          if (!current) return
+          const previous = state.preparation
+          if (!previous) return
           state.preparation = {
-            ...current,
+            ...previous,
             phase: update.phase,
             detail: update.detail ?? null,
             progress: hasProgress
@@ -72,13 +86,20 @@ export function createEditorPreparationController(
                 }
               : null
           }
+          events?.emit('preparation:updated', state.preparation, previous)
         },
-        finish,
-        cancel() {
+        complete() {
           if (!isActive(id)) return
-          abort.abort()
-          finish()
-        }
+          clear()
+          events?.emit('preparation:finished', { id, kind, status: 'completed' })
+        },
+        fail(failure) {
+          if (!isActive(id)) return
+          const event: EditorPreparationFailure = { id, kind, ...failure }
+          clear()
+          events?.emit('preparation:failed', event)
+        },
+        cancel
       }
     },
     acknowledgePresentation(sceneVersion) {
@@ -96,10 +117,12 @@ export function createEditorPreparationController(
       })
     },
     dispose() {
+      activeCancel?.('tab-closed')
       activeAbort?.abort()
+      activeAbort = null
+      activeCancel = null
       for (const waiter of presentationWaiters.values()) waiter.resolve()
       presentationWaiters.clear()
-      activeAbort = null
       state.preparation = null
     }
   }

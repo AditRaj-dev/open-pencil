@@ -80,16 +80,24 @@ export function createDOMOpenActions({
       setDocumentSource(`${pageName}.html`, 'html')
       toast.info(notificationMessages.get().importedDOMCSS)
     } catch (e) {
+      if (load.signal.aborted) throw e
+      const diagnostic = describeDiagnosticError(e)
+      load.fail({
+        code: 'decode-failed',
+        message: errorDetail(e),
+        retryable: diagnostic.retryable ?? true
+      })
       recordDocumentFailure({
         operation: 'import',
         format: 'dom-css',
-        ...describeDiagnosticError(e),
-        retryable: describeDiagnosticError(e).retryable
+        ...diagnostic,
+        retryable: diagnostic.retryable
       })
+      console.error('Failed to import DOM/CSS:', e)
       toast.error(notificationMessages.get().importDOMCSSFailed({ error: errorDetail(e) }))
       throw e
     } finally {
-      load.finish()
+      load.complete()
     }
   }
 
@@ -109,15 +117,25 @@ export function createDOMOpenActions({
       )
       setDocumentSource(file.name, 'html', options.handle, options.path)
     } catch (e) {
+      if (load.signal.aborted) return
+      const diagnostic = describeDiagnosticError(e)
+      if (ownsLoad) {
+        load.fail({
+          code: 'decode-failed',
+          message: errorDetail(e),
+          retryable: diagnostic.retryable ?? true
+        })
+      }
       recordDocumentFailure({
         operation: 'open',
         format: 'dom-css',
-        ...describeDiagnosticError(e),
-        retryable: describeDiagnosticError(e).retryable
+        ...diagnostic,
+        retryable: diagnostic.retryable
       })
+      console.error('Failed to open DOM/CSS file:', e)
       toast.error(notificationMessages.get().openDOMCSSFailed({ error: errorDetail(e) }))
     } finally {
-      if (ownsLoad) load.finish()
+      if (ownsLoad) load.complete()
     }
   }
 
