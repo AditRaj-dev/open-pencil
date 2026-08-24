@@ -1,6 +1,7 @@
 import type { Editor, EditorState } from '@open-pencil/core/editor'
 import { browserHTMLToSceneGraph } from '@open-pencil/dom-css/browser'
 
+import { describeDiagnosticError, recordDocumentFailure } from '@/app/diagnostics'
 import { yieldToUI } from '@/app/document/io/browser'
 import { applyImportedDocument } from '@/app/document/io/imported-document'
 import type { EditorPreparationController } from '@/app/editor/preparation/controller'
@@ -79,9 +80,19 @@ export function createDOMOpenActions({
       setDocumentSource(`${pageName}.html`, 'html')
       toast.info(notificationMessages.get().importedDOMCSS)
     } catch (e) {
-      if (!load.signal.aborted) {
-        load.fail({ code: 'decode-failed', message: errorDetail(e), retryable: true })
-      }
+      if (load.signal.aborted) throw e
+      const diagnostic = describeDiagnosticError(e)
+      load.fail({
+        code: 'decode-failed',
+        message: errorDetail(e),
+        retryable: diagnostic.retryable ?? true
+      })
+      recordDocumentFailure({
+        operation: 'import',
+        format: 'dom-css',
+        ...diagnostic,
+        retryable: diagnostic.retryable
+      })
       console.error('Failed to import DOM/CSS:', e)
       toast.error(notificationMessages.get().importDOMCSSFailed({ error: errorDetail(e) }))
       throw e
@@ -106,9 +117,21 @@ export function createDOMOpenActions({
       )
       setDocumentSource(file.name, 'html', options.handle, options.path)
     } catch (e) {
-      if (!load.signal.aborted && ownsLoad) {
-        load.fail({ code: 'decode-failed', message: errorDetail(e), retryable: true })
+      if (load.signal.aborted) return
+      const diagnostic = describeDiagnosticError(e)
+      if (ownsLoad) {
+        load.fail({
+          code: 'decode-failed',
+          message: errorDetail(e),
+          retryable: diagnostic.retryable ?? true
+        })
       }
+      recordDocumentFailure({
+        operation: 'open',
+        format: 'dom-css',
+        ...diagnostic,
+        retryable: diagnostic.retryable
+      })
       console.error('Failed to open DOM/CSS file:', e)
       toast.error(notificationMessages.get().openDOMCSSFailed({ error: errorDetail(e) }))
     } finally {

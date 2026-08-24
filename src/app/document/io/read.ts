@@ -1,6 +1,7 @@
 import type { Editor, EditorState } from '@open-pencil/core/editor'
 import { computeAllLayouts } from '@open-pencil/core/layout'
 
+import { describeDiagnosticError, recordDocumentFailure } from '@/app/diagnostics'
 import { yieldToUI } from '@/app/document/io/browser'
 import { readFigDocument } from '@/app/document/io/fig'
 import { applyImportedDocument } from '@/app/document/io/imported-document'
@@ -61,10 +62,17 @@ export function createOpenActions({
       editor.requestRender()
     } catch (e) {
       if (load.signal.aborted) return
+      const diagnostic = describeDiagnosticError(e)
       load.fail({
         code: 'decode-failed',
         message: e instanceof Error ? e.message : String(e),
-        retryable: true
+        retryable: diagnostic.retryable ?? true
+      })
+      recordDocumentFailure({
+        operation: 'open',
+        format: 'fig',
+        ...diagnostic,
+        retryable: diagnostic.retryable
       })
       console.error('Failed to open .fig file:', e)
       toast.error(

@@ -12,7 +12,7 @@ import { createPenActions } from '@/app/editor/pen'
 import type { EditorPreparationController } from '@/app/editor/preparation/controller'
 import { createProfilerActions } from '@/app/editor/profiler'
 import type { AppEditorState } from '@/app/editor/session/types'
-import { createVectorEditActions } from '@/app/editor/vector-edit'
+import { createVectorEditActions } from '@/app/editor/vector'
 
 export function defineEditorStoreAccessors(store: object, editor: Editor) {
   Object.defineProperties(store, {
