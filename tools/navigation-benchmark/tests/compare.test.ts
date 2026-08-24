@@ -18,7 +18,6 @@ function metrics(displayP95: number, crispMs: number): NavigationMetrics {
     zoomAnchorDriftPx: distribution,
     maximumJumpPx: 1,
     finalInputToCrispMs: crispMs,
-    finalInputToTileCoverageMs: null,
     scheduler: {
       frameCount: 0,
       maximumJobsPerFrame: 0,

@@ -45,7 +45,6 @@ const mutationOpacity = process.argv.includes('--mutate-opacity')
   ? Number(argument('--mutate-opacity'))
   : null
 const replayAfterMutation = process.argv.includes('--replay-after-mutation')
-const waitForBackgroundTiles = process.argv.includes('--wait-for-background-tiles')
 const traceEnabled = !process.argv.includes('--no-trace')
 const cpuProfile = process.argv.includes('--cpu-profile')
 const softwareGpu = process.argv.includes('--software-gpu')
@@ -185,11 +184,6 @@ try {
     await replay(page, input, mode)
   }
   await page.evaluate(() => window.openPencil?.test?.navigation?.waitForSettlement())
-  if (waitForBackgroundTiles) {
-    await page.evaluate(() =>
-      window.openPencil?.test?.navigation?.waitForTiledBackgroundSettlement()
-    )
-  }
   await trace?.stop(resolve(output, 'trace.json.gz'))
 
   const recording = await page.evaluate(
@@ -208,7 +202,6 @@ try {
     mutationNodeId,
     mutationOpacity,
     replayAfterMutation,
-    waitForBackgroundTiles,
     gesturePath: resolve(gesturePath),
     browserVersion: await browser.version(),
     platform: process.platform,

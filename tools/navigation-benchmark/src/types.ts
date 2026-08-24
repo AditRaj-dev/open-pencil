@@ -33,7 +33,6 @@ export interface NavigationMetrics {
   zoomAnchorDriftPx: Distribution
   maximumJumpPx: number
   finalInputToCrispMs: number | null
-  finalInputToTileCoverageMs: number | null
   scheduler: {
     frameCount: number
     maximumJobsPerFrame: number

@@ -16,7 +16,7 @@ describe('navigation benchmark metrics', () => {
     })
   })
 
-  test('separates retained presentation settlement from background tile coverage', () => {
+  test('uses tiled coverage rather than fallback backing for tiled settlement', () => {
     const recording: NavigationRecordingFile = {
       schemaVersion: 1,
       name: 'tiled',
@@ -33,9 +33,7 @@ describe('navigation benchmark metrics', () => {
       ]
     }
 
-    const metrics = computeNavigationMetrics(recording)
-    expect(metrics.finalInputToCrispMs).toBe(10)
-    expect(metrics.finalInputToTileCoverageMs).toBe(130)
+    expect(computeNavigationMetrics(recording).finalInputToCrispMs).toBe(130)
   })
 
   test('correlates input, viewport, render, and crisp backing events', () => {
@@ -118,7 +116,6 @@ describe('navigation benchmark metrics', () => {
     expect(metrics.zoomAnchorDriftPx.max).toBe(0)
     expect(metrics.maximumJumpPx).toBe(2)
     expect(metrics.finalInputToCrispMs).toBe(40)
-    expect(metrics.finalInputToTileCoverageMs).toBeNull()
     expect(metrics.scheduler).toEqual({
       frameCount: 1,
       maximumJobsPerFrame: 4,

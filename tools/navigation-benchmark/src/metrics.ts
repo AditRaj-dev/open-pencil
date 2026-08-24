@@ -134,14 +134,15 @@ export function computeNavigationMetrics(recording: NavigationRecordingFile): Na
     const next = nextTimestamp(trace, event.timestamp, 'render:end')
     return next === null ? [] : [next - event.timestamp]
   })
-  const crispCandidates = [
-    ...events(trace, 'backing:crisp'),
-    ...rendered.filter((event) => event.detail.backingCrisp === true)
-  ].sort((a, b) => a.timestamp - b.timestamp)
+  const crispCandidates = (
+    recording.sceneRenderer === 'tiled'
+      ? events(trace, 'tiles:coverage-complete')
+      : [
+          ...events(trace, 'backing:crisp'),
+          ...rendered.filter((event) => event.detail.backingCrisp === true)
+        ]
+  ).sort((a, b) => a.timestamp - b.timestamp)
   const crisp = crispCandidates.find((event) => event.timestamp >= finalInput)
-  const tileCoverage = events(trace, 'tiles:coverage-complete').find(
-    (event) => event.timestamp >= finalInput
-  )
   const schedulerEvents = events(trace, 'render:end').filter(
     (event) => event.detail.layer === 'tiled-scheduler'
   )
@@ -172,7 +173,6 @@ export function computeNavigationMetrics(recording: NavigationRecordingFile): Na
     zoomAnchorDriftPx: distribution(zoomAnchorDrift(trace, recording)),
     maximumJumpPx: round(maximumViewportJump(trace)),
     finalInputToCrispMs: crisp ? round(crisp.timestamp - finalInput) : null,
-    finalInputToTileCoverageMs: tileCoverage ? round(tileCoverage.timestamp - finalInput) : null,
     scheduler: {
       frameCount: schedulerEvents.length,
       maximumJobsPerFrame: Math.max(0, ...schedulerCompleted),

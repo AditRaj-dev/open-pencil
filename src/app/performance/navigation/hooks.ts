@@ -5,54 +5,10 @@ import { startNavigationRecorder } from '@/app/performance/navigation/recorder'
 export interface NavigationBenchmarkHooks {
   startRecording: (name: string) => void
   waitForSettlement: (timeoutMs?: number) => Promise<void>
-  waitForTiledBackgroundSettlement: (timeoutMs?: number) => Promise<void>
   stopRecording: () => NavigationRecording
 }
 
 let recorder: NavigationRecorder | null = null
-
-function settlementRenderers(store: EditorStore) {
-  return store.canvasRenderers.filter(
-    (renderer) => renderer.tracksSceneSettlement && renderer.pageId !== null
-  )
-}
-
-async function waitForRendererState(
-  store: EditorStore,
-  label: string,
-  settled: (renderers: ReturnType<typeof settlementRenderers>) => boolean,
-  timeoutMs: number
-): Promise<void> {
-  const startedAt = performance.now()
-  await new Promise<void>((resolve, reject) => {
-    const check = () => {
-      const renderers = settlementRenderers(store)
-      if (store.state.navigation.phase === 'idle' && renderers.length > 0 && settled(renderers)) {
-        resolve()
-        return
-      }
-      if (performance.now() - startedAt >= timeoutMs) {
-        const state = renderers.map((renderer) => ({
-          tiled: renderer.tiledSceneEnabled,
-          covered: renderer.tiledSceneCovered,
-          pending: renderer.tiledScenePending,
-          backingCrisp: !renderer.sceneBackingNeedsCrispRender
-        }))
-        reject(
-          new Error(
-            `${label} did not settle within ${timeoutMs} ms: ${JSON.stringify({
-              navigationPhase: store.state.navigation.phase,
-              renderers: state
-            })}`
-          )
-        )
-        return
-      }
-      requestAnimationFrame(check)
-    }
-    requestAnimationFrame(check)
-  })
-}
 
 export function createNavigationBenchmarkHooks(store: EditorStore): NavigationBenchmarkHooks {
   return {
@@ -76,25 +32,47 @@ export function createNavigationBenchmarkHooks(store: EditorStore): NavigationBe
       )
     },
     async waitForSettlement(timeoutMs = 30_000) {
-      await waitForRendererState(
-        store,
-        'Navigation renderer',
-        (renderers) => renderers.every((renderer) => !renderer.sceneBackingNeedsCrispRender),
-        timeoutMs
-      )
-    },
-    async waitForTiledBackgroundSettlement(timeoutMs = 30_000) {
-      await waitForRendererState(
-        store,
-        'Tiled background renderer',
-        (renderers) =>
-          renderers.every(
-            (renderer) =>
-              !renderer.tiledSceneEnabled ||
-              (renderer.tiledSceneCovered && !renderer.tiledScenePending)
-          ),
-        timeoutMs
-      )
+      const startedAt = performance.now()
+      await new Promise<void>((resolve, reject) => {
+        let frameId: number | null = null
+        const check = () => {
+          const renderers = store.canvasRenderers.filter(
+            (renderer) => renderer.tracksSceneSettlement && renderer.pageId !== null
+          )
+          const settled =
+            store.state.navigation.phase === 'idle' &&
+            renderers.length > 0 &&
+            renderers.every((renderer) =>
+              renderer.tiledSceneEnabled
+                ? renderer.tiledSceneCovered && !renderer.tiledScenePending
+                : !renderer.sceneBackingNeedsCrispRender
+            )
+          if (settled) {
+            resolve()
+            return
+          }
+          if (performance.now() - startedAt >= timeoutMs) {
+            const state = renderers.map((renderer) => ({
+              tiled: renderer.tiledSceneEnabled,
+              covered: renderer.tiledSceneCovered,
+              pending: renderer.tiledScenePending,
+              backingCrisp: !renderer.sceneBackingNeedsCrispRender
+            }))
+            reject(
+              new Error(
+                `Navigation renderer did not settle within ${timeoutMs} ms: ${JSON.stringify({
+                  navigationPhase: store.state.navigation.phase,
+                  renderers: state
+                })}`
+              )
+            )
+            return
+          }
+          frameId = requestAnimationFrame(check)
+        }
+        frameId = requestAnimationFrame(check)
+        void frameId
+      })
     },
     stopRecording() {
       if (!recorder) throw new Error('No navigation recording is active')

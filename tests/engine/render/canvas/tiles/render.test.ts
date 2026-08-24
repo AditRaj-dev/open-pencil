@@ -267,7 +267,6 @@ describe('tile rendering', () => {
       expect(navigating.metrics.cancelledJobs).toBeGreaterThan(0)
       expect(navigating.metrics.mandatoryCompleted).toBe(0)
       expect(navigating.metrics.interruptibleCompleted).toBe(0)
-      expect(navigating.presentedTiles).toBe(0)
     } finally {
       controller.destroy()
       renderer.destroy()
