@@ -91,6 +91,21 @@ describe('editor preparation controller', () => {
     handle.fail({ code: 'render-failed', message: 'Timed out', retryable: true })
     expect(state.preparation).toBeNull()
   })
+  test('emits exactly one terminal outcome', () => {
+    const state = createInitialAppEditorState('page')
+    const events = createEditorPreparationEvents()
+    const outcomes: string[] = []
+    events.on('preparation:finished', (result) => outcomes.push(result.status))
+    events.on('preparation:failed', () => outcomes.push('failed'))
+    const controller = createEditorPreparationController(state, events)
+
+    const failed = controller.begin({ kind: 'document-open' })
+    failed.fail({ code: 'decode-failed', message: 'Invalid', retryable: false })
+    failed.complete()
+    failed.cancel()
+
+    expect(outcomes).toEqual(['failed'])
+  })
   test('dispose aborts the active tab-local preparation', () => {
     const state = createInitialAppEditorState('page')
     const controller = createEditorPreparationController(state)

@@ -80,10 +80,12 @@ export function createDOMOpenActions({
       kind: 'dom-import',
       subject: options.documentName ?? 'DOM Import'
     })
+    let succeeded = false
     try {
       const pageName = await applyDOMText(html, options, load)
       setDocumentSource(`${pageName}.html`, 'html')
       toast.info(notificationMessages.get().importedDOMCSS)
+      succeeded = true
     } catch (e) {
       if (load.signal.aborted) throw e
       const diagnostic = describeDiagnosticError(e)
@@ -102,7 +104,7 @@ export function createDOMOpenActions({
       toast.error(notificationMessages.get().importDOMCSSFailed({ error: errorDetail(e) }))
       throw e
     } finally {
-      load.complete()
+      if (succeeded) load.complete()
     }
   }
 
@@ -110,6 +112,7 @@ export function createDOMOpenActions({
     const load =
       options.preparation ?? preparationController.begin({ kind: 'dom-import', subject: file.name })
     const ownsLoad = options.preparation === undefined
+    let succeeded = false
     try {
       const html = await file.text()
       await applyDOMText(
@@ -121,6 +124,7 @@ export function createDOMOpenActions({
         load
       )
       setDocumentSource(file.name, 'html', options.handle, options.path)
+      succeeded = true
     } catch (e) {
       if (load.signal.aborted) return
       const diagnostic = describeDiagnosticError(e)
@@ -140,7 +144,7 @@ export function createDOMOpenActions({
       console.error('Failed to open DOM/CSS file:', e)
       toast.error(notificationMessages.get().openDOMCSSFailed({ error: errorDetail(e) }))
     } finally {
-      if (ownsLoad) load.complete()
+      if (ownsLoad && succeeded) load.complete()
     }
   }
 

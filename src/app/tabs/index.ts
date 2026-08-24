@@ -275,6 +275,19 @@ function findStorageTab(providerId: string, documentId: string): Tab | undefined
   })
 }
 
+function failPreparation(
+  load: DocumentLoadSession,
+  code: 'read-failed' | 'decode-failed',
+  error: unknown
+): void {
+  if (load.signal.aborted) return
+  load.fail({
+    code,
+    message: error instanceof Error ? error.message : String(error),
+    retryable: true
+  })
+}
+
 export async function openStorageDocumentInNewTab(document: StorageDocument): Promise<void> {
   const providerId = activeStorageProviderID.value
   const existing = findStorageTab(providerId, document.id)
@@ -290,6 +303,7 @@ export async function openStorageDocumentInNewTab(document: StorageDocument): Pr
     kind: 'storage-open',
     subject: document.name
   })
+  let succeeded = false
   try {
     load.update({ phase: 'reading', detail: document.name })
     const local = getLocalCanvasStore()
@@ -340,6 +354,7 @@ export async function openStorageDocumentInNewTab(document: StorageDocument): Pr
       load
     )
     rememberRecentStorageDocument(providerId, document.id, document.name)
+    succeeded = true
   } catch (error) {
     if (!load.signal.aborted) {
       const diagnostic = describeDiagnosticError(error)
@@ -362,7 +377,7 @@ export async function openStorageDocumentInNewTab(document: StorageDocument): Pr
     }
     throw error
   } finally {
-    load.complete()
+    if (succeeded) load.complete()
   }
 }
 
@@ -416,10 +431,12 @@ export async function openFileInNewTab(
   }
 
   const { completion, pendingOpen, store, created, load } = decision
+  let succeeded = false
   try {
     if (isDOMImportFile(file)) {
       await store.openDOMFile(file, { handle, path, preparation: load })
       completion.resolve(undefined)
+      succeeded = true
       return
     }
 
@@ -459,14 +476,9 @@ export async function openFileInNewTab(
       })
     }
     completion.resolve(undefined)
+    succeeded = true
   } catch (error) {
-    if (!load.signal.aborted) {
-      load.fail({
-        code: 'decode-failed',
-        message: error instanceof Error ? error.message : String(error),
-        retryable: true
-      })
-    }
+    failPreparation(load, 'decode-failed', error)
     completion.reject(error)
     if (created) {
       const tab = getTabForStore(store)
@@ -474,7 +486,7 @@ export async function openFileInNewTab(
     }
     throw error
   } finally {
-    load.complete()
+    if (succeeded) load.complete()
     fileOpenCoordinator.remove(pendingOpen)
   }
 }
@@ -496,6 +508,7 @@ export async function restoreRecoverySnapshot(id: string): Promise<void> {
     kind: 'recovery-restore',
     subject: snapshot.documentName
   })
+  let succeeded = false
   try {
     load.update({ phase: 'reading', detail: snapshot.documentName })
     const fileBytes = new Uint8Array(snapshot.figBytes)
@@ -514,17 +527,12 @@ export async function restoreRecoverySnapshot(id: string): Promise<void> {
       },
       load
     )
+    succeeded = true
   } catch (error) {
-    if (!load.signal.aborted) {
-      load.fail({
-        code: 'decode-failed',
-        message: error instanceof Error ? error.message : String(error),
-        retryable: true
-      })
-    }
+    failPreparation(load, 'decode-failed', error)
     throw error
   } finally {
-    load.complete()
+    if (succeeded) load.complete()
   }
 }
 
