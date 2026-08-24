@@ -24,6 +24,25 @@ type SwitchPageOptions = {
   onProgress?: (progress: PageSwitchProgress) => void
 }
 
+const MAX_CONCURRENT_FONT_LOADS = 4
+
+async function mapWithConcurrency<T, R>(
+  values: T[],
+  concurrency: number,
+  mapper: (value: T) => Promise<R>
+): Promise<R[]> {
+  const results: R[] = []
+  let nextIndex = 0
+  async function worker(): Promise<void> {
+    while (nextIndex < values.length) {
+      const index = nextIndex++
+      results[index] = await mapper(values[index])
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(concurrency, values.length) }, () => worker()))
+  return results
+}
+
 export function createPageActions(ctx: EditorContext) {
   const pageViewportStore = createPageViewportStore(ctx)
   let populationWorkerInstance: ReturnType<typeof createFigPopulationWorker> | undefined
@@ -69,8 +88,10 @@ export function createPageActions(ctx: EditorContext) {
     fontManager.blockNodesUntilFontsResolve(childIds)
     try {
       let completedFaces = 0
-      const results = await Promise.all(
-        toLoad.map(async ([family, style]) => {
+      const results = await mapWithConcurrency(
+        toLoad,
+        MAX_CONCURRENT_FONT_LOADS,
+        async ([family, style]) => {
           const result = await ctx.loadFont(family, style, requirements.characters)
           completedFaces++
           options.onProgress?.({
@@ -80,7 +101,7 @@ export function createPageActions(ctx: EditorContext) {
             total: toLoad.length
           })
           return result
-        })
+        }
       )
       const requiredFallbacks = missingGraphFontScripts(requirements)
       options.onProgress?.({

@@ -208,6 +208,22 @@ describe('renderText', () => {
     expect(r.buildParagraph).toHaveBeenCalledTimes(1)
   })
 
+  test('renders a live paragraph for finalized default-family substitution', () => {
+    const r = createMockRenderer({ nodeFontReadiness: mock(() => 'substituted') })
+    const canvas = createMockCanvas()
+    const node = textNode({
+      fontFamily: 'Geist',
+      text: 'Edited text',
+      textPicture: null,
+      derivedTextGlyphs: null
+    })
+
+    renderText(r, canvas as never, node)
+
+    expect(r.buildParagraph).toHaveBeenCalledTimes(1)
+    expect(canvas.drawParagraph).toHaveBeenCalledTimes(1)
+  })
+
   test('uses baked text pictures after font resolution is exhausted', () => {
     const r = createMockRenderer({ nodeFontReadiness: mock(() => 'exhausted') })
     const canvas = createMockCanvas()

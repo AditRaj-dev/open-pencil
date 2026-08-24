@@ -119,6 +119,15 @@ export class WebFontResolver {
     this.failedFonts.clear()
   }
 
+  resetFailures(family?: string, style?: string): void {
+    for (const key of this.failedFonts) {
+      const [, failedFamily, failedStyle] = key.split('|')
+      if (!family || (failedFamily === family && (!style || failedStyle === style))) {
+        this.failedFonts.delete(key)
+      }
+    }
+  }
+
   enabledProviders(): WebFontProviderId[] {
     return WEB_FONT_PROVIDER_IDS.filter((provider) => this.enabled.has(provider))
   }
