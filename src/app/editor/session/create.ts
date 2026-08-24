@@ -26,6 +26,8 @@ import {
   defineEditorStoreAccessors
 } from '@/app/editor/session/modules'
 import { createInitialAppEditorState, type AppEditorState } from '@/app/editor/session/types'
+import { notificationMessages } from '@/app/i18n/notifications'
+import { toast } from '@/app/shell/ui'
 import { IS_BROWSER, IS_TAURI } from '@/constants'
 
 export { EDITOR_TOOLS as TOOLS, TOOL_SHORTCUTS } from '@open-pencil/core/editor'
@@ -94,6 +96,7 @@ export function createEditorStore(initialGraph?: SceneGraph) {
         subject: page?.name ?? null
       })
     const ownsPreparation = options.preparation === undefined
+    let succeeded = false
     try {
       const prepared = await editor.preparePage(pageId, {
         signal: preparation.signal,
@@ -110,19 +113,29 @@ export function createEditorStore(initialGraph?: SceneGraph) {
         preparation.update({ phase: 'preparing-render', detail: page?.name ?? null })
         await preparationController.waitForPresentation(preparation.id, editor.state.sceneVersion)
       }
+      succeeded = true
     } catch (error) {
       if (!preparation.signal.aborted) {
         if (ownsPreparation) {
+          const presentationTimedOut =
+            error instanceof Error && error.message === 'The operation was timed out'
           preparation.fail({
-            code: 'layout-failed',
+            code: presentationTimedOut ? 'render-failed' : 'layout-failed',
             message: error instanceof Error ? error.message : String(error),
             retryable: true
           })
+          if (presentationTimedOut) {
+            toast.error(
+              notificationMessages.get().operationFailed({
+                error: error instanceof Error ? error.message : String(error)
+              })
+            )
+          }
         }
         throw error
       }
     } finally {
-      if (ownsPreparation) preparation.complete()
+      if (ownsPreparation && succeeded) preparation.complete()
     }
   }
 
