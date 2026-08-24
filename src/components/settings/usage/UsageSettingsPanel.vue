@@ -6,7 +6,7 @@ import { diagnostics } from '@/app/diagnostics'
 import { isUsageEnabled } from '@/app/diagnostics/settings'
 import { summarizeUsage, type UsageSummary } from '@/app/usage'
 
-const { diagnostics: diagnosticMessages } = useI18n()
+const { diagnostics: diagnosticMessages, settings } = useI18n()
 const summary = ref<UsageSummary>(summarizeUsage([]))
 
 async function refresh() {
@@ -33,7 +33,7 @@ function formatTokenValue(value: number | null): string {
 <template>
   <section class="flex flex-col gap-4" data-test-id="settings-usage-panel">
     <div>
-      <h3 class="text-xs font-semibold text-surface">{{ diagnosticMessages.settingsUsage }}</h3>
+      <h3 class="text-xs font-semibold text-surface">{{ settings.settingsUsage }}</h3>
       <p class="mt-1 text-[11px] text-muted">{{ diagnosticMessages.usageDescription }}</p>
     </div>
 

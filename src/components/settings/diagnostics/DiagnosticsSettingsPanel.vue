@@ -17,7 +17,7 @@ import { AppConfirmationDialog } from '@/components/ui/dialog'
 import AppButton from '@/components/ui/AppButton.vue'
 import AppSwitch from '@/components/ui/AppSwitch.vue'
 
-const { diagnostics: diagnosticMessages } = useI18n()
+const { common, diagnostics: diagnosticMessages } = useI18n()
 const recentEvents = ref<DiagnosticEventSummary[]>([])
 const clearOpen = ref(false)
 
@@ -100,7 +100,9 @@ async function exportDiagnostics() {
       </label>
       <div class="flex items-center justify-between gap-4 px-3 py-2.5">
         <span
-          ><span class="block text-xs text-surface">{{ diagnosticMessages.diagnosticsRetention }}</span
+          ><span class="block text-xs text-surface">{{
+            diagnosticMessages.diagnosticsRetention
+          }}</span
           ><span class="block text-[10px] text-muted">{{
             diagnosticMessages.diagnosticsRetentionDescription
           }}</span></span
@@ -172,7 +174,7 @@ async function exportDiagnostics() {
     v-model:open="clearOpen"
     :heading="diagnosticMessages.diagnosticsClear"
     :description="diagnosticMessages.diagnosticsClearDescription"
-    :cancel-label="diagnosticMessages.cancel"
+    :cancel-label="common.cancel"
     :confirm-label="diagnosticMessages.diagnosticsClear"
     tone="danger"
     @confirm="clearDiagnostics"
