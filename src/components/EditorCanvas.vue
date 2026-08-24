@@ -42,6 +42,28 @@ const collab = useCollabInjected()
 const sceneCanvasRef = ref<HTMLCanvasElement | null>(null)
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 
+const loadingProgress = computed(() => store.state.documentLoadProgress)
+const loadingProgressValue = computed(() => {
+  const progress = loadingProgress.value
+  if (!progress || progress.completed === null || progress.total === null || progress.total <= 0) {
+    return null
+  }
+  return Math.round((progress.completed / progress.total) * 100)
+})
+const loadingPhaseLabels = {
+  reading: 'Reading document',
+  decoding: 'Decoding Figma document',
+  materializing: 'Preparing layers',
+  'populating-page': 'Preparing page',
+  'resolving-fonts': 'Resolving fonts',
+  'resolving-fallbacks': 'Finalizing typography',
+  layout: 'Computing layout',
+  'preparing-render': 'Preparing canvas'
+} as const
+const loadingLabel = computed(() =>
+  loadingProgress.value ? loadingPhaseLabels[loadingProgress.value.phase] : 'Loading…'
+)
+
 const isActivePane = computed(() => !paneId || store.activePaneId.value === paneId)
 
 function activatePane() {
@@ -211,15 +233,39 @@ const cursor = computed(() => toolCursor(store.state.activeTool, cursorOverride.
           <div
             v-if="store.state.loading"
             data-test-id="canvas-loading"
+            role="status"
+            aria-live="polite"
+            :aria-label="loadingLabel"
             class="absolute inset-0 z-50 flex items-center justify-center bg-canvas"
           >
-            <icon-lucide-pencil-line class="size-8 text-surface opacity-45" />
-            <div
-              class="absolute bottom-1/2 left-1/2 h-0.5 w-25 -translate-x-1/2 translate-y-10 overflow-hidden rounded-full bg-surface/8"
-            >
+            <div class="flex w-72 flex-col items-center gap-3 text-center">
+              <icon-lucide-pencil-line class="size-8 text-surface opacity-45" />
+              <div class="space-y-1">
+                <p class="text-sm font-medium text-surface/80">{{ loadingLabel }}</p>
+                <p v-if="loadingProgress?.detail" class="truncate text-xs text-surface/45">
+                  {{ loadingProgress.detail }}
+                </p>
+              </div>
               <div
-                class="h-full w-2/5 animate-[slide_1s_ease-in-out_infinite] rounded-full bg-surface/25"
-              />
+                class="h-0.5 w-25 overflow-hidden rounded-full bg-surface/8"
+                :role="loadingProgressValue === null ? undefined : 'progressbar'"
+                :aria-valuemin="loadingProgressValue === null ? undefined : 0"
+                :aria-valuemax="loadingProgressValue === null ? undefined : 100"
+                :aria-valuenow="loadingProgressValue ?? undefined"
+              >
+                <div
+                  v-if="loadingProgressValue === null"
+                  class="h-full w-2/5 animate-[slide_1s_ease-in-out_infinite] rounded-full bg-surface/25"
+                />
+                <div
+                  v-else
+                  class="h-full rounded-full bg-surface/35 transition-[width] duration-150"
+                  :style="{ width: `${loadingProgressValue}%` }"
+                />
+              </div>
+              <p v-if="loadingProgressValue !== null" class="text-xs tabular-nums text-surface/45">
+                {{ loadingProgress?.completed }} of {{ loadingProgress?.total }}
+              </p>
             </div>
           </div>
         </Transition>
