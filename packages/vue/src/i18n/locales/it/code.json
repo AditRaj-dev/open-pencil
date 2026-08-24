@@ -8,8 +8,8 @@
   "codeUpdating": "Aggiornamento…",
   "codeUpdatedLive": "Aggiornato in tempo reale",
   "codePreviewFailed": "Anteprima non riuscita",
-  "codeGeneratedReadOnly": "Generato, sola lettura",
+  "codeGeneratedReadOnly": "Generato, in sola lettura",
   "codeReset": "Reimposta",
-  "copyJSXReference": "Copia riferimento props JSX negli appunti",
+  "copyJSXReference": "Copia il riferimento alle props JSX negli appunti",
   "jsxUpToDate": "Aggiornato"
 }
