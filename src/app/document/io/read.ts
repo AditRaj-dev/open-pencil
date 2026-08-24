@@ -1,5 +1,4 @@
 import type { Editor, EditorState } from '@open-pencil/core/editor'
-import { computeAllLayouts } from '@open-pencil/core/layout'
 
 import { describeDiagnosticError, recordDocumentFailure } from '@/app/diagnostics'
 import { yieldToUI } from '@/app/document/io/browser'
@@ -36,6 +35,7 @@ type ReloadActionsOptions = {
   getFilePath: () => string | null
   getFileHandle: () => FileSystemFileHandle | null
   setSavedVersion: (version: number) => void
+  preparationController: EditorPreparationController
 }
 
 export function createOpenActions({
@@ -96,27 +96,56 @@ export function createReloadActions({
   state,
   getFilePath,
   getFileHandle,
-  setSavedVersion
+  setSavedVersion,
+  preparationController
 }: ReloadActionsOptions) {
   async function reloadFromDisk() {
-    const snapshot = captureReloadState(state)
-    const filePath = getFilePath()
-    const fileHandle = getFileHandle()
-
-    const imported = await readReloadSource({
-      documentName: state.documentName,
-      filePath,
-      fileHandle
+    const load = preparationController.begin({
+      kind: 'document-reload',
+      subject: state.documentName
     })
-    if (!imported) return
-    const pageId = imported.getNode(snapshot.pageId) ? snapshot.pageId : imported.getPages()[0]?.id
-    if (pageId) computeAllLayouts(imported, pageId)
-    editor.replaceGraph(imported)
-
-    editor.undo.clear()
-    restoreReloadState(editor, state, snapshot)
-    editor.requestRender()
-    setSavedVersion(state.sceneVersion)
+    let succeeded = false
+    try {
+      const snapshot = captureReloadState(state)
+      load.update({ phase: 'reading', detail: state.documentName })
+      const imported = await readReloadSource({
+        documentName: state.documentName,
+        filePath: getFilePath(),
+        fileHandle: getFileHandle(),
+        signal: load.signal
+      })
+      if (!imported) {
+        succeeded = true
+        return
+      }
+      await applyImportedDocument(editor, imported, load)
+      restoreReloadState(editor, state, snapshot)
+      editor.requestRender()
+      setSavedVersion(state.sceneVersion)
+      succeeded = true
+    } catch (error) {
+      if (load.signal.aborted) return
+      const diagnostic = describeDiagnosticError(error)
+      load.fail({
+        code: 'decode-failed',
+        message: error instanceof Error ? error.message : String(error),
+        retryable: diagnostic.retryable ?? true
+      })
+      recordDocumentFailure({
+        operation: 'open',
+        format: 'fig',
+        ...diagnostic,
+        retryable: diagnostic.retryable
+      })
+      toast.error(
+        notificationMessages.get().openFileFailed({
+          name: state.documentName,
+          error: error instanceof Error ? error.message : String(error)
+        })
+      )
+    } finally {
+      if (succeeded) load.complete()
+    }
   }
 
   return { reloadFromDisk }
