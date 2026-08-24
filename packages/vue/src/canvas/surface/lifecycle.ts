@@ -100,7 +100,8 @@ export function createCanvasSurfaceManager({
 
   const renderLoop = createCanvasRenderLoop(editor, renderNow, {
     layer: options?.layer,
-    getRenderState: options?.getRenderState
+    getRenderState: options?.getRenderState,
+    shouldSuspendRender: options?.shouldSuspendRender
   })
 
   function resizeCanvas(canvas: HTMLCanvasElement) {

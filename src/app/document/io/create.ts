@@ -7,18 +7,18 @@ import { createOpenActions, createReloadActions } from '@/app/document/io/read'
 import { createDocumentSourceActions, createDocumentSourceState } from '@/app/document/io/source'
 import type { ViewportSize } from '@/app/document/io/types'
 import { createFileWatcher } from '@/app/document/io/watch'
-import type { DocumentLoadingState } from '@/app/document/loading/session'
+import type { EditorPreparationController } from '@/app/editor/preparation/controller'
 
-type DocumentIOState = EditorState &
-  DocumentLoadingState & {
-    documentName: string
-    autosaveEnabled: boolean
-  }
+type DocumentIOState = EditorState & {
+  documentName: string
+  autosaveEnabled: boolean
+}
 
 export function createDocumentIOActions(
   editor: Editor,
   state: DocumentIOState,
-  viewportSize: ViewportSize
+  viewportSize: ViewportSize,
+  preparationController: EditorPreparationController
 ) {
   const sourceState = createDocumentSourceState()
 
@@ -55,13 +55,15 @@ export function createDocumentIOActions(
     editor,
     state,
     setDocumentSource: sourceActions.setDocumentSource,
-    fitCurrentPageToViewport
+    fitCurrentPageToViewport,
+    preparationController
   })
   const { openDOMFile, importDOMText } = createDOMOpenActions({
     editor,
     state,
     setDocumentSource: sourceActions.setDocumentSource,
-    fitCurrentPageToViewport
+    fitCurrentPageToViewport,
+    preparationController
   })
 
   return {

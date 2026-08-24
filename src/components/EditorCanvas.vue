@@ -41,12 +41,10 @@ const collab = useCollabInjected()
 const sceneCanvasRef = ref<HTMLCanvasElement | null>(null)
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 
-const loadingProgress = computed(() => store.state.documentLoadProgress)
+const preparation = computed(() => store.state.preparation)
 const loadingProgressValue = computed(() => {
-  const progress = loadingProgress.value
-  if (!progress || progress.completed === null || progress.total === null || progress.total <= 0) {
-    return null
-  }
+  const progress = preparation.value?.progress
+  if (!progress || progress.total <= 0) return null
   return Math.round((progress.completed / progress.total) * 100)
 })
 const loadingPhaseLabels = {
@@ -60,7 +58,7 @@ const loadingPhaseLabels = {
   'preparing-render': 'Preparing canvas'
 } as const
 const loadingLabel = computed(() =>
-  loadingProgress.value ? loadingPhaseLabels[loadingProgress.value.phase] : 'Loading…'
+  preparation.value ? loadingPhaseLabels[preparation.value.phase] : 'Loading…'
 )
 
 const isActivePane = computed(() => !paneId || store.activePaneId.value === paneId)
@@ -83,6 +81,7 @@ const { selectAtContextPoint } = createCanvasContextSelection(canvasRef, store)
 
 useCanvas(sceneCanvasRef, store, {
   layer: 'scene',
+  shouldSuspendRender: () => store.state.preparation !== null,
   showRulers: false,
   getRenderState,
   onViewportResize
@@ -92,6 +91,7 @@ const { hitTestSectionTitle, hitTestComponentLabel, hitTestFrameTitle } = useCan
   store,
   {
     layer: 'overlays',
+    shouldSuspendRender: () => store.state.preparation !== null,
     getRenderState,
     onViewportResize
   }
@@ -228,7 +228,7 @@ const cursor = computed(() => toolCursor(store.state.activeTool, cursorOverride.
         </PopoverRoot>
         <Transition leave-active-class="transition-opacity duration-300" leave-to-class="opacity-0">
           <div
-            v-if="store.state.loading"
+            v-if="store.state.preparation"
             data-test-id="canvas-loading"
             role="status"
             aria-live="polite"
@@ -239,8 +239,8 @@ const cursor = computed(() => toolCursor(store.state.activeTool, cursorOverride.
               <icon-lucide-pencil-line class="size-8 text-surface opacity-45" />
               <div class="space-y-1">
                 <p class="text-sm font-medium text-surface/80">{{ loadingLabel }}</p>
-                <p v-if="loadingProgress?.detail" class="truncate text-xs text-surface/45">
-                  {{ loadingProgress.detail }}
+                <p v-if="preparation?.detail" class="truncate text-xs text-surface/45">
+                  {{ preparation.detail }}
                 </p>
               </div>
               <div
@@ -261,7 +261,7 @@ const cursor = computed(() => toolCursor(store.state.activeTool, cursorOverride.
                 />
               </div>
               <p v-if="loadingProgressValue !== null" class="text-xs tabular-nums text-surface/45">
-                {{ loadingProgress?.completed }} of {{ loadingProgress?.total }}
+                {{ preparation?.progress?.completed }} of {{ preparation?.progress?.total }}
               </p>
             </div>
           </div>

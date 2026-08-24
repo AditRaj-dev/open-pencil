@@ -45,7 +45,6 @@ export interface EditorSharedState {
   documentName: string
   rulerTheme?: RulerTheme
   sceneVersion: number
-  loading: boolean
 }
 
 export interface EditorViewState {

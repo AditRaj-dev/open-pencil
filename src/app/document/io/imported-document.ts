@@ -2,7 +2,7 @@ import type { Editor } from '@open-pencil/core/editor'
 import { computeAllLayouts } from '@open-pencil/core/layout'
 import type { SceneGraph, SceneNode } from '@open-pencil/scene-graph'
 
-import type { DocumentLoadSession } from '@/app/document/loading/session'
+import type { EditorPreparationHandle as DocumentLoadSession } from '@/app/editor/preparation/types'
 
 export async function applyImportedDocument(
   editor: Editor,
@@ -18,7 +18,6 @@ export async function applyImportedDocument(
   const pageId = firstPage?.id ?? editor.graph.rootId
   load?.update({ phase: 'populating-page', detail: firstPage?.name ?? null })
   await editor.switchPage(pageId, {
-    preserveLoading: load !== undefined,
     onProgress: (progress) => load?.update(progress)
   })
 }
