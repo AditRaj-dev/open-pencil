@@ -14,7 +14,7 @@ export {
   NODE_HIT_THRESHOLD
 } from '#vue/shared/input/vector/hit-test'
 import type { Editor } from '@open-pencil/core/editor'
-import type { Vector } from '@open-pencil/scene-graph/primitives'
+import { vectorHandleId } from '@open-pencil/core/vector'
 
 type NodeEditEditor = Partial<{
   nodeEditSelectVertex: (vertexIndex: number, addToSelection: boolean) => void
@@ -48,7 +48,8 @@ export function handleNodeEditDown(
 
   const handleHit = hitTestEditHandle(editor, cx, cy)
   if (handleHit) {
-    const key = `${handleHit.segmentIndex}:${handleHit.tangentField}`
+    const key = vectorHandleId(handleHit.segmentIndex, handleHit.tangentField)
+
     if (e.shiftKey) {
       const next = new Set(es.selectedHandles)
       if (next.has(key)) next.delete(key)
