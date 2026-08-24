@@ -86,7 +86,8 @@ export function createEditorStore(initialGraph?: SceneGraph) {
       })
     const ownsPreparation = options.preparation === undefined
     try {
-      await editor.switchPage(pageId, {
+      const prepared = await editor.preparePage(pageId, {
+        signal: preparation.signal,
         onProgress: (progress) => {
           options.onProgress?.(progress)
           preparation.update({
@@ -95,7 +96,13 @@ export function createEditorStore(initialGraph?: SceneGraph) {
           })
         }
       })
-      preparation.update({ phase: 'preparing-render', detail: page?.name ?? null })
+      if (prepared && !preparation.signal.aborted) {
+        editor.commitPageSwitch(prepared)
+        preparation.update({ phase: 'preparing-render', detail: page?.name ?? null })
+        await preparationController.waitForPresentation(preparation.id, editor.state.sceneVersion)
+      }
+    } catch (error) {
+      if (!preparation.signal.aborted) throw error
     } finally {
       if (ownsPreparation) preparation.finish()
     }

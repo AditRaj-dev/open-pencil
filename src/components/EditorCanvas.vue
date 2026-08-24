@@ -80,20 +80,25 @@ const onViewportResize = paneId
 const { updateCursor } = useCanvasCollaborationAwareness(store, collab)
 const { selectAtContextPoint } = createCanvasContextSelection(canvasRef, store)
 
+const shouldSuspendRender = () =>
+  store.state.preparation !== null && store.state.preparation.phase !== 'preparing-render'
+
 useCanvas(sceneCanvasRef, store, {
   layer: 'scene',
-  shouldSuspendRender: () => store.state.preparation !== null,
+  shouldSuspendRender,
   sceneRenderer: appRuntimeConfig.sceneRenderer,
   showRulers: false,
   getRenderState,
-  onViewportResize
+  onViewportResize,
+  onPresented: ({ sceneVersion }) =>
+    store.preparationController.acknowledgePresentation(sceneVersion)
 })
 const { hitTestSectionTitle, hitTestComponentLabel, hitTestFrameTitle } = useCanvas(
   canvasRef,
   store,
   {
     layer: 'overlays',
-    shouldSuspendRender: () => store.state.preparation !== null,
+    shouldSuspendRender,
     showRulers: appRuntimeConfig.showRulers ? undefined : false,
     getRenderState,
     onViewportResize
