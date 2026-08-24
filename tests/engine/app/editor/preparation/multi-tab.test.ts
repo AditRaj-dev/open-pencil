@@ -6,6 +6,12 @@ describe('multi-tab editor preparation', () => {
   test('keeps preparation snapshots isolated per editor store', () => {
     const first = createEditorStore()
     const second = createEditorStore()
+    const events: string[] = []
+    const offStarted = first.onPreparationEvent('preparation:started', () => events.push('started'))
+    const offUpdated = first.onPreparationEvent('preparation:updated', () => events.push('updated'))
+    const offFinished = first.onPreparationEvent('preparation:finished', (result) =>
+      events.push(result.status)
+    )
     const firstLoad = first.preparationController.begin({
       kind: 'document-open',
       subject: 'first.fig'
@@ -17,7 +23,12 @@ describe('multi-tab editor preparation', () => {
 
     expect(first.state.preparation?.subject).toBe('first.fig')
     expect(second.state.preparation?.subject).toBe('second.fig')
-    firstLoad.finish()
+    firstLoad.update({ phase: 'layout' })
+    firstLoad.complete()
+    expect(events).toEqual(['started', 'updated', 'completed'])
+    offStarted()
+    offUpdated()
+    offFinished()
     expect(first.state.preparation).toBeNull()
     expect(second.state.preparation?.id).toBe(secondLoad.id)
 

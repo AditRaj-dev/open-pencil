@@ -212,8 +212,9 @@ async function loadSystemFont(family: string, style = 'Regular'): Promise<ArrayB
 export async function loadFont(
   family: string,
   style = 'Regular',
-  characters = ''
+  characters = '',
+  signal?: AbortSignal
 ): Promise<ArrayBuffer | null> {
   configureTauriFontCache()
-  return fontManager.loadFont(family, style, characters)
+  return fontManager.loadFont(family, style, characters, signal)
 }

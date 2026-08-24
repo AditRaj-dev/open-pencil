@@ -47,10 +47,30 @@ export interface EditorPreparationUpdate {
   unit?: EditorPreparationProgress['unit']
 }
 
+export type EditorPreparationCancelReason = 'superseded' | 'tab-closed' | 'user'
+
+export interface EditorPreparationFailure {
+  id: number
+  kind: EditorPreparationKind
+  code: 'read-failed' | 'decode-failed' | 'font-failed' | 'layout-failed' | 'render-failed'
+  message: string
+  retryable: boolean
+}
+
+export type EditorPreparationResult =
+  | { id: number; kind: EditorPreparationKind; status: 'completed' }
+  | {
+      id: number
+      kind: EditorPreparationKind
+      status: 'cancelled'
+      reason: EditorPreparationCancelReason
+    }
+
 export interface EditorPreparationHandle {
   readonly id: number
   readonly signal: AbortSignal
   update(update: EditorPreparationUpdate): void
-  finish(): void
-  cancel(): void
+  complete(): void
+  fail(failure: Omit<EditorPreparationFailure, 'id' | 'kind'>): void
+  cancel(reason?: EditorPreparationCancelReason): void
 }

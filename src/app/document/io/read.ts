@@ -50,7 +50,7 @@ export function createOpenActions({
       load.update({ phase: 'reading', detail: file.name })
       await yieldToUI()
       load.update({ phase: 'decoding', detail: file.name })
-      const imported = await readFigDocument(file, editor)
+      const imported = await readFigDocument(file, load.signal)
       await yieldToUI()
       load.update({ phase: 'materializing', detail: file.name })
       await applyImportedDocument(editor, imported, load)
@@ -60,6 +60,12 @@ export function createOpenActions({
       load.update({ phase: 'preparing-render', detail: state.documentName })
       editor.requestRender()
     } catch (e) {
+      if (load.signal.aborted) return
+      load.fail({
+        code: 'decode-failed',
+        message: e instanceof Error ? e.message : String(e),
+        retryable: true
+      })
       console.error('Failed to open .fig file:', e)
       toast.error(
         notificationMessages.get().openFileFailed({
@@ -68,7 +74,7 @@ export function createOpenActions({
         })
       )
     } finally {
-      load.finish()
+      load.complete()
     }
   }
 

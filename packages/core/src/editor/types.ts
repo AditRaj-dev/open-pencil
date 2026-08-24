@@ -140,7 +140,12 @@ export type EditorEventName = keyof EditorEvents
 export interface EditorOptions {
   graph?: SceneGraph
   state?: EditorState
-  loadFont?: (family: string, style: string, characters?: string) => Promise<ArrayBuffer | null>
+  loadFont?: (
+    family: string,
+    style: string,
+    characters?: string,
+    signal?: AbortSignal
+  ) => Promise<ArrayBuffer | null>
   resolveFigmaClipboardImages?: FigmaClipboardImageResolver
   getViewportSize?: () => { width: number; height: number }
   skipInitialGraphSetup?: boolean
@@ -151,7 +156,12 @@ export interface EditorContext {
   set graph(g: SceneGraph)
   undo: UndoManager
   state: EditorState
-  loadFont: (family: string, style: string, characters?: string) => Promise<ArrayBuffer | null>
+  loadFont: (
+    family: string,
+    style: string,
+    characters?: string,
+    signal?: AbortSignal
+  ) => Promise<ArrayBuffer | null>
   resolveFigmaClipboardImages: FigmaClipboardImageResolver | null
   getViewportSize: () => { width: number; height: number }
   getCk: () => CanvasKit | null

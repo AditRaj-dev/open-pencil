@@ -35,6 +35,21 @@ describe('browser web font fetch', () => {
     expect([...new Uint8Array(await response.arrayBuffer())]).toEqual([1, 2, 3])
   })
 
+  test('passes cancellation through browser font downloads', async () => {
+    let observedSignal: AbortSignal | null = null
+    const fontFetch = createBrowserWebFontFetch(
+      mock(async (request: Request) => {
+        observedSignal = request.signal
+        return new Response(new Uint8Array([1, 2, 3]))
+      }) as typeof fetch
+    )
+    const abort = new AbortController()
+
+    await fontFetch('https://fonts.gstatic.com/font.ttf', { signal: abort.signal })
+    abort.abort()
+
+    expect(observedSignal?.aborted).toBe(true)
+  })
   test('rejects provider responses over the font size limit', async () => {
     const fontFetch = createBrowserWebFontFetch(
       mock(

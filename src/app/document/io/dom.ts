@@ -79,11 +79,14 @@ export function createDOMOpenActions({
       setDocumentSource(`${pageName}.html`, 'html')
       toast.info(notificationMessages.get().importedDOMCSS)
     } catch (e) {
+      if (!load.signal.aborted) {
+        load.fail({ code: 'decode-failed', message: errorDetail(e), retryable: true })
+      }
       console.error('Failed to import DOM/CSS:', e)
       toast.error(notificationMessages.get().importDOMCSSFailed({ error: errorDetail(e) }))
       throw e
     } finally {
-      load.finish()
+      load.complete()
     }
   }
 
@@ -103,10 +106,13 @@ export function createDOMOpenActions({
       )
       setDocumentSource(file.name, 'html', options.handle, options.path)
     } catch (e) {
+      if (!load.signal.aborted && ownsLoad) {
+        load.fail({ code: 'decode-failed', message: errorDetail(e), retryable: true })
+      }
       console.error('Failed to open DOM/CSS file:', e)
       toast.error(notificationMessages.get().openDOMCSSFailed({ error: errorDetail(e) }))
     } finally {
-      if (ownsLoad) load.finish()
+      if (ownsLoad) load.complete()
     }
   }
 
