@@ -13,6 +13,8 @@ import { resolveFigmaClipboardImages } from '@/app/editor/clipboard/figma-images
 import { bindClipboardNotifications } from '@/app/editor/clipboard/notifications'
 import { loadFont } from '@/app/editor/fonts'
 import { createCanvasPaneRegistry } from '@/app/editor/panes/registry'
+import { createEditorPreparationController } from '@/app/editor/preparation/controller'
+import type { EditorPreparationHandle } from '@/app/editor/preparation/types'
 import {
   createEditorComputedRefs,
   createEditorStoreModules,
@@ -49,17 +51,60 @@ export function createEditorStore(initialGraph?: SceneGraph) {
   }
 
   const { selectedNodes, selectedNode, layerTree } = createEditorComputedRefs(editor, state)
-
-  const modules = createEditorStoreModules(editor, state, io, viewportSize)
+  const preparationController = createEditorPreparationController(state)
+  const modules = createEditorStoreModules(editor, state, io, viewportSize, preparationController)
 
   // ─── Public API ───────────────────────────────────────────────
   // Spread all core Editor methods, then override getters and add app-specific.
 
   const panes = createCanvasPaneRegistry(state)
 
+  function progressUnit(phase: string): 'fonts' | 'pages' | undefined {
+    if (phase === 'resolving-fonts') return 'fonts'
+    if (phase === 'populating-page') return 'pages'
+    return undefined
+  }
+
+  async function switchPage(
+    pageId: string,
+    options: {
+      preparation?: EditorPreparationHandle
+      onProgress?: Parameters<typeof editor.switchPage>[1] extends infer Options
+        ? Options extends { onProgress?: infer Progress }
+          ? Progress
+          : never
+        : never
+    } = {}
+  ) {
+    const page = editor.graph.getNode(pageId)
+    const preparation =
+      options.preparation ??
+      preparationController.begin({
+        kind: 'page-switch',
+        phase: 'populating-page',
+        subject: page?.name ?? null
+      })
+    const ownsPreparation = options.preparation === undefined
+    try {
+      await editor.switchPage(pageId, {
+        onProgress: (progress) => {
+          options.onProgress?.(progress)
+          preparation.update({
+            ...progress,
+            unit: progressUnit(progress.phase)
+          })
+        }
+      })
+      preparation.update({ phase: 'preparing-render', detail: page?.name ?? null })
+    } finally {
+      if (ownsPreparation) preparation.finish()
+    }
+  }
+
   const store = {
     ...editor,
     state,
+    preparationController,
     panes,
     selectedNodes,
     selectedNode,
@@ -69,6 +114,7 @@ export function createEditorStore(initialGraph?: SceneGraph) {
     visiblePaneCount: panes.visiblePaneCount,
     getPaneRenderState: panes.getPaneRenderState,
     setActivePane: panes.setActivePane,
+    switchPage,
     splitPane: panes.splitPane,
     closePane: panes.closePane,
     resizePane: panes.resizePane,

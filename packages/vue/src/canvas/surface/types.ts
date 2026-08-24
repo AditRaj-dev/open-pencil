@@ -6,6 +6,7 @@ import type { EditorState } from '@open-pencil/core/editor'
 export type CanvasRenderLayer = 'full' | 'scene' | 'overlays'
 
 export interface UseCanvasOptions {
+  shouldSuspendRender?: () => boolean
   /**
    * Selects which render layer this canvas owns.
    */

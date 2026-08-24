@@ -21,7 +21,6 @@ type PageSwitchProgress = {
 }
 
 type SwitchPageOptions = {
-  preserveLoading?: boolean
   onProgress?: (progress: PageSwitchProgress) => void
 }
 
@@ -128,16 +127,8 @@ export function createPageActions(ctx: EditorContext) {
 
     pageViewportStore.restorePageViewport(pageId)
 
-    if (!options.preserveLoading) ctx.state.loading = true
     options.onProgress?.({ phase: 'populating-page', detail: page.name })
-    let populated: boolean | null
-    try {
-      populated = await populatePage(pageId, switchGeneration)
-    } finally {
-      if (!options.preserveLoading && switchGeneration === pageSwitchGeneration) {
-        ctx.state.loading = false
-      }
-    }
+    const populated = await populatePage(pageId, switchGeneration)
     if (populated === null || switchGeneration !== pageSwitchGeneration) return
 
     await resolvePageFonts(pageId, page.name, options)
