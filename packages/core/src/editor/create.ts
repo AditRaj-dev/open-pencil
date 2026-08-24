@@ -8,6 +8,7 @@ import { UndoManager } from '@open-pencil/scene-graph/undo'
 import type { SkiaRenderer } from '#core/canvas/renderer'
 import { prefetchFigmaSchema } from '#core/clipboard'
 import { IS_BROWSER } from '#core/constants'
+import { clearLazyFigImportContext } from '#core/kiwi/fig/lazy-import'
 import { setTextMeasurer } from '#core/layout'
 import { TextEditor } from '#core/text/editor'
 import { fontManager } from '#core/text/fonts'
@@ -123,7 +124,7 @@ export function createEditor(options?: EditorOptions) {
   const { runLayoutForNode } = createLayoutRunner(() => _graph)
   const { scheduleComponentSync } = createComponentSyncScheduler(() => _graph, requestRender)
 
-  const { subscribeToGraph } = createGraphEventSubscription({
+  const { subscribeToGraph, unsubscribeFromGraph } = createGraphEventSubscription({
     getGraph: () => _graph,
     getRenderers: () => _renderers,
     scheduleComponentSync,
@@ -220,6 +221,15 @@ export function createEditor(options?: EditorOptions) {
     requestRender()
   }
 
+  function dispose() {
+    stopFontResolutionEvents()
+    unsubscribeFromGraph()
+  }
+
+  function releaseGraphResources() {
+    clearLazyFigImportContext(_graph)
+  }
+
   return {
     get graph() {
       return _graph
@@ -247,7 +257,8 @@ export function createEditor(options?: EditorOptions) {
     removeCanvasRenderer,
     replaceGraph,
     subscribeToGraph,
-    dispose: stopFontResolutionEvents,
+    dispose,
+    releaseGraphResources,
 
     // Selection
     ...selection,
