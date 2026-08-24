@@ -2,6 +2,7 @@ import type { InstanceNodeChange } from '@open-pencil/fig/instance-overrides'
 import { SceneGraph } from '@open-pencil/scene-graph'
 import type { EnabledLibraryBinding, SceneNode } from '@open-pencil/scene-graph'
 
+import { restoreLazyFigImportMaterializer } from '#core/kiwi/fig/import'
 import { getLazyFigImportContext, setLazyFigImportContext } from '#core/kiwi/fig/lazy-import'
 import type { PortableSceneGraphData } from '#core/kiwi/fig/parse/portable-data'
 
@@ -10,6 +11,10 @@ export interface SerializedLazyFigImportContext {
   guidToNodeId: Array<[string, string]>
   blobs: Uint8Array[]
   populatedRootIds: string[]
+  parentMap: Array<[string, string]>
+  childrenMap: Array<[string, string[]]>
+  canvasIdToPageId: Array<[string, string]>
+  materializedSourceIds: string[]
 }
 
 export interface SerializedSceneGraph extends PortableSceneGraphData {
@@ -39,7 +44,11 @@ export function serializeSceneGraph(graph: SceneGraph): SerializedSceneGraph {
           changeMap: [...lazyFigImport.changeMap],
           guidToNodeId: [...lazyFigImport.guidToNodeId],
           blobs: lazyFigImport.blobs,
-          populatedRootIds: [...lazyFigImport.populatedRootIds]
+          populatedRootIds: [...lazyFigImport.populatedRootIds],
+          parentMap: [...lazyFigImport.parentMap],
+          childrenMap: [...lazyFigImport.childrenMap],
+          canvasIdToPageId: [...lazyFigImport.canvasIdToPageId],
+          materializedSourceIds: [...lazyFigImport.materializedSourceIds]
         }
       : undefined
   }
@@ -106,7 +115,12 @@ export function cloneSceneGraphForFigExport(graph: SceneGraph): SceneGraph {
       changeMap: lazyFigImport.changeMap,
       guidToNodeId: lazyFigImport.guidToNodeId,
       blobs: lazyFigImport.blobs,
-      populatedRootIds: new Set(lazyFigImport.populatedRootIds)
+      populatedRootIds: new Set(lazyFigImport.populatedRootIds),
+      parentMap: lazyFigImport.parentMap,
+      childrenMap: lazyFigImport.childrenMap,
+      canvasIdToPageId: lazyFigImport.canvasIdToPageId,
+      materializedSourceIds: new Set(lazyFigImport.materializedSourceIds),
+      materializeRoots: lazyFigImport.materializeRoots
     })
   }
   return cloned
@@ -134,8 +148,13 @@ export function deserializeSceneGraph(data: SerializedSceneGraph): SceneGraph {
       changeMap: new Map(data.lazyFigImport.changeMap),
       guidToNodeId: new Map(data.lazyFigImport.guidToNodeId),
       blobs: data.lazyFigImport.blobs,
-      populatedRootIds: new Set(data.lazyFigImport.populatedRootIds)
+      populatedRootIds: new Set(data.lazyFigImport.populatedRootIds),
+      parentMap: new Map(data.lazyFigImport.parentMap),
+      childrenMap: new Map(data.lazyFigImport.childrenMap),
+      canvasIdToPageId: new Map(data.lazyFigImport.canvasIdToPageId),
+      materializedSourceIds: new Set(data.lazyFigImport.materializedSourceIds)
     })
+    restoreLazyFigImportMaterializer(graph)
   }
   return graph
 }
