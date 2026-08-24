@@ -14,6 +14,11 @@ export interface TileJob {
 export interface TileJobResult {
   renderMs: number
   overBudget: boolean
+  allocationMs?: number
+  drawMs?: number
+  flushMs?: number
+  snapshotMs?: number
+  chunkCount?: number
 }
 
 export interface TileSchedulerMetrics {
@@ -26,12 +31,45 @@ export interface TileSchedulerMetrics {
   maximumJobRenderMs: number
   staleJobsDiscarded: number
   cancelledJobs: number
+  totalAllocationMs: number
+  totalDrawMs: number
+  totalFlushMs: number
+  totalSnapshotMs: number
+  totalChunks: number
 }
 
 export interface TileSchedulerOptions {
   now?: () => number
   budgetMs: number
   maximumJobsPerFrame?: number
+}
+
+export function emptyTileSchedulerMetrics(): TileSchedulerMetrics {
+  return {
+    mandatoryCompleted: 0,
+    interruptibleCompleted: 0,
+    remaining: 0,
+    skippedWithFallback: 0,
+    deadlineOverrunMs: 0,
+    overBudgetJobs: 0,
+    maximumJobRenderMs: 0,
+    staleJobsDiscarded: 0,
+    cancelledJobs: 0,
+    totalAllocationMs: 0,
+    totalDrawMs: 0,
+    totalFlushMs: 0,
+    totalSnapshotMs: 0,
+    totalChunks: 0
+  }
+}
+
+function addJobMetrics(metrics: TileSchedulerMetrics, result: TileJobResult): void {
+  metrics.maximumJobRenderMs = Math.max(metrics.maximumJobRenderMs, result.renderMs)
+  metrics.totalAllocationMs += result.allocationMs ?? 0
+  metrics.totalDrawMs += result.drawMs ?? 0
+  metrics.totalFlushMs += result.flushMs ?? 0
+  metrics.totalSnapshotMs += result.snapshotMs ?? 0
+  metrics.totalChunks += result.chunkCount ?? 0
 }
 
 const PRIORITY_ORDER: Record<TileJobPriority, number> = {
@@ -84,17 +122,7 @@ export class TileScheduler {
 
   runFrame(execute: (job: TileJob) => TileJobResult): TileSchedulerMetrics {
     const frameStart = this.now()
-    const metrics: TileSchedulerMetrics = {
-      mandatoryCompleted: 0,
-      interruptibleCompleted: 0,
-      remaining: 0,
-      skippedWithFallback: 0,
-      deadlineOverrunMs: 0,
-      overBudgetJobs: 0,
-      maximumJobRenderMs: 0,
-      staleJobsDiscarded: 0,
-      cancelledJobs: 0
-    }
+    const metrics = emptyTileSchedulerMetrics()
 
     let jobsExecuted = 0
     while (this.jobs.length > 0) {
@@ -114,7 +142,7 @@ export class TileScheduler {
           this.jobs.shift()
           jobsExecuted++
           metrics.interruptibleCompleted++
-          metrics.maximumJobRenderMs = Math.max(metrics.maximumJobRenderMs, result.renderMs)
+          addJobMetrics(metrics, result)
           if (result.overBudget || result.renderMs > this.budgetMs) metrics.overBudgetJobs++
           const overrun = this.now() - frameStart - this.budgetMs
           if (overrun > metrics.deadlineOverrunMs) metrics.deadlineOverrunMs = overrun
@@ -126,7 +154,7 @@ export class TileScheduler {
       this.jobs.shift()
       const result = execute(job)
       jobsExecuted++
-      metrics.maximumJobRenderMs = Math.max(metrics.maximumJobRenderMs, result.renderMs)
+      addJobMetrics(metrics, result)
       if (result.overBudget || result.renderMs > this.budgetMs) metrics.overBudgetJobs++
       if (mandatory) metrics.mandatoryCompleted++
       else metrics.interruptibleCompleted++
