@@ -38,8 +38,7 @@ export interface NodeEditOverlayState {
 const BLUE = [0.23, 0.51, 0.96] as const
 const LIGHT_BLUE = [0.376, 0.647, 0.98] as const
 
-/** Compute set of vertices whose handles should be visible: selected vertices + vertices with selected handles + their direct neighbors */
-function computeHandleVisibleVertices(
+export function computeHandleVisibleVertices(
   selectedVertexIndices: Set<number>,
   selectedHandles: Set<string>,
   segments: VectorSegment[]
@@ -48,7 +47,10 @@ function computeHandleVisibleVertices(
   const seed = new Set(selectedVertexIndices)
   for (const key of selectedHandles) {
     const [siStr, tf] = key.split(':')
-    const seg = segments[Number(siStr)]
+    const segmentIndex = Number(siStr)
+    if (!Number.isInteger(segmentIndex) || segmentIndex < 0 || segmentIndex >= segments.length)
+      continue
+    const seg = segments[segmentIndex]
     seed.add(tf === 'tangentStart' ? seg.start : seg.end)
   }
   // Expand: add only direct neighbors of seed vertices (no cascading)

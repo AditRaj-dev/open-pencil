@@ -1,5 +1,9 @@
 import { describe, test, expect } from 'bun:test'
 
+import {
+  computeHandleVisibleVertices,
+  drawNodeEditOverlay
+} from '@open-pencil/core/canvas/overlays'
 import { createEditor, type Editor } from '@open-pencil/core/editor'
 import { regenerateFillGeometry } from '@open-pencil/core/vector'
 import { SceneGraph } from '@open-pencil/scene-graph'
@@ -82,6 +86,12 @@ function worldVertices(graph: SceneGraph, nodeId: string) {
 }
 
 describe('vector edit graph ownership', () => {
+  test('ignores stale selected handle indices', () => {
+    expect(
+      computeHandleVisibleVertices(new Set(), new Set(['99:tangentStart', 'bad']), [])
+    ).toEqual(new Set())
+    expect(drawNodeEditOverlay).toBeDefined()
+  })
   test('enters edit mode after the editor graph is replaced', () => {
     const initial = new SceneGraph()
     const replacement = new SceneGraph()
