@@ -44,6 +44,28 @@ describe('editor preparation controller', () => {
     expect(state.preparation).toBeNull()
   })
 
+  test('waits for the prepared scene to be presented before finishing', async () => {
+    const state = createInitialAppEditorState('page')
+    const controller = createEditorPreparationController(state)
+    const handle = controller.begin({ kind: 'page-switch' })
+
+    let presented = false
+    const waiting = controller.waitForPresentation(handle.id, 7).then(() => {
+      presented = true
+      return presented
+    })
+    await Promise.resolve()
+    expect(presented).toBe(false)
+
+    controller.acknowledgePresentation(6)
+    await Promise.resolve()
+    expect(presented).toBe(false)
+
+    controller.acknowledgePresentation(7)
+    await waiting
+    expect(presented).toBe(true)
+    handle.finish()
+  })
   test('dispose aborts the active tab-local preparation', () => {
     const state = createInitialAppEditorState('page')
     const controller = createEditorPreparationController(state)
