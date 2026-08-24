@@ -32,7 +32,19 @@ function expand(bounds: TileWorldBounds, amount: number): TileWorldBounds {
   }
 }
 
-export function planTiles(cache: TileImageCache, options: TilePlanOptions): TilePlan {
+function planCachedVisibleTiles(cache: TileImageCache, options: TilePlanOptions): TilePlan {
+  const visible = tileKeysForWorldBounds(options.pageId, options.level, options.viewport).map(
+    (key) => ({ key, tile: cache.getIfPresent(key) })
+  )
+  return { jobs: [], visible }
+}
+
+export function planTiles(
+  cache: TileImageCache,
+  options: TilePlanOptions,
+  cachedOnly = false
+): TilePlan {
+  if (cachedOnly) return planCachedVisibleTiles(cache, options)
   const worldTileSize = 256 / options.level
   const visibleKeys = tileKeysForWorldBounds(options.pageId, options.level, options.viewport)
   const visibleIds = new Set(visibleKeys.map(tileKeyString))
