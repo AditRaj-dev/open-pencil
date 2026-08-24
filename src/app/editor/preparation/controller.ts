@@ -7,6 +7,8 @@ import type { AppEditorState } from '@/app/editor/session/types'
 
 export interface EditorPreparationController {
   begin(options: BeginEditorPreparation): EditorPreparationHandle
+  acknowledgePresentation(sceneVersion: number): void
+  waitForPresentation(id: number, sceneVersion: number): Promise<void>
   dispose(): void
 }
 
@@ -15,12 +17,15 @@ export function createEditorPreparationController(
 ): EditorPreparationController {
   let nextId = 0
   let activeAbort: AbortController | null = null
+  let presentedSceneVersion = -1
+  const presentationWaiters = new Map<number, { sceneVersion: number; resolve: () => void }>()
 
   const isActive = (id: number) => state.preparation?.id === id
 
   return {
     begin(options) {
       activeAbort?.abort()
+      presentationWaiters.get(state.preparation?.id ?? -1)?.resolve()
       const abort = new AbortController()
       activeAbort = abort
       const id = ++nextId
@@ -35,6 +40,8 @@ export function createEditorPreparationController(
       }
 
       const finish = () => {
+        presentationWaiters.get(id)?.resolve()
+        presentationWaiters.delete(id)
         if (!isActive(id)) return
         state.preparation = null
         if (activeAbort === abort) activeAbort = null
@@ -74,8 +81,24 @@ export function createEditorPreparationController(
         }
       }
     },
+    acknowledgePresentation(sceneVersion) {
+      presentedSceneVersion = Math.max(presentedSceneVersion, sceneVersion)
+      for (const [id, waiter] of presentationWaiters) {
+        if (waiter.sceneVersion > presentedSceneVersion) continue
+        waiter.resolve()
+        presentationWaiters.delete(id)
+      }
+    },
+    waitForPresentation(id, sceneVersion) {
+      if (!isActive(id) || presentedSceneVersion >= sceneVersion) return Promise.resolve()
+      return new Promise<void>((resolve) => {
+        presentationWaiters.set(id, { sceneVersion, resolve })
+      })
+    },
     dispose() {
       activeAbort?.abort()
+      for (const waiter of presentationWaiters.values()) waiter.resolve()
+      presentationWaiters.clear()
       activeAbort = null
       state.preparation = null
     }
