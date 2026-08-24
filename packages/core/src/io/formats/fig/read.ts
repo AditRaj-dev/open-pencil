@@ -4,10 +4,10 @@ import type { SceneGraph } from '@open-pencil/scene-graph'
 
 import { IS_BROWSER } from '#core/constants'
 import { importNodeChanges } from '#core/kiwi/fig/import'
-import { createFigParseWorker } from '#core/kiwi/fig/parse/client'
 import { deserializeSceneGraph } from '#core/kiwi/fig/parse/transfer'
-import type { SerializedSceneGraph } from '#core/kiwi/fig/parse/transfer'
 import { registerFigPopulationWorker } from '#core/kiwi/fig/population/client'
+import { createFigSessionWorker } from '#core/kiwi/fig/session/client'
+import type { FigSessionOpenRequest, FigSessionResponse } from '#core/kiwi/fig/session/protocol'
 
 export interface ParseFigFileOptions {
   populate?: 'all' | 'first-page' | 'none'
@@ -29,37 +29,29 @@ function parseFigFileSync(buffer: ArrayBuffer, options: ParseFigFileOptions = {}
   return graph
 }
 
-interface WorkerGraphResult {
-  type: 'graph'
-  graph?: SerializedSceneGraph
-  error?: string
-}
-
-interface WorkerPageManifestResult {
-  type: 'page-manifest'
-  pages: FigPageManifestEntry[]
-}
-
-type WorkerParseResult = WorkerGraphResult | WorkerPageManifestResult
-
 function parseViaWorker(buffer: ArrayBuffer, options: ParseFigFileOptions): Promise<SceneGraph> {
   return new Promise((resolve, reject) => {
     options.signal?.throwIfAborted()
-    const worker = createFigParseWorker()
+    const worker = createFigSessionWorker()
+    const channel = new MessageChannel()
     const abort = () => {
+      channel.port1.postMessage({ type: 'dispose' })
+      channel.port1.close()
       worker.terminate()
       reject(new DOMException('Aborted', 'AbortError'))
     }
     options.signal?.addEventListener('abort', abort, { once: true })
     const cleanupAbort = () => options.signal?.removeEventListener('abort', abort)
 
-    worker.onmessage = (e: MessageEvent<WorkerParseResult>) => {
+    channel.port1.onmessage = (e: MessageEvent<FigSessionResponse>) => {
       if (e.data.type === 'page-manifest') {
         options.onPages?.(e.data.pages)
         return
       }
+      if (e.data.type !== 'graph') return
       if (e.data.error || !e.data.graph) {
         cleanupAbort()
+        channel.port1.close()
         worker.terminate()
         reject(new Error(e.data.error ?? 'Worker failed to parse .fig file'))
         return
@@ -68,28 +60,34 @@ function parseViaWorker(buffer: ArrayBuffer, options: ParseFigFileOptions): Prom
         const graph = deserializeSceneGraph(e.data.graph)
         if (options.populate === 'first-page') {
           cleanupAbort()
-          worker.onmessage = null
-          worker.onerror = null
-          registerFigPopulationWorker(graph, worker)
+          registerFigPopulationWorker(graph, worker, channel.port1)
         } else {
           cleanupAbort()
+          channel.port1.close()
           worker.terminate()
         }
         resolve(graph)
       } catch (error) {
         cleanupAbort()
+        channel.port1.close()
         worker.terminate()
         reject(error instanceof Error ? error : new Error(String(error)))
       }
     }
-
+    channel.port1.start()
     worker.onerror = (err) => {
       cleanupAbort()
+      channel.port1.close()
       worker.terminate()
       reject(new Error(err.message || 'Worker failed to parse .fig file'))
     }
-
-    worker.postMessage({ buffer, options: { populate: options.populate } }, [buffer])
+    const request: FigSessionOpenRequest = {
+      type: 'open',
+      buffer,
+      options: { populate: options.populate },
+      port: channel.port2
+    }
+    worker.postMessage(request, [buffer, channel.port2])
   })
 }
 
