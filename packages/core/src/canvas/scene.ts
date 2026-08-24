@@ -764,21 +764,23 @@ export function renderText(r: SkiaRenderer, canvas: Canvas, node: SceneNode, fil
   }
 
   const fontReadiness = r.nodeFontReadiness(node)
-  if (fontReadiness !== 'ready') {
-    if (fontReadiness === 'exhausted') {
-      if (node.textPicture && r.isTextPictureCurrent(node)) {
-        const pic = r.ck.MakePicture(node.textPicture)
-        if (pic) {
-          canvas.drawPicture(pic)
-          pic.delete()
-          canvas.restore()
-          return
-        }
-      }
-      if (drawDerivedText(r, canvas, node)) {
+  if (fontReadiness === 'pending') {
+    canvas.restore()
+    return
+  }
+  if (fontReadiness === 'exhausted') {
+    if (node.textPicture && r.isTextPictureCurrent(node)) {
+      const pic = r.ck.MakePicture(node.textPicture)
+      if (pic) {
+        canvas.drawPicture(pic)
+        pic.delete()
         canvas.restore()
         return
       }
+    }
+    if (drawDerivedText(r, canvas, node)) {
+      canvas.restore()
+      return
     }
     canvas.restore()
     return
