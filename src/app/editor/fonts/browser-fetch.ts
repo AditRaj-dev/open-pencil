@@ -11,7 +11,7 @@ const ALLOWED_WEB_FONT_HOSTS = new Set([
 
 export function createBrowserWebFontFetch(
   nativeFetch: typeof globalThis.fetch,
-  origin = globalThis.location.origin
+  origin = typeof process === 'undefined' ? globalThis.location.origin : ''
 ): FetchFunction {
   return async (input, init) => {
     const request = new Request(input, init)
