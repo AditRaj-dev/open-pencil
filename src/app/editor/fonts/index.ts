@@ -216,7 +216,5 @@ export async function loadFont(
   signal?: AbortSignal
 ): Promise<ArrayBuffer | null> {
   configureTauriFontCache()
-  const loaded = await fontManager.loadFont(family, style, characters, signal)
-  if (!loaded) showWebFontUnavailableToast()
-  return loaded
+  return fontManager.loadFont(family, style, characters, signal)
 }
