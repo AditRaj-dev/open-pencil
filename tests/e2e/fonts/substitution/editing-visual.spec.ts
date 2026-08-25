@@ -39,6 +39,7 @@ test('first edit replaces baked missing-font glyphs with visible live substituti
     void import(/* @vite-ignore */ fontModuleURL).then(({ fontFaceDemand, fontResolver }) => {
       fontResolver.exhaust(fontFaceDemand(node.fontFamily, 'Regular', node.text))
       store.requestRender()
+      return node.id
     })
     node.textPicture = baked
     store.select([node.id])
