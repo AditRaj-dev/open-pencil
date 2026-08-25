@@ -5,9 +5,13 @@ import type { SceneGraph } from '@open-pencil/scene-graph'
 import { IS_BROWSER } from '#core/constants'
 import { importNodeChanges } from '#core/kiwi/fig/import'
 import { deserializeSceneGraph } from '#core/kiwi/fig/parse/transfer'
-import { registerFigPopulationWorker } from '#core/kiwi/fig/population/client'
+import {
+  registerFigPopulationWorker,
+  registerOriginalArchiveRequest
+} from '#core/kiwi/fig/population/client'
 import { createFigSessionWorker } from '#core/kiwi/fig/session/client'
 import type { FigSessionOpenRequest, FigSessionResponse } from '#core/kiwi/fig/session/protocol'
+import { randomHex } from '#core/random'
 
 export interface ParseFigFileOptions {
   populate?: 'all' | 'first-page' | 'none'
@@ -61,6 +65,26 @@ function parseViaWorker(buffer: ArrayBuffer, options: ParseFigFileOptions): Prom
         if (options.populate === 'first-page') {
           cleanupAbort()
           registerFigPopulationWorker(graph, worker, channel.port1)
+          registerOriginalArchiveRequest(
+            graph,
+            () =>
+              new Promise<Uint8Array>((resolveArchive) => {
+                const requestId = randomHex()
+                const previous = channel.port1.onmessage
+                channel.port1.onmessage = (message: MessageEvent<FigSessionResponse>) => {
+                  if (
+                    message.data.type === 'original-archive-result' &&
+                    message.data.requestId === requestId
+                  ) {
+                    channel.port1.onmessage = previous
+                    resolveArchive(message.data.bytes)
+                    return
+                  }
+                  previous?.call(channel.port1, message)
+                }
+                channel.port1.postMessage({ type: 'original-archive', requestId })
+              })
+          )
         } else {
           cleanupAbort()
           channel.port1.close()
@@ -81,13 +105,16 @@ function parseViaWorker(buffer: ArrayBuffer, options: ParseFigFileOptions): Prom
       worker.terminate()
       reject(new Error(err.message || 'Worker failed to parse .fig file'))
     }
+    const workerBuffer = buffer.slice(0)
+    const archiveBuffer = buffer.slice(0)
     const request: FigSessionOpenRequest = {
       type: 'open',
-      buffer,
+      originalBuffer: workerBuffer,
+      archiveBuffer,
       options: { populate: options.populate },
       port: channel.port2
     }
-    worker.postMessage(request, [buffer, channel.port2])
+    worker.postMessage(request, [workerBuffer, archiveBuffer, channel.port2])
   })
 }
 
