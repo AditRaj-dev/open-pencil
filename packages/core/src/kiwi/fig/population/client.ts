@@ -18,6 +18,12 @@ type WorkerResult = PopulationResult | { type: 'population-error'; error: string
 const MAX_FIG_POPULATION_WORKER_NODES = 200_000
 const FIG_POPULATION_WORKER_TIMEOUT_MS = 30_000
 const populationWorkers = new WeakMap<SceneGraph, FigPopulationWorker>()
+interface OriginalArchiveRequest {
+  request: () => Promise<Uint8Array>
+  valid: boolean
+  unbind: () => void
+}
+const originalArchiveRequests = new WeakMap<SceneGraph, OriginalArchiveRequest>()
 
 export interface FigPopulationWorkerTelemetry {
   event: 'registered' | 'populate' | 'fallback' | 'stale' | 'terminated'
@@ -59,6 +65,36 @@ export function canUseFigPopulationWorker(graph: SceneGraph): boolean {
     populationWorkers.has(graph) &&
     getLazyFigImportContext(graph) !== undefined
   )
+}
+
+export function registerOriginalArchiveRequest(
+  graph: SceneGraph,
+  request: () => Promise<Uint8Array>
+): void {
+  const entry: OriginalArchiveRequest = { request, valid: true, unbind: () => undefined }
+  const invalidate = () => {
+    if (!graph.isApplyingLayout) entry.valid = false
+  }
+  entry.unbind = graph.onNodeEvents({
+    created: invalidate,
+    updated: invalidate,
+    deleted: invalidate,
+    reparented: invalidate,
+    reordered: invalidate
+  })
+  originalArchiveRequests.set(graph, entry)
+}
+
+export async function requestOriginalArchive(graph: SceneGraph): Promise<Uint8Array | null> {
+  const entry = originalArchiveRequests.get(graph)
+  return entry?.valid ? entry.request() : null
+}
+
+export function releaseFigPopulationWorker(graph: SceneGraph): void {
+  populationWorkers.get(graph)?.terminate()
+  populationWorkers.delete(graph)
+  originalArchiveRequests.get(graph)?.unbind()
+  originalArchiveRequests.delete(graph)
 }
 
 export interface FigPopulationWorker {

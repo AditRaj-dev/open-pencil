@@ -9,6 +9,8 @@ import type { SkiaRenderer } from '#core/canvas/renderer'
 import { prefetchFigmaSchema } from '#core/clipboard'
 import { IS_BROWSER } from '#core/constants'
 import { clearLazyFigImportContext } from '#core/kiwi/fig/lazy-import'
+import { releaseFigPopulationWorker } from '#core/kiwi/fig/population/client'
+import { releaseOriginalFigArchive } from '#core/kiwi/fig/session/original-archive'
 import { setTextMeasurer } from '#core/layout'
 import { TextEditor } from '#core/text/editor'
 import { fontManager } from '#core/text/fonts'
@@ -227,6 +229,8 @@ export function createEditor(options?: EditorOptions) {
   }
 
   function releaseGraphResources() {
+    releaseFigPopulationWorker(_graph)
+    releaseOriginalFigArchive(_graph)
     clearLazyFigImportContext(_graph)
   }
 
