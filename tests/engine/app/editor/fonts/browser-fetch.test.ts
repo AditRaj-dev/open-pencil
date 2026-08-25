@@ -25,7 +25,8 @@ describe('browser web font fetch', () => {
       value: { location: { origin: 'http://127.0.0.1:4301' } }
     })
     const fontFetch = createBrowserWebFontFetch(
-      mock(async () => new Response(new Uint8Array([1]))) as typeof fetch
+      mock(async () => new Response(new Uint8Array([1]))) as typeof fetch,
+      'http://127.0.0.1:4301'
     )
     try {
       await expect(fontFetch('http://127.0.0.1:4301/gold-preview.fig')).resolves.toBeInstanceOf(
