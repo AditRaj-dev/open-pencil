@@ -12,6 +12,7 @@ import type {
 } from '#core/kiwi/fig/session/protocol'
 
 let graph: SceneGraph | undefined
+let originalArchive: Uint8Array | undefined
 let port: MessagePort | undefined
 
 function respond(message: FigSessionResponse): void {
@@ -39,8 +40,17 @@ function populate(request: Extract<FigSessionRequest, { type: 'populate' }>): vo
 
 function handleRequest(request: FigSessionRequest): void {
   try {
+    if (request.type === 'original-archive') {
+      if (!originalArchive) throw new Error('FIG session has no original archive')
+      const bytes = originalArchive.slice()
+      port?.postMessage({ type: 'original-archive-result', requestId: request.requestId, bytes }, [
+        bytes.buffer
+      ])
+      return
+    }
     if (request.type === 'dispose') {
       graph = undefined
+      originalArchive = undefined
       respond({ type: 'disposed' })
       port?.close()
       port = undefined
@@ -63,9 +73,10 @@ self.onmessage = (event: MessageEvent<FigSessionOpenRequest>) => {
   port = request.port
   port.onmessage = (message: MessageEvent<FigSessionRequest>) => handleRequest(message.data)
   port.start()
+  originalArchive = new Uint8Array(request.archiveBuffer)
   try {
     const { nodeChanges, blobs, images, figKiwiVersion, figSchemaDeflated } = parseFigBuffer(
-      request.buffer,
+      request.originalBuffer,
       (pages) => respond({ type: 'page-manifest', pages })
     )
     const parsedGraph = importNodeChanges(nodeChanges, blobs, new Map(images), request.options)

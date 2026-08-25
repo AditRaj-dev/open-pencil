@@ -5,7 +5,8 @@ import type { FigPopulationDelta } from '#core/kiwi/fig/population/delta'
 
 export interface FigSessionOpenRequest {
   type: 'open'
-  buffer: ArrayBuffer
+  originalBuffer: ArrayBuffer
+  archiveBuffer: ArrayBuffer
   options?: { populate?: 'all' | 'first-page' | 'none' }
   port: MessagePort
 }
@@ -15,6 +16,11 @@ export interface FigSessionPopulateRequest {
   requestId: string
   baseRevision: number
   pageId: string
+}
+
+export interface FigSessionOriginalArchiveRequest {
+  type: 'original-archive'
+  requestId: string
 }
 
 export interface FigSessionCancelRequest {
@@ -28,6 +34,7 @@ export interface FigSessionDisposeRequest {
 
 export type FigSessionRequest =
   | FigSessionPopulateRequest
+  | FigSessionOriginalArchiveRequest
   | FigSessionCancelRequest
   | FigSessionDisposeRequest
 
@@ -42,4 +49,5 @@ export type FigSessionResponse =
       delta: FigPopulationDelta
     }
   | { type: 'population-error'; requestId?: string; error: string }
+  | { type: 'original-archive-result'; requestId: string; bytes: Uint8Array }
   | { type: 'disposed' }
