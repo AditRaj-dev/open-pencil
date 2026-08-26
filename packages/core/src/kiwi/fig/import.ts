@@ -1,3 +1,5 @@
+import { isNotNil } from 'es-toolkit/predicate'
+
 import { populateAndApplyOverrides } from '@open-pencil/fig/instance-overrides'
 import type { InstanceNodeChange } from '@open-pencil/fig/instance-overrides'
 import {
@@ -21,7 +23,7 @@ import type {
 } from '@open-pencil/scene-graph'
 
 import { BLACK } from '#core/constants'
-import { getLazyFigImportContext, setLazyFigImportContext } from '#core/kiwi/fig/lazy-import'
+import { setLazyFigImportContext } from '#core/kiwi/fig/lazy-import'
 
 type AssetRef = { key: string; version?: string }
 type AliasRef = { guid?: GUID; assetRef?: AssetRef }
@@ -324,26 +326,6 @@ function importVariableEntries(
   }
 }
 
-function importCanvasPage(
-  graph: SceneGraph,
-  canvasId: string,
-  canvasNc: NodeChange,
-  childrenMap: Map<string, string[]>,
-  created: Set<string>,
-  canvasIdToPageId: Map<string, string>,
-  createSceneNode: (ncId: string, graphParentId: string) => void,
-  materialize: boolean
-): void {
-  const page = graph.addPage(canvasNc.name ?? 'Page')
-  page.source.id = canvasId
-  applyImportedCanvasMetadata(page, canvasNc)
-  canvasIdToPageId.set(canvasId, page.id)
-  if (canvasNc.internalOnly) page.internalOnly = true
-  created.add(canvasId)
-  if (!materialize) return
-  for (const childId of childrenMap.get(canvasId) ?? []) createSceneNode(childId, page.id)
-}
-
 function importPages(
   graph: SceneGraph,
   changeMap: Map<string, NodeChange>,
@@ -351,8 +333,7 @@ function importPages(
   childrenMap: Map<string, string[]>,
   created: Set<string>,
   canvasIdToPageId: Map<string, string>,
-  createSceneNode: (ncId: string, graphParentId: string) => void,
-  materializeOnlyFirstPage = false
+  createSceneNode: (ncId: string, graphParentId: string) => void
 ): void {
   let docId: string | null = null
   for (const [id, nc] of changeMap) {
@@ -365,24 +346,19 @@ function importPages(
   if (docId) {
     applyImportedDocumentMetadata(graph, changeMap.get(docId))
 
-    let materializedPage = false
     for (const canvasId of childrenMap.get(docId) ?? []) {
       const canvasNc = changeMap.get(canvasId)
       if (!canvasNc) continue
       if (canvasNc.type === 'CANVAS') {
-        const shouldMaterialize: boolean =
-          !materializeOnlyFirstPage || (!materializedPage && !canvasNc.internalOnly)
-        if (shouldMaterialize) materializedPage = true
-        importCanvasPage(
-          graph,
-          canvasId,
-          canvasNc,
-          childrenMap,
-          created,
-          canvasIdToPageId,
-          createSceneNode,
-          shouldMaterialize
-        )
+        const page = graph.addPage(canvasNc.name ?? 'Page')
+        page.source.id = canvasId
+        applyImportedCanvasMetadata(page, canvasNc)
+        canvasIdToPageId.set(canvasId, page.id)
+        if (canvasNc.internalOnly) page.internalOnly = true
+        created.add(canvasId)
+        for (const childId of childrenMap.get(canvasId) ?? []) {
+          createSceneNode(childId, page.id)
+        }
       } else {
         createSceneNode(canvasId, graph.getPages()[0]?.id ?? graph.rootId)
       }
@@ -490,28 +466,6 @@ function parseDocumentColorSpace(nodeChanges: NodeChange[]): 'srgb' | 'display-p
   return documentNode?.documentColorProfile === 'DISPLAY_P3' ? 'display-p3' : 'srgb'
 }
 
-function referencedComponentSourceIds(nc: NodeChange): string[] {
-  const ids = new Set<string>()
-  const symbolData = nc.symbolData as
-    | {
-        symbolID?: GUID
-        symbolOverrides?: Array<{ overriddenSymbolID?: GUID }>
-      }
-    | undefined
-  if (symbolData?.symbolID) ids.add(guidToString(symbolData.symbolID))
-  for (const override of symbolData?.symbolOverrides ?? []) {
-    if (override.overriddenSymbolID) ids.add(guidToString(override.overriddenSymbolID))
-  }
-  for (const assignment of (nc.componentPropAssignments ?? []) as Array<{
-    value?: { guidValue?: GUID }
-    varValue?: { value?: { symbolIdValue?: { guid?: GUID } } }
-  }>) {
-    const guid = assignment.value?.guidValue ?? assignment.varValue?.value?.symbolIdValue?.guid
-    if (guid) ids.add(guidToString(guid))
-  }
-  return [...ids]
-}
-
 function applyStyleRefs(
   changeMap: Map<string, NodeChange>,
   assetRefs: ReadonlyMap<string, string>
@@ -528,97 +482,17 @@ function rememberLazyFigImportContext(
   changeMap: Map<string, NodeChange>,
   guidToNodeId: Map<string, string>,
   blobs: Uint8Array[],
-  populatedRootIds: string[],
-  parentMap: Map<string, string>,
-  childrenMap: Map<string, string[]>,
-  canvasIdToPageId: Map<string, string>,
-  materializedSourceIds: Set<string>,
-  materializeRoots: (rootIds: Iterable<string>) => void
+  populatedRootIds: string[]
 ): void {
   setLazyFigImportContext(graph, {
     changeMap: changeMap as Map<string, InstanceNodeChange>,
     guidToNodeId,
     blobs,
-    populatedRootIds: new Set(populatedRootIds),
-    parentMap,
-    childrenMap,
-    canvasIdToPageId,
-    materializedSourceIds,
-    materializeRoots
+    populatedRootIds: new Set(populatedRootIds)
   })
 }
 
-function sourceDependencyClosure(
-  changeMap: Map<string, NodeChange>,
-  parentMap: Map<string, string>,
-  childrenMap: Map<string, string[]>,
-  rootIds: Iterable<string>
-): Set<string> {
-  const included = new Set<string>()
-  const scanQueue: string[] = []
-
-  function includeSubtree(rootId: string): void {
-    const pending = [rootId]
-    const traversed = new Set<string>()
-    for (const id of pending) {
-      if (traversed.has(id) || !changeMap.has(id)) continue
-      traversed.add(id)
-      if (!included.has(id)) {
-        included.add(id)
-        scanQueue.push(id)
-      }
-      pending.push(...(childrenMap.get(id) ?? []))
-    }
-  }
-
-  function includeAncestors(id: string): void {
-    const ancestors: string[] = []
-    let current: string | undefined = id
-    while (current && changeMap.has(current)) {
-      ancestors.push(current)
-      const parent = parentMap.get(current)
-      if (!parent || changeMap.get(parent)?.type === 'DOCUMENT') break
-      current = parent
-    }
-    for (const ancestor of ancestors.reverse()) {
-      if (!included.has(ancestor)) {
-        included.add(ancestor)
-        scanQueue.push(ancestor)
-      }
-    }
-  }
-
-  for (const rootId of rootIds) includeSubtree(rootId)
-  for (const sourceId of scanQueue) {
-    const change = changeMap.get(sourceId)
-    if (!change) continue
-    for (const dependencyId of referencedComponentSourceIds(change)) {
-      includeAncestors(dependencyId)
-      includeSubtree(dependencyId)
-    }
-  }
-  return included
-}
-
-function initialSourceDependencyClosure(
-  changeMap: Map<string, NodeChange>,
-  childrenMap: Map<string, string[]>,
-  parentMap: Map<string, string>
-): Set<string> {
-  const documentId = [...changeMap].find(([, change]) => change.type === 'DOCUMENT')?.[0] ?? '0:0'
-  const firstCanvasId = (childrenMap.get(documentId) ?? []).find((id) => {
-    const change = changeMap.get(id)
-    return change?.type === 'CANVAS' && !change.internalOnly
-  })
-  return sourceDependencyClosure(
-    changeMap,
-    parentMap,
-    childrenMap,
-    firstCanvasId ? [firstCanvasId] : []
-  )
-}
-
-function materializedComponentPageIds(graph: SceneGraph): Set<string> {
+function componentPageIdsForLazyPopulation(graph: SceneGraph): Set<string> {
   const pageIds = new Set<string>()
   for (const node of graph.getAllNodes()) {
     if (node.type !== 'COMPONENT' && node.type !== 'COMPONENT_SET') continue
@@ -629,53 +503,6 @@ function materializedComponentPageIds(graph: SceneGraph): Set<string> {
     if (current?.type === 'CANVAS') pageIds.add(current.id)
   }
   return pageIds
-}
-
-export function restoreLazyFigImportMaterializer(graph: SceneGraph): void {
-  const context = getLazyFigImportContext(graph)
-  if (!context) return
-  context.materializeRoots = createLazyMaterializer(graph, context)
-}
-
-function createLazyMaterializer(
-  graph: SceneGraph,
-  context: NonNullable<ReturnType<typeof getLazyFigImportContext>>
-): (rootIds: Iterable<string>) => void {
-  const changeMap = context.changeMap as Map<string, NodeChange>
-  const { guidToNodeId, blobs, parentMap, childrenMap, canvasIdToPageId } = context
-  const created = context.materializedSourceIds
-  function createSourceNode(sourceId: string, graphParentId: string): void {
-    if (created.has(sourceId)) return
-    const change = changeMap.get(sourceId)
-    if (!change) return
-    created.add(sourceId)
-    const { nodeType, ...props } = nodeChangeToProps(change, blobs)
-    if (nodeType === 'DOCUMENT' || nodeType === 'VARIABLE' || change.type === 'VARIABLE_SET') return
-    if (shouldImportTextAsAutoSize(change, changeMap.get(parentMap.get(sourceId) ?? ''))) {
-      props.textAutoResize = 'WIDTH_AND_HEIGHT'
-    }
-    const node = graph.createNode(nodeType, graphParentId, props)
-    guidToNodeId.set(sourceId, node.id)
-    for (const childSourceId of childrenMap.get(sourceId) ?? []) {
-      createSourceNode(childSourceId, node.id)
-    }
-  }
-  return (rootIds) => {
-    const sourceRoots = [...rootIds]
-      .map((id) => graph.getNode(id)?.source.id)
-      .filter((id): id is string => id !== null && id !== undefined)
-    const closure = sourceDependencyClosure(changeMap, parentMap, childrenMap, sourceRoots)
-    for (const sourceId of closure) {
-      if (created.has(sourceId)) continue
-      const parentSourceId = parentMap.get(sourceId)
-      if (!parentSourceId) continue
-      const graphParentId = canvasIdToPageId.get(parentSourceId) ?? guidToNodeId.get(parentSourceId)
-      if (graphParentId) createSourceNode(sourceId, graphParentId)
-    }
-    remapComponentIds(graph, guidToNodeId)
-    remapInstanceSwapPropertyValues(graph, guidToNodeId)
-    applyVariantPropSpecs(graph)
-  }
 }
 
 export function importNodeChanges(
@@ -730,30 +557,7 @@ export function importNodeChanges(
     }
   }
 
-  importPages(
-    graph,
-    changeMap,
-    parentMap,
-    childrenMap,
-    created,
-    canvasIdToPageId,
-    createSceneNode,
-    options.populate === 'first-page'
-  )
-
-  const initialSourceIds =
-    options.populate === 'first-page'
-      ? initialSourceDependencyClosure(changeMap, childrenMap, parentMap)
-      : null
-  if (initialSourceIds) {
-    for (const sourceId of initialSourceIds) {
-      if (created.has(sourceId)) continue
-      const parentSourceId = parentMap.get(sourceId)
-      if (!parentSourceId) continue
-      const graphParentId = canvasIdToPageId.get(parentSourceId) ?? guidToNodeId.get(parentSourceId)
-      if (graphParentId) createSceneNode(sourceId, graphParentId)
-    }
-  }
+  importPages(graph, changeMap, parentMap, childrenMap, created, canvasIdToPageId, createSceneNode)
 
   importCollections(changeMap, graph)
   importVariableEntries(changeMap, parentMap, graph, assetRefs)
@@ -763,11 +567,11 @@ export function importNodeChanges(
   applyVariantPropSpecs(graph)
 
   const firstPageId = graph.getPages()[0]?.id
-  const dependencyPageIds =
-    options.populate === 'first-page' ? materializedComponentPageIds(graph) : new Set<string>()
+  const componentPageIds =
+    options.populate === 'first-page' ? componentPageIdsForLazyPopulation(graph) : new Set<string>()
   const activeRootIds =
-    options.populate === 'first-page' && firstPageId
-      ? [firstPageId, ...dependencyPageIds]
+    options.populate === 'first-page'
+      ? [firstPageId, ...componentPageIds].filter(isNotNil)
       : undefined
 
   if (options.populate !== 'none') {
@@ -782,31 +586,8 @@ export function importNodeChanges(
     })
   }
 
-  const initiallyPopulatedRootIds = firstPageId ? [firstPageId] : []
-  if (activeRootIds) {
-    const materializeRoots = createLazyMaterializer(graph, {
-      changeMap: changeMap as Map<string, InstanceNodeChange>,
-      guidToNodeId,
-      blobs,
-      populatedRootIds: new Set(initiallyPopulatedRootIds),
-      parentMap,
-      childrenMap,
-      canvasIdToPageId,
-      materializedSourceIds: created
-    })
-    rememberLazyFigImportContext(
-      graph,
-      changeMap,
-      guidToNodeId,
-      blobs,
-      initiallyPopulatedRootIds,
-      parentMap,
-      childrenMap,
-      canvasIdToPageId,
-      created,
-      materializeRoots
-    )
-  }
+  if (activeRootIds)
+    rememberLazyFigImportContext(graph, changeMap, guidToNodeId, blobs, activeRootIds)
 
   setVariableColorResolver(null)
 

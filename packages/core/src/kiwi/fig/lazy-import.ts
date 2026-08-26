@@ -7,11 +7,6 @@ export interface LazyFigImportContext {
   guidToNodeId: Map<string, string>
   blobs: Uint8Array[]
   populatedRootIds: Set<string>
-  parentMap: Map<string, string>
-  childrenMap: Map<string, string[]>
-  canvasIdToPageId: Map<string, string>
-  materializedSourceIds: Set<string>
-  materializeRoots?: (rootIds: Iterable<string>) => void
 }
 
 const lazyFigImportContexts = new WeakMap<SceneGraph, LazyFigImportContext>()
@@ -46,31 +41,6 @@ function applyPopulation(
   for (const id of populatedRootIds) context.populatedRootIds.add(id)
 }
 
-function materializeRootsFromContext(
-  graph: SceneGraph,
-  context: LazyFigImportContext,
-  rootIds: Iterable<string>
-): void {
-  if (context.materializeRoots) {
-    context.materializeRoots(rootIds)
-    return
-  }
-  materializeSerializedRoots(graph, context, rootIds)
-}
-
-function materializeSerializedRoots(
-  graph: SceneGraph,
-  context: LazyFigImportContext,
-  rootIds: Iterable<string>
-): void {
-  // Serialized lazy sessions are reconstructed without closures. Importing the source records
-  // on demand is provided by the FIG session protocol; legacy serialized graphs already contain
-  // their initially materialized roots.
-  void graph
-  void context
-  void rootIds
-}
-
 function populateRoots(
   graph: SceneGraph,
   context: LazyFigImportContext,
@@ -78,7 +48,6 @@ function populateRoots(
 ): boolean {
   const pending = [...rootIds].filter((id) => id && !context.populatedRootIds.has(id))
   if (pending.length === 0) return false
-  materializeRootsFromContext(graph, context, rootIds)
   applyPopulation(graph, context, pending)
   return true
 }
