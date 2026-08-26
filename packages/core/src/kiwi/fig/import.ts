@@ -370,7 +370,8 @@ function importPages(
       const canvasNc = changeMap.get(canvasId)
       if (!canvasNc) continue
       if (canvasNc.type === 'CANVAS') {
-        const shouldMaterialize: boolean = !materializeOnlyFirstPage || !materializedPage
+        const shouldMaterialize: boolean =
+          !materializeOnlyFirstPage || (!materializedPage && !canvasNc.internalOnly)
         if (shouldMaterialize) materializedPage = true
         importCanvasPage(
           graph,
@@ -605,9 +606,10 @@ function initialSourceDependencyClosure(
   parentMap: Map<string, string>
 ): Set<string> {
   const documentId = [...changeMap].find(([, change]) => change.type === 'DOCUMENT')?.[0] ?? '0:0'
-  const firstCanvasId = (childrenMap.get(documentId) ?? []).find(
-    (id) => changeMap.get(id)?.type === 'CANVAS'
-  )
+  const firstCanvasId = (childrenMap.get(documentId) ?? []).find((id) => {
+    const change = changeMap.get(id)
+    return change?.type === 'CANVAS' && !change.internalOnly
+  })
   return sourceDependencyClosure(
     changeMap,
     parentMap,
@@ -780,12 +782,13 @@ export function importNodeChanges(
     })
   }
 
+  const initiallyPopulatedRootIds = firstPageId ? [firstPageId] : []
   if (activeRootIds) {
     const materializeRoots = createLazyMaterializer(graph, {
       changeMap: changeMap as Map<string, InstanceNodeChange>,
       guidToNodeId,
       blobs,
-      populatedRootIds: new Set(activeRootIds),
+      populatedRootIds: new Set(initiallyPopulatedRootIds),
       parentMap,
       childrenMap,
       canvasIdToPageId,
@@ -796,7 +799,7 @@ export function importNodeChanges(
       changeMap,
       guidToNodeId,
       blobs,
-      activeRootIds,
+      initiallyPopulatedRootIds,
       parentMap,
       childrenMap,
       canvasIdToPageId,
