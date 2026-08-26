@@ -13,70 +13,15 @@ import { clearSubtreePictureCache } from '#core/canvas/renderer/state'
 import { worldNodeVisualBounds } from '#core/canvas/renderer/visual-bounds'
 import { emitNavigationTrace } from '#core/profiler'
 
-import type { RenderLayer } from './pipeline'
+import { clamp, smoothAverage } from './retained-backing/timing'
+import type { SceneBackingGeometry } from './retained-backing/types'
+
+export { updateSceneBackingPreviewState } from './retained-backing/preview'
 
 const now = typeof performance !== 'undefined' ? () => performance.now() : () => 0
 const SCENE_BACKING_SCALE = 3
 const MAX_SCENE_BACKING_DEVICE_PIXELS = 16_000_000
-const FRAME_BUDGET_60HZ_MS = 1000 / 60
-const MIN_SCENE_BACKING_IDLE_FRAMES = 2
-const MAX_SCENE_BACKING_IDLE_FRAMES = 18
-const MAX_SCENE_BACKING_QUIET_INPUT_INTERVALS = 4
 const SCENE_BACKING_BUILD_BUDGET_MS = 6
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(max, Math.max(min, value))
-}
-
-function smoothAverage(previous: number, next: number, weight = 0.2): number {
-  return previous * (1 - weight) + next * weight
-}
-
-function sceneBackingPreviewIdleMs(r: SkiaRenderer): number {
-  const minDelay = FRAME_BUDGET_60HZ_MS * MIN_SCENE_BACKING_IDLE_FRAMES
-  const maxDelay = FRAME_BUDGET_60HZ_MS * MAX_SCENE_BACKING_IDLE_FRAMES
-  const renderMs = clamp(r.sceneBackingAverageRecordMs, minDelay, maxDelay)
-  const inputIntervalMs = clamp(r.sceneBackingAverageViewportIntervalMs, 1, maxDelay)
-  if (inputIntervalMs > FRAME_BUDGET_60HZ_MS * MAX_SCENE_BACKING_QUIET_INPUT_INTERVALS) {
-    return renderMs
-  }
-
-  const expectedEventsDuringRender = renderMs / inputIntervalMs
-  const quietInputIntervals = clamp(
-    expectedEventsDuringRender,
-    1,
-    MAX_SCENE_BACKING_QUIET_INPUT_INTERVALS
-  )
-  return clamp(Math.max(renderMs, inputIntervalMs * quietInputIntervals), minDelay, maxDelay)
-}
-
-export function updateSceneBackingPreviewState(r: SkiaRenderer, layer: RenderLayer): void {
-  if (layer !== 'scene') return
-  const previous = r.lastSceneViewport
-  const viewportChanged =
-    !previous || previous.panX !== r.panX || previous.panY !== r.panY || previous.zoom !== r.zoom
-  if (viewportChanged) {
-    const timestamp = now()
-    if (r.sceneBackingLastViewportEventAt > 0) {
-      const interval = timestamp - r.sceneBackingLastViewportEventAt
-      r.sceneBackingAverageViewportIntervalMs = smoothAverage(
-        r.sceneBackingAverageViewportIntervalMs,
-        clamp(interval, 1, 500)
-      )
-    }
-    r.sceneBackingLastViewportEventAt = timestamp
-    r.sceneBackingPreviewUntil = timestamp + sceneBackingPreviewIdleMs(r)
-    r.sceneBackingNeedsCrispRender = !!r.sceneBacking
-    emitNavigationTrace('backing:preview', {
-      previewUntil: r.sceneBackingPreviewUntil,
-      hasBacking: !!r.sceneBacking,
-      panX: r.panX,
-      panY: r.panY,
-      zoom: r.zoom
-    })
-    r.lastSceneViewport = { panX: r.panX, panY: r.panY, zoom: r.zoom }
-  }
-}
 
 function backingMetadataMatches(
   r: SkiaRenderer,
@@ -178,7 +123,7 @@ function sceneBackingScale(r: SkiaRenderer): number {
   )
 }
 
-function sceneBackingGeometry(r: SkiaRenderer) {
+function sceneBackingGeometry(r: SkiaRenderer): SceneBackingGeometry {
   const backingScale = sceneBackingScale(r)
   const marginX = r.viewportWidth * ((backingScale - 1) / 2)
   const marginY = r.viewportHeight * ((backingScale - 1) / 2)
@@ -328,7 +273,7 @@ function renderBackingChild(
   graph: SceneGraph,
   surface: Surface,
   childId: string,
-  backing: ReturnType<typeof sceneBackingGeometry>,
+  backing: SceneBackingGeometry,
   sceneVersion: number
 ): void {
   const canvas = surface.getCanvas()
@@ -368,7 +313,7 @@ function renderBackingChild(
   }
 }
 
-function sceneBackingMetrics(backing: ReturnType<typeof sceneBackingGeometry>) {
+function sceneBackingMetrics(backing: SceneBackingGeometry): SceneBackingGeometry {
   return {
     panX: backing.panX,
     panY: backing.panY,
@@ -388,7 +333,7 @@ function installSceneBackingImage(
   image: CKImage,
   sceneVersion: number,
   positionPreviewVersion: number,
-  backing: ReturnType<typeof sceneBackingGeometry>
+  backing: SceneBackingGeometry
 ): void {
   r.sceneBacking?.image.delete()
   r.sceneBacking = {
@@ -454,7 +399,9 @@ function startSceneBackingBuild(r: SkiaRenderer, graph: SceneGraph, sceneVersion
   })
 }
 
-function sceneBackingGeometryFromBuild(build: NonNullable<SkiaRenderer['sceneBackingBuild']>) {
+function sceneBackingGeometryFromBuild(
+  build: NonNullable<SkiaRenderer['sceneBackingBuild']>
+): SceneBackingGeometry {
   return {
     panX: build.panX,
     panY: build.panY,

@@ -2,6 +2,10 @@
 
 The navigation benchmark measures the complete wheel/trackpad-to-render pipeline. It is intentionally separate from the synchronous microbenchmark in `tests/e2e/viewport/zoom-pan.spec.ts`: accepting JavaScript calls quickly does not prove smooth navigation.
 
+## Renderer lifecycle and ownership
+
+The benchmark validates the retained and tiled renderer contracts documented in [Renderer lifecycle and ownership](./renderer-lifecycle.md). Structural renderer changes must preserve those generation, settlement, and CanvasKit ownership rules.
+
 ## What it captures
 
 Every run writes:

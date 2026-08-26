@@ -8,7 +8,6 @@ import {
   RenderChunkIndex,
   RenderChunkPictureCache
 } from '#core/canvas/renderer/chunks'
-import { emitNavigationTrace } from '#core/profiler'
 
 import { TileImageCache } from './cache'
 import { TILE_DEVICE_SIZE, tileLevel, tileWorldBounds, type TileWorldBounds } from './geometry'
@@ -21,6 +20,7 @@ import {
   type TileSchedulerMetrics
 } from './scheduler'
 import { TileSurfacePool } from './surface-pool'
+import { emitTileCoverageComplete, emitTileFrameTrace } from './telemetry'
 
 const TILE_FRAME_BUDGET_MS = 5
 const MAXIMUM_TILE_JOBS_PER_FRAME = 32
@@ -120,7 +120,7 @@ export class TiledSceneController {
       : this.runScheduledFrame(renderer, graph, index)
     metrics.cancelledJobs += this.cancelledJobs
     this.cancelledJobs = 0
-    const refreshed = planTiles(
+    const visibleCoverage = planTiles(
       this.tileCache,
       {
         pageId: renderer.pageId,
@@ -135,42 +135,28 @@ export class TiledSceneController {
     )
     const presentedTileCount = this.navigationActive
       ? 0
-      : this.drawVisibleTiles(renderer, canvas, refreshed.visible)
+      : this.drawVisibleTiles(renderer, canvas, visibleCoverage.visible)
     canvas.restore()
-    const covered = refreshed.visible.every(({ tile }) => tile !== null)
-    emitNavigationTrace('render:end', {
-      layer: 'tiled-scheduler',
-      sceneVersion: contentGeneration,
-      mandatoryCompleted: metrics.mandatoryCompleted,
-      interruptibleCompleted: metrics.interruptibleCompleted,
-      remaining: metrics.remaining,
-      skippedWithFallback: metrics.skippedWithFallback,
-      deadlineOverrunMs: metrics.deadlineOverrunMs,
-      overBudgetJobs: metrics.overBudgetJobs,
-      maximumJobRenderMs: metrics.maximumJobRenderMs,
-      staleJobsDiscarded: metrics.staleJobsDiscarded,
-      cancelledJobs: metrics.cancelledJobs,
-      tileAllocationMs: metrics.totalAllocationMs,
-      tileDrawMs: metrics.totalDrawMs,
-      tileFlushMs: metrics.totalFlushMs,
-      tileSnapshotMs: metrics.totalSnapshotMs,
-      tileChunks: metrics.totalChunks,
+    const covered = visibleCoverage.visible.every(({ tile }) => tile !== null)
+    emitTileFrameTrace({
+      contentGeneration,
+      metrics,
       tileCacheBytes: this.tileCache.byteSize(),
       tileCacheEntries: this.tileCache.size(),
-      visibleTileCount: refreshed.visible.length,
+      visibleTileCount: visibleCoverage.visible.length,
       presentedTileCount,
       covered
     })
-    const coveredGeneration = `${navigationGeneration}:${contentGeneration}`
-    if (covered && !this.navigationActive && this.lastCoveredGeneration !== coveredGeneration) {
-      this.lastCoveredGeneration = coveredGeneration
-      emitNavigationTrace('tiles:coverage-complete', {
+    const settledGenerationKey = `${navigationGeneration}:${contentGeneration}`
+    if (covered && !this.navigationActive && this.lastCoveredGeneration !== settledGenerationKey) {
+      this.lastCoveredGeneration = settledGenerationKey
+      emitTileCoverageComplete(
         level,
-        sceneVersion: contentGeneration,
+        contentGeneration,
         navigationGeneration,
-        tileCacheEntries: this.tileCache.size(),
-        tileCacheBytes: this.tileCache.byteSize()
-      })
+        this.tileCache.size(),
+        this.tileCache.byteSize()
+      )
     }
     return {
       covered,
@@ -272,22 +258,10 @@ export class TiledSceneController {
   }
 
   private deferActiveJobs(jobs: TileJob[]): TileSchedulerMetrics {
-    return {
-      mandatoryCompleted: 0,
-      interruptibleCompleted: 0,
-      remaining: jobs.length,
-      skippedWithFallback: jobs.filter((job) => job.fallbackAvailable).length,
-      deadlineOverrunMs: 0,
-      overBudgetJobs: 0,
-      maximumJobRenderMs: 0,
-      staleJobsDiscarded: 0,
-      cancelledJobs: 0,
-      totalAllocationMs: 0,
-      totalDrawMs: 0,
-      totalFlushMs: 0,
-      totalSnapshotMs: 0,
-      totalChunks: 0
-    }
+    const metrics = emptyTileSchedulerMetrics()
+    metrics.remaining = jobs.length
+    metrics.skippedWithFallback = jobs.filter((job) => job.fallbackAvailable).length
+    return metrics
   }
 
   private executeJob(

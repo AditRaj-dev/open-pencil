@@ -28,6 +28,7 @@ import { destroyRenderer } from './renderer/lifecycle'
 import { installRendererDomainMethods } from './renderer/methods'
 import { initializeRendererPaints } from './renderer/paints'
 import * as RenderPipeline from './renderer/pipeline'
+import type { SceneBacking, SceneBackingBuild } from './renderer/retained-backing/types'
 import * as RendererState from './renderer/state'
 import * as RenderText from './text'
 export type { MeasurementMode, RenderOverlays, RulerTheme } from './renderer/types'
@@ -108,47 +109,11 @@ export class SkiaRenderer {
   scenePictureFontGeneration = -1
   scenePicturePositionPreviewVersion = -1
   scenePicturePageId: string | null = null
-  sceneBacking: {
-    image: CKImage
-    pageId: string | null
-    sceneVersion: number
-    positionPreviewVersion: number
-    fontGeneration: number
-    panX: number
-    panY: number
-    zoom: number
-    width: number
-    height: number
-    dpr: number
-    worldX: number
-    worldY: number
-    worldWidth: number
-    worldHeight: number
-  } | null = null
+  sceneBacking: SceneBacking | null = null
   sceneBackingPreviewUntil = 0
   sceneBackingNeedsCrispRender = false
   sceneBackingAllocationFailed = false
-  sceneBackingBuild: {
-    surface: Surface
-    graph: SceneGraph
-    childIds: string[]
-    index: number
-    startedAt: number
-    pageId: string | null
-    sceneVersion: number
-    positionPreviewVersion: number
-    fontGeneration: number
-    panX: number
-    panY: number
-    zoom: number
-    width: number
-    height: number
-    dpr: number
-    worldX: number
-    worldY: number
-    worldWidth: number
-    worldHeight: number
-  } | null = null
+  sceneBackingBuild: SceneBackingBuild | null = null
   sceneBackingAverageRecordMs = 40
   sceneBackingAverageViewportIntervalMs = 80
   sceneBackingLastViewportEventAt = 0
