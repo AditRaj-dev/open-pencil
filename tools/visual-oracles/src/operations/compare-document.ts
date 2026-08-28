@@ -150,7 +150,9 @@ async function captureOpenPencilTarget(
             .find(
               (candidate) => candidate.name === target.node && candidate.parentId === pageNode.id
             )
-      if (!node) throw new Error(`OpenPencil node missing: ${target.page} / ${target.node}`)
+      if (!node || node.parentId !== pageNode.id) {
+        throw new Error(`OpenPencil node missing from page: ${target.page} / ${target.node}`)
+      }
       const position = store.graph.getAbsolutePosition(node.id)
       const viewportWidth = 1280
       const viewportHeight = 800
