@@ -45,7 +45,8 @@ export const exposeInstanceSwap = defineTool({
   params: {
     instance_ids: {
       type: 'string[]',
-      description: 'Instance node IDs to expose as the swap slot (one per variant that has this slot)',
+      description:
+        'Instance node IDs to expose as the swap slot (one per variant that has this slot)',
       required: true
     },
     candidate_ids: {
@@ -56,12 +57,16 @@ export const exposeInstanceSwap = defineTool({
     property_name: { type: 'string', description: 'Name for the property (default: "Instance")' }
   },
   execute: (figma, { instance_ids, candidate_ids, property_name }) => {
-    const slots = instance_ids.map((id) => figma.getNodeById(id)).filter((n): n is FigmaNodeProxy => n !== null)
-    if (slots.length !== instance_ids.length) return { error: 'One or more instance IDs were not found' }
+    const slots = instance_ids
+      .map((id) => figma.getNodeById(id))
+      .filter((n): n is FigmaNodeProxy => n !== null)
+    if (slots.length !== instance_ids.length)
+      return { error: 'One or more instance IDs were not found' }
     const candidates = candidate_ids
       .map((id) => figma.getNodeById(id))
       .filter((n): n is FigmaNodeProxy => n !== null)
-    if (candidates.length !== candidate_ids.length) return { error: 'One or more candidate IDs were not found' }
+    if (candidates.length !== candidate_ids.length)
+      return { error: 'One or more candidate IDs were not found' }
     try {
       const host = figma.exposeInstanceSwap(slots, candidates, property_name)
       return nodeSummary(host)
