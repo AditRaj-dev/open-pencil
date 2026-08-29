@@ -214,23 +214,30 @@ describe('FontManager loaded font cache', () => {
 
   test('forwards cancellation to fallback web-font requests', async () => {
     const manager = new FontManager()
-    manager.setFallbackUserAgent('OpenPencil test')
-    manager.setOnlineFontProviders({ google: true })
-    manager.setWebFontFetch(async (_input, init) => {
-      return await new Promise<Response>((_resolve, reject) => {
-        init?.signal?.addEventListener(
-          'abort',
-          () => reject(new DOMException('Aborted', 'AbortError')),
-          { once: true }
-        )
-      })
+    let remoteRequestStarted: (() => void) | null = null
+    const started = new Promise<void>((resolve) => {
+      remoteRequestStarted = resolve
     })
+    const originalLoadRemoteFont = manager.loadRemoteFont.bind(manager)
+    manager.loadRemoteFont = async (_family, _style, _characters, signal) => {
+      remoteRequestStarted?.()
+      return new Promise<ArrayBuffer | null>((_resolve, reject) => {
+        signal?.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')), {
+          once: true
+        })
+      })
+    }
     const abort = new AbortController()
     const loading = manager.ensureFallbackPack(['cjk'], '字', abort.signal)
 
+    await started
     abort.abort()
 
-    await expect(loading).rejects.toHaveProperty('name', 'AbortError')
+    try {
+      await expect(loading).rejects.toHaveProperty('name', 'AbortError')
+    } finally {
+      manager.loadRemoteFont = originalLoadRemoteFont
+    }
   })
 
   test('loads bundled Inter ExtraBold without network access', async () => {
