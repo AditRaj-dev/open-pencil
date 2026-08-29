@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ProgressIndicator, ProgressRoot } from 'reka-ui'
 import { computed } from 'vue'
 
 import type { EditorPreparation } from '@/app/editor/preparation/types'
@@ -10,6 +11,7 @@ const { preparation } = defineProps<{
 
 const label = computed(() => preparationLabel(preparation))
 const progressValue = computed(() => preparationPercent(preparation.progress))
+const progressSteps = computed(() => Math.round(progressValue.value ?? 0))
 </script>
 
 <template>
@@ -29,23 +31,23 @@ const progressValue = computed(() => preparationPercent(preparation.progress))
             {{ preparation.detail }}
           </p>
         </div>
-        <div
+        <ProgressRoot
+          :model-value="progressValue"
           class="h-0.5 w-25 overflow-hidden rounded-full bg-surface/8"
-          :role="progressValue === null ? undefined : 'progressbar'"
-          :aria-valuemin="progressValue === null ? undefined : 0"
-          :aria-valuemax="progressValue === null ? undefined : 100"
-          :aria-valuenow="progressValue ?? undefined"
         >
-          <div
+          <ProgressIndicator
             v-if="progressValue === null"
             class="h-full w-2/5 animate-[slide_1s_ease-in-out_infinite] rounded-full bg-surface/25"
           />
-          <div
-            v-else
-            class="h-full rounded-full bg-surface/35 transition-[width] duration-150"
-            :style="{ width: `${progressValue}%` }"
-          />
-        </div>
+          <div v-else class="flex h-full w-full">
+            <span
+              v-for="step in 100"
+              :key="step"
+              :data-complete="step <= progressSteps"
+              class="h-full flex-1 bg-transparent transition-colors duration-150 data-[complete=true]:bg-surface/35"
+            />
+          </div>
+        </ProgressRoot>
         <p v-if="progressValue !== null" class="text-xs tabular-nums text-surface/45">
           {{ preparation.progress?.completed }} of {{ preparation.progress?.total }}
         </p>

@@ -142,7 +142,8 @@ export async function s3Request(
         method: signed.method,
         headers: signed.headers,
         body: init.body ?? undefined,
-        credentials: 'omit'
+        credentials: 'omit',
+        signal: init.signal
       })
     }
   } catch (error) {

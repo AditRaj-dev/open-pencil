@@ -56,7 +56,12 @@ async function settleFileOpen(opening: Promise<void>): Promise<void> {
 
   const awaitOutcome = async (): Promise<FileOpenOutcome> => {
     acknowledgePendingPresentation()
-    const result = await Promise.race([outcome, Promise.resolve(null)])
+    const result = await Promise.race([
+      outcome,
+      new Promise<null>((resolve) => {
+        setTimeout(resolve, 0)
+      })
+    ])
     return result ?? awaitOutcome()
   }
 

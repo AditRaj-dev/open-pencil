@@ -104,7 +104,10 @@ export async function browserTailwindHTMLToSceneGraph(
   options: BrowserTailwindHTMLToSceneGraphOptions = {}
 ): Promise<SceneGraph> {
   const document = await browserTailwindHTMLToDesignDocument(html, candidates, options)
-  return designDocumentToSceneGraph(document, options)
+  options.signal?.throwIfAborted()
+  const graph = designDocumentToSceneGraph(document, options)
+  options.signal?.throwIfAborted()
+  return graph
 }
 
 export async function browserJSXToDesignDocument(

@@ -2,7 +2,7 @@ import { expect, test } from 'bun:test'
 
 import { SceneGraph } from '@open-pencil/scene-graph'
 
-import { createEditor } from '#core/editor'
+import { createEditor, type PageSwitchProgress } from '#core/editor'
 
 test('core page preparation only reports progress and never owns app suspension', async () => {
   const graph = new SceneGraph()
@@ -13,7 +13,7 @@ test('core page preparation only reports progress and never owns app suspension'
     fontFamily: 'Loader Test',
     fontWeight: 400
   })
-  const progress: Array<{ phase: string; completed?: number; total?: number }> = []
+  const progress: PageSwitchProgress[] = []
   let release: (() => void) | null = null
   const fontReady = new Promise<void>((resolve) => {
     release = resolve

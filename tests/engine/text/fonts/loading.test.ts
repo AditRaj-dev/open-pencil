@@ -212,6 +212,27 @@ describe('FontManager loaded font cache', () => {
     expect(writes).toBe(0)
   })
 
+  test('forwards cancellation to fallback web-font requests', async () => {
+    const manager = new FontManager()
+    manager.setFallbackUserAgent('OpenPencil test')
+    manager.setOnlineFontProviders({ google: true })
+    manager.setWebFontFetch(async (_input, init) => {
+      return await new Promise<Response>((_resolve, reject) => {
+        init?.signal?.addEventListener(
+          'abort',
+          () => reject(new DOMException('Aborted', 'AbortError')),
+          { once: true }
+        )
+      })
+    })
+    const abort = new AbortController()
+    const loading = manager.ensureFallbackPack(['cjk'], '字', abort.signal)
+
+    abort.abort()
+
+    await expect(loading).rejects.toHaveProperty('name', 'AbortError')
+  })
+
   test('loads bundled Inter ExtraBold without network access', async () => {
     const manager = new FontManager()
     const recording = createRecordingProvider()

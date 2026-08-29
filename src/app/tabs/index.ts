@@ -11,6 +11,7 @@ import type { SceneGraph } from '@open-pencil/scene-graph'
 import { setOpenPencilStore } from '@/app/browser-bridge'
 import { describeDiagnosticError, recordStorageFailure } from '@/app/diagnostics'
 import { readFigDocument } from '@/app/document/io/fig'
+import { applyImportedDocument } from '@/app/document/io/imported-document'
 import type { DocumentSourceIdentity } from '@/app/document/io/types'
 import { getRecoveryStore, type RecoverySnapshotMeta } from '@/app/document/recovery'
 import { setActiveEditorStore } from '@/app/editor/active-store'
@@ -215,13 +216,14 @@ async function showImportedGraph(
   load?: DocumentLoadSession
 ): Promise<void> {
   load?.update({ phase: 'materializing', detail: store.state.documentName })
-  store.replaceGraph(graph)
-  store.undo.clear()
+  await applyImportedDocument(store, graph, load)
+  load?.signal.throwIfAborted()
   await prepare?.()
-  store.clearSelection()
+  load?.signal.throwIfAborted()
   const pageId = store.graph.getPages()[0]?.id ?? store.graph.rootId
   load?.update({ phase: 'populating-page', detail: store.graph.getNode(pageId)?.name ?? null })
   await store.switchPage(pageId, { preparation: load })
+  load?.signal.throwIfAborted()
   load?.update({ phase: 'preparing-render', detail: store.state.documentName })
   await store.fitCurrentPageToViewport()
 }

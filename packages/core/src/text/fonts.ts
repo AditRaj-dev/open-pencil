@@ -390,20 +390,33 @@ export class FontManager {
 
   async ensureFallbackPack(
     scripts: FontFallbackScript[] = ['cjk', 'arabic'],
-    characters = ''
+    characters = '',
+    signal?: AbortSignal
   ): Promise<Partial<Record<FontFallbackScript, string[]>>> {
+    signal?.throwIfAborted()
     const result: Partial<Record<FontFallbackScript, string[]>> = {}
     await Promise.all(
       scripts.map(async (script) => {
-        if (script === 'arabic' && !characters) result[script] = await this.ensureArabicFallback()
-        else if (script === 'cjk' && !characters) result[script] = await this.ensureCJKFallback()
-        else {
-          const target =
-            script === 'arabic' ? this.arabicFallbackFamilies : this.cjkFallbackFamilies
+        signal?.throwIfAborted()
+        const target = script === 'arabic' ? this.arabicFallbackFamilies : this.cjkFallbackFamilies
+        if (signal) {
+          result[script] = await this.ensureFallbackFamilies(
+            script,
+            target,
+            { allowVariableLocalFonts: script === 'cjk' },
+            characters,
+            signal
+          )
+        } else if (script === 'arabic' && !characters) {
+          result[script] = await this.ensureArabicFallback()
+        } else if (script === 'cjk' && !characters) {
+          result[script] = await this.ensureCJKFallback()
+        } else {
           result[script] = await this.ensureFallbackFamilies(script, target, {}, characters)
         }
       })
     )
+    signal?.throwIfAborted()
     return result
   }
 
@@ -421,11 +434,14 @@ export class FontManager {
     script: FontFallbackScript,
     targetFamilies: string[],
     options: { allowVariableLocalFonts?: boolean } = {},
-    characters = ''
+    characters = '',
+    signal?: AbortSignal
   ): Promise<string[]> {
+    signal?.throwIfAborted()
     const manifest = fontFallbackEntry(script, this.fallbackUserAgent)
 
     for (const family of manifest.localFamilies) {
+      signal?.throwIfAborted()
       const buffer =
         (await this.loadHostFont(family, 'Regular')) ??
         (await this.findLocalFont(family, undefined, {
@@ -443,7 +459,9 @@ export class FontManager {
     if (targetFamilies.length === 0 || characters) {
       const results = await Promise.allSettled(
         manifest.remoteFamilies.map(async (family) => {
-          const data = await this.loadRemoteFont(family, 'Regular', characters)
+          signal?.throwIfAborted()
+          const data = await this.loadRemoteFont(family, 'Regular', characters, signal)
+          signal?.throwIfAborted()
           return data ? family : null
         })
       )

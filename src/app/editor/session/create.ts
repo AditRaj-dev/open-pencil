@@ -154,32 +154,33 @@ export function createEditorStore(initialGraph?: SceneGraph) {
           })
         }
       })
-      if (prepared && !preparation.signal.aborted) {
+      preparation.signal.throwIfAborted()
+      if (prepared) {
         editor.commitPageSwitch(prepared)
         preparation.update({ phase: 'preparing-render', detail: page?.name ?? null })
         await preparationController.waitForPresentation(preparation.id, editor.state.sceneVersion)
+        preparation.signal.throwIfAborted()
       }
       succeeded = true
     } catch (error) {
-      if (!preparation.signal.aborted) {
-        if (ownsPreparation) {
-          const presentationTimedOut =
-            error instanceof Error && error.message === 'The operation was timed out'
-          preparation.fail({
-            code: presentationTimedOut ? 'render-failed' : 'layout-failed',
-            message: error instanceof Error ? error.message : String(error),
-            retryable: true
-          })
-          if (presentationTimedOut) {
-            toast.error(
-              notificationMessages.get().operationFailed({
-                error: error instanceof Error ? error.message : String(error)
-              })
-            )
-          }
+      if (preparation.signal.aborted) throw error
+      if (ownsPreparation) {
+        const presentationTimedOut =
+          error instanceof Error && error.message === 'The operation was timed out'
+        preparation.fail({
+          code: presentationTimedOut ? 'render-failed' : 'layout-failed',
+          message: error instanceof Error ? error.message : String(error),
+          retryable: true
+        })
+        if (presentationTimedOut) {
+          toast.error(
+            notificationMessages.get().operationFailed({
+              error: error instanceof Error ? error.message : String(error)
+            })
+          )
         }
-        throw error
       }
+      throw error
     } finally {
       if (ownsPreparation && succeeded) preparation.complete()
     }

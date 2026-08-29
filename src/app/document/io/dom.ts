@@ -126,15 +126,13 @@ export function createDOMOpenActions({
       setDocumentSource(file.name, 'html', options.handle, options.path)
       succeeded = true
     } catch (e) {
-      if (load.signal.aborted) return
+      if (load.signal.aborted || !ownsLoad) throw e
       const diagnostic = describeDiagnosticError(e)
-      if (ownsLoad) {
-        load.fail({
-          code: 'decode-failed',
-          message: errorDetail(e),
-          retryable: diagnostic.retryable ?? true
-        })
-      }
+      load.fail({
+        code: 'decode-failed',
+        message: errorDetail(e),
+        retryable: diagnostic.retryable ?? true
+      })
       recordDocumentFailure({
         operation: 'open',
         format: 'dom-css',

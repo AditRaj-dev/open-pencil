@@ -17,5 +17,5 @@ export function preparationLabel(preparation: EditorPreparation | null): string 
 
 export function preparationPercent(progress: EditorPreparationProgress | null): number | null {
   if (!progress || progress.total <= 0) return null
-  return Math.round((progress.completed / progress.total) * 100)
+  return Math.min(100, Math.max(0, Math.round((progress.completed / progress.total) * 100)))
 }

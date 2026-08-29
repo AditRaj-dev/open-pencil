@@ -115,7 +115,8 @@ export function createPageActions(ctx: EditorContext) {
       })
       const fallbacks = await fontManager.ensureFallbackPack(
         requiredFallbacks,
-        requirements.characters
+        requirements.characters,
+        options.signal
       )
       throwIfAborted(options.signal)
       options.onProgress?.({
