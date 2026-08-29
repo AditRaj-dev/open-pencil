@@ -130,7 +130,9 @@ export async function parseFigFile(
     } catch (error) {
       if (options.signal?.aborted) throw error
       console.warn('Worker parsing failed, falling back to main thread:', error)
-      return parseFigFileSync(copy, options)
+      const graph = parseFigFileSync(copy, options)
+      registerOriginalArchiveRequest(graph, async () => new Uint8Array(copy.slice(0)))
+      return graph
     }
   }
   options.signal?.throwIfAborted()

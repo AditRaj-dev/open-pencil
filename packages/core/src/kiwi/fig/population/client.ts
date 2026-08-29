@@ -47,7 +47,7 @@ export function registerFigPopulationWorker(
 ): void {
   if (graph.nodes.size > MAX_FIG_POPULATION_WORKER_NODES) {
     emitTelemetry({ event: 'fallback', reason: 'oversized' })
-    worker.terminate()
+    if (!port) worker.terminate()
     return
   }
   const client = createPopulationWorkerClient(graph, worker, port)
