@@ -48,7 +48,7 @@ function drawSectionTitle(
     node.fills.length > 0 && node.fills[0].visible
       ? r.resolveFillColor(node.fills[0], 0, node, graph)
       : { r: 0.37, g: 0.37, b: 0.37, a: 1 }
-  const foreground = canvasLabelForeground(pillColor)
+  const foreground = canvasLabelForeground(pillColor, r.pageColor)
   const textColor = r.ck.Color4f(foreground.r, foreground.g, foreground.b, foreground.a)
 
   const maxTextW = Math.max(1, maxPillW - SECTION_TITLE_PADDING_X * 2)
