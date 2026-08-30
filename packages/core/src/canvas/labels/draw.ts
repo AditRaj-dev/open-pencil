@@ -51,7 +51,7 @@ function drawSectionTitle(
   const textColor = lum > 0.5 ? r.ck.BLACK : r.ck.WHITE
 
   const maxTextW = Math.max(1, maxPillW - SECTION_TITLE_PADDING_X * 2)
-  const textWidth = r.labelParagraphCache.measure(
+  const textMetrics = r.labelParagraphCache.measure(
     r.ck,
     provider,
     node.name,
@@ -60,7 +60,7 @@ function drawSectionTitle(
     textColor,
     r.fontGeneration
   )
-  const pillW = Math.min(textWidth + SECTION_TITLE_PADDING_X * 2, maxPillW)
+  const pillW = Math.min(textMetrics.width + SECTION_TITLE_PADDING_X * 2, maxPillW)
   const pillH = SECTION_TITLE_HEIGHT
   const localPillX = 0
   const localPillY = nested ? SECTION_TITLE_GAP : -pillH - SECTION_TITLE_GAP
@@ -86,7 +86,7 @@ function drawSectionTitle(
     textColor,
     r.fontGeneration,
     localPillX + SECTION_TITLE_PADDING_X,
-    localPillY
+    localPillY + (pillH - textMetrics.height) / 2
   )
   canvas.restore()
 }
