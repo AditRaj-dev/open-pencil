@@ -214,20 +214,23 @@ export class WebFontResolver {
     }
 
     const originalFetch = globalThis.fetch
-    globalThis.fetch = ((input: RequestInfo | URL, init?: RequestInit) => {
+    const proxyFetch = (input: RequestInfo | URL, init?: RequestInit) => {
       const url = typeof input === 'string' || input instanceof URL ? input.toString() : input.url
       if (url.startsWith('https://') || url.startsWith('http://')) {
+        signal?.throwIfAborted()
         return (
-          this.remoteFetch?.(url, init) ?? Promise.reject(new TypeError('No font proxy fetcher'))
+          this.remoteFetch?.(url, { ...init, signal: signal ?? init?.signal }) ??
+          Promise.reject(new TypeError('No font proxy fetcher'))
         )
       }
       return originalFetch(input, init)
-    }) as typeof fetch
+    }
+    globalThis.fetch = proxyFetch as typeof fetch
 
     try {
-      return await operation()
+      return await waitForFontOperation(operation(), signal)
     } finally {
-      globalThis.fetch = originalFetch
+      if (globalThis.fetch === proxyFetch) globalThis.fetch = originalFetch
       release?.()
     }
   }

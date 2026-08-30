@@ -619,7 +619,7 @@ export class SkiaRenderer {
   }
 
   isNodeFontLoaded(node: SceneNode): boolean {
-    return this.nodeFontReadiness(node) === 'ready'
+    return RenderText.isNodeFontLoaded(this, node)
   }
 
   buildTextPicture(node: SceneNode): Uint8Array | null {

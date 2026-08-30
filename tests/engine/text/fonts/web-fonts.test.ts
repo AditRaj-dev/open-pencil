@@ -39,6 +39,31 @@ describe('web font coverage requests', () => {
     await first
   })
 
+  test('aborts promptly while provider resolution is pending', async () => {
+    const resolver = new WebFontResolver()
+    resolver.setEnabled({ google: true })
+    let providerRequestStarted: (() => void) | null = null
+    let releaseProviderRequest: (() => void) | null = null
+    const started = new Promise<void>((resolve) => {
+      providerRequestStarted = resolve
+    })
+    const blocked = new Promise<Response>((resolve) => {
+      releaseProviderRequest = () => resolve(new Response('{}', { status: 200 }))
+    })
+    resolver.setRemoteFetch(async () => {
+      providerRequestStarted?.()
+      return blocked
+    })
+    const abort = new AbortController()
+    const loading = resolver.fetchFont(['Inter'], 'Regular', '', abort.signal)
+    await started
+
+    abort.abort()
+
+    await expect(loading).rejects.toHaveProperty('name', 'AbortError')
+    releaseProviderRequest?.()
+  })
+
   test('requests script-specific subsets instead of Latin only', () => {
     expect(webFontSubsetsForText('مرحبا')).toContain('arabic')
     expect(webFontSubsetsForText('한글')).toContain('korean')
