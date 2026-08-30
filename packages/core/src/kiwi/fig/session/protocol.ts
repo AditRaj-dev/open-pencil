@@ -1,5 +1,6 @@
 import type { FigPageManifestEntry } from '@open-pencil/kiwi/fig'
 
+import type { FigImportOptions } from '#core/kiwi/fig/import'
 import type { SerializedSceneGraph } from '#core/kiwi/fig/parse/transfer'
 import type { FigPopulationDelta } from '#core/kiwi/fig/population/delta'
 
@@ -7,7 +8,7 @@ export interface FigSessionOpenRequest {
   type: 'open'
   originalBuffer: ArrayBuffer
   archiveBuffer: ArrayBuffer
-  options?: { populate?: 'all' | 'first-page' | 'none' }
+  options?: FigImportOptions
   port: MessagePort
 }
 

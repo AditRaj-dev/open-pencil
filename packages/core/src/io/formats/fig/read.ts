@@ -38,6 +38,7 @@ function parseViaWorker(buffer: ArrayBuffer, options: ParseFigFileOptions): Prom
     options.signal?.throwIfAborted()
     const worker = createFigSessionWorker()
     const channel = new MessageChannel()
+    const pendingArchives = new Map<string, (bytes: Uint8Array) => void>()
     const abort = () => {
       channel.port1.postMessage({ type: 'dispose' })
       channel.port1.close()
@@ -48,6 +49,13 @@ function parseViaWorker(buffer: ArrayBuffer, options: ParseFigFileOptions): Prom
     const cleanupAbort = () => options.signal?.removeEventListener('abort', abort)
 
     channel.port1.onmessage = (e: MessageEvent<FigSessionResponse>) => {
+      if (e.data.type === 'original-archive-result') {
+        const resolveArchive = pendingArchives.get(e.data.requestId)
+        if (!resolveArchive) return
+        pendingArchives.delete(e.data.requestId)
+        resolveArchive(e.data.bytes)
+        return
+      }
       if (e.data.type === 'page-manifest') {
         options.onPages?.(e.data.pages)
         return
@@ -70,18 +78,7 @@ function parseViaWorker(buffer: ArrayBuffer, options: ParseFigFileOptions): Prom
             () =>
               new Promise<Uint8Array>((resolveArchive) => {
                 const requestId = randomHex()
-                const previous = channel.port1.onmessage
-                channel.port1.onmessage = (message: MessageEvent<FigSessionResponse>) => {
-                  if (
-                    message.data.type === 'original-archive-result' &&
-                    message.data.requestId === requestId
-                  ) {
-                    channel.port1.onmessage = previous
-                    resolveArchive(message.data.bytes)
-                    return
-                  }
-                  previous?.call(channel.port1, message)
-                }
+                pendingArchives.set(requestId, resolveArchive)
                 channel.port1.postMessage({ type: 'original-archive', requestId })
               })
           )

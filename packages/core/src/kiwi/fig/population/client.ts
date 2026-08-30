@@ -47,7 +47,11 @@ export function registerFigPopulationWorker(
 ): void {
   if (graph.nodes.size > MAX_FIG_POPULATION_WORKER_NODES) {
     emitTelemetry({ event: 'fallback', reason: 'oversized' })
-    if (!port) worker.terminate()
+    if (!port) {
+      worker.terminate()
+      return
+    }
+    populationWorkers.set(graph, createDisposalOnlyWorker(worker, port))
     return
   }
   const client = createPopulationWorkerClient(graph, worker, port)
@@ -87,7 +91,12 @@ export function registerOriginalArchiveRequest(
 
 export async function requestOriginalArchive(graph: SceneGraph): Promise<Uint8Array | null> {
   const entry = originalArchiveRequests.get(graph)
-  return entry?.valid ? entry.request() : null
+  if (!entry?.valid) return null
+  const archive = await entry.request()
+  return originalArchiveRequests.get(graph)?.valid === true &&
+    originalArchiveRequests.get(graph) === entry
+    ? archive
+    : null
 }
 
 export function releaseFigPopulationWorker(graph: SceneGraph): void {
@@ -100,6 +109,21 @@ export function releaseFigPopulationWorker(graph: SceneGraph): void {
 export interface FigPopulationWorker {
   populate: (pageId: string, signal?: AbortSignal) => Promise<boolean | null>
   terminate: () => void
+}
+
+function createDisposalOnlyWorker(worker: Worker, port: MessagePort): FigPopulationWorker {
+  let disposed = false
+  return {
+    populate: () => Promise.resolve(null),
+    terminate() {
+      if (disposed) return
+      disposed = true
+      emitTelemetry({ event: 'terminated' })
+      port.postMessage({ type: 'dispose' })
+      port.close()
+      worker.terminate()
+    }
+  }
 }
 
 export function createFigPopulationWorker(graph: SceneGraph): FigPopulationWorker | null {
