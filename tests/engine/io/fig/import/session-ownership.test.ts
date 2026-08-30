@@ -54,7 +54,7 @@ describe('FIG session ownership', () => {
     expect(portClosed).toBe(true)
   })
 
-  test('rejects session worker construction outside Worker runtimes', async () => {
+  test.serial('rejects session worker construction outside Worker runtimes', async () => {
     const originalWorker = globalThis.Worker
     Reflect.deleteProperty(globalThis, 'Worker')
     try {
