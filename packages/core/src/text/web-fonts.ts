@@ -207,11 +207,11 @@ export class WebFontResolver {
     })
     try {
       await waitForFontOperation(previous, signal)
+      signal?.throwIfAborted()
     } catch (error) {
       void previous.finally(() => release?.())
       throw error
     }
-    signal?.throwIfAborted()
 
     const originalFetch = globalThis.fetch
     globalThis.fetch = ((input: RequestInfo | URL, init?: RequestInit) => {

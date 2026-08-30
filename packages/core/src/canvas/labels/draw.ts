@@ -41,6 +41,7 @@ function drawSectionTitle(
   const screenY = absY * r.zoom + r.panY
   const screenW = node.width * r.zoom
   const maxPillW = Math.max(screenW, 0)
+  if (maxPillW <= 0) return
 
   const pillColor =
     node.fills.length > 0 && node.fills[0].visible
