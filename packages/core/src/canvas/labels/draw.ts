@@ -42,6 +42,13 @@ function drawSectionTitle(
   const screenW = node.width * r.zoom
   const maxPillW = Math.max(screenW, 0)
 
+  const pillColor =
+    node.fills.length > 0 && node.fills[0].visible
+      ? r.resolveFillColor(node.fills[0], 0, node, graph)
+      : { r: 0.37, g: 0.37, b: 0.37, a: 1 }
+  const lum = 0.299 * pillColor.r + 0.587 * pillColor.g + 0.114 * pillColor.b
+  const textColor = lum > 0.5 ? r.ck.BLACK : r.ck.WHITE
+
   const maxTextW = Math.max(1, maxPillW - SECTION_TITLE_PADDING_X * 2)
   const textWidth = r.labelParagraphCache.measure(
     r.ck,
@@ -49,18 +56,13 @@ function drawSectionTitle(
     node.name,
     SECTION_TITLE_FONT_SIZE,
     maxTextW,
-    r.ck.BLACK,
+    textColor,
     r.fontGeneration
   )
   const pillW = Math.min(textWidth + SECTION_TITLE_PADDING_X * 2, maxPillW)
   const pillH = SECTION_TITLE_HEIGHT
   const localPillX = 0
   const localPillY = nested ? SECTION_TITLE_GAP : -pillH - SECTION_TITLE_GAP
-
-  const pillColor =
-    node.fills.length > 0 && node.fills[0].visible
-      ? r.resolveFillColor(node.fills[0], 0, node, graph)
-      : { r: 0.37, g: 0.37, b: 0.37, a: 1 }
 
   canvas.save()
   canvas.translate(screenX, screenY)
@@ -72,8 +74,6 @@ function drawSectionTitle(
   const pillRect = r.ck.LTRBRect(localPillX, localPillY, localPillX + pillW, localPillY + pillH)
   canvas.drawRRect(r.ck.RRectXY(pillRect, SECTION_TITLE_RADIUS, SECTION_TITLE_RADIUS), r.auxFill)
 
-  const lum = 0.299 * pillColor.r + 0.587 * pillColor.g + 0.114 * pillColor.b
-  const textColor = lum > 0.5 ? r.ck.BLACK : r.ck.WHITE
   r.auxFill.setColor(textColor)
   r.labelParagraphCache.draw(
     r.ck,

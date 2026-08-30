@@ -89,6 +89,33 @@ function isArrayBuffer(value: ArrayBuffer | null): value is ArrayBuffer {
   return value !== null
 }
 
+function waitForFontOperation<T>(operation: Promise<T>, signal?: AbortSignal): Promise<T> {
+  if (!signal) return operation
+  signal.throwIfAborted()
+  return new Promise<T>((resolve, reject) => {
+    const abort = () => {
+      try {
+        signal.throwIfAborted()
+      } catch (error) {
+        reject(error instanceof Error ? error : new Error(String(error)))
+      }
+    }
+    signal.addEventListener('abort', abort, { once: true })
+    void operation.then(
+      (value) => {
+        signal.removeEventListener('abort', abort)
+        resolve(value)
+        return undefined
+      },
+      (error: unknown) => {
+        signal.removeEventListener('abort', abort)
+        reject(error instanceof Error ? error : new Error(String(error)))
+        return undefined
+      }
+    )
+  })
+}
+
 export interface ResolvedWebFont {
   buffers: ArrayBuffer[]
   provider: WebFontProviderId
@@ -170,7 +197,7 @@ export class WebFontResolver {
     return null
   }
 
-  private async withFetchProxy<T>(operation: () => Promise<T>): Promise<T> {
+  private async withFetchProxy<T>(operation: () => Promise<T>, signal?: AbortSignal): Promise<T> {
     if (!this.remoteFetch) return operation()
 
     const previous = this.fetchProxyQueue
@@ -178,7 +205,13 @@ export class WebFontResolver {
     this.fetchProxyQueue = new Promise<void>((resolve) => {
       release = () => resolve()
     })
-    await previous
+    try {
+      await waitForFontOperation(previous, signal)
+    } catch (error) {
+      void previous.finally(() => release?.())
+      throw error
+    }
+    signal?.throwIfAborted()
 
     const originalFetch = globalThis.fetch
     globalThis.fetch = ((input: RequestInfo | URL, init?: RequestInit) => {
@@ -204,13 +237,13 @@ export class WebFontResolver {
     return fetch(url, init)
   }
 
-  private async unifont(provider: WebFontProviderId): Promise<WebUnifont> {
+  private async unifont(provider: WebFontProviderId, signal?: AbortSignal): Promise<WebUnifont> {
     let promise = this.unifontPromises.get(provider)
     if (!promise) {
       promise = this.withFetchProxy(() => createProviderUnifont(provider))
       this.unifontPromises.set(provider, promise)
     }
-    return promise
+    return waitForFontOperation(promise, signal)
   }
 
   private async loadFamilies(provider: WebFontProviderId): Promise<string[]> {
@@ -272,7 +305,7 @@ export class WebFontResolver {
     try {
       signal?.throwIfAborted()
       const parsed = parseFontStyle(style)
-      const unifont = await this.unifont(provider)
+      const unifont = await this.unifont(provider, signal)
       const options = {
         weights: [String(parsed.weight)],
         styles: [parsed.italic ? 'italic' : 'normal'],
@@ -282,9 +315,11 @@ export class WebFontResolver {
           ? { options: { google: { experimental: { glyphs: [characters] } } } }
           : {})
       } satisfies WebFontResolveOptions
-      const result = await this.withFetchProxy<ResolveFontResult>(() =>
-        unifont.resolveFont(family, options)
+      const result = await this.withFetchProxy<ResolveFontResult>(
+        () => unifont.resolveFont(family, options),
+        signal
       )
+      signal?.throwIfAborted()
       const faces = resolvedRemoteFaces(result)
       const buffers = await Promise.all(
         faces.map(async ({ source, init }) => {
