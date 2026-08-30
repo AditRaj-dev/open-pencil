@@ -2,6 +2,7 @@ import type { Canvas } from 'canvaskit-wasm'
 
 import type { SceneNode, SceneGraph } from '@open-pencil/scene-graph'
 
+import { canvasLabelForeground } from '#core/canvas/labels/color'
 import type { SkiaRenderer } from '#core/canvas/renderer'
 import {
   SECTION_TITLE_HEIGHT,
@@ -47,8 +48,8 @@ function drawSectionTitle(
     node.fills.length > 0 && node.fills[0].visible
       ? r.resolveFillColor(node.fills[0], 0, node, graph)
       : { r: 0.37, g: 0.37, b: 0.37, a: 1 }
-  const lum = 0.299 * pillColor.r + 0.587 * pillColor.g + 0.114 * pillColor.b
-  const textColor = lum > 0.5 ? r.ck.BLACK : r.ck.WHITE
+  const foreground = canvasLabelForeground(pillColor)
+  const textColor = r.ck.Color4f(foreground.r, foreground.g, foreground.b, foreground.a)
 
   const maxTextW = Math.max(1, maxPillW - SECTION_TITLE_PADDING_X * 2)
   const textMetrics = r.labelParagraphCache.measure(
