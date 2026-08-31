@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { useI18n } from '@open-pencil/vue'
+import { useCloudMessages } from '@open-pencil/vue'
 
 import {
   cloudConnectionWorkSummary,
@@ -22,7 +22,7 @@ import AppSelect from '@/components/ui/AppSelect.vue'
 import { useButtonUI } from '@/components/ui/button'
 
 const router = useRouter()
-const { dialogs } = useI18n()
+const cloudMessages = useCloudMessages()
 const cloud = useCloudStorageSettings()
 const connectDialogOpen = ref(false)
 const disconnectOpen = ref(false)
@@ -44,33 +44,33 @@ const presentation = computed(() =>
 const statusCopy = computed(() => {
   switch (presentation.value.status) {
     case 'connected':
-      return { label: dialogs.value.cloudStatusConnected, description: null }
+      return { label: cloudMessages.value.statusConnected, description: null }
     case 'unauthenticated':
       return {
-        label: dialogs.value.cloudStatusSignInRequired,
-        description: dialogs.value.cloudStatusSignInRequiredDescription
+        label: cloudMessages.value.statusSignInRequired,
+        description: cloudMessages.value.statusSignInRequiredDescription
       }
     case 'authentication-required':
       return {
-        label: dialogs.value.cloudStatusReauthenticationRequired,
-        description: dialogs.value.cloudStatusReauthenticationRequiredDescription
+        label: cloudMessages.value.statusReauthenticationRequired,
+        description: cloudMessages.value.statusReauthenticationRequiredDescription
       }
     case 'discovering':
-      return { label: dialogs.value.cloudStatusConnecting, description: null }
+      return { label: cloudMessages.value.statusConnecting, description: null }
     case 'offline':
       return {
-        label: dialogs.value.cloudStatusOffline,
-        description: dialogs.value.cloudStatusOfflineDescription
+        label: cloudMessages.value.statusOffline,
+        description: cloudMessages.value.statusOfflineDescription
       }
     case 'error':
       return {
-        label: dialogs.value.cloudStatusConnectionError,
-        description: dialogs.value.cloudStatusConnectionErrorDescription
+        label: cloudMessages.value.statusConnectionError,
+        description: cloudMessages.value.statusConnectionErrorDescription
       }
     case 'disconnected':
       return {
-        label: dialogs.value.cloudStatusDisconnected,
-        description: dialogs.value.cloudStatusDisconnectedDescription
+        label: cloudMessages.value.statusDisconnected,
+        description: cloudMessages.value.statusDisconnectedDescription
       }
   }
   throw new Error('Unknown Cloud connection status')
@@ -78,15 +78,15 @@ const statusCopy = computed(() => {
 const primaryActionLabel = computed(() => {
   switch (presentation.value.primaryAction) {
     case 'open-workspace':
-      return dialogs.value.cloudOpenWorkspace
+      return cloudMessages.value.openWorkspace
     case 'reauthenticate':
-      return dialogs.value.cloudReauthenticate
+      return cloudMessages.value.reauthenticate
     case 'sign-in':
-      return dialogs.value.cloudSignIn
+      return cloudMessages.value.signIn
     case 'reconnect':
-      return dialogs.value.cloudReconnect
+      return cloudMessages.value.reconnect
     case 'retry':
-      return dialogs.value.cloudRetryConnection
+      return cloudMessages.value.retryConnection
   }
 })
 const badgeUI = computed(() => {

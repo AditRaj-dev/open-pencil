@@ -1,5 +1,5 @@
 {
-  "lockfileVersion": 1,
+  "lockfileVersion": 3,
   "configVersion": 1,
   "workspaces": {
     "": {
@@ -430,7 +430,9 @@
   },
   "overrides": {
     "@codemirror/view": "6.43.9",
-    "brace-expansion@2": "2.1.4",
+    "brace-expansion@2": {
+      ".": "2.1.4",
+    },
     "protobufjs": "7.5.5",
     "websocket-driver": "0.7.5",
   },

@@ -48,7 +48,7 @@ const showChrome = !('no-chrome' in params)
 const createdInitialTab = tabCount() === 0
 const firstTab = createdInitialTab ? createTab() : (activeTab.value ?? createTab())
 const store = useEditorStore()
-const { dialogs } = useI18n()
+const { editor } = useI18n()
 const { isMobile } = useViewportKind()
 
 if (createdInitialTab && route.meta.demo && !('test' in params)) {
@@ -262,9 +262,7 @@ onUnmounted(() => {
             store.state.documentName
           }}</span>
           <Tip
-            :label="
-              dialogs.showUI({ shortcut: formatShortcut(appMenuShortcut('toggle-ui')) ?? '' })
-            "
+            :label="editor.showUI({ shortcut: formatShortcut(appMenuShortcut('toggle-ui')) ?? '' })"
           >
             <button
               data-test-id="editor-show-ui"

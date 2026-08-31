@@ -10,12 +10,16 @@ import type { SceneGraph } from '@open-pencil/scene-graph'
 
 import { setOpenPencilStore } from '@/app/browser-bridge'
 import { getCloudDocumentAccess } from '@/app/collab/cloud-sharing'
+import { describeDiagnosticError, recordStorageFailure } from '@/app/diagnostics'
 import { readFigDocument } from '@/app/document/io/fig'
+import { applyImportedDocument } from '@/app/document/io/imported-document'
 import type { DocumentSourceIdentity } from '@/app/document/io/types'
 import { getRecoveryStore, type RecoverySnapshotMeta } from '@/app/document/recovery'
 import { setActiveEditorStore } from '@/app/editor/active-store'
+import type { EditorPreparationHandle as DocumentLoadSession } from '@/app/editor/preparation/types'
 import { createEditorStore } from '@/app/editor/session'
 import type { EditorStore } from '@/app/editor/session'
+import { notificationMessages } from '@/app/i18n/notifications'
 import {
   activeStorageProviderID,
   createActiveStorageAdapter,
@@ -28,6 +32,7 @@ import {
   loadCachedRecentFileThumbnail,
   rememberRecentStorageDocument
 } from '@/app/recent-files'
+import { toast } from '@/app/shell/ui'
 import { storageCanvasId } from '@/app/storage/id'
 import { getLocalCanvasStore } from '@/app/storage/local-store'
 import { seedStorageCanvasFromRemote } from '@/app/storage/sync/persist'
@@ -64,6 +69,8 @@ export const allTabs = computed(() =>
     id: t.id,
     name: t.store.state.documentName,
     isHome: t.kind === 'home',
+    isPreparing: t.store.state.preparation !== null,
+    preparationProgress: t.store.state.preparation?.progress ?? null,
     isActive: t.id === activeTabId.value
   }))
 )
@@ -155,6 +162,7 @@ export async function closeTab(tabId: string): Promise<void> {
   const wasActive = activeTabId.value === tabId
   coverThumbnailListeners.get(closingTab.store)?.()
   coverThumbnailListeners.delete(closingTab.store)
+  closingTab.store.preparationController.dispose()
   await closingTab.store.persistRecoveryNow()
   closingTab.store.dispose()
   tabsRef.value = tabsRef.value.filter((t) => t.id !== tabId)
@@ -195,8 +203,8 @@ function reusableTabStore(): { store: EditorStore; created: boolean } {
   return { store: createTab().store, created: true }
 }
 
-async function readFigForTab(file: File, store: EditorStore): Promise<SceneGraph> {
-  const imported = await readFigDocument(file, store)
+async function readFigForTab(file: File, signal?: AbortSignal): Promise<SceneGraph> {
+  const imported = await readFigDocument(file, signal)
   const firstPageId = imported.getPages()[0]?.id
   if (firstPageId) computeAllLayouts(imported, firstPageId)
   const coverPageId = findFigThumbnailPageId(imported.getPages())
@@ -210,14 +218,19 @@ async function readFigForTab(file: File, store: EditorStore): Promise<SceneGraph
 async function showImportedGraph(
   store: EditorStore,
   graph: SceneGraph,
-  prepare?: () => void | Promise<void>
+  prepare?: () => void | Promise<void>,
+  load?: DocumentLoadSession
 ): Promise<void> {
-  store.replaceGraph(graph)
-  store.undo.clear()
+  load?.update({ phase: 'materializing', detail: store.state.documentName })
+  await applyImportedDocument(store, graph, load)
+  load?.signal.throwIfAborted()
   await prepare?.()
-  store.clearSelection()
+  load?.signal.throwIfAborted()
   const pageId = store.graph.getPages()[0]?.id ?? store.graph.rootId
-  await store.switchPage(pageId)
+  load?.update({ phase: 'populating-page', detail: store.graph.getNode(pageId)?.name ?? null })
+  await store.switchPage(pageId, { preparation: load })
+  load?.signal.throwIfAborted()
+  load?.update({ phase: 'preparing-render', detail: store.state.documentName })
   await store.fitCurrentPageToViewport()
 }
 
@@ -307,12 +320,6 @@ function storageOpenIdentity(providerId: string, documentId: string): StorageOpe
   const profile = activeCloudConnectionProfile()
   if (!profile?.selectedWorkspaceId)
     throw new Error('OpenPencil Cloud connection and workspace are required')
-  const binding = {
-    providerId: 'openpencil-cloud' as const,
-    connectionId: profile.id,
-    workspaceId: profile.selectedWorkspaceId,
-    documentId
-  }
   return {
     providerId,
     canvasId: storageCanvasId({
@@ -320,36 +327,13 @@ function storageOpenIdentity(providerId: string, documentId: string): StorageOpe
       connectionId: profile.id,
       documentId
     }),
-    binding
+    binding: {
+      providerId: 'openpencil-cloud',
+      connectionId: profile.id,
+      workspaceId: profile.selectedWorkspaceId,
+      documentId
+    }
   }
-}
-
-async function storageDocumentBytes(
-  identity: StorageOpenIdentity,
-  document: StorageDocument
-): Promise<Uint8Array> {
-  const local = getLocalCanvasStore()
-  const metadata = await local.getMeta(identity.canvasId)
-  const localBytes = metadata?.hasFig ? await local.readFig(identity.canvasId) : null
-  const localIsAuthoritative =
-    metadata?.syncStatus !== 'synced' ||
-    !document.metadataAuthoritative ||
-    metadata.updatedAt >= document.updatedAt
-  if (localBytes && localIsAuthoritative) return localBytes
-  const bytes = await createActiveStorageAdapter(identity.providerId).getDocument(document.id)
-  await seedStorageCanvasFromRemote({
-    providerId: identity.providerId,
-    documentId: document.id,
-    ...(identity.binding.providerId === 'openpencil-cloud'
-      ? { connectionId: identity.binding.connectionId, workspaceId: identity.binding.workspaceId }
-      : {}),
-    canvasId: identity.canvasId,
-    name: document.name,
-    updatedAt: document.updatedAt,
-    figBytes: bytes,
-    remoteRevisionId: document.remoteRevisionId
-  })
-  return bytes
 }
 
 export async function openStorageDocumentInNewTab(document: StorageDocument): Promise<void> {
@@ -362,13 +346,57 @@ export async function openStorageDocumentInNewTab(document: StorageDocument): Pr
     rememberRecentStorageDocument(identity.providerId, document.id, document.name)
     return
   }
+
   const { store, created } = reusableTabStore()
   store.state.documentName = document.name
-  store.state.loading = true
+  const load = store.preparationController.begin({
+    kind: 'storage-open',
+    subject: document.name
+  })
+  let succeeded = false
   try {
     load.update({ phase: 'reading', detail: document.name })
-    const bytes = await storageDocumentBytes(identity, document)
+    const local = getLocalCanvasStore()
+    const localMetadata = await local.getMeta(identity.canvasId)
     load.signal.throwIfAborted()
+    const localBytes = localMetadata?.hasFig ? await local.readFig(identity.canvasId) : null
+    load.signal.throwIfAborted()
+    const localIsAuthoritative =
+      localMetadata?.syncStatus !== 'synced' ||
+      !document.metadataAuthoritative ||
+      localMetadata.updatedAt >= document.updatedAt
+    let bytes = localBytes && localIsAuthoritative ? localBytes : null
+
+    if (!bytes) {
+      bytes = await createActiveStorageAdapter(identity.providerId).getDocument(
+        document.id,
+        (progress) =>
+          load.update({
+            phase: 'reading',
+            detail: document.name,
+            completed: progress.transferredBytes,
+            total: progress.totalBytes,
+            unit: 'bytes'
+          }),
+        load.signal
+      )
+      await seedStorageCanvasFromRemote({
+        providerId: identity.providerId,
+        documentId: document.id,
+        ...(identity.binding.providerId === 'openpencil-cloud'
+          ? {
+              connectionId: identity.binding.connectionId,
+              workspaceId: identity.binding.workspaceId
+            }
+          : {}),
+        canvasId: identity.canvasId,
+        name: document.name,
+        updatedAt: document.updatedAt,
+        figBytes: bytes
+      })
+      load.signal.throwIfAborted()
+    }
+
     const fileBytes = new Uint8Array(bytes.byteLength)
     fileBytes.set(bytes)
     const file = new File([fileBytes.buffer], `${document.name}.fig`, {
@@ -391,14 +419,30 @@ export async function openStorageDocumentInNewTab(document: StorageDocument): Pr
     )
     rememberRecentStorageDocument(identity.providerId, document.id, document.name)
     emitActiveDocumentOpened(store)
+    succeeded = true
   } catch (error) {
+    if (!load.signal.aborted) {
+      const diagnostic = describeDiagnosticError(error)
+      load.fail({
+        code: 'read-failed',
+        message: error instanceof Error ? error.message : String(error),
+        retryable: diagnostic.retryable ?? true
+      })
+      recordStorageFailure({ operation: 'download', ...diagnostic })
+      toast.error(
+        notificationMessages.get().openFileFailed({
+          name: document.name,
+          error: error instanceof Error ? error.message : String(error)
+        })
+      )
+    }
     if (created) {
       const tab = getTabForStore(store)
       if (tab) await closeTab(tab.id)
     }
     throw error
   } finally {
-    store.state.loading = false
+    if (succeeded) load.complete()
   }
 }
 
@@ -433,13 +477,16 @@ export async function openFileInNewTab(
 
     const { store, created } = reusableTabStore()
     store.state.documentName = file.name.replace(/\.[^.]+$/i, '')
-    store.state.loading = true
+    const load = store.preparationController.begin({
+      kind: isDOMImportFile(file) ? 'dom-import' : 'document-open',
+      subject: file.name
+    })
 
     const completion = Promise.withResolvers<undefined>()
     void completion.promise.catch(() => undefined)
     const pendingOpen = { completion: completion.promise, identity, store }
     fileOpenCoordinator.add(pendingOpen)
-    return { kind: 'owner' as const, completion, pendingOpen, store, created }
+    return { kind: 'owner' as const, completion, pendingOpen, store, created, load }
   })
 
   if (decision.kind === 'existing') return
@@ -448,40 +495,55 @@ export async function openFileInNewTab(
     return
   }
 
-  const { completion, pendingOpen, store, created } = decision
+  const { completion, pendingOpen, store, created, load } = decision
+  let succeeded = false
   try {
     if (isDOMImportFile(file)) {
-      await store.openDOMFile(file, { handle, path })
+      await store.openDOMFile(file, { handle, path, preparation: load })
       completion.resolve(undefined)
+      succeeded = true
       return
     }
 
     await yieldToUI()
+    load.update({ phase: 'reading', detail: file.name })
     const isFig = file.name.toLowerCase().endsWith('.fig')
-    const { graph: imported, sourceFormat } = isFig
-      ? {
-          graph: await readFigForTab(file, store),
-          sourceFormat: 'fig'
-        }
-      : await io.readDocument({
-          name: file.name,
-          mimeType: file.type || undefined,
-          data: new Uint8Array(await file.arrayBuffer())
-        })
+    let imported: SceneGraph
+    let sourceFormat: string
+    if (isFig) {
+      load.update({ phase: 'decoding', detail: file.name })
+      imported = await readFigForTab(file, load.signal)
+      sourceFormat = 'fig'
+    } else {
+      const result = await io.readDocument({
+        name: file.name,
+        mimeType: file.type || undefined,
+        data: new Uint8Array(await file.arrayBuffer())
+      })
+      imported = result.graph
+      sourceFormat = result.sourceFormat
+    }
 
     const firstPageId = imported.getPages()[0]?.id
     if (!isFig && firstPageId) computeAllLayouts(imported, firstPageId)
-    await showImportedGraph(store, imported, () => {
-      store.setDocumentSource(file.name, sourceFormat, handle, path)
-      if (isFig && path) watchOpenedFigCover(path, store)
-    })
+    await showImportedGraph(
+      store,
+      imported,
+      () => {
+        store.setDocumentSource(file.name, sourceFormat, handle, path)
+        if (isFig && path) watchOpenedFigCover(path, store)
+      },
+      load
+    )
     if (isFig && path) {
       void cacheOpenedFigCover(path, store).catch((error) => {
         console.warn('[Recent files] Failed to cache the Cover thumbnail', error)
       })
     }
     completion.resolve(undefined)
+    succeeded = true
   } catch (error) {
+    failPreparation(load, 'decode-failed', error)
     completion.reject(error)
     if (created) {
       const tab = getTabForStore(store)
@@ -489,7 +551,7 @@ export async function openFileInNewTab(
     }
     throw error
   } finally {
-    store.state.loading = false
+    if (succeeded) load.complete()
     fileOpenCoordinator.remove(pendingOpen)
   }
 }
@@ -507,20 +569,35 @@ export async function restoreRecoverySnapshot(id: string): Promise<void> {
   if (!snapshot) throw new Error('Recovery snapshot is no longer available')
 
   const { store } = reusableTabStore()
-  store.state.loading = true
+  const load = store.preparationController.begin({
+    kind: 'recovery-restore',
+    subject: snapshot.documentName
+  })
+  let succeeded = false
   try {
+    load.update({ phase: 'reading', detail: snapshot.documentName })
     const fileBytes = new Uint8Array(snapshot.figBytes)
     const file = new File([fileBytes.buffer], `${snapshot.documentName}.fig`, {
       type: 'application/octet-stream'
     })
-    const imported = await readFigForTab(file, store)
+    load.update({ phase: 'decoding', detail: snapshot.documentName })
+    const imported = await readFigForTab(file, load.signal)
 
-    await showImportedGraph(store, imported, async () => {
-      store.state.documentName = snapshot.documentName
-      await store.adoptRecoverySnapshot(id, snapshot.sceneVersion)
-    })
+    await showImportedGraph(
+      store,
+      imported,
+      async () => {
+        store.state.documentName = snapshot.documentName
+        await store.adoptRecoverySnapshot(id, snapshot.sceneVersion)
+      },
+      load
+    )
+    succeeded = true
+  } catch (error) {
+    failPreparation(load, 'decode-failed', error)
+    throw error
   } finally {
-    store.state.loading = false
+    if (succeeded) load.complete()
   }
 }
 

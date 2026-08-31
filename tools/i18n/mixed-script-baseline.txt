@@ -2,7 +2,6 @@ ja:ai.apiKey
 ja:ai.apiType
 ja:ai.baseURL
 ja:ai.baseURLPlaceholder
-ja:ai.connectProvider
 ja:ai.connectionTestAPITypeMismatch
 ja:ai.connectionTestAuthFailed
 ja:ai.connectionTestBrowserNetworkFailed
@@ -12,6 +11,7 @@ ja:ai.connectionTestMissingBaseURL
 ja:ai.connectionTestMissingModel
 ja:ai.connectionTestModelNotFound
 ja:ai.connectionTestNetworkFailed
+ja:ai.connectProvider
 ja:ai.customModelID
 ja:ai.getProviderAPIKey
 ja:ai.modelID
@@ -41,6 +41,8 @@ ja:automation.searchTools
 ja:automation.serverURL
 ja:automation.toolsEnabled
 ja:automation.toolsRestartNotice
+ja:cloud.shareDocument
+ja:cloud.statusConnectionErrorDescription
 ja:code.copyJSXReference
 ja:collaboration.clickToFollowPeer
 ja:collaboration.followingPeerStop
@@ -60,9 +62,9 @@ ja:editor.showUI
 ja:editor.toolOptions
 ja:files.browserFileAPINotSupported
 ja:files.clipboardImageFetchFailed
-ja:files.clipboardImageUnavailableWeb
 ja:files.clipboardImagesFetchFailed
 ja:files.clipboardImagesUnavailableWeb
+ja:files.clipboardImageUnavailableWeb
 ja:files.closeTab
 ja:files.importFailed
 ja:files.importHTMLCSS
@@ -79,8 +81,8 @@ ja:fonts.providerEnabled
 ja:fonts.webFontProvidersRequireDesktopApp
 ja:media.getPexelsAPIKey
 ja:media.getUnsplashAccessKey
-ja:media.pexelsAPIKey
 ja:media.pexelsAlternativeOptional
+ja:media.pexelsAPIKey
 ja:media.stockPhotoToolOptional
 ja:media.unsplashAccessKey
 ja:media.vectorizationDescription
@@ -128,7 +130,6 @@ zh-cn:ai.apiKey
 zh-cn:ai.apiType
 zh-cn:ai.baseURLPlaceholder
 zh-cn:ai.chatOutputLimit
-zh-cn:ai.connectProvider
 zh-cn:ai.connectionTestAPITypeMismatch
 zh-cn:ai.connectionTestAuthFailed
 zh-cn:ai.connectionTestBrowserNetworkFailed
@@ -138,6 +139,7 @@ zh-cn:ai.connectionTestMissingBaseURL
 zh-cn:ai.connectionTestMissingModel
 zh-cn:ai.connectionTestModelNotFound
 zh-cn:ai.connectionTestNetworkFailed
+zh-cn:ai.connectProvider
 zh-cn:ai.customModelID
 zh-cn:ai.getProviderAPIKey
 zh-cn:ai.maxOutputTokens
@@ -168,6 +170,8 @@ zh-cn:automation.searchTools
 zh-cn:automation.serverURL
 zh-cn:automation.toolsEnabled
 zh-cn:automation.toolsRestartNotice
+zh-cn:cloud.shareDocument
+zh-cn:cloud.statusConnectionErrorDescription
 zh-cn:code.copyJSXReference
 zh-cn:collaboration.clickToFollowPeer
 zh-cn:collaboration.followingPeerStop
@@ -203,8 +207,8 @@ zh-cn:fonts.providerDisabled
 zh-cn:fonts.providerEnabled
 zh-cn:media.getPexelsAPIKey
 zh-cn:media.getUnsplashAccessKey
-zh-cn:media.pexelsAPIKey
 zh-cn:media.pexelsAlternativeOptional
+zh-cn:media.pexelsAPIKey
 zh-cn:media.stockPhotoToolOptional
 zh-cn:media.unsplashAccessKey
 zh-cn:media.vectorizationDescription

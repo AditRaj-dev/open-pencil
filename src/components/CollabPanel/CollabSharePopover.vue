@@ -38,7 +38,7 @@ const styles = computed(() => collaboration({ connection: connection.value }))
     @click="cloudDialogOpen = true"
   >
     <icon-lucide-share-2 class="size-3.5" />
-    {{ collab.dialogs.share }}
+    {{ collab.messages.share }}
   </button>
   <PopoverRoot v-else v-model:open="collab.popoverOpen">
     <PopoverTrigger as-child>
