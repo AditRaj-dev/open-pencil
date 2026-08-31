@@ -127,6 +127,7 @@ export class SkiaRenderer {
   lastSceneViewport: { panX: number; panY: number; zoom: number } | null = null
   nodePictureCache = new Map<string, SkPicture | null>()
   nodePictureCacheGenerations = new Map<string, number>()
+  nodePictureCacheDependencies = new Map<string, readonly string[]>()
   effectRasterCache = new Map<string, EffectRasterCacheEntry>()
   subtreePictureCache = new Map<string, SubtreePictureCacheEntry>()
   subtreePictureCachePageId: string | null = null

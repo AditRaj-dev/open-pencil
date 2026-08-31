@@ -576,6 +576,7 @@ export function renderShape(
   if (cached) cached.delete()
   r.nodePictureCache.delete(node.id)
   r.nodePictureCacheGenerations.delete(node.id)
+  r.nodePictureCacheDependencies.delete(node.id)
 
   const bounds = r.ck.LTRBRect(-margin, -margin, node.width + margin, node.height + margin)
   const recorder = new r.ck.PictureRecorder()
@@ -585,6 +586,8 @@ export function renderShape(
     const picture = recorder.finishRecordingAsPicture()
     r.nodePictureCache.set(node.id, picture)
     r.nodePictureCacheGenerations.set(node.id, r.fontGeneration)
+    const shadowChild = getShadowShapeChild(node, graph)
+    r.nodePictureCacheDependencies.set(node.id, shadowChild ? [shadowChild.id] : [])
     canvas.drawPicture(picture)
   } finally {
     recorder.delete()
