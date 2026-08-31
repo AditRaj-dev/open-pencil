@@ -28,7 +28,7 @@ export function createNavigationBenchmarkHooks(store: EditorStore): NavigationBe
           (renderer) => renderer.tracksSceneSettlement && renderer.tiledSceneEnabled
         )
           ? 'tiled'
-          : 'existing'
+          : 'retained'
       )
     },
     async waitForSettlement(timeoutMs = 30_000) {

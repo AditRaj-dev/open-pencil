@@ -389,5 +389,11 @@
   "diagnosticsClearDescription": "このデバイスに保存されている診断イベントを削除します。",
   "diagnosticsCleared": "診断データを消去しました。",
   "diagnosticsCopied": "診断データをクリップボードにコピーしました。",
-  "diagnosticsCopyFailed": "診断データをクリップボードにコピーできませんでした。"
+  "diagnosticsCopyFailed": "診断データをクリップボードにコピーできませんでした。",
+  "settingsRendering": "Rendering",
+  "settingsRenderingDescription": "Choose how OpenPencil presents large canvases.",
+  "progressiveTiledRendering": "Progressive tiled canvas rendering",
+  "progressiveTiledRenderingDescription": "Updates large canvases in bounded tiles while navigating. Experimental; reload required.",
+  "rendererReloadRequired": "Reload OpenPencil to apply this change.",
+  "rendererURLOverride": "The current session renderer is controlled by a URL override. Your saved preference applies when the override is removed."
 }

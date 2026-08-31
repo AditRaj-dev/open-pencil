@@ -389,5 +389,11 @@
   "diagnosticsClearDescription": "Cette action supprime de cet appareil les événements de diagnostic stockés localement.",
   "diagnosticsCleared": "Diagnostics effacés.",
   "diagnosticsCopied": "Diagnostics copiés dans le presse-papiers.",
-  "diagnosticsCopyFailed": "Impossible de copier les diagnostics dans le presse-papiers."
+  "diagnosticsCopyFailed": "Impossible de copier les diagnostics dans le presse-papiers.",
+  "settingsRendering": "Rendering",
+  "settingsRenderingDescription": "Choose how OpenPencil presents large canvases.",
+  "progressiveTiledRendering": "Progressive tiled canvas rendering",
+  "progressiveTiledRenderingDescription": "Updates large canvases in bounded tiles while navigating. Experimental; reload required.",
+  "rendererReloadRequired": "Reload OpenPencil to apply this change.",
+  "rendererURLOverride": "The current session renderer is controlled by a URL override. Your saved preference applies when the override is removed."
 }

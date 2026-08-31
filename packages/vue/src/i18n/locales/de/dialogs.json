@@ -389,5 +389,11 @@
   "diagnosticsClearDescription": "Dadurch werden lokal gespeicherte Diagnosedaten von diesem Gerät entfernt.",
   "diagnosticsCleared": "Diagnosedaten gelöscht.",
   "diagnosticsCopied": "Diagnosedaten in die Zwischenablage kopiert.",
-  "diagnosticsCopyFailed": "Diagnosedaten konnten nicht in die Zwischenablage kopiert werden."
+  "diagnosticsCopyFailed": "Diagnosedaten konnten nicht in die Zwischenablage kopiert werden.",
+  "settingsRendering": "Rendering",
+  "settingsRenderingDescription": "Choose how OpenPencil presents large canvases.",
+  "progressiveTiledRendering": "Progressive tiled canvas rendering",
+  "progressiveTiledRenderingDescription": "Updates large canvases in bounded tiles while navigating. Experimental; reload required.",
+  "rendererReloadRequired": "Reload OpenPencil to apply this change.",
+  "rendererURLOverride": "The current session renderer is controlled by a URL override. Your saved preference applies when the override is removed."
 }

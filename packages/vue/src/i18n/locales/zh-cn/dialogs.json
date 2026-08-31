@@ -389,5 +389,11 @@
   "diagnosticsClearDescription": "这会从此设备中删除本地保存的诊断事件。",
   "diagnosticsCleared": "诊断数据已清除。",
   "diagnosticsCopied": "诊断数据已复制到剪贴板。",
-  "diagnosticsCopyFailed": "无法将诊断数据复制到剪贴板。"
+  "diagnosticsCopyFailed": "无法将诊断数据复制到剪贴板。",
+  "settingsRendering": "Rendering",
+  "settingsRenderingDescription": "Choose how OpenPencil presents large canvases.",
+  "progressiveTiledRendering": "Progressive tiled canvas rendering",
+  "progressiveTiledRenderingDescription": "Updates large canvases in bounded tiles while navigating. Experimental; reload required.",
+  "rendererReloadRequired": "Reload OpenPencil to apply this change.",
+  "rendererURLOverride": "The current session renderer is controlled by a URL override. Your saved preference applies when the override is removed."
 }

@@ -7,6 +7,7 @@ import { setSnappingPreference } from '@/app/settings/preferences/apply'
 import { appPreferences } from '@/app/settings/preferences/store'
 import AppSelect from '@/components/ui/AppSelect.vue'
 import AppSwitch from '@/components/ui/AppSwitch.vue'
+import RenderingSettingsSection from '@/components/settings/general/RenderingSettingsSection.vue'
 
 const { availableLocales, dialogs, locale, localeLabels, menu, setLocale } = useI18n()
 
@@ -124,5 +125,7 @@ const snapToPixelGrid = computed({
     </div>
 
     <p class="text-[10px] text-muted">{{ dialogs.snapTemporaryDisableHint }}</p>
+
+    <RenderingSettingsSection />
   </section>
 </template>

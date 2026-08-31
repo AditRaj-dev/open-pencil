@@ -15,7 +15,7 @@ export interface NavigationRecording {
     canvasWidth: number
     canvasHeight: number
   }
-  sceneRenderer: 'existing' | 'tiled'
+  sceneRenderer: 'retained' | 'tiled'
   initialViewport: { panX: number; panY: number; zoom: number }
   wheel: RecordedWheelSample[]
   trace: NavigationTraceEvent[]

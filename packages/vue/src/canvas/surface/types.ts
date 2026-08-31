@@ -15,7 +15,7 @@ export interface UseCanvasOptions {
   /**
    * Enables the experimental tiled scene renderer for this surface.
    */
-  sceneRenderer?: 'existing' | 'tiled'
+  sceneRenderer?: 'retained' | 'tiled'
   /**
    * Forces ruler visibility on or off for this canvas.
    *

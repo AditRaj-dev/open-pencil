@@ -20,6 +20,16 @@ describe('app runtime configuration', () => {
     })
   })
 
+  test('uses a persisted renderer preference when no URL override is present', () => {
+    expect(parseAppRuntimeConfig('', 'tiled').sceneRenderer).toBe('tiled')
+    expect(parseAppRuntimeConfig('?renderer=unknown', 'tiled').sceneRenderer).toBe('tiled')
+  })
+
+  test('valid renderer URL overrides take precedence over preferences', () => {
+    expect(parseAppRuntimeConfig('?renderer=retained', 'tiled').sceneRenderer).toBe('retained')
+    expect(parseAppRuntimeConfig('?renderer=tiled', 'retained').sceneRenderer).toBe('tiled')
+  })
+
   test('uses production-safe defaults for absent or unknown values', () => {
     expect(parseAppRuntimeConfig('?renderer=unknown')).toEqual({
       test: false,
@@ -27,7 +37,7 @@ describe('app runtime configuration', () => {
       recentFiles: false,
       showChrome: true,
       showRulers: true,
-      sceneRenderer: 'existing',
+      sceneRenderer: 'retained',
       collaborationTransport: 'default',
       collaborationRelayURL: null
     })

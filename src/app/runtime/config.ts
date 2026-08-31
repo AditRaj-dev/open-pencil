@@ -1,6 +1,7 @@
+import { appPreferences, type CanvasRenderingMode } from '@/app/settings/preferences/store'
 import { IS_BROWSER } from '@/constants'
 
-export type SceneRendererMode = 'existing' | 'tiled'
+export type SceneRendererMode = CanvasRenderingMode
 export type CollaborationTransportMode = 'default' | 'test'
 
 export interface AppRuntimeConfig {
@@ -14,18 +15,27 @@ export interface AppRuntimeConfig {
   collaborationRelayURL: string | null
 }
 
-export function parseAppRuntimeConfig(search: string): AppRuntimeConfig {
+export function parseAppRuntimeConfig(
+  search: string,
+  preferredRenderer: SceneRendererMode = 'retained'
+): AppRuntimeConfig {
   const params = new URLSearchParams(search)
+  const renderer = params.get('renderer')
+  const sceneRenderer =
+    renderer === 'tiled' || renderer === 'retained' ? renderer : preferredRenderer
   return {
     test: params.has('test'),
     navigationBenchmark: params.has('navigation-benchmark'),
     recentFiles: params.has('recent-files'),
     showChrome: !params.has('no-chrome'),
     showRulers: !params.has('no-rulers'),
-    sceneRenderer: params.get('renderer') === 'tiled' ? 'tiled' : 'existing',
+    sceneRenderer,
     collaborationTransport: params.get('collabTransport') === 'test' ? 'test' : 'default',
     collaborationRelayURL: params.get('collabRelay')
   }
 }
 
-export const appRuntimeConfig = parseAppRuntimeConfig(IS_BROWSER ? window.location.search : '')
+export const appRuntimeConfig = parseAppRuntimeConfig(
+  IS_BROWSER ? window.location.search : '',
+  appPreferences.value.rendering.canvasMode
+)

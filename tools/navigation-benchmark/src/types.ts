@@ -14,7 +14,7 @@ export interface NavigationRecordingFile {
   source: 'macos-trackpad' | 'synthetic'
   recordedAt: string
   environment: Record<string, string | number>
-  sceneRenderer: 'existing' | 'tiled'
+  sceneRenderer: 'retained' | 'tiled'
   initialViewport: { panX: number; panY: number; zoom: number }
   wheel: WheelSample[]
   trace: TraceEvent[]

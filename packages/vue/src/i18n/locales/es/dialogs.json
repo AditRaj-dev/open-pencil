@@ -389,5 +389,11 @@
   "diagnosticsClearDescription": "Esto elimina del dispositivo los eventos de diagnóstico almacenados localmente.",
   "diagnosticsCleared": "Diagnóstico borrado.",
   "diagnosticsCopied": "Diagnóstico copiado al portapapeles.",
-  "diagnosticsCopyFailed": "No se pudo copiar el diagnóstico al portapapeles."
+  "diagnosticsCopyFailed": "No se pudo copiar el diagnóstico al portapapeles.",
+  "settingsRendering": "Rendering",
+  "settingsRenderingDescription": "Choose how OpenPencil presents large canvases.",
+  "progressiveTiledRendering": "Progressive tiled canvas rendering",
+  "progressiveTiledRenderingDescription": "Updates large canvases in bounded tiles while navigating. Experimental; reload required.",
+  "rendererReloadRequired": "Reload OpenPencil to apply this change.",
+  "rendererURLOverride": "The current session renderer is controlled by a URL override. Your saved preference applies when the override is removed."
 }
