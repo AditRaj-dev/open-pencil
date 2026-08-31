@@ -18,6 +18,8 @@ export {
   staleFigmaRawFields
 } from './source-metadata'
 
+export * from './source-session/journal'
+
 import {
   FIG_KIWI_DEFAULT_VERSION,
   buildFigKiwi,
