@@ -1,13 +1,27 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useI18n } from '@open-pencil/vue'
+import { type Locale, useI18n } from '@open-pencil/vue'
 
 import { recoveryEnabled, setRecoveryEnabled } from '@/app/document/recovery/preferences'
 import { setSnappingPreference } from '@/app/settings/preferences/apply'
 import { appPreferences } from '@/app/settings/preferences/store'
+import AppSelect from '@/components/ui/AppSelect.vue'
 import AppSwitch from '@/components/ui/AppSwitch.vue'
+import RenderingSettingsSection from '@/components/settings/general/RenderingSettingsSection.vue'
+import SettingsGroup from '@/components/settings/layout/SettingsGroup.vue'
+import SettingsSectionHeader from '@/components/settings/layout/SettingsSectionHeader.vue'
 
-const { recovery, settings } = useI18n()
+const { availableLocales, locale, localeLabels, menu, recovery, setLocale, settings } = useI18n()
+
+const language = computed<Locale>({
+  get: () => locale.value,
+  set: setLocale
+})
+
+const languageOptions = availableLocales.map((value) => ({
+  value,
+  label: localeLabels[value]
+}))
 
 const preserveUnsavedWork = computed({
   get: () => recoveryEnabled.value,
@@ -33,11 +47,29 @@ const snapToPixelGrid = computed({
 <template>
   <section class="flex flex-col gap-4" data-test-id="settings-general-panel">
     <div>
-      <h3 class="text-xs font-semibold text-surface">{{ recovery.settingsTitle }}</h3>
-      <p class="mt-1 text-[11px] text-muted">{{ recovery.settingsDescription }}</p>
+      <h3 class="text-xs font-semibold text-surface">{{ menu.language }}</h3>
+      <p class="mt-1 text-[11px] text-muted">{{ settings.languageDescription }}</p>
     </div>
 
     <div class="flex flex-col rounded border border-border">
+      <label class="flex items-center justify-between gap-4 px-3 py-2.5">
+        <span class="text-xs text-surface">{{ menu.language }}</span>
+        <AppSelect
+          v-model="language"
+          :label="menu.language"
+          :options="languageOptions"
+          class="w-44"
+          data-test-id="settings-language"
+        />
+      </label>
+    </div>
+
+    <SettingsSectionHeader>
+      {{ recovery.settingsTitle }}
+      <template #description>{{ recovery.settingsDescription }}</template>
+    </SettingsSectionHeader>
+
+    <SettingsGroup>
       <label class="flex items-center justify-between gap-4 px-3 py-2.5">
         <span>
           <span class="block text-xs text-surface">{{ recovery.preserveUnsavedWork }}</span>
@@ -51,14 +83,14 @@ const snapToPixelGrid = computed({
           data-test-id="settings-recovery-enabled"
         />
       </label>
-    </div>
+    </SettingsGroup>
 
-    <div>
-      <h3 class="text-xs font-semibold text-surface">{{ settings.editing }}</h3>
-      <p class="mt-1 text-[11px] text-muted">{{ settings.snappingDescription }}</p>
-    </div>
+    <SettingsSectionHeader>
+      {{ settings.editing }}
+      <template #description>{{ settings.snappingDescription }}</template>
+    </SettingsSectionHeader>
 
-    <div class="flex flex-col divide-y divide-border rounded border border-border">
+    <SettingsGroup>
       <label class="flex items-center justify-between gap-4 px-3 py-2.5">
         <span>
           <span class="block text-xs text-surface">{{ settings.snapToGeometry }}</span>
@@ -94,8 +126,10 @@ const snapToPixelGrid = computed({
           data-test-id="settings-snap-pixel-grid"
         />
       </label>
-    </div>
+    </SettingsGroup>
 
     <p class="text-[10px] text-muted">{{ settings.temporaryDisableSnappingHint }}</p>
+
+    <RenderingSettingsSection />
   </section>
 </template>
