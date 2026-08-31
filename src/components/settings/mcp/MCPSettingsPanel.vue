@@ -17,6 +17,13 @@ import AppInput from '@/components/ui/AppInput.vue'
 import AppSwitch from '@/components/ui/AppSwitch.vue'
 
 const { settings, automation, common } = useI18n()
+const statusMessages = computed(() => ({
+  idle: automation.value.statusIdle,
+  starting: automation.value.statusStarting,
+  running: automation.value.statusRunning,
+  stopped: automation.value.statusStopped,
+  error: automation.value.statusError
+}))
 const toolSearch = ref('')
 const disabledToolNames = computed(() => new Set(disabledMCPTools.value))
 function categoryStatus(effect: ToolEffect) {
@@ -86,7 +93,7 @@ function enableAllTools(): void {
                   : 'bg-muted'
             "
           />
-          {{ automation[`mcpStatus_${mcpRuntime.status}`] }}
+          {{ statusMessages[mcpRuntime.status] }}
         </dd>
         <dt class="text-muted">{{ automation.port }}</dt>
         <dd class="font-mono text-surface">{{ mcpRuntime.port }}</dd>

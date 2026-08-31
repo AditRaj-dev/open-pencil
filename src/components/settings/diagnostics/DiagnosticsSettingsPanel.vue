@@ -59,16 +59,16 @@ async function clearDiagnostics() {
   await diagnostics.clear()
   await refreshDiagnosticsStats()
   clearOpen.value = false
-  toast.info(diagnosticMessages.value.diagnosticsCleared)
+  toast.info(diagnosticMessages.value.cleared)
 }
 
 async function exportDiagnostics() {
   const text = await diagnostics.export()
   try {
     await navigator.clipboard.writeText(text)
-    toast.info(diagnosticMessages.value.diagnosticsCopied)
+    toast.info(diagnosticMessages.value.copied)
   } catch {
-    toast.error(diagnosticMessages.value.diagnosticsCopyFailed)
+    toast.error(diagnosticMessages.value.copyFailed)
   }
 }
 </script>
@@ -76,8 +76,8 @@ async function exportDiagnostics() {
 <template>
   <section class="flex flex-col gap-4" data-test-id="settings-diagnostics-panel">
     <div>
-      <h3 class="text-xs font-semibold text-surface">{{ diagnosticMessages.diagnosticsTitle }}</h3>
-      <p class="mt-1 text-[11px] text-muted">{{ diagnosticMessages.diagnosticsDescription }}</p>
+      <h3 class="text-xs font-semibold text-surface">{{ diagnosticMessages.title }}</h3>
+      <p class="mt-1 text-[11px] text-muted">{{ diagnosticMessages.description }}</p>
     </div>
     <div class="flex flex-col divide-y divide-border rounded border border-border">
       <label class="flex items-center justify-between gap-4 px-3 py-2.5">
@@ -100,18 +100,16 @@ async function exportDiagnostics() {
       </label>
       <div class="flex items-center justify-between gap-4 px-3 py-2.5">
         <span
-          ><span class="block text-xs text-surface">{{
-            diagnosticMessages.diagnosticsRetention
-          }}</span
+          ><span class="block text-xs text-surface">{{ diagnosticMessages.retention }}</span
           ><span class="block text-[10px] text-muted">{{
-            diagnosticMessages.diagnosticsRetentionDescription
+            diagnosticMessages.retentionDescription
           }}</span></span
         >
         <SegmentedControlRoot
           v-model="retentionValue"
           required
           class="flex rounded border border-border p-0.5"
-          :aria-label="diagnosticMessages.diagnosticsRetention"
+          :aria-label="diagnosticMessages.retention"
         >
           <SegmentedControlItem
             v-for="option in diagnosticsRetentionOptions"
@@ -147,7 +145,7 @@ async function exportDiagnostics() {
     </div>
     <div class="flex items-center justify-between text-[11px] text-muted">
       <span>{{
-        diagnosticMessages.diagnosticsEventCount({
+        diagnosticMessages.eventCount({
           count: diagnosticsCount,
           size: Math.ceil(diagnosticsSize / 1024)
         })
@@ -155,7 +153,7 @@ async function exportDiagnostics() {
       <div class="flex items-center gap-1.5">
         <AppButton size="xs" color="neutral" variant="ghost" @click="exportDiagnostics"
           ><template #leading><icon-lucide-copy /></template
-          >{{ diagnosticMessages.diagnosticsCopy }}</AppButton
+          >{{ diagnosticMessages.copy }}</AppButton
         >
         <AppButton
           size="xs"
@@ -164,7 +162,7 @@ async function exportDiagnostics() {
           :disabled="diagnosticsCount === 0"
           @click="clearOpen = true"
           ><template #leading><icon-lucide-trash-2 /></template
-          >{{ diagnosticMessages.diagnosticsClear }}</AppButton
+          >{{ diagnosticMessages.clear }}</AppButton
         >
       </div>
     </div>
@@ -172,10 +170,10 @@ async function exportDiagnostics() {
 
   <AppConfirmationDialog
     v-model:open="clearOpen"
-    :heading="diagnosticMessages.diagnosticsClear"
-    :description="diagnosticMessages.diagnosticsClearDescription"
+    :heading="diagnosticMessages.clear"
+    :description="diagnosticMessages.clearDescription"
     :cancel-label="common.cancel"
-    :confirm-label="diagnosticMessages.diagnosticsClear"
+    :confirm-label="diagnosticMessages.clear"
     tone="danger"
     @confirm="clearDiagnostics"
   />
