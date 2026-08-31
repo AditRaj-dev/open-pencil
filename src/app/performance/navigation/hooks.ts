@@ -32,9 +32,36 @@ export function createNavigationBenchmarkHooks(store: EditorStore): NavigationBe
       )
     },
     async waitForSettlement(timeoutMs = 30_000) {
-      const startedAt = performance.now()
       await new Promise<void>((resolve, reject) => {
         let frameId: number | null = null
+        let finished = false
+        const finish = (result: 'resolve' | 'reject', error?: Error) => {
+          if (finished) return
+          finished = true
+          if (frameId !== null) cancelAnimationFrame(frameId)
+          clearTimeout(timeout)
+          if (result === 'resolve') resolve()
+          else reject(error ?? new Error('Navigation settlement failed'))
+        }
+        const timeout = setTimeout(() => {
+          const state = store.canvasRenderers
+            .filter((renderer) => renderer.tracksSceneSettlement && renderer.pageId !== null)
+            .map((renderer) => ({
+              tiled: renderer.tiledSceneEnabled,
+              covered: renderer.tiledSceneCovered,
+              pending: renderer.tiledScenePending,
+              backingCrisp: !renderer.sceneBackingNeedsCrispRender
+            }))
+          finish(
+            'reject',
+            new Error(
+              `Navigation renderer did not settle within ${timeoutMs} ms: ${JSON.stringify({
+                navigationPhase: store.state.navigation.phase,
+                renderers: state
+              })}`
+            )
+          )
+        }, timeoutMs)
         const check = () => {
           const renderers = store.canvasRenderers.filter(
             (renderer) => renderer.tracksSceneSettlement && renderer.pageId !== null
@@ -48,30 +75,12 @@ export function createNavigationBenchmarkHooks(store: EditorStore): NavigationBe
                 : !renderer.sceneBackingNeedsCrispRender
             )
           if (settled) {
-            resolve()
-            return
-          }
-          if (performance.now() - startedAt >= timeoutMs) {
-            const state = renderers.map((renderer) => ({
-              tiled: renderer.tiledSceneEnabled,
-              covered: renderer.tiledSceneCovered,
-              pending: renderer.tiledScenePending,
-              backingCrisp: !renderer.sceneBackingNeedsCrispRender
-            }))
-            reject(
-              new Error(
-                `Navigation renderer did not settle within ${timeoutMs} ms: ${JSON.stringify({
-                  navigationPhase: store.state.navigation.phase,
-                  renderers: state
-                })}`
-              )
-            )
+            finish('resolve')
             return
           }
           frameId = requestAnimationFrame(check)
         }
         frameId = requestAnimationFrame(check)
-        void frameId
       })
     },
     stopRecording() {

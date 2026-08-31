@@ -5,7 +5,7 @@ import * as v from 'valibot'
 import type { NavigationRecordingFile } from './types'
 
 const wheelSampleSchema = v.object({
-  timeMs: v.number(),
+  timeMs: v.pipe(v.number(), v.minValue(0)),
   deltaX: v.number(),
   deltaY: v.number(),
   deltaMode: v.number(),
@@ -30,7 +30,7 @@ const recordingSchema = v.object({
   source: v.picklist(['macos-trackpad', 'synthetic']),
   recordedAt: v.string(),
   environment: v.record(v.string(), v.union([v.string(), v.number()])),
-  sceneRenderer: v.optional(v.picklist(['retained', 'tiled']), 'retained'),
+  sceneRenderer: v.optional(v.picklist(['existing', 'retained', 'tiled']), 'retained'),
   initialViewport: v.object({ panX: v.number(), panY: v.number(), zoom: v.number() }),
   wheel: v.array(wheelSampleSchema),
   trace: v.array(traceEventSchema)
@@ -38,6 +38,10 @@ const recordingSchema = v.object({
 
 export function parseRecording(value: unknown): NavigationRecordingFile {
   const data = v.parse(recordingSchema, value)
+  const normalized = {
+    ...data,
+    sceneRenderer: data.sceneRenderer === 'existing' ? ('retained' as const) : data.sceneRenderer
+  }
   for (let index = 1; index < data.wheel.length; index++) {
     const current = data.wheel[index]
     const previous = data.wheel[index - 1]
@@ -45,7 +49,7 @@ export function parseRecording(value: unknown): NavigationRecordingFile {
       throw new Error('Wheel samples must be ordered by timeMs')
     }
   }
-  return data
+  return normalized
 }
 
 export async function readRecording(path: string): Promise<NavigationRecordingFile> {

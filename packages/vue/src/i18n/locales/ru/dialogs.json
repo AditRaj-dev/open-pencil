@@ -390,10 +390,10 @@
   "diagnosticsCleared": "Диагностические данные очищены.",
   "diagnosticsCopied": "Диагностические данные скопированы в буфер обмена.",
   "diagnosticsCopyFailed": "Не удалось скопировать диагностические данные в буфер обмена.",
-  "settingsRendering": "Rendering",
-  "settingsRenderingDescription": "Choose how OpenPencil presents large canvases.",
-  "progressiveTiledRendering": "Progressive tiled canvas rendering",
-  "progressiveTiledRenderingDescription": "Updates large canvases in bounded tiles while navigating. Experimental; reload required.",
-  "rendererReloadRequired": "Reload OpenPencil to apply this change.",
-  "rendererURLOverride": "The current session renderer is controlled by a URL override. Your saved preference applies when the override is removed."
+  "settingsRendering": "Отрисовка",
+  "settingsRenderingDescription": "Выберите способ отображения больших холстов в OpenPencil.",
+  "progressiveTiledRendering": "Прогрессивная плиточная отрисовка",
+  "progressiveTiledRenderingDescription": "При навигации обновляет большие холсты ограниченными плитками. Экспериментальная функция; требуется перезагрузка.",
+  "rendererReloadRequired": "Перезагрузите OpenPencil, чтобы применить изменение.",
+  "rendererURLOverride": "Режим отрисовки текущего сеанса задан параметром URL. Сохранённая настройка применится после удаления параметра."
 }

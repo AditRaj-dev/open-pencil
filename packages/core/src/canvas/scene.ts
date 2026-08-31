@@ -550,7 +550,8 @@ export function renderShape(
         height,
         scale,
         pixels: image.width() * image.height(),
-        fontGeneration: r.fontGeneration
+        fontGeneration: r.fontGeneration,
+        dependencyIds: node.childIds.slice(0, 1)
       })
       canvas.drawImageRectOptions(
         image,

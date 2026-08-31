@@ -8,9 +8,9 @@ The benchmark validates the retained and tiled renderer contracts documented in 
 
 ## What it captures
 
-Every run writes:
+Every run writes `recording.json`, `metrics.json`, and `environment.json`. When tracing is enabled, it also writes `trace.json.gz`:
 
-- `trace.json.gz`: Chromium tracing data for Perfetto or Chrome tracing tools.
+- `trace.json.gz` (when tracing is enabled): Chromium tracing data for Perfetto or Chrome tracing tools.
 - `recording.json`: wheel samples plus OpenPencil input, viewport, render, and retained-backing events.
 - `metrics.json`: frame pacing, input latency, zoom-anchor drift, viewport jumps, exact active-renderer settlement, and tiled scheduler throughput/cancellation when enabled.
 - `environment.json`: browser, runtime, replay mode, and source gesture information.

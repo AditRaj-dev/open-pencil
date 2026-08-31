@@ -4,6 +4,7 @@ import {
   canCacheEffectRaster,
   clearEffectRasterCache,
   deleteEffectRaster,
+  deleteEffectRasterDependencies,
   effectRasterScale,
   effectRasterScaleMatches,
   installEffectRaster,
@@ -20,7 +21,8 @@ function entry(pixels: number): EffectRasterCacheEntry {
     height: 10,
     scale: 2,
     pixels,
-    fontGeneration: 0
+    fontGeneration: 0,
+    dependencyIds: []
   }
 }
 
@@ -53,6 +55,17 @@ describe('effect raster cache', () => {
     deleteEffectRaster(cache, 'node')
     expect(second.image.delete).toHaveBeenCalledTimes(1)
     expect(cache.size).toBe(0)
+  })
+
+  test('invalidates an owning raster when a geometry dependency changes', () => {
+    const cache = new Map<string, EffectRasterCacheEntry>()
+    const parent = { ...entry(100), dependencyIds: ['child'] }
+    installEffectRaster(cache, 'parent', parent)
+
+    deleteEffectRasterDependencies(cache, 'child')
+
+    expect(parent.image.delete).toHaveBeenCalledTimes(1)
+    expect(cache.has('parent')).toBe(false)
   })
 
   test('evicts least-recently-used entries within the pixel budget', () => {

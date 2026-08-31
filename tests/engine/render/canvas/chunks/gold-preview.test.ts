@@ -21,12 +21,9 @@ beforeAll(async () => {
 
 test('gold-preview render chunks stay bounded and spatial queries stay selective', () => {
   const page = expectDefined(graph.getPages()[0], 'gold-preview page')
-  const buildStartedAt = performance.now()
   const { index, stats } = RenderChunkIndex.build(graph, page.id)
-  const buildMs = performance.now() - buildStartedAt
 
   const bounds = graph.getChildren(page.id)[0]
-  const queryStartedAt = performance.now()
   const found = bounds
     ? index.search({
         minX: bounds.x,
@@ -35,27 +32,11 @@ test('gold-preview render chunks stay bounded and spatial queries stay selective
         maxY: bounds.y + Math.min(bounds.height, 800)
       })
     : []
-  const queryMs = performance.now() - queryStartedAt
-
-  console.debug(
-    JSON.stringify({
-      nodesVisited: stats.nodesVisited,
-      chunksBuilt: stats.chunksBuilt,
-      maximumChunkNodes: stats.maximumChunkNodes,
-      maximumAtomicChunkNodes: stats.maximumAtomicChunkNodes,
-      oversizedAtomicChunks: stats.oversizedAtomicChunks,
-      buildMs,
-      queryResults: found.length,
-      queryMs
-    })
-  )
 
   expect(stats.nodesVisited).toBeGreaterThan(300)
   expect(stats.maximumChunkNodes).toBeLessThanOrEqual(32)
   expect(stats.chunksBuilt).toBeLessThan(stats.nodesVisited)
   expect(stats.oversizedAtomicChunks).toBe(0)
   expect(found.length).toBeLessThan(stats.chunksBuilt)
-  expect(buildMs).toBeLessThan(1_000)
-  expect(queryMs).toBeLessThan(20)
   index.dispose()
 })

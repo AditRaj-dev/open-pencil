@@ -9,6 +9,7 @@ import {
   type RenderChunkPictureCache,
   drawRenderChunkDirect
 } from '#core/canvas/renderer/chunks'
+import { rendererNow } from '#core/canvas/renderer/clock'
 
 import { type TileKey, tileWorldBounds } from './geometry'
 import type { TileSurfacePool } from './surface-pool'
@@ -43,13 +44,14 @@ export function renderTile(
   key: TileKey,
   pictureCache: RenderChunkPictureCache,
   surfacePool: TileSurfacePool
-): RenderedTile {
-  const startedAt = performance.now()
+): RenderedTile | null {
+  const startedAt = rendererNow()
   const bounds = tileWorldBounds(key)
   const chunks = index.search(bounds)
-  const allocationStartedAt = performance.now()
+  const allocationStartedAt = rendererNow()
   const surface = surfacePool.acquire(renderer)
-  const allocationMs = performance.now() - allocationStartedAt
+  if (!surface) return null
+  const allocationMs = rendererNow() - allocationStartedAt
   const canvas = surface.getCanvas()
   canvas.save()
   try {
@@ -69,7 +71,7 @@ export function renderTile(
       false
     )
 
-    const drawStartedAt = performance.now()
+    const drawStartedAt = rendererNow()
     for (const chunk of chunks) {
       if (isBoundedAtomicBlurChunk(graph, chunk)) {
         const previous = renderer.boundEffectLayersToViewport
@@ -84,19 +86,19 @@ export function renderTile(
       const picture = pictureCache.get(renderer, graph, chunk)
       canvas.drawPicture(picture)
     }
-    const drawMs = performance.now() - drawStartedAt
-    const flushStartedAt = performance.now()
+    const drawMs = rendererNow() - drawStartedAt
+    const flushStartedAt = rendererNow()
     surface.flush()
-    const flushMs = performance.now() - flushStartedAt
-    const snapshotStartedAt = performance.now()
+    const flushMs = rendererNow() - flushStartedAt
+    const snapshotStartedAt = rendererNow()
     const image = surface.makeImageSnapshot()
-    const snapshotMs = performance.now() - snapshotStartedAt
+    const snapshotMs = rendererNow() - snapshotStartedAt
     return {
       key,
       image,
       chunkCount: chunks.length,
       estimatedCost: chunks.reduce((total, chunk) => total + chunk.estimatedCost, 0),
-      renderMs: performance.now() - startedAt,
+      renderMs: rendererNow() - startedAt,
       allocationMs,
       drawMs,
       flushMs,

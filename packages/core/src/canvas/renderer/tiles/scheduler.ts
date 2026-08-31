@@ -1,3 +1,5 @@
+import { rendererNow } from '#core/canvas/renderer/clock'
+
 import type { TileKey } from './geometry'
 
 export type TileJobPriority = 'mandatory' | 'visible' | 'overscan'
@@ -87,7 +89,7 @@ export class TileScheduler {
   private readonly maximumJobsPerFrame: number
 
   constructor(options: TileSchedulerOptions) {
-    this.now = options.now ?? (() => performance.now())
+    this.now = options.now ?? rendererNow
     this.budgetMs = options.budgetMs
     this.maximumJobsPerFrame = options.maximumJobsPerFrame ?? Number.POSITIVE_INFINITY
   }

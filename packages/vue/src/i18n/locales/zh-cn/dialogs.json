@@ -390,10 +390,10 @@
   "diagnosticsCleared": "诊断数据已清除。",
   "diagnosticsCopied": "诊断数据已复制到剪贴板。",
   "diagnosticsCopyFailed": "无法将诊断数据复制到剪贴板。",
-  "settingsRendering": "Rendering",
-  "settingsRenderingDescription": "Choose how OpenPencil presents large canvases.",
-  "progressiveTiledRendering": "Progressive tiled canvas rendering",
-  "progressiveTiledRenderingDescription": "Updates large canvases in bounded tiles while navigating. Experimental; reload required.",
-  "rendererReloadRequired": "Reload OpenPencil to apply this change.",
-  "rendererURLOverride": "The current session renderer is controlled by a URL override. Your saved preference applies when the override is removed."
+  "settingsRendering": "渲染",
+  "settingsRenderingDescription": "选择 OpenPencil 显示大型画布的方式。",
+  "progressiveTiledRendering": "渐进式分块画布渲染",
+  "progressiveTiledRenderingDescription": "导航时以有限大小的分块更新大型画布。此功能为实验性功能，需要重新加载。",
+  "rendererReloadRequired": "重新加载 OpenPencil 以应用此更改。",
+  "rendererURLOverride": "当前会话的渲染器由 URL 参数控制。移除该参数后将应用已保存的偏好设置。"
 }

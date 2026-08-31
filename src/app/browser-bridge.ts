@@ -47,6 +47,7 @@ function windowAPI(): OpenPencilWindowAPI {
 
 export function setOpenPencilStore(store: EditorStore) {
   activeStore = store
+  if (!IS_BROWSER) return
   const api = windowAPI()
   if (appRuntimeConfig.navigationBenchmark) {
     const testHooks = (api.test ??= {})

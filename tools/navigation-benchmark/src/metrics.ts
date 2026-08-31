@@ -80,10 +80,7 @@ function zoomAnchorDrift(
 }
 
 function navigationRenderEvents(trace: readonly TraceEvent[]): TraceEvent[] {
-  const scene = events(trace, 'render:end').filter(
-    (event) => event.detail.layer === 'scene' || event.detail.layer === 'full'
-  )
-  return scene.length > 0 ? scene : events(trace, 'render:end')
+  return events(trace, 'render:end').filter((event) => event.detail.layer !== 'tiled-scheduler')
 }
 
 function maximumViewportJump(trace: readonly TraceEvent[]): number {
@@ -131,7 +128,7 @@ export function computeNavigationMetrics(recording: NavigationRecordingFile): Na
     return next === null ? [] : [next - event.timestamp]
   })
   const eventToRenderEnd = received.flatMap((event) => {
-    const next = nextTimestamp(trace, event.timestamp, 'render:end')
+    const next = nextTimestamp(rendered, event.timestamp, 'render:end')
     return next === null ? [] : [next - event.timestamp]
   })
   const crispCandidates = (

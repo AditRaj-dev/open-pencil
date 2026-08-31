@@ -390,10 +390,10 @@
   "diagnosticsCleared": "Wyczyszczono dane diagnostyczne.",
   "diagnosticsCopied": "Skopiowano dane diagnostyczne do schowka.",
   "diagnosticsCopyFailed": "Nie można skopiować danych diagnostycznych do schowka.",
-  "settingsRendering": "Rendering",
-  "settingsRenderingDescription": "Choose how OpenPencil presents large canvases.",
-  "progressiveTiledRendering": "Progressive tiled canvas rendering",
-  "progressiveTiledRenderingDescription": "Updates large canvases in bounded tiles while navigating. Experimental; reload required.",
-  "rendererReloadRequired": "Reload OpenPencil to apply this change.",
-  "rendererURLOverride": "The current session renderer is controlled by a URL override. Your saved preference applies when the override is removed."
+  "settingsRendering": "Renderowanie",
+  "settingsRenderingDescription": "Wybierz sposób wyświetlania dużych obszarów roboczych w OpenPencil.",
+  "progressiveTiledRendering": "Progresywne renderowanie kafelkowe",
+  "progressiveTiledRenderingDescription": "Podczas nawigacji aktualizuje duże obszary robocze w ograniczonych kafelkach. Funkcja eksperymentalna; wymaga ponownego wczytania.",
+  "rendererReloadRequired": "Wczytaj ponownie OpenPencil, aby zastosować tę zmianę.",
+  "rendererURLOverride": "Renderer bieżącej sesji jest kontrolowany przez parametr URL. Zapisana preferencja zostanie użyta po usunięciu parametru."
 }

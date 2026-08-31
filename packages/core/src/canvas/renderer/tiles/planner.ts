@@ -3,7 +3,8 @@ import {
   type TileKey,
   type TileWorldBounds,
   tileKeysForWorldBounds,
-  tileKeyString
+  tileKeyString,
+  tileWorldSize
 } from './geometry'
 import type { TileJob } from './scheduler'
 
@@ -45,7 +46,7 @@ export function planTiles(
   cachedOnly = false
 ): TilePlan {
   if (cachedOnly) return planCachedVisibleTiles(cache, options)
-  const worldTileSize = 256 / options.level
+  const worldTileSize = tileWorldSize(options.level)
   const visibleKeys = tileKeysForWorldBounds(options.pageId, options.level, options.viewport)
   const visibleIds = new Set(visibleKeys.map(tileKeyString))
   const overscanKeys = tileKeysForWorldBounds(

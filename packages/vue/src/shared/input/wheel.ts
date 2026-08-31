@@ -76,10 +76,10 @@ export function setupWheelPanZoom(canvasRef: Ref<HTMLCanvasElement | null>, edit
 
   function scheduleSettle() {
     if (settleTimer !== null) clearTimeout(settleTimer)
-    editor.setNavigationPhase('settling', performance.now())
+    editor.setNavigationPhase('settling')
     settleTimer = setTimeout(() => {
       settleTimer = null
-      editor.setNavigationPhase('idle', performance.now())
+      editor.setNavigationPhase('idle')
       editor.requestRepaint()
     }, NAVIGATION_SETTLE_DELAY_MS)
   }

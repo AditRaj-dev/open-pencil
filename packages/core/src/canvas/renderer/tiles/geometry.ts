@@ -1,5 +1,6 @@
 export const TILE_DEVICE_SIZE = 256
 export const TILE_LEVEL_STEP = 0.25
+export const MIN_TILE_LEVEL = TILE_LEVEL_STEP / 16
 
 export interface TileKey {
   pageId: string
@@ -17,7 +18,11 @@ export interface TileWorldBounds {
 
 export function tileLevel(scale: number): number {
   if (!Number.isFinite(scale) || scale <= 0) return 1
-  return Math.max(TILE_LEVEL_STEP, Math.ceil(scale / TILE_LEVEL_STEP) * TILE_LEVEL_STEP)
+  if (scale < TILE_LEVEL_STEP) {
+    const exponent = Math.ceil(Math.log2(TILE_LEVEL_STEP / scale))
+    return Math.max(MIN_TILE_LEVEL, TILE_LEVEL_STEP / 2 ** exponent)
+  }
+  return Math.ceil(scale / TILE_LEVEL_STEP) * TILE_LEVEL_STEP
 }
 
 export function tileWorldSize(level: number): number {

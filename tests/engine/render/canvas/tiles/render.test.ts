@@ -220,8 +220,14 @@ describe('tile rendering', () => {
     const surfacePool = new TileSurfacePool()
     const key = { pageId: page.id, level: 1, x: 0, y: 0 }
     try {
-      const first = renderTile(renderer, graph, index, key, pictureCache, surfacePool)
-      const second = renderTile(renderer, graph, index, key, pictureCache, surfacePool)
+      const first = expectDefined(
+        renderTile(renderer, graph, index, key, pictureCache, surfacePool),
+        'first tile'
+      )
+      const second = expectDefined(
+        renderTile(renderer, graph, index, key, pictureCache, surfacePool),
+        'second tile'
+      )
       const firstPixels = pixels(first.image, TILE_DEVICE_SIZE, TILE_DEVICE_SIZE)
       const secondPixels = pixels(second.image, TILE_DEVICE_SIZE, TILE_DEVICE_SIZE)
       expect(firstPixels.every((value, index) => value === secondPixels[index])).toBe(true)
@@ -401,7 +407,10 @@ describe('tile rendering', () => {
       const tiledCanvas = tiled.surface.getCanvas()
       tiledCanvas.clear(ck.WHITE)
       const rendered = keys.map((key) =>
-        renderTile(tileFactory, graph, index, key, pictureCache, surfacePool)
+        expectDefined(
+          renderTile(tileFactory, graph, index, key, pictureCache, surfacePool),
+          'rendered tile'
+        )
       )
       const tilePaint = new ck.Paint()
       tilePaint.setBlendMode(ck.BlendMode.Src)

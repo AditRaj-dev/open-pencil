@@ -9,6 +9,7 @@ export interface EffectRasterCacheEntry {
   scale: number
   pixels: number
   fontGeneration: number
+  dependencyIds: readonly string[]
 }
 
 const MAX_EFFECT_RASTER_CACHE_PIXELS = 24_000_000
@@ -77,6 +78,15 @@ export function deleteEffectRaster(
   const entry = cache.get(nodeId)
   entry?.image.delete()
   cache.delete(nodeId)
+}
+
+export function deleteEffectRasterDependencies(
+  cache: Map<string, EffectRasterCacheEntry>,
+  nodeId: string
+): void {
+  for (const [ownerId, entry] of cache) {
+    if (entry.dependencyIds.includes(nodeId)) deleteEffectRaster(cache, ownerId)
+  }
 }
 
 export function clearEffectRasterCache(cache: Map<string, EffectRasterCacheEntry>): void {

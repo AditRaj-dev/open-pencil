@@ -270,14 +270,8 @@ export class TiledSceneController {
     index: RenderChunkIndex,
     job: TileJob
   ) {
-    if (
-      this.navigationActive &&
-      job.fallbackAvailable &&
-      job.estimatedCost > TILE_FRAME_BUDGET_MS
-    ) {
-      return { renderMs: 0, overBudget: false }
-    }
     const tile = renderTile(renderer, graph, index, job.key, this.pictureCache, this.surfacePool)
+    if (!tile) return { renderMs: 0, overBudget: true }
     const previousCost = this.measuredCosts.get(this.costKey(job.key)) ?? tile.renderMs
     this.measuredCosts.set(this.costKey(job.key), previousCost * 0.7 + tile.renderMs * 0.3)
     if (
@@ -291,7 +285,7 @@ export class TiledSceneController {
     return this.jobResult(tile)
   }
 
-  private jobResult(tile: ReturnType<typeof renderTile>) {
+  private jobResult(tile: NonNullable<ReturnType<typeof renderTile>>) {
     return {
       renderMs: tile.renderMs,
       overBudget: tile.renderMs > TILE_FRAME_BUDGET_MS,

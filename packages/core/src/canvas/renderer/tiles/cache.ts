@@ -1,6 +1,6 @@
 import type { Image as CKImage } from 'canvaskit-wasm'
 
-import { tileKeyString, type TileKey } from './geometry'
+import { tileKeyString, tileWorldSize, type TileKey, type TileWorldBounds } from './geometry'
 import type { RenderedTile } from './render'
 
 export interface CachedTile {
@@ -57,15 +57,11 @@ export class TileImageCache {
     }
   }
 
-  invalidateBounds(
-    pageId: string,
-    bounds: { minX: number; minY: number; maxX: number; maxY: number },
-    contentGeneration: number
-  ): number {
+  invalidateBounds(pageId: string, bounds: TileWorldBounds, contentGeneration: number): number {
     let invalidated = 0
     for (const [id, entry] of this.entries) {
       if (entry.key.pageId !== pageId) continue
-      const size = 256 / entry.key.level
+      const size = tileWorldSize(entry.key.level)
       const minX = entry.key.x * size
       const minY = entry.key.y * size
       if (

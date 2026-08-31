@@ -230,7 +230,10 @@ export class RenderChunkIndex {
       this.tree.remove(chunk)
       const bounds =
         chunk.kind === 'self' ? worldNodeVisualBounds(graph, node) : subtreeBounds(graph, nodeId)
-      if (!bounds) continue
+      if (!bounds) {
+        this.tree.insert(chunk)
+        continue
+      }
       Object.assign(chunk, bounds, { context: chunkContext(graph, node) })
       this.tree.insert(chunk)
       updated++

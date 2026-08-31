@@ -47,50 +47,17 @@ test('renders one gold-preview tile from a selective chunk query', () => {
       x: Math.floor(root.x / worldSize),
       y: Math.floor(root.y / worldSize)
     }
-    const cold = renderTile(renderer, graph, index, key, pictureCache, surfacePool)
-    const warm = renderTile(renderer, graph, index, key, pictureCache, surfacePool)
-    console.debug(
-      JSON.stringify({
-        indexChunks: index.size(),
-        tileChunks: cold.chunkCount,
-        estimatedCost: cold.estimatedCost,
-        coldRenderMs: cold.renderMs,
-        warmRenderMs: warm.renderMs,
-        warmPhases: {
-          allocationMs: warm.allocationMs,
-          drawMs: warm.drawMs,
-          flushMs: warm.flushMs,
-          snapshotMs: warm.snapshotMs
-        },
-        cachedPictures: pictureCache.size(),
-        chunks: tileChunks(index, key).map((chunk) => ({
-          id: chunk.id,
-          kind: chunk.kind,
-          interruptible: chunk.interruptible,
-          nodeCount: chunk.nodeCount,
-          estimatedCost: chunk.estimatedCost,
-          node: (() => {
-            const node = graph.getNode(chunk.nodeId)
-            return node
-              ? {
-                  type: node.type,
-                  name: node.name,
-                  opacity: node.opacity,
-                  blendMode: node.blendMode,
-                  effects: node.effects
-                    .filter((effect) => effect.visible)
-                    .map((effect) => effect.type),
-                  children: node.childIds.length
-                }
-              : null
-          })()
-        }))
-      })
+    const cold = expectDefined(
+      renderTile(renderer, graph, index, key, pictureCache, surfacePool),
+      'cold tile'
+    )
+    const warm = expectDefined(
+      renderTile(renderer, graph, index, key, pictureCache, surfacePool),
+      'warm tile'
     )
 
     expect(cold.chunkCount).toBeLessThan(index.size())
-    expect(cold.renderMs).toBeGreaterThanOrEqual(0)
-    expect(warm.renderMs).toBeGreaterThanOrEqual(0)
+    expect(tileChunks(index, key)).toHaveLength(cold.chunkCount)
     expect(pictureCache.size()).toBeGreaterThan(0)
     deleteRenderedTile(cold)
     deleteRenderedTile(warm)

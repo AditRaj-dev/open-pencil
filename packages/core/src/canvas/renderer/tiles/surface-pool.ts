@@ -7,7 +7,7 @@ import { TILE_DEVICE_SIZE } from './geometry'
 export class TileSurfacePool {
   private readonly available: Surface[] = []
 
-  acquire(renderer: SkiaRenderer): Surface {
+  acquire(renderer: SkiaRenderer): Surface | null {
     return (
       this.available.pop() ??
       renderer.surface.makeSurface({
