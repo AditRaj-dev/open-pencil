@@ -32,6 +32,21 @@ describe('browser web font fetch', () => {
       Response
     )
   })
+  test('derives same-origin access from window even when process is shimmed', async () => {
+    const originalWindow = globalThis.window
+    Object.assign(globalThis, {
+      window: { location: { origin: 'http://127.0.0.1:4301' } }
+    })
+    try {
+      const fontFetch = createBrowserWebFontFetch(
+        mock(async () => new Response(new Uint8Array([1]))) as typeof fetch
+      )
+      await expect(fontFetch('http://127.0.0.1:4301/font.ttf')).resolves.toBeInstanceOf(Response)
+    } finally {
+      Object.assign(globalThis, { window: originalWindow })
+    }
+  })
+
   test('returns bounded responses from approved provider hosts', async () => {
     const fontFetch = createBrowserWebFontFetch(
       mock(
