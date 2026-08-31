@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import { useCloudMessages } from '@open-pencil/vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import type { InvitationPreview } from '@open-pencil/cloud/contract'
@@ -7,6 +8,7 @@ import { createCloudAPIClient, discoverCloud, signInToCloud } from '@open-pencil
 
 import AppButton from '@/components/ui/AppButton.vue'
 
+const cloudMessages = useCloudMessages()
 const route = useRoute()
 const router = useRouter()
 const invitation = ref<InvitationPreview | null>(null)
@@ -105,8 +107,8 @@ onMounted(load)
       >
         <icon-lucide-mail class="size-5" />
       </div>
-      <h1 class="text-lg font-semibold text-surface">Document invitation</h1>
-      <p v-if="loading" class="mt-3 text-sm text-muted">Loading invitation…</p>
+      <h1 class="text-lg font-semibold text-surface">{{ cloudMessages.documentInvitation }}</h1>
+      <p v-if="loading" class="mt-3 text-sm text-muted">{{ cloudMessages.loadingInvitation }}</p>
       <p v-else-if="error" role="alert" class="mt-3 text-sm text-danger">{{ error }}</p>
       <template v-else-if="invitation">
         <p class="mt-3 text-sm leading-relaxed text-muted">
@@ -126,7 +128,7 @@ onMounted(load)
           :disabled="accepting"
           @click="accept"
         >
-          {{ accepting ? 'Accepting…' : 'Accept invitation' }}
+          {{ accepting ? cloudMessages.acceptingInvitation : cloudMessages.acceptInvitation }}
         </AppButton>
       </template>
     </section>

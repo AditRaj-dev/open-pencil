@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import { useCloudMessages } from '@open-pencil/vue'
 import { useRoute } from 'vue-router'
 
 import { createCloudAuthClient, discoverCloud, signInToCloud } from '@open-pencil/cloud/client'
 
 import AppButton from '@/components/ui/AppButton.vue'
 
+const cloudMessages = useCloudMessages()
 const route = useRoute()
 const userCode = typeof route.query.user_code === 'string' ? route.query.user_code : ''
 const loading = ref(true)
@@ -80,8 +82,8 @@ onMounted(load)
       >
         <icon-lucide-monitor-check class="size-5" />
       </div>
-      <h1 class="text-lg font-semibold text-surface">Authorize OpenPencil desktop</h1>
-      <p v-if="loading" class="mt-3 text-sm text-muted">Loading authorization…</p>
+      <h1 class="text-lg font-semibold text-surface">{{ cloudMessages.authorizeDesktop }}</h1>
+      <p v-if="loading" class="mt-3 text-sm text-muted">{{ cloudMessages.loadingAuthorization }}</p>
       <p v-else-if="error" role="alert" class="mt-3 text-sm text-danger">{{ error }}</p>
       <template v-else-if="status === 'pending'">
         <p class="mt-3 text-sm leading-relaxed text-muted">
@@ -95,7 +97,7 @@ onMounted(load)
             size="sm"
             class="flex-1 justify-center"
             @click="deny"
-            >Deny</AppButton
+            >{{ cloudMessages.deny }}</AppButton
           >
           <AppButton
             color="neutral"
@@ -103,14 +105,14 @@ onMounted(load)
             size="sm"
             class="flex-1 justify-center"
             @click="approve"
-            >Authorize</AppButton
+            >{{ cloudMessages.authorize }}</AppButton
           >
         </div>
       </template>
       <p v-else-if="status === 'approved'" class="mt-3 text-sm text-surface">
         Desktop authorized. You can return to OpenPencil.
       </p>
-      <p v-else class="mt-3 text-sm text-muted">Authorization denied.</p>
+      <p v-else class="mt-3 text-sm text-muted">{{ cloudMessages.authorizationDenied }}</p>
     </section>
   </main>
 </template>

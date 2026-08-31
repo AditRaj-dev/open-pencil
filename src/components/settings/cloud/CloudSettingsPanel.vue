@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { useCloudMessages } from '@open-pencil/vue'
+import { useCloudMessages, useCommonMessages } from '@open-pencil/vue'
 
 import {
   cloudConnectionWorkSummary,
@@ -23,6 +23,7 @@ import { useButtonUI } from '@/components/ui/button'
 
 const router = useRouter()
 const cloudMessages = useCloudMessages()
+const common = useCommonMessages()
 const cloud = useCloudStorageSettings()
 const connectDialogOpen = ref(false)
 const disconnectOpen = ref(false)
@@ -170,22 +171,22 @@ async function openWorkspace() {
 <template>
   <section class="flex flex-col gap-4" data-test-id="settings-cloud-panel">
     <div>
-      <h3 class="text-xs font-semibold text-surface">Cloud connections</h3>
+      <h3 class="text-xs font-semibold text-surface">{{ cloudMessages.connectionsTitle }}</h3>
       <p class="mt-0.5 text-[10px] text-muted">
-        Connect to OpenPencil Cloud or a self-hosted OpenPencil instance.
+        {{ cloudMessages.connectionsDescription }}
       </p>
     </div>
 
     <div>
       <button type="button" :class="primary.base" @click="connectDialogOpen = true">
-        Connect instance
+        {{ cloudMessages.connectInstance }}
       </button>
     </div>
 
     <AppSelect
       v-if="connectionOptions.length"
       v-model="selectedConnection"
-      label="Connected instance"
+      :label="cloudMessages.connectedInstance"
       :options="connectionOptions"
     />
 
@@ -200,7 +201,11 @@ async function openWorkspace() {
               {{ cloud.activeProfile.value.label }}
             </h4>
             <AppBadge :ui="{ base: 'bg-hover text-muted' }">
-              {{ cloud.activeProfile.value.kind === 'official' ? 'Official' : 'Self-hosted' }}
+              {{
+                cloud.activeProfile.value.kind === 'official'
+                  ? cloudMessages.official
+                  : cloudMessages.selfHosted
+              }}
             </AppBadge>
           </div>
           <p class="mt-0.5 truncate text-[10px] text-muted">
@@ -218,7 +223,9 @@ async function openWorkspace() {
         <span class="truncate text-[10px] text-muted">
           {{ cloud.state.value.session.user.email }}
         </span>
-        <button type="button" :class="quiet.base" @click="cloud.signOut">Sign out</button>
+        <button type="button" :class="quiet.base" @click="cloud.signOut">
+          {{ cloudMessages.signOut }}
+        </button>
       </div>
       <div v-else-if="cloud.state.value" class="mt-3 flex gap-2">
         <button
@@ -228,7 +235,7 @@ async function openWorkspace() {
           :class="secondary.base"
           @click="cloud.signIn(provider)"
         >
-          Sign in with {{ provider }}
+          {{ cloudMessages.signInWith({ provider }) }}
         </button>
       </div>
 
@@ -236,7 +243,7 @@ async function openWorkspace() {
         v-if="deviceAuth?.status === 'waiting'"
         class="mt-3 rounded border border-border bg-hover/40 p-2 text-[10px] text-muted"
       >
-        <p>Complete sign-in in your browser.</p>
+        <p>{{ cloudMessages.completeSignInInBrowser }}</p>
         <p class="mt-1 font-mono text-xs text-surface">{{ deviceAuth.userCode }}</p>
         <div class="mt-2 flex gap-2">
           <button
@@ -251,7 +258,7 @@ async function openWorkspace() {
             :class="secondary.base"
             @click="reopenDeviceBrowser(deviceAuth.verificationURL)"
           >
-            Open browser again
+            {{ cloudMessages.openBrowserAgain }}
           </button>
         </div>
       </div>
@@ -266,7 +273,7 @@ async function openWorkspace() {
         v-if="cloud.workspaceOptions.value.length"
         v-model="selectedWorkspace"
         class="mt-3"
-        label="Default workspace"
+        :label="cloudMessages.defaultWorkspace"
         :options="cloud.workspaceOptions.value"
       />
       <CloudEntitlementsSummary
@@ -283,31 +290,37 @@ async function openWorkspace() {
           {{ primaryActionLabel }}
         </button>
         <button type="button" class="text-[10px] text-danger" @click="requestDisconnect">
-          Disconnect instance
+          {{ cloudMessages.disconnectInstance }}
         </button>
       </div>
     </article>
     <AppAlertDialogRoot :open="disconnectOpen" size="sm" @update:open="disconnectOpen = $event">
       <AppDialogBody class="space-y-2">
-        <h3 class="text-sm font-semibold text-surface">Disconnect instance?</h3>
+        <h3 class="text-sm font-semibold text-surface">{{ cloudMessages.disconnectTitle }}</h3>
         <p class="text-xs text-muted">
           <template v-if="disconnectSummary && hasPendingCloudConnectionWork(disconnectSummary)">
             {{
-              disconnectSummary.pendingDocuments +
-              disconnectSummary.conflictingDocuments +
-              disconnectSummary.failedDocuments
+              cloudMessages.disconnectPendingWork({
+                documents:
+                  disconnectSummary.pendingDocuments +
+                  disconnectSummary.conflictingDocuments +
+                  disconnectSummary.failedDocuments,
+                jobs: disconnectSummary.queuedJobs
+              })
             }}
-            documents have unsynchronized local work and {{ disconnectSummary.queuedJobs }} queued
-            jobs. Synchronization will pause until this instance is reconnected.
           </template>
-          <template v-else>You can reconnect to this instance later.</template>
+          <template v-else>{{ cloudMessages.reconnectLater }}</template>
         </p>
       </AppDialogBody>
       <AppDialogFooter>
-        <button type="button" :class="quiet.base" @click="disconnectOpen = false">Cancel</button>
-        <button type="button" :class="secondary.base" @click="openWorkspace">Open workspace</button>
+        <button type="button" :class="quiet.base" @click="disconnectOpen = false">
+          {{ common.cancel }}
+        </button>
+        <button type="button" :class="secondary.base" @click="openWorkspace">
+          {{ cloudMessages.openWorkspace }}
+        </button>
         <button type="button" class="text-xs text-danger" @click="confirmDisconnect">
-          Disconnect anyway
+          {{ cloudMessages.disconnectAnyway }}
         </button>
       </AppDialogFooter>
     </AppAlertDialogRoot>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue'
+import { useCloudMessages, useCommonMessages } from '@open-pencil/vue'
 
 import AppInput from '@/components/ui/AppInput.vue'
 import { useButtonUI } from '@/components/ui/button'
@@ -11,6 +12,8 @@ import {
 } from '@/components/ui/dialog'
 import { useConnectCloudInstance } from './useConnectCloudInstance'
 
+const cloudMessages = useCloudMessages()
+const common = useCommonMessages()
 const open = defineModel<boolean>('open', { default: false })
 const emit = defineEmits<{
   connectOfficial: []
@@ -43,8 +46,8 @@ watch(open, (isOpen) => {
 </script>
 
 <template>
-  <AppDialogRoot v-model:open="open" size="sm" aria-label="Connect Cloud instance">
-    <AppDialogHeader heading="Connect Cloud instance" close-label="Close" />
+  <AppDialogRoot v-model:open="open" size="sm" :aria-label="cloudMessages.connectDialogTitle">
+    <AppDialogHeader :heading="cloudMessages.connectDialogTitle" :close-label="common.close" />
     <AppDialogBody class="space-y-3">
       <template v-if="flow.step.value === 'choose-kind'">
         <button
@@ -53,27 +56,31 @@ watch(open, (isOpen) => {
           @click="finishOfficial"
         >
           <span class="block text-xs font-medium text-surface">OpenPencil Cloud</span>
-          <span class="mt-1 block text-[10px] text-muted">Official hosted service</span>
+          <span class="mt-1 block text-[10px] text-muted">{{
+            cloudMessages.officialHostedService
+          }}</span>
         </button>
         <button
           type="button"
           class="w-full rounded border border-border p-3 text-left hover:bg-hover"
           @click="flow.step.value = 'enter-url'"
         >
-          <span class="block text-xs font-medium text-surface">Self-hosted instance</span>
+          <span class="block text-xs font-medium text-surface">{{
+            cloudMessages.selfHostedInstance
+          }}</span>
           <span class="mt-1 block text-[10px] text-muted">
-            Connect to your company or own server
+            {{ cloudMessages.selfHostedDescription }}
           </span>
         </button>
       </template>
 
       <template v-else-if="flow.step.value === 'enter-url' || flow.step.value === 'error'">
         <label class="flex flex-col gap-1 text-[10px] text-muted">
-          Server URL
+          {{ cloudMessages.serverURL }}
           <AppInput
             v-model="flow.serverURL.value"
             placeholder="https://pencil.example.com"
-            aria-label="Server URL"
+            :aria-label="cloudMessages.serverURL"
             size="sm"
             tone="panel"
             @enter="flow.verify"
@@ -88,7 +95,7 @@ watch(open, (isOpen) => {
         v-else-if="flow.step.value === 'discovering'"
         class="py-6 text-center text-xs text-muted"
       >
-        Verifying instance…
+        {{ cloudMessages.verifyingInstance }}
       </div>
 
       <template v-else-if="flow.discovery.value">
@@ -97,15 +104,21 @@ watch(open, (isOpen) => {
             {{ verifiedHostname }}
           </p>
           <p class="mt-1 text-[10px] text-muted">
-            {{ flow.discovery.value.deployment === 'official' ? 'Official' : 'Self-hosted' }} ·
-            Protocol {{ flow.discovery.value.protocolVersion }}
+            {{
+              flow.discovery.value.deployment === 'official'
+                ? cloudMessages.official
+                : cloudMessages.selfHosted
+            }}
+            ·
+            {{ cloudMessages.protocolVersion({ version: flow.discovery.value.protocolVersion }) }}
           </p>
         </div>
         <ul class="space-y-1 text-[10px] text-muted">
-          <li>✓ Document storage</li>
-          <li>✓ Workspaces</li>
+          <li>✓ {{ cloudMessages.documentStorage }}</li>
+          <li>✓ {{ cloudMessages.workspaces }}</li>
           <li :class="flow.discovery.value.capabilities.collaboration ? '' : 'text-warning'">
-            {{ flow.discovery.value.capabilities.collaboration ? '✓' : '—' }} Collaboration
+            {{ flow.discovery.value.capabilities.collaboration ? '✓' : '—' }}
+            {{ cloudMessages.collaboration }}
           </li>
         </ul>
       </template>
@@ -117,7 +130,7 @@ watch(open, (isOpen) => {
         :class="secondary.base"
         @click="flow.step.value = 'choose-kind'"
       >
-        Back
+        {{ cloudMessages.back }}
       </button>
       <button
         v-if="flow.step.value === 'enter-url' || flow.step.value === 'error'"
@@ -126,7 +139,7 @@ watch(open, (isOpen) => {
         :disabled="!flow.serverURL.value.trim()"
         @click="flow.verify"
       >
-        Verify
+        {{ cloudMessages.verify }}
       </button>
       <button
         v-if="flow.step.value === 'verify'"
@@ -135,7 +148,7 @@ watch(open, (isOpen) => {
         :disabled="!flow.canConfirm.value"
         @click="finishSelfHosted"
       >
-        Connect
+        {{ cloudMessages.connect }}
       </button>
     </AppDialogFooter>
   </AppDialogRoot>

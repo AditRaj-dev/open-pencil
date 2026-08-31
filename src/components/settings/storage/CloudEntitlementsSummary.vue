@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useCloudMessages } from '@open-pencil/vue'
 
 import type { WorkspaceEntitlements } from '@open-pencil/cloud/contract'
 
@@ -8,6 +9,7 @@ import AppBadge from '@/components/ui/AppBadge.vue'
 import AppProgress from '@/components/ui/AppProgress.vue'
 import AppButton from '@/components/ui/AppButton.vue'
 
+const cloudMessages = useCloudMessages()
 const { entitlements, loading, error } = defineProps<{
   entitlements: WorkspaceEntitlements | null
   loading: boolean
@@ -48,19 +50,23 @@ const features = computed(() =>
   >
     <div class="flex items-center justify-between gap-3">
       <h3 id="cloud-workspace-usage" class="text-[11px] font-medium text-surface">
-        Workspace usage
+        {{ cloudMessages.workspaceUsage }}
       </h3>
       <span v-if="entitlements" class="text-[10px] tabular-nums text-muted">
         {{ storageSummary }}
       </span>
     </div>
 
-    <p v-if="loading" class="mt-2 text-[10px] text-muted">Loading workspace usage…</p>
+    <p v-if="loading" class="mt-2 text-[10px] text-muted">
+      {{ cloudMessages.loadingWorkspaceUsage }}
+    </p>
     <div v-else-if="error" class="mt-2 flex items-center justify-between gap-2">
       <p class="text-[10px] text-danger">
-        Workspace limits could not be loaded. Reconnect to the Cloud server and try again.
+        {{ cloudMessages.workspaceLimitsError }}
       </p>
-      <AppButton color="neutral" variant="soft" size="sm" @click="emit('retry')">Retry</AppButton>
+      <AppButton color="neutral" variant="soft" size="sm" @click="emit('retry')">{{
+        cloudMessages.retry
+      }}</AppButton>
     </div>
 
     <template v-else-if="entitlements">
@@ -69,7 +75,7 @@ const features = computed(() =>
         class="mt-2"
         :value="usedBytes"
         :max="entitlements.limits.maximumStorageBytes"
-        label="Workspace storage used"
+        :label="cloudMessages.workspaceStorageUsed"
       />
       <p
         v-if="entitlements.usage.reservedStorageBytes > 0"
@@ -81,17 +87,17 @@ const features = computed(() =>
 
       <dl class="mt-3 space-y-1.5 border-t border-border pt-3">
         <div class="flex items-center justify-between gap-3 text-[10px]">
-          <dt class="text-muted">Maximum file size</dt>
+          <dt class="text-muted">{{ cloudMessages.maximumFileSize }}</dt>
           <dd class="tabular-nums text-surface">
             {{ formatStorageBytes(entitlements.limits.maximumFileBytes) }}
           </dd>
         </div>
         <div class="flex items-center justify-between gap-3 text-[10px]">
-          <dt class="text-muted">Storage allowance</dt>
+          <dt class="text-muted">{{ cloudMessages.storageAllowance }}</dt>
           <dd class="tabular-nums text-surface">
             {{
               entitlements.limits.maximumStorageBytes === null
-                ? 'Unlimited'
+                ? cloudMessages.unlimited
                 : formatStorageBytes(entitlements.limits.maximumStorageBytes)
             }}
           </dd>
@@ -100,7 +106,7 @@ const features = computed(() =>
           v-if="entitlements.limits.maximumParticipants !== null"
           class="flex items-center justify-between gap-3 text-[10px]"
         >
-          <dt class="text-muted">Maximum collaborators</dt>
+          <dt class="text-muted">{{ cloudMessages.maximumCollaborators }}</dt>
           <dd class="tabular-nums text-surface">
             {{ entitlements.limits.maximumParticipants }}
           </dd>
@@ -116,7 +122,7 @@ const features = computed(() =>
         >
           <span class="text-[10px] text-muted">{{ label }}</span>
           <AppBadge :ui="available ? undefined : { base: 'bg-hover text-muted' }">
-            {{ available ? 'Available' : 'Unavailable' }}
+            {{ available ? cloudMessages.available : cloudMessages.unavailable }}
           </AppBadge>
         </div>
       </div>
