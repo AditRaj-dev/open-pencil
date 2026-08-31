@@ -24,7 +24,7 @@
   "permissionRequest": "{tool} fordert eine Berechtigung an.",
   "baseURLPlaceholder": "Base URL (z. B. http://localhost:11434/v1)",
   "modelIDPlaceholder": "Model ID (z. B. llama-3.3-70b)",
-  "providerSettings": "Provider settings",
+  "providerSettings": "Anbietereinstellungen",
   "openProviderSettings": "Anbietereinstellungen öffnen",
   "modelsDescription": "Wiederverwendbare Modelle und ihre Anbieter-Verbindungen konfigurieren.",
   "addModel": "Modell hinzufügen",
@@ -67,7 +67,7 @@
   "modelRoleReviewDescription": "Explizite Plan- und Designprüfungen",
   "modelRoleFastDescription": "Kostengünstige Hintergrundarbeit",
   "modelRoleVisionDescription": "Screenshots und Bildreferenzen",
-  "modelRoleUseDesign": "Wie Design",
+  "modelRoleUseDesign": "Als Designmodell verwenden",
   "noModel": "Keines",
   "apiKey": "API Key",
   "apiType": "API Type",
@@ -89,6 +89,6 @@
   "responses": "Responses",
   "connectProvider": "Verbinde einen KI-Anbieter, um den Chat zu starten.",
   "getProviderAPIKey": "Einen {provider}-API-Schlüssel erhalten →",
-  "provider": "AI Provider",
+  "provider": "KI-Anbieter",
   "modelsTitle": "Modelle"
 }

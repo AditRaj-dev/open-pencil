@@ -38,7 +38,7 @@
   "restart": "MCP サーバーを再起動",
   "externallyManaged": "外部で管理",
   "starting": "起動中…",
-  "statusIdle": "未初期化",
+  "statusIdle": "待機中",
   "statusStarting": "起動中",
   "statusRunning": "実行中",
   "statusStopped": "停止",
