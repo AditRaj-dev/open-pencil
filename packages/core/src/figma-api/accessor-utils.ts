@@ -38,10 +38,6 @@ export function updateNode(
   assertProxyEditable(target, internals)
   const g = graph(target, internals)
   const id = nodeId(target, internals)
-  const applied = Object.fromEntries(
-    Object.entries(changes).filter(([, value]) => value !== undefined)
-  ) as Partial<SceneNode>
-  if (Object.keys(applied).length === 0) return
-  g.updateNode(id, applied)
-  recordInstanceOverride(g, id, Object.keys(applied))
+  g.updateNode(id, changes)
+  recordInstanceOverride(g, id, Object.keys(changes))
 }
