@@ -16,6 +16,7 @@ const LOCALE_FILE_NAMES: Record<string, string> = {
 }
 const REQUIRED_INDEX_FILE = 'index.ts'
 const TRANSLATION_BASELINE_PATH = 'tools/i18n/translation-baseline.txt'
+const MIXED_SCRIPT_BASELINE_PATH = 'tools/i18n/mixed-script-baseline.txt'
 const PLACEHOLDER_PATTERN = /\{([A-Za-z][A-Za-z0-9_]*)\}/g
 
 function sourceMessage(value: unknown): string | null {
@@ -35,17 +36,11 @@ function normalized(value: string): string {
   return value.normalize('NFKC').replaceAll(/\s+/g, ' ').trim()
 }
 
-const TECHNICAL_TERM_PATTERN =
-  /(?:https?:\/\/\S+|OpenPencil|Figma|Chrome|Edge|Web|XPath|Control|Pexels|Unsplash|stock_photo|Tailwind|Design|Streamable|Bearer|Completions|Responses|HTML|CSS|JSX|MCP|ACP|API|URL|CORS|RGB|HSL|AI)/g
-
-function hasSuspiciousMixedScript(locale: TranslatedLocale, value: string): boolean {
-  if (locale === 'ja' || locale === 'zh-CN') {
-    const prose = value.replaceAll(TECHNICAL_TERM_PATTERN, '')
-    return /[A-Z][a-z]{2,}[\u3040-\u30ff\u3400-\u9fff]|[\u3040-\u30ff\u3400-\u9fff][A-Z][a-z]{2,}/u.test(
-      prose
-    )
-  }
-  return false
+function hasMixedLatinAndCjk(value: string): boolean {
+  return (
+    /\p{Script=Latin}/u.test(value) &&
+    /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}]/u.test(value)
+  )
 }
 
 function localeFileName(namespace: string) {
@@ -88,7 +83,14 @@ const translationBaseline = new Set(
     .map((line) => line.trim())
     .filter(Boolean)
 )
+const mixedScriptBaseline = new Set(
+  readFileSync(MIXED_SCRIPT_BASELINE_PATH, 'utf8')
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+)
 const observedIdentical = new Set<string>()
+const observedMixedScript = new Set<string>()
 
 let hasErrors = false
 
@@ -164,8 +166,10 @@ for (const [locale, dir] of expectedLocaleDirs) {
           `${id}: placeholders differ from source (${placeholders(source).join(', ')} != ${placeholders(localized).join(', ')})`
         )
       }
-      if (hasSuspiciousMixedScript(locale, localized))
-        report(`${id}: suspicious mixed-script translation '${localized}'`)
+      if ((locale === 'ja' || locale === 'zh-CN') && hasMixedLatinAndCjk(localized)) {
+        observedMixedScript.add(id)
+        if (!mixedScriptBaseline.has(id)) report(`${id}: mixed Latin/CJK scripts require review`)
+      }
       if (normalized(source) === normalized(localized)) {
         observedIdentical.add(id)
         if (!translationBaseline.has(id))
@@ -199,6 +203,9 @@ for (const [locale, dir] of expectedLocaleDirs) {
 
 for (const id of translationBaseline) {
   if (!observedIdentical.has(id)) report(`${id}: stale translation baseline entry`)
+}
+for (const id of mixedScriptBaseline) {
+  if (!observedMixedScript.has(id)) report(`${id}: stale mixed-script baseline entry`)
 }
 
 if (hasErrors) {
