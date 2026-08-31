@@ -15,6 +15,38 @@ const LOCALE_FILE_NAMES: Record<string, string> = {
   variableTypes: 'variable-types'
 }
 const REQUIRED_INDEX_FILE = 'index.ts'
+const TRANSLATION_BASELINE_PATH = 'tools/i18n/translation-baseline.txt'
+const PLACEHOLDER_PATTERN = /\{([A-Za-z][A-Za-z0-9_]*)\}/g
+
+function sourceMessage(value: unknown): string | null {
+  if (typeof value === 'string') return value
+  if (value && typeof value === 'object' && 'input' in value) {
+    const input = (value as { input?: unknown }).input
+    return typeof input === 'string' ? input : null
+  }
+  return null
+}
+
+function placeholders(value: string): string[] {
+  return [...value.matchAll(PLACEHOLDER_PATTERN)].map((match) => match[1]).sort()
+}
+
+function normalized(value: string): string {
+  return value.normalize('NFKC').replaceAll(/\s+/g, ' ').trim()
+}
+
+const TECHNICAL_TERM_PATTERN =
+  /(?:https?:\/\/\S+|OpenPencil|Figma|Chrome|Edge|Web|XPath|Control|Pexels|Unsplash|stock_photo|Tailwind|Design|Streamable|Bearer|Completions|Responses|HTML|CSS|JSX|MCP|ACP|API|URL|CORS|RGB|HSL|AI)/g
+
+function hasSuspiciousMixedScript(locale: TranslatedLocale, value: string): boolean {
+  if (locale === 'ja' || locale === 'zh-CN') {
+    const prose = value.replaceAll(TECHNICAL_TERM_PATTERN, '')
+    return /[A-Z][a-z]{2,}[\u3040-\u30ff\u3400-\u9fff]|[\u3040-\u30ff\u3400-\u9fff][A-Z][a-z]{2,}/u.test(
+      prose
+    )
+  }
+  return false
+}
 
 function localeFileName(namespace: string) {
   return LOCALE_FILE_NAMES[namespace] ?? namespace
@@ -48,7 +80,15 @@ const expectedKeys = new Map(
 const expectedLocaleDirs = new Map<TranslatedLocale, string>(
   TRANSLATED_LOCALES.map((locale) => [locale, LOCALE_DIR_NAMES[locale]])
 )
+const baselineLocaleId = (locale: TranslatedLocale): string => LOCALE_DIR_NAMES[locale]
 const expectedLocaleFiles = new Set(namespaces.map(localeFileName))
+const translationBaseline = new Set(
+  readFileSync(TRANSLATION_BASELINE_PATH, 'utf8')
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+)
+const observedIdentical = new Set<string>()
 
 let hasErrors = false
 
@@ -94,6 +134,8 @@ for (const [locale, dir] of expectedLocaleDirs) {
   const fileDiff = sameMembers(namespaceFiles, expectedLocaleFiles)
   const missing: string[] = []
   const extra: string[] = []
+  let translated = 0
+  let total = 0
 
   for (const file of fileDiff.missing) missing.push(`${file}.*`)
   for (const file of fileDiff.extra) extra.push(`${file}.*`)
@@ -106,12 +148,40 @@ for (const [locale, dir] of expectedLocaleDirs) {
     if (!expected) continue
 
     const data = readJSONObject(path)
+    const defaults = messageDefaults[namespace as keyof typeof messageDefaults]
     for (const key of expected) {
-      if (!(key in data)) missing.push(`${namespace}.${key}`)
+      if (!(key in data)) {
+        missing.push(`${namespace}.${key}`)
+        continue
+      }
+      const source = sourceMessage(defaults[key as keyof typeof defaults])
+      const localized = data[key]
+      if (source === null || typeof localized !== 'string') continue
+      total++
+      const id = `${baselineLocaleId(locale)}:${namespace}.${key}`
+      if (placeholders(source).join(',') !== placeholders(localized).join(',')) {
+        report(
+          `${id}: placeholders differ from source (${placeholders(source).join(', ')} != ${placeholders(localized).join(', ')})`
+        )
+      }
+      if (hasSuspiciousMixedScript(locale, localized))
+        report(`${id}: suspicious mixed-script translation '${localized}'`)
+      if (normalized(source) === normalized(localized)) {
+        observedIdentical.add(id)
+        if (!translationBaseline.has(id))
+          report(`${id}: translation is identical to the English source`)
+      } else {
+        translated++
+      }
     }
     for (const key of Object.keys(data)) {
       if (!expected.has(key)) extra.push(`${namespace}.${key}`)
     }
+  }
+
+  if (total > 0) {
+    const coverage = ((translated / total) * 100).toFixed(1)
+    console.log(`${locale}: ${translated}/${total} translated (${coverage}%)`)
   }
 
   const extraNonJSONFiles = files.filter(
@@ -127,9 +197,15 @@ for (const [locale, dir] of expectedLocaleDirs) {
   }
 }
 
+for (const id of translationBaseline) {
+  if (!observedIdentical.has(id)) report(`${id}: stale translation baseline entry`)
+}
+
 if (hasErrors) {
   console.error('\nLocale files are out of sync with message defaults')
   process.exit(1)
 }
 
-console.log('All locale files are in sync.')
+console.log(
+  'All locale files are structurally complete and translation quality is within baseline.'
+)
