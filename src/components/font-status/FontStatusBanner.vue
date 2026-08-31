@@ -25,11 +25,7 @@ const issues = computed(() => status.value.issues)
         class="min-w-0 flex-1 text-left font-medium"
         @click="expanded = !expanded"
       >
-        {{
-          issues.length === 1
-            ? fonts.fontIssueFound
-            : fonts.fontIssuesFound({ count: issues.length })
-        }}
+        {{ issues.length === 1 ? fonts.issueFound : fonts.issuesFound({ count: issues.length }) }}
       </button>
       <button
         type="button"
@@ -46,11 +42,11 @@ const issues = computed(() => status.value.issues)
         :disabled="retrying"
         @click="retry"
       >
-        {{ retrying ? fonts.retryingFonts : fonts.retryFonts }}
+        {{ retrying ? fonts.retrying : fonts.retry }}
       </button>
       <button
         type="button"
-        :aria-label="expanded ? fonts.collapseFontIssues : fonts.expandFontIssues"
+        :aria-label="expanded ? fonts.collapseIssues : fonts.expandIssues"
         class="flex size-5 shrink-0 items-center justify-center rounded hover:bg-amber-500/20"
         @click="expanded = !expanded"
       >
@@ -69,7 +65,7 @@ const issues = computed(() => status.value.issues)
         <span class="min-w-0 flex-1 truncate">
           <strong>{{ issue.family }} {{ issue.style }}</strong>
           <template v-if="issue.substituteFamily"> → {{ issue.substituteFamily }} </template>
-          <template v-else>— {{ fonts.noFontSubstitute }}</template>
+          <template v-else>— {{ fonts.noSubstitute }}</template>
         </span>
         <span class="shrink-0 text-[10px] opacity-75">
           {{

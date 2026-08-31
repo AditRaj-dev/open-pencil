@@ -8,9 +8,6 @@
   "copiedExclamation": "Скопировано!",
   "copyMessage": "Скопировать сообщение",
   "paste": "Вставить",
-  "restore": "Восстановить",
-  "discard": "Удалить",
-  "showUI": "Показать интерфейс ({shortcut})",
   "lastUpdated": "Последнее обновление",
   "enabled": "Включено",
   "disabled": "Отключено",
@@ -25,7 +22,6 @@
   "download": "Загрузить",
   "downloading": "Загрузка…",
   "refresh": "Обновить",
-  "clearCache": "Очистить кэш",
   "you": "Вы",
   "youSuffix": "вы",
   "connect": "Подключить",
@@ -40,7 +36,5 @@
   "unsupported": "Не поддерживается",
   "tokens": "токенов",
   "clear": "Очистить",
-  "disconnect": "Отключиться",
-  "share": "Поделиться",
   "dismiss": "Закрыть"
 }

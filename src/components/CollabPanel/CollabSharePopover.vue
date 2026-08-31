@@ -35,7 +35,7 @@ const styles = computed(() => collaboration({ connection: connection.value }))
             ? collab.messages.connected
             : collab.isJoining
               ? collab.messages.joinRoom
-              : collab.common.share
+              : collab.messages.share
         }}
       </button>
     </PopoverTrigger>

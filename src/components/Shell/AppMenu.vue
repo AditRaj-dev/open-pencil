@@ -78,11 +78,11 @@ const subMenuCls = useMenuUI({ content: 'min-w-44' })
         @dblclick="startRename"
         >{{ store.state.documentName }}</span
       >
-      <Tip :label="settings.settings">
+      <Tip :label="settings.title">
         <button
           type="button"
           data-test-id="app-settings-trigger"
-          :aria-label="settings.settings"
+          :aria-label="settings.title"
           class="flex size-6 shrink-0 cursor-pointer items-center justify-center rounded text-muted transition-colors hover:bg-hover hover:text-surface"
           @click="openSettingsDialog()"
         >

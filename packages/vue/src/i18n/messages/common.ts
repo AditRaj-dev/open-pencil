@@ -12,9 +12,6 @@ export const commonMessageDefaults = {
   copiedExclamation: 'Copied!',
   copyMessage: 'Copy message',
   paste: 'Paste',
-  restore: 'Restore',
-  discard: 'Discard',
-  showUI: params('Show UI ({shortcut})'),
   lastUpdated: 'Last updated',
   enabled: 'Enabled',
   disabled: 'Disabled',
@@ -29,7 +26,6 @@ export const commonMessageDefaults = {
   download: 'Download',
   downloading: 'Downloading…',
   refresh: 'Refresh',
-  clearCache: 'Clear cache',
   you: 'You',
   youSuffix: 'you',
   connect: 'Connect',
@@ -44,8 +40,6 @@ export const commonMessageDefaults = {
   unsupported: 'Not supported',
   tokens: 'tokens',
   clear: 'Clear',
-  disconnect: 'Disconnect',
-  share: 'Share',
   dismiss: 'Dismiss'
 } as const
 

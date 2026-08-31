@@ -113,8 +113,8 @@ export function useFontSettings(actions: FontSettingsActions = defaultActions) {
   function setFontProviderEnabled(provider: WebFontProviderId, enabled: boolean) {
     fontProviderSettings.value = { ...fontProviderSettings.value, [provider]: enabled }
     status.value = enabled
-      ? fonts.value.fontProviderEnabled({ provider })
-      : fonts.value.fontProviderDisabled({ provider })
+      ? fonts.value.providerEnabled({ provider })
+      : fonts.value.providerDisabled({ provider })
   }
 
   async function downloadFallbacks() {
@@ -123,9 +123,9 @@ export function useFontSettings(actions: FontSettingsActions = defaultActions) {
     try {
       await actions.predownloadFallbackFonts()
       await refreshSummary()
-      status.value = fonts.value.fallbackFontsDownloaded
+      status.value = fonts.value.fallbackDownloaded
     } catch {
-      status.value = fonts.value.fallbackFontsDownloadFailed
+      status.value = fonts.value.fallbackDownloadFailed
     } finally {
       busyAction.value = null
     }

@@ -1,12 +1,12 @@
 import { i18n } from '#vue/i18n/create'
 
 export const settingsMessageDefaults = {
-  settings: 'Settings',
-  settingsDescription: 'Manage integrations and app preferences.',
-  settingsGeneral: 'General',
-  settingsEditing: 'Editing',
-  settingsSnappingDescription:
-    'Control alignment while editing paths, moving, and resizing layers.',
+  title: 'Settings',
+  description: 'Manage integrations and app preferences.',
+  general: 'General',
+  languageDescription: 'Choose the language used by the app interface.',
+  editing: 'Editing',
+  snappingDescription: 'Control alignment while editing paths, moving, and resizing layers.',
   snapToGeometry: 'Snap to geometry',
   snapToGeometryDescription: 'Align dragged vector points to other points in the path.',
   snapToObjects: 'Snap to objects',
@@ -15,13 +15,13 @@ export const settingsMessageDefaults = {
   snapToPixelGrid: 'Snap to pixel grid',
   snapToPixelGridDescription:
     'Align vector points, moved layers, and resized edges to whole pixels.',
-  snapTemporaryDisableHint: 'Hold Control while dragging to temporarily disable snapping.',
-  settingsAIAndAgents: 'AI & agents',
-  settingsUsage: 'Usage',
-  settingsDiagnostics: 'Diagnostics',
-  settingsMedia: 'Media',
-  settingsMCP: 'MCP & automation',
-  settingsStorage: 'Cloud storage',
+  temporaryDisableSnappingHint: 'Hold Control while dragging to temporarily disable snapping.',
+  aiAndAgents: 'AI & agents',
+  usage: 'Usage',
+  diagnostics: 'Diagnostics',
+  media: 'Media',
+  automation: 'MCP & automation',
+  storage: 'Cloud storage',
   mobilePanelNavigation: 'Mobile panel navigation',
   notifications: 'Notifications'
 } as const

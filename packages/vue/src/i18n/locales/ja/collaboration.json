@@ -11,5 +11,7 @@
   "joinCollaboration": "共同編集に参加",
   "orJoinRoom": "またはルームに参加",
   "pasteRoomLinkOrId": "ルームのリンクまたはIDを貼り付け",
-  "connected": "接続済み"
+  "connected": "接続済み",
+  "disconnect": "切断",
+  "share": "共有"
 }

@@ -1,5 +1,4 @@
 {
-  "connectAIProvider": "Conecta un proveedor de IA para empezar a chatear.",
   "connectionTestSuccess": "Conexión correcta. Se puede acceder al modelo.",
   "connectionTestMissingAPIKey": "Introduce una clave API antes de probar.",
   "connectionTestMissingBaseURL": "Introduce una URL base antes de probar.",
@@ -12,7 +11,6 @@
   "connectionTestBrowserNetworkFailed": "No se ha podido acceder a este endpoint desde el navegador. Prueba la aplicación de escritorio o usa un endpoint con CORS habilitado.",
   "connectionTestNetworkFailed": "No se ha podido acceder al endpoint. Comprueba la URL y la conexión de red.",
   "connectionTestUnknownFailed": "La prueba de conexión ha fallado. Comprueba los ajustes del proveedor e inténtalo de nuevo.",
-  "getAPIKey": "Obtener una clave API de {provider} →",
   "oneKeyManyModels": "Una clave para más de 100 modelos de todos los proveedores.",
   "describeChange": "Describe un cambio…",
   "describeCreateOrChange": "Describe lo que quieres crear o cambiar.",
@@ -26,10 +24,8 @@
   "permissionRequest": "{tool} solicita permiso.",
   "baseURLPlaceholder": "Base URL (p. ej. http://localhost:11434/v1)",
   "modelIDPlaceholder": "Model ID (p. ej. llama-3.3-70b)",
-  "aiProvider": "Proveedor IA",
   "providerSettings": "Opciones del proveedor",
   "openProviderSettings": "Abrir opciones del proveedor",
-  "models": "Modelos",
   "modelsDescription": "Configura modelos reutilizables y sus conexiones de proveedor.",
   "addModel": "Añadir modelo",
   "editModel": "Editar modelo",
@@ -90,5 +86,9 @@
   "chatOutputLimit": "El modelo agotó los tokens de salida mientras razonaba. Aumenta los tokens máximos de salida o reduce el esfuerzo de razonamiento.",
   "chatRequestFailed": "La solicitud al modelo falló. Comprueba la configuración del proveedor e inténtalo de nuevo.",
   "completions": "Completados",
-  "responses": "Respuestas"
+  "responses": "Respuestas",
+  "connectProvider": "Conecta un proveedor de IA para empezar a chatear.",
+  "getProviderAPIKey": "Obtener una clave API de {provider} →",
+  "provider": "Proveedor IA",
+  "modelsTitle": "Modelos"
 }

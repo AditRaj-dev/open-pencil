@@ -91,7 +91,7 @@ watch(
     <section>
       <div class="mb-2 flex items-center justify-between">
         <div>
-          <h3 class="text-xs font-semibold text-surface">{{ ai.models }}</h3>
+          <h3 class="text-xs font-semibold text-surface">{{ ai.modelsTitle }}</h3>
           <p class="text-[10px] text-muted">{{ ai.modelsDescription }}</p>
         </div>
         <button

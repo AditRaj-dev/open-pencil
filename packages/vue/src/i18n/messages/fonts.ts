@@ -3,20 +3,20 @@ import { params } from '@nanostores/i18n'
 import { i18n } from '#vue/i18n/create'
 
 export const fontsMessageDefaults = {
-  fontSettings: 'Font settings',
-  fontIssueFound: '1 font face is unavailable or substituted',
-  fontIssuesFound: params('{count} font faces are unavailable or substituted'),
+  settingsTitle: 'Font settings',
+  issueFound: '1 font face is unavailable or substituted',
+  issuesFound: params('{count} font faces are unavailable or substituted'),
   selectAffectedLayers: 'Select layers',
-  retryFonts: 'Retry fonts',
-  retryingFonts: 'Retrying…',
-  expandFontIssues: 'Show font issues',
-  collapseFontIssues: 'Hide font issues',
-  noFontSubstitute: 'no substitute available',
+  retry: 'Retry fonts',
+  retrying: 'Retrying…',
+  expandIssues: 'Show font issues',
+  collapseIssues: 'Hide font issues',
+  noSubstitute: 'no substitute available',
   affectedLayer: '1 affected layer',
   affectedLayerCount: params('{count} affected layers'),
-  fontSettingsDesktopDescription:
+  settingsDesktopDescription:
     'Access system fonts, online providers, fallback packs, and cached downloads.',
-  fontSettingsBrowserDescription:
+  settingsBrowserDescription:
     'Allow browser access to local fonts and manage online font providers.',
   localFonts: 'Local fonts',
   onlineFonts: 'Online fonts',
@@ -35,12 +35,13 @@ export const fontsMessageDefaults = {
   localFontAccessNotGranted: 'Local font access was not granted.',
   onlineFontProvidersEnabled: 'Online font providers enabled.',
   onlineFontProvidersDisabled: 'Online font providers disabled.',
-  fontProviderEnabled: params('Enabled {provider}.'),
-  fontProviderDisabled: params('Disabled {provider}.'),
-  fallbackFontsDownloaded: 'Fallback fonts downloaded.',
-  fallbackFontsDownloadFailed: 'Could not download fallback fonts.',
+  providerEnabled: params('Enabled {provider}.'),
+  providerDisabled: params('Disabled {provider}.'),
+  fallbackDownloaded: 'Fallback fonts downloaded.',
+  fallbackDownloadFailed: 'Could not download fallback fonts.',
   downloadedFontCacheCleared: 'Downloaded font cache cleared.',
-  downloadedFontCacheClearFailed: 'Could not clear downloaded font cache.'
+  downloadedFontCacheClearFailed: 'Could not clear downloaded font cache.',
+  clearCache: 'Clear cache'
 } as const
 
 export const fontsMessages = i18n('fonts', fontsMessageDefaults)

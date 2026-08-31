@@ -3,7 +3,7 @@ import { params } from '@nanostores/i18n'
 import { i18n } from '#vue/i18n/create'
 
 export const aiMessageDefaults = {
-  connectAIProvider: 'Connect an AI provider to start chatting.',
+  connectProvider: 'Connect an AI provider to start chatting.',
   connectionTestSuccess: 'Connected successfully. Model is reachable.',
   connectionTestMissingAPIKey: 'Enter an API key before testing.',
   connectionTestMissingBaseURL: 'Enter a base URL before testing.',
@@ -21,7 +21,7 @@ export const aiMessageDefaults = {
   connectionTestNetworkFailed:
     'Could not reach the endpoint. Check the URL and your network connection.',
   connectionTestUnknownFailed: 'Connection test failed. Check the provider settings and try again.',
-  getAPIKey: params('Get an {provider} API key →'),
+  getProviderAPIKey: params('Get an {provider} API key →'),
   oneKeyManyModels: 'One key for 100+ models from all providers.',
   describeChange: 'Describe a change…',
   describeCreateOrChange: 'Describe what you want to create or change.',
@@ -35,10 +35,10 @@ export const aiMessageDefaults = {
   permissionRequest: params('{tool} is requesting permission.'),
   baseURLPlaceholder: 'Base URL (e.g. http://localhost:11434/v1)',
   modelIDPlaceholder: 'Model ID (e.g. llama-3.3-70b)',
-  aiProvider: 'AI Provider',
+  provider: 'AI Provider',
   providerSettings: 'Provider settings',
   openProviderSettings: 'Open provider settings',
-  models: 'Models',
+  modelsTitle: 'Models',
   modelsDescription: 'Configure reusable models and their provider connections.',
   addModel: 'Add model',
   editModel: 'Edit model',

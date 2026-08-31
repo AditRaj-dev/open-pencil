@@ -11,5 +11,7 @@
   "joinCollaboration": "Dołącz do współpracy",
   "orJoinRoom": "lub dołącz do pokoju",
   "pasteRoomLinkOrId": "Wklej link lub ID pokoju",
-  "connected": "Połączono"
+  "connected": "Połączono",
+  "disconnect": "Rozłącz",
+  "share": "Udostępnij"
 }

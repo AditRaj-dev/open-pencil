@@ -1,15 +1,15 @@
 {
-  "codeSource": "Codequelle",
-  "codeSourceDesignJSX": "Design JSX",
-  "codeSourceTailwindJSX": "Tailwind JSX",
-  "codeSourceHTMLCSS": "HTML/CSS",
-  "codeEditorDesignLabel": "Design JSX",
-  "codeEditorHTMLCSSLabel": "HTML and CSS",
-  "codeUpdating": "Wird aktualisiert…",
-  "codeUpdatedLive": "Live aktualisiert",
-  "codePreviewFailed": "Vorschau fehlgeschlagen",
-  "codeGeneratedReadOnly": "Generiert, schreibgeschützt",
-  "codeReset": "Zurücksetzen",
   "copyJSXReference": "JSX-Prop-Referenz in die Zwischenablage kopieren",
-  "jsxUpToDate": "Aktuell"
+  "jsxUpToDate": "Aktuell",
+  "source": "Codequelle",
+  "sourceDesignJSX": "Design JSX",
+  "sourceTailwindJSX": "Tailwind JSX",
+  "sourceHTMLCSS": "HTML/CSS",
+  "editorDesignLabel": "Design JSX",
+  "editorHTMLCSSLabel": "HTML and CSS",
+  "updating": "Wird aktualisiert…",
+  "updatedLive": "Live aktualisiert",
+  "previewFailed": "Vorschau fehlgeschlagen",
+  "generatedReadOnly": "Generiert, schreibgeschützt",
+  "reset": "Zurücksetzen"
 }

@@ -70,7 +70,7 @@ function peerAvatarClass(following: boolean) {
         </div>
 
         <button :class="styles.disconnect()" @click="hud.disconnect">
-          {{ hud.common.disconnect }}
+          {{ hud.messages.disconnect }}
         </button>
       </PopoverContent>
     </PopoverPortal>

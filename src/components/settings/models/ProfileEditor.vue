@@ -301,10 +301,10 @@ void refreshKeyStatus()
         />
       </ProviderSettingsField>
 
-      <ProviderSettingsField :label="ai.aiProvider">
+      <ProviderSettingsField :label="ai.provider">
         <ProviderSelect
           :model-value="draft.providerID"
-          :aria-label="ai.aiProvider"
+          :aria-label="ai.provider"
           data-test-id="settings-model-provider"
           :ui="{
             trigger:
@@ -375,9 +375,9 @@ void refreshKeyStatus()
           :label="ai.apiKey"
           :saved="hasExistingKey"
           kind="api"
-          :placeholder="hasExistingKey ? credentials.keySavedReplace : providerDef.keyPlaceholder"
+          :placeholder="hasExistingKey ? credentials.savedReplace : providerDef.keyPlaceholder"
           :key-u-r-l="providerDef.keyURL"
-          :key-u-r-l-label="credentials.getAPIKeyGeneric"
+          :key-u-r-l-label="credentials.getAPIKey"
           @clear="clearKey"
         />
 

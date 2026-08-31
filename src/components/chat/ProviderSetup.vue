@@ -8,7 +8,7 @@ const { ai } = useI18n()
 </script>
 
 <template>
-  <AppPlaceholder data-test-id="provider-setup" :label="ai.connectAIProvider">
+  <AppPlaceholder data-test-id="provider-setup" :label="ai.connectProvider">
     <template #icon>
       <icon-lucide-sparkles class="size-5" />
     </template>

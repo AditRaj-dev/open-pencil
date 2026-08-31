@@ -15,7 +15,9 @@ export const collaborationMessageDefaults = {
   joinCollaboration: 'Join collaboration',
   orJoinRoom: 'or join a room',
   pasteRoomLinkOrId: 'Paste room link or ID',
-  connected: 'Connected'
+  connected: 'Connected',
+  disconnect: 'Disconnect',
+  share: 'Share'
 } as const
 
 export const collaborationMessages = i18n('collaboration', collaborationMessageDefaults)

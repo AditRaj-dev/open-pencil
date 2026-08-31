@@ -1,11 +1,11 @@
 {
-  "appUpToDate": "OpenPencil обновлён до последней версии",
-  "updateAvailableTitle": "Обновить OpenPencil",
-  "updateAvailable": "Доступен OpenPencil {version}.",
-  "updateInstallPrompt": "Скачать и установить сейчас? После установки обновления приложение перезапустится.",
-  "downloadingUpdate": "Загрузка OpenPencil {version}",
-  "updateInstalledTitle": "Обновление установлено",
-  "updateInstalled": "OpenPencil {version} установлен{size}. Перезапуск.",
-  "updateUnavailable": "Обновления пока недоступны. Сначала опубликуйте подписанный релиз с latest.json.",
-  "updateCheckFailed": "Не удалось проверить обновления: {error}"
+  "upToDate": "OpenPencil обновлён до последней версии",
+  "availableTitle": "Обновить OpenPencil",
+  "available": "Доступен OpenPencil {version}.",
+  "installPrompt": "Скачать и установить сейчас? После установки обновления приложение перезапустится.",
+  "downloading": "Загрузка OpenPencil {version}",
+  "installedTitle": "Обновление установлено",
+  "installed": "OpenPencil {version} установлен{size}. Перезапуск.",
+  "unavailable": "Обновления пока недоступны. Сначала опубликуйте подписанный релиз с latest.json.",
+  "checkFailed": "Не удалось проверить обновления: {error}"
 }

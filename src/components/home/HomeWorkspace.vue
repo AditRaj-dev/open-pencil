@@ -76,10 +76,10 @@ const storageDescription = computed(() => {
   if (endpoint) {
     try {
       const hostname = new URL(endpoint).hostname
-      if (hostname.endsWith('.r2.cloudflarestorage.com')) label = storage.value.storageProviderR2
-      else if (hostname.includes('amazonaws.com')) label = storage.value.storageProviderAmazonS3
-      else if (hostname.includes('backblazeb2.com')) label = storage.value.storageProviderBackblaze
-      else if (hostname) label = storage.value.storageProviderS3
+      if (hostname.endsWith('.r2.cloudflarestorage.com')) label = storage.value.providerR2
+      else if (hostname.includes('amazonaws.com')) label = storage.value.providerAmazonS3
+      else if (hostname.includes('backblazeb2.com')) label = storage.value.providerBackblaze
+      else if (hostname) label = storage.value.providerS3
     } catch {
       label = provider.label
     }
@@ -318,7 +318,7 @@ function formattedDate(updatedAt: string): string {
       <section class="mt-7">
         <div class="mb-3 flex items-start gap-3">
           <div class="min-w-0">
-            <h2 class="text-base font-semibold">{{ storage.storageWorkspace }}</h2>
+            <h2 class="text-base font-semibold">{{ storage.workspace }}</h2>
             <p class="mt-0.5 truncate text-xs text-muted sm:whitespace-normal">
               {{ storageDescription }}
             </p>
@@ -334,11 +334,11 @@ function formattedDate(updatedAt: string): string {
                 <icon-lucide-refresh-cw class="size-3.5" />
               </button>
             </Tip>
-            <Tip :label="settings.settings">
+            <Tip :label="settings.title">
               <button
                 type="button"
                 class="flex size-10 items-center justify-center rounded text-muted hover:bg-hover hover:text-surface sm:size-7"
-                :aria-label="settings.settings"
+                :aria-label="settings.title"
                 @click="openSettingsDialog('storage')"
               >
                 <icon-lucide-settings-2 class="size-3.5" />
@@ -350,7 +350,7 @@ function formattedDate(updatedAt: string): string {
         <div
           v-if="storageLoading && storageDocuments.length === 0"
           class="grid grid-cols-1 gap-x-5 gap-y-6 sm:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]"
-          :aria-label="storage.loadingStorageWorkspace"
+          :aria-label="storage.loadingWorkspace"
         >
           <div v-for="index in 3" :key="index" class="min-w-0 animate-pulse">
             <div class="aspect-video rounded-lg border border-border bg-panel-field" />
@@ -432,13 +432,13 @@ function formattedDate(updatedAt: string): string {
           v-else-if="!storageConfigured"
           class="rounded-lg border border-dashed border-border px-4 py-4 text-center text-xs text-muted sm:py-6"
         >
-          <p>{{ storage.storageNotConfigured }}</p>
+          <p>{{ storage.notConfigured }}</p>
           <button
             type="button"
             class="mt-3 rounded border border-border px-3 py-1.5 text-xs text-surface hover:bg-hover"
             @click="openSettingsDialog('storage')"
           >
-            {{ settings.settings }}
+            {{ settings.title }}
           </button>
         </div>
 

@@ -58,7 +58,7 @@ async function save(): Promise<void> {
       !tokenDraft.value.trim() &&
       tokenStatus.value !== 'configured'
     ) {
-      throw new Error(automation.value.mcpBearerTokenRequired)
+      throw new Error(automation.value.bearerTokenRequired)
     }
     const connection = saveMCPConnectionDraft(draft.value)
     if (draft.value.authenticationType === 'none') {
@@ -117,9 +117,9 @@ onMounted(() => {
       <div class="flex items-center justify-between">
         <div>
           <h3 class="text-xs font-semibold text-surface">
-            {{ draft.id ? automation.editMCPConnection : automation.addMCPConnection }}
+            {{ draft.id ? automation.editConnection : automation.addServerConnection }}
           </h3>
-          <p class="text-[10px] text-muted">{{ automation.mcpConnectionEditorDescription }}</p>
+          <p class="text-[10px] text-muted">{{ automation.connectionEditorDescription }}</p>
         </div>
         <button
           type="button"
@@ -140,32 +140,32 @@ onMounted(() => {
         />
       </label>
       <label class="flex flex-col gap-1 text-[10px] text-muted">
-        {{ automation.mcpServerURL }}
+        {{ automation.serverURL }}
         <AppInput
           v-model="draft.url"
           tone="panel"
           size="sm"
-          :aria-label="automation.mcpServerURL"
+          :aria-label="automation.serverURL"
           placeholder="https://example.com/mcp"
         />
       </label>
-      <AppSwitch v-model="draft.enabled" :label="automation.enableMCPConnection" />
+      <AppSwitch v-model="draft.enabled" :label="automation.enableConnection" />
       <AppSwitch
         :model-value="draft.authenticationType === 'bearer'"
-        :label="automation.mcpBearerAuthentication"
+        :label="automation.bearerAuthentication"
         @update:model-value="draft.authenticationType = $event ? 'bearer' : 'none'"
       />
       <ProviderSettingsKeyField
         v-if="draft.authenticationType === 'bearer'"
         v-model="tokenDraft"
-        :label="automation.mcpBearerToken"
+        :label="automation.bearerToken"
         input-id="mcp-bearer-token"
         :saved="tokenStatus === 'configured'"
         kind="api"
         :placeholder="
           tokenStatus === 'configured'
-            ? credentials.keySavedReplace
-            : automation.mcpBearerTokenPlaceholder
+            ? credentials.savedReplace
+            : automation.bearerTokenPlaceholder
         "
         @clear="clearCredential"
       />
@@ -178,7 +178,7 @@ onMounted(() => {
           class="text-[10px] text-danger hover:underline"
           @click="deleteOpen = true"
         >
-          {{ automation.deleteMCPConnection }}
+          {{ automation.deleteConnection }}
         </button>
         <span v-else />
         <button
@@ -194,8 +194,8 @@ onMounted(() => {
     <div v-else>
       <div class="mb-2 flex items-center justify-between">
         <div>
-          <h3 class="text-xs font-semibold text-surface">{{ automation.mcpConnections }}</h3>
-          <p class="text-[10px] text-muted">{{ automation.mcpConnectionsDescription }}</p>
+          <h3 class="text-xs font-semibold text-surface">{{ automation.connections }}</h3>
+          <p class="text-[10px] text-muted">{{ automation.connectionsDescription }}</p>
         </div>
         <button
           type="button"
@@ -226,17 +226,17 @@ onMounted(() => {
         </button>
       </div>
       <p v-else class="rounded border border-dashed border-border p-3 text-[10px] text-muted">
-        {{ automation.noMCPConnections }}
+        {{ automation.noConnections }}
       </p>
     </div>
   </section>
 
   <AppConfirmationDialog
     v-model:open="deleteOpen"
-    :heading="automation.deleteMCPConnection"
-    :description="automation.deleteMCPConnectionDescription"
+    :heading="automation.deleteConnection"
+    :description="automation.deleteConnectionDescription"
     :cancel-label="common.cancel"
-    :confirm-label="automation.deleteMCPConnection"
+    :confirm-label="automation.deleteConnection"
     tone="danger"
     @confirm="remove"
   />

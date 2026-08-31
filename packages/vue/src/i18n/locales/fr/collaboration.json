@@ -11,5 +11,7 @@
   "joinCollaboration": "Rejoindre la collaboration",
   "orJoinRoom": "ou rejoindre une salle",
   "pasteRoomLinkOrId": "Collez le lien ou l’ID de la salle",
-  "connected": "Connecté"
+  "connected": "Connecté",
+  "disconnect": "Déconnecter",
+  "share": "Partager"
 }

@@ -1,4 +1,5 @@
 {
   "toolOptions": "Options de {tool}",
-  "removeGradientStop": "Supprimer le point de dégradé"
+  "removeGradientStop": "Supprimer le point de dégradé",
+  "showUI": "Afficher l’interface ({shortcut})"
 }

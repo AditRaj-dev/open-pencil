@@ -1,15 +1,15 @@
 {
-  "codeSource": "Источник кода",
-  "codeSourceDesignJSX": "Design JSX",
-  "codeSourceTailwindJSX": "Tailwind JSX",
-  "codeSourceHTMLCSS": "HTML/CSS",
-  "codeEditorDesignLabel": "Design JSX",
-  "codeEditorHTMLCSSLabel": "HTML and CSS",
-  "codeUpdating": "Обновление…",
-  "codeUpdatedLive": "Обновлено в реальном времени",
-  "codePreviewFailed": "Ошибка предпросмотра",
-  "codeGeneratedReadOnly": "Сгенерировано, только чтение",
-  "codeReset": "Сбросить",
   "copyJSXReference": "Скопировать справку по JSX-свойствам в буфер",
-  "jsxUpToDate": "Актуально"
+  "jsxUpToDate": "Актуально",
+  "source": "Источник кода",
+  "sourceDesignJSX": "Design JSX",
+  "sourceTailwindJSX": "Tailwind JSX",
+  "sourceHTMLCSS": "HTML/CSS",
+  "editorDesignLabel": "Design JSX",
+  "editorHTMLCSSLabel": "HTML and CSS",
+  "updating": "Обновление…",
+  "updatedLive": "Обновлено в реальном времени",
+  "previewFailed": "Ошибка предпросмотра",
+  "generatedReadOnly": "Сгенерировано, только чтение",
+  "reset": "Сбросить"
 }

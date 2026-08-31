@@ -11,5 +11,7 @@
   "joinCollaboration": "Присоединиться к совместной работе",
   "orJoinRoom": "или войти в комнату",
   "pasteRoomLinkOrId": "Вставьте ссылку на комнату или ID",
-  "connected": "Подключено"
+  "connected": "Подключено",
+  "disconnect": "Отключиться",
+  "share": "Поделиться"
 }

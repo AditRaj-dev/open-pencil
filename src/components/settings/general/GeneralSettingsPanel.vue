@@ -33,8 +33,8 @@ const snapToPixelGrid = computed({
 <template>
   <section class="flex flex-col gap-4" data-test-id="settings-general-panel">
     <div>
-      <h3 class="text-xs font-semibold text-surface">{{ recovery.settingsRecovery }}</h3>
-      <p class="mt-1 text-[11px] text-muted">{{ recovery.settingsRecoveryDescription }}</p>
+      <h3 class="text-xs font-semibold text-surface">{{ recovery.settingsTitle }}</h3>
+      <p class="mt-1 text-[11px] text-muted">{{ recovery.settingsDescription }}</p>
     </div>
 
     <div class="flex flex-col rounded border border-border">
@@ -54,8 +54,8 @@ const snapToPixelGrid = computed({
     </div>
 
     <div>
-      <h3 class="text-xs font-semibold text-surface">{{ settings.settingsEditing }}</h3>
-      <p class="mt-1 text-[11px] text-muted">{{ settings.settingsSnappingDescription }}</p>
+      <h3 class="text-xs font-semibold text-surface">{{ settings.editing }}</h3>
+      <p class="mt-1 text-[11px] text-muted">{{ settings.snappingDescription }}</p>
     </div>
 
     <div class="flex flex-col divide-y divide-border rounded border border-border">
@@ -96,6 +96,6 @@ const snapToPixelGrid = computed({
       </label>
     </div>
 
-    <p class="text-[10px] text-muted">{{ settings.snapTemporaryDisableHint }}</p>
+    <p class="text-[10px] text-muted">{{ settings.temporaryDisableSnappingHint }}</p>
   </section>
 </template>

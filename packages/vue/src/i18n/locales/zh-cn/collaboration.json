@@ -11,5 +11,7 @@
   "joinCollaboration": "加入协作",
   "orJoinRoom": "或加入一个房间",
   "pasteRoomLinkOrId": "粘贴房间链接或 ID",
-  "connected": "已连接"
+  "connected": "已连接",
+  "disconnect": "断开连接",
+  "share": "分享"
 }

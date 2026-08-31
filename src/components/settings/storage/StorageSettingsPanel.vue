@@ -41,15 +41,15 @@ const configured = computed(
 )
 
 function preferenceLabel(field: string): string {
-  if (field === 'endpoint') return storage.value.storageEndpoint
-  if (field === 'bucket') return storage.value.storageBucket
-  if (field === 'region') return storage.value.storageRegion
+  if (field === 'endpoint') return storage.value.endpoint
+  if (field === 'bucket') return storage.value.bucket
+  if (field === 'region') return storage.value.region
   return field
 }
 
 function credentialLabel(field: string): string {
-  if (field === 'access-key-id') return storage.value.storageAccessKeyID
-  if (field === 'secret-access-key') return storage.value.storageSecretAccessKey
+  if (field === 'access-key-id') return storage.value.accessKeyID
+  if (field === 'secret-access-key') return storage.value.secretAccessKey
   return field
 }
 
@@ -118,7 +118,7 @@ onMounted(() => void refreshStatuses())
 <template>
   <section class="flex flex-col gap-3" data-test-id="settings-storage-panel">
     <div>
-      <h3 class="text-xs font-semibold text-surface">{{ settings.settingsStorage }}</h3>
+      <h3 class="text-xs font-semibold text-surface">{{ settings.storage }}</h3>
       <p class="mt-0.5 text-[10px] text-muted">{{ provider.description }}</p>
     </div>
 
@@ -154,7 +154,7 @@ onMounted(() => void refreshStatuses())
           :aria-label="credentialLabel(field.id)"
           :placeholder="
             credentialStatuses[field.id] === 'configured'
-              ? credentials.keySavedReplace
+              ? credentials.savedReplace
               : field.placeholder
           "
           size="sm"
@@ -198,7 +198,7 @@ onMounted(() => void refreshStatuses())
       data-test-id="settings-storage-open-workspace"
       @click="openWorkspace"
     >
-      {{ storage.openStorageWorkspace }}
+      {{ storage.openWorkspace }}
     </button>
   </section>
 </template>

@@ -8,9 +8,6 @@
   "copiedExclamation": "Kopiert!",
   "copyMessage": "Nachricht kopieren",
   "paste": "Einfügen",
-  "restore": "Wiederherstellen",
-  "discard": "Verwerfen",
-  "showUI": "UI anzeigen ({shortcut})",
   "lastUpdated": "Zuletzt aktualisiert",
   "enabled": "Aktiviert",
   "disabled": "Deaktiviert",
@@ -25,7 +22,6 @@
   "download": "Herunterladen",
   "downloading": "Wird heruntergeladen…",
   "refresh": "Aktualisieren",
-  "clearCache": "Cache leeren",
   "you": "Du",
   "youSuffix": "du",
   "connect": "Verbinden",
@@ -40,7 +36,5 @@
   "unsupported": "Nicht unterstützt",
   "tokens": "Token",
   "clear": "Löschen",
-  "disconnect": "Verbindung trennen",
-  "share": "Teilen",
   "dismiss": "Schließen"
 }

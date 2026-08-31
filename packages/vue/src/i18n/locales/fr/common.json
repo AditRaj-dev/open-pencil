@@ -8,9 +8,6 @@
   "copiedExclamation": "Copié !",
   "copyMessage": "Copier le message",
   "paste": "Coller",
-  "restore": "Restaurer",
-  "discard": "Supprimer",
-  "showUI": "Afficher l’interface ({shortcut})",
   "lastUpdated": "Dernière mise à jour",
   "enabled": "Activé",
   "disabled": "Désactivé",
@@ -25,7 +22,6 @@
   "download": "Télécharger",
   "downloading": "Téléchargement…",
   "refresh": "Actualiser",
-  "clearCache": "Vider le cache",
   "you": "Vous",
   "youSuffix": "vous",
   "connect": "Connecter",
@@ -40,7 +36,5 @@
   "unsupported": "Non pris en charge",
   "tokens": "jetons",
   "clear": "Effacer",
-  "disconnect": "Déconnecter",
-  "share": "Partager",
   "dismiss": "Ignorer"
 }

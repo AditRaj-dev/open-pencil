@@ -69,10 +69,10 @@ onMounted(() => {
 
 <template>
   <PopoverRoot v-model:open="popoverOpen" @update:open="setPopoverOpen">
-    <Tip :label="fonts.fontSettings" :disabled="popoverOpen">
+    <Tip :label="fonts.settingsTitle" :disabled="popoverOpen">
       <PopoverTrigger
         data-test-id="font-settings-trigger"
-        :aria-label="fonts.fontSettings"
+        :aria-label="fonts.settingsTitle"
         :class="trigger"
       >
         <icon-lucide-settings class="size-3.5" />
@@ -97,12 +97,12 @@ onMounted(() => {
               <icon-lucide-type class="size-4" />
             </div>
             <div>
-              <h3 class="text-[11px] font-semibold text-surface">{{ fonts.fontSettings }}</h3>
+              <h3 class="text-[11px] font-semibold text-surface">{{ fonts.settingsTitle }}</h3>
               <p class="mt-0.5 text-[10px] leading-relaxed text-muted">
                 {{
                   showDownloadedFonts
-                    ? fonts.fontSettingsDesktopDescription
-                    : fonts.fontSettingsBrowserDescription
+                    ? fonts.settingsDesktopDescription
+                    : fonts.settingsBrowserDescription
                 }}
               </p>
             </div>
@@ -241,7 +241,7 @@ onMounted(() => {
               :disabled="busyAction !== null || cacheCount === 0"
               @click="clearCache"
             >
-              {{ common.clearCache }}
+              {{ fonts.clearCache }}
             </AppButton>
           </div>
 

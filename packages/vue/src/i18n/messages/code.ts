@@ -1,17 +1,17 @@
 import { i18n } from '#vue/i18n/create'
 
 export const codeMessageDefaults = {
-  codeSource: 'Code source',
-  codeSourceDesignJSX: 'Design JSX',
-  codeSourceTailwindJSX: 'Tailwind JSX',
-  codeSourceHTMLCSS: 'HTML/CSS',
-  codeEditorDesignLabel: 'Design JSX',
-  codeEditorHTMLCSSLabel: 'HTML and CSS',
-  codeUpdating: 'Updating…',
-  codeUpdatedLive: 'Updated live',
-  codePreviewFailed: 'Preview failed',
-  codeGeneratedReadOnly: 'Generated, read only',
-  codeReset: 'Reset',
+  source: 'Code source',
+  sourceDesignJSX: 'Design JSX',
+  sourceTailwindJSX: 'Tailwind JSX',
+  sourceHTMLCSS: 'HTML/CSS',
+  editorDesignLabel: 'Design JSX',
+  editorHTMLCSSLabel: 'HTML and CSS',
+  updating: 'Updating…',
+  updatedLive: 'Updated live',
+  previewFailed: 'Preview failed',
+  generatedReadOnly: 'Generated, read only',
+  reset: 'Reset',
   copyJSXReference: 'Copy JSX prop reference to clipboard',
   jsxUpToDate: 'Up to date'
 } as const

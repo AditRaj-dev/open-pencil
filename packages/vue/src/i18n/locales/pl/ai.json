@@ -1,5 +1,4 @@
 {
-  "connectAIProvider": "Połącz dostawcę AI, aby rozpocząć czat.",
   "connectionTestSuccess": "Połączono pomyślnie. Model jest dostępny.",
   "connectionTestMissingAPIKey": "Wprowadź klucz API przed rozpoczęciem testu.",
   "connectionTestMissingBaseURL": "Wprowadź bazowy adres URL przed rozpoczęciem testu.",
@@ -12,7 +11,6 @@
   "connectionTestBrowserNetworkFailed": "Nie udało się połączyć z tym punktem końcowym z przeglądarki. Spróbuj użyć aplikacji komputerowej lub punktu końcowego z włączonym CORS.",
   "connectionTestNetworkFailed": "Nie udało się połączyć z punktem końcowym. Sprawdź adres URL i połączenie sieciowe.",
   "connectionTestUnknownFailed": "Test połączenia nie powiódł się. Sprawdź ustawienia dostawcy i spróbuj ponownie.",
-  "getAPIKey": "Pobierz klucz API {provider} →",
   "oneKeyManyModels": "Jeden klucz do ponad 100 modeli od wszystkich dostawców.",
   "describeChange": "Opisz zmianę…",
   "describeCreateOrChange": "Opisz, co chcesz utworzyć lub zmienić.",
@@ -26,10 +24,8 @@
   "permissionRequest": "{tool} prosi o uprawnienie.",
   "baseURLPlaceholder": "Base URL (np. http://localhost:11434/v1)",
   "modelIDPlaceholder": "Model ID (np. llama-3.3-70b)",
-  "aiProvider": "AI Provider",
   "providerSettings": "Provider settings",
   "openProviderSettings": "Otwórz ustawienia dostawcy",
-  "models": "Modele",
   "modelsDescription": "Skonfiguruj modele wielokrotnego użytku i połączenia z dostawcami.",
   "addModel": "Dodaj model",
   "editModel": "Edytuj model",
@@ -90,5 +86,9 @@
   "chatOutputLimit": "Model wyczerpał limit tokenów wyjściowych podczas rozumowania. Zwiększ maksymalną liczbę tokenów wyjściowych lub zmniejsz poziom rozumowania.",
   "chatRequestFailed": "Żądanie do modelu nie powiodło się. Sprawdź ustawienia dostawcy i spróbuj ponownie.",
   "completions": "Completions",
-  "responses": "Responses"
+  "responses": "Responses",
+  "connectProvider": "Połącz dostawcę AI, aby rozpocząć czat.",
+  "getProviderAPIKey": "Pobierz klucz API {provider} →",
+  "provider": "AI Provider",
+  "modelsTitle": "Modele"
 }

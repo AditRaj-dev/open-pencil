@@ -1,5 +1,4 @@
 {
-  "connectAIProvider": "Connectez un fournisseur d’IA pour commencer à discuter.",
   "connectionTestSuccess": "Connexion réussie. Le modèle est accessible.",
   "connectionTestMissingAPIKey": "Saisissez une clé API avant le test.",
   "connectionTestMissingBaseURL": "Saisissez une URL de base avant le test.",
@@ -12,7 +11,6 @@
   "connectionTestBrowserNetworkFailed": "Impossible d’atteindre ce point de terminaison depuis le navigateur. Essayez l’application de bureau ou un point de terminaison avec CORS activé.",
   "connectionTestNetworkFailed": "Impossible d’atteindre le point de terminaison. Vérifiez l’URL et votre connexion réseau.",
   "connectionTestUnknownFailed": "Échec du test de connexion. Vérifiez les paramètres du fournisseur, puis réessayez.",
-  "getAPIKey": "Obtenir une clé API {provider} →",
   "oneKeyManyModels": "Une clé pour plus de 100 modèles de tous les fournisseurs.",
   "describeChange": "Décrivez un changement…",
   "describeCreateOrChange": "Décrivez ce que vous voulez créer ou modifier.",
@@ -26,10 +24,8 @@
   "permissionRequest": "{tool} demande une autorisation.",
   "baseURLPlaceholder": "Base URL (ex. http://localhost:11434/v1)",
   "modelIDPlaceholder": "Model ID (ex. llama-3.3-70b)",
-  "aiProvider": "AI Provider",
   "providerSettings": "Provider settings",
   "openProviderSettings": "Ouvrir les paramètres du fournisseur",
-  "models": "Modèles",
   "modelsDescription": "Configurez des modèles réutilisables et leurs connexions fournisseur.",
   "addModel": "Ajouter un modèle",
   "editModel": "Modifier le modèle",
@@ -90,5 +86,9 @@
   "chatOutputLimit": "Le modèle a épuisé ses jetons de sortie pendant le raisonnement. Augmentez le nombre maximal de jetons de sortie ou réduisez l’effort de raisonnement.",
   "chatRequestFailed": "La requête au modèle a échoué. Vérifiez les paramètres du fournisseur et réessayez.",
   "completions": "Completions",
-  "responses": "Responses"
+  "responses": "Responses",
+  "connectProvider": "Connectez un fournisseur d’IA pour commencer à discuter.",
+  "getProviderAPIKey": "Obtenir une clé API {provider} →",
+  "provider": "AI Provider",
+  "modelsTitle": "Modèles"
 }

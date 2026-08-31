@@ -71,11 +71,9 @@ onMounted(() => void refreshStatus())
       :label="ai.apiKey"
       :saved="keyStatus === 'configured'"
       kind="api"
-      :placeholder="
-        keyStatus === 'configured' ? credentials.keySavedReplace : provider.keyPlaceholder
-      "
+      :placeholder="keyStatus === 'configured' ? credentials.savedReplace : provider.keyPlaceholder"
       :key-u-r-l="provider.keyURL"
-      :key-u-r-l-label="credentials.getAPIKeyGeneric"
+      :key-u-r-l-label="credentials.getAPIKey"
       @change="saveCredential"
       @clear="clearCredential"
     />

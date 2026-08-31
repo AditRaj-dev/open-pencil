@@ -8,9 +8,6 @@
   "copiedExclamation": "Copiato!",
   "copyMessage": "Copia messaggio",
   "paste": "Incolla",
-  "restore": "Ripristina",
-  "discard": "Scarta",
-  "showUI": "Mostra interfaccia ({shortcut})",
   "lastUpdated": "Ultimo aggiornamento",
   "enabled": "Abilitato",
   "disabled": "Disabilitato",
@@ -25,7 +22,6 @@
   "download": "Scarica",
   "downloading": "Download…",
   "refresh": "Aggiorna",
-  "clearCache": "Svuota cache",
   "you": "Tu",
   "youSuffix": "tu",
   "connect": "Connetti",
@@ -40,7 +36,5 @@
   "unsupported": "Non supportato",
   "tokens": "token",
   "clear": "Cancella",
-  "disconnect": "Disconnetti",
-  "share": "Condividi",
   "dismiss": "Chiudi"
 }

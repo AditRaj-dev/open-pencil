@@ -34,7 +34,7 @@ async function restore(snapshot: RecoverySnapshotMeta): Promise<void> {
   } catch (error) {
     toast.error(
       notifications.value.operationFailed({
-        error: error instanceof Error ? error.message : recovery.value.recoveryFailed
+        error: error instanceof Error ? error.message : recovery.value.restoreFailed
       })
     )
   } finally {
@@ -68,12 +68,12 @@ onMounted(async () => {
   <AppAlertDialogRoot v-model:open="open" size="md" data-test-id="recovery-dialog">
     <div class="border-b border-border px-4 py-3">
       <AlertDialogTitle class="text-sm font-semibold text-surface">
-        {{ recovery.recoverUnsavedWork }}
+        {{ recovery.dialogTitle }}
       </AlertDialogTitle>
     </div>
     <AppDialogBody class="space-y-3">
       <AlertDialogDescription class="text-xs text-muted">
-        {{ recovery.recoverUnsavedWorkDescription }}
+        {{ recovery.dialogDescription }}
       </AlertDialogDescription>
       <div class="max-h-72 space-y-2 overflow-y-auto">
         <div
@@ -95,7 +95,7 @@ onMounted(async () => {
             :disabled="busyId !== null"
             @click="discard(snapshot)"
           >
-            {{ common.discard }}
+            {{ recovery.discard }}
           </AppButton>
           <AppButton
             color="primary"
@@ -104,7 +104,7 @@ onMounted(async () => {
             :disabled="busyId !== null"
             @click="restore(snapshot)"
           >
-            {{ common.restore }}
+            {{ recovery.restore }}
           </AppButton>
         </div>
       </div>

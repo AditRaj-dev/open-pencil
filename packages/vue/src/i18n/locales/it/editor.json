@@ -1,4 +1,5 @@
 {
   "toolOptions": "Opzioni di {tool}",
-  "removeGradientStop": "Rimuovi punto sfumatura"
+  "removeGradientStop": "Rimuovi punto sfumatura",
+  "showUI": "Mostra interfaccia ({shortcut})"
 }

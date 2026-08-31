@@ -11,5 +11,7 @@
   "joinCollaboration": "Zur Zusammenarbeit beitreten",
   "orJoinRoom": "oder einem Raum beitreten",
   "pasteRoomLinkOrId": "Raumlink oder ID einfügen",
-  "connected": "Verbunden"
+  "connected": "Verbunden",
+  "disconnect": "Verbindung trennen",
+  "share": "Teilen"
 }

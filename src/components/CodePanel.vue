@@ -61,14 +61,14 @@ const generatedJSX = useSceneComputed(() => {
 })
 
 const sourceOptions = computed(() => [
-  { value: 'design-jsx' as const, label: code.value.codeSourceDesignJSX },
-  { value: 'tailwind-jsx' as const, label: code.value.codeSourceTailwindJSX },
-  { value: 'html-css' as const, label: code.value.codeSourceHTMLCSS }
+  { value: 'design-jsx' as const, label: code.value.sourceDesignJSX },
+  { value: 'tailwind-jsx' as const, label: code.value.sourceTailwindJSX },
+  { value: 'html-css' as const, label: code.value.sourceHTMLCSS }
 ])
 const readOnly = computed(() => source.value === 'tailwind-jsx')
 const dirty = computed(() => draft.value !== baseline.value)
 const editorLabel = computed(() =>
-  source.value === 'html-css' ? code.value.codeEditorHTMLCSSLabel : code.value.codeEditorDesignLabel
+  source.value === 'html-css' ? code.value.editorHTMLCSSLabel : code.value.editorDesignLabel
 )
 const statusTone = computed(() => {
   if (status.value === 'error') return 'error'
@@ -78,9 +78,9 @@ const statusTone = computed(() => {
 const statusStyles = computed(() => tv(statusTheme)({ tone: statusTone.value }))
 
 const statusText = computed(() => {
-  if (status.value === 'updating') return code.value.codeUpdating
-  if (status.value === 'error') return code.value.codePreviewFailed
-  if (dirty.value) return code.value.codeUpdatedLive
+  if (status.value === 'updating') return code.value.updating
+  if (status.value === 'error') return code.value.previewFailed
+  if (dirty.value) return code.value.updatedLive
   return code.value.jsxUpToDate
 })
 
@@ -223,7 +223,7 @@ watch(
       <AppSelect
         :model-value="source"
         :options="sourceOptions"
-        :label="code.codeSource"
+        :label="code.source"
         data-test-id="code-panel-source"
         :ui="{ trigger: 'h-7 min-w-0 flex-1 text-[11px]' }"
         @update:model-value="changeSource"
@@ -271,7 +271,7 @@ watch(
         :data-tone="statusTone"
         :class="statusStyles.text()"
       >
-        {{ readOnly ? code.codeGeneratedReadOnly : statusText }}
+        {{ readOnly ? code.generatedReadOnly : statusText }}
       </span>
       <div class="flex items-center gap-1">
         <AppButton
@@ -283,7 +283,7 @@ watch(
           @click="resetDraft"
         >
           <icon-lucide-rotate-ccw class="size-3" />
-          {{ code.codeReset }}
+          {{ code.reset }}
         </AppButton>
         <AppButton
           color="neutral"

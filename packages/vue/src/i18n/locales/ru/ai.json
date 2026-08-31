@@ -1,5 +1,4 @@
 {
-  "connectAIProvider": "Подключите AI-провайдера, чтобы начать чат.",
   "connectionTestSuccess": "Подключение установлено. Модель доступна.",
   "connectionTestMissingAPIKey": "Введите API-ключ перед проверкой.",
   "connectionTestMissingBaseURL": "Введите базовый URL перед проверкой.",
@@ -12,7 +11,6 @@
   "connectionTestBrowserNetworkFailed": "Не удалось подключиться к этой конечной точке из браузера. Попробуйте настольное приложение или конечную точку с поддержкой CORS.",
   "connectionTestNetworkFailed": "Не удалось подключиться к конечной точке. Проверьте URL и подключение к сети.",
   "connectionTestUnknownFailed": "Не удалось проверить подключение. Проверьте настройки провайдера и повторите попытку.",
-  "getAPIKey": "Получить API-ключ {provider} →",
   "oneKeyManyModels": "Один ключ для 100+ моделей от разных провайдеров.",
   "describeChange": "Опишите изменение…",
   "describeCreateOrChange": "Опишите, что вы хотите создать или изменить.",
@@ -26,10 +24,8 @@
   "permissionRequest": "Инструмент «{tool}» запрашивает разрешение.",
   "baseURLPlaceholder": "Base URL (например, http://localhost:11434/v1)",
   "modelIDPlaceholder": "Model ID (например, llama-3.3-70b)",
-  "aiProvider": "AI Provider",
   "providerSettings": "Provider settings",
   "openProviderSettings": "Открыть настройки провайдера",
-  "models": "Модели",
   "modelsDescription": "Настройте переиспользуемые модели и подключения к провайдерам.",
   "addModel": "Добавить модель",
   "editModel": "Изменить модель",
@@ -90,5 +86,9 @@
   "chatOutputLimit": "Модель исчерпала лимит выходных токенов во время рассуждения. Увеличьте максимум выходных токенов или снизьте глубину рассуждения.",
   "chatRequestFailed": "Запрос к модели завершился ошибкой. Проверьте настройки провайдера и повторите попытку.",
   "completions": "Completions",
-  "responses": "Responses"
+  "responses": "Responses",
+  "connectProvider": "Подключите AI-провайдера, чтобы начать чат.",
+  "getProviderAPIKey": "Получить API-ключ {provider} →",
+  "provider": "AI Provider",
+  "modelsTitle": "Модели"
 }

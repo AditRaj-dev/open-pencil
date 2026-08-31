@@ -1,5 +1,4 @@
 {
-  "connectAIProvider": "连接 AI 提供商以开始聊天。",
   "connectionTestSuccess": "连接成功。模型可访问。",
   "connectionTestMissingAPIKey": "请在测试前输入 API 密钥。",
   "connectionTestMissingBaseURL": "请在测试前输入基础 URL。",
@@ -12,7 +11,6 @@
   "connectionTestBrowserNetworkFailed": "无法从浏览器访问此端点。请尝试桌面应用，或使用已启用 CORS 的端点。",
   "connectionTestNetworkFailed": "无法访问端点。请检查 URL 和网络连接。",
   "connectionTestUnknownFailed": "连接测试失败。请检查提供商设置，然后重试。",
-  "getAPIKey": "获取 {provider} API 密钥 →",
   "oneKeyManyModels": "一个密钥即可使用来自所有提供商的 100+ 模型。",
   "describeChange": "描述一个更改…",
   "describeCreateOrChange": "描述你想创建或更改的内容。",
@@ -26,10 +24,8 @@
   "permissionRequest": "{tool} 正在请求权限。",
   "baseURLPlaceholder": "Base URL（例如 http://localhost:11434/v1）",
   "modelIDPlaceholder": "模型 ID（例如 llama-3.3-70b）",
-  "aiProvider": "AI 提供商",
   "providerSettings": "提供商设置",
   "openProviderSettings": "打开提供商设置",
-  "models": "模型",
   "modelsDescription": "配置可复用模型及其提供商连接。",
   "addModel": "添加模型",
   "editModel": "编辑模型",
@@ -90,5 +86,9 @@
   "chatOutputLimit": "模型在推理时耗尽了输出 token。请提高最大输出 token 数或降低推理强度。",
   "chatRequestFailed": "模型请求失败。请检查提供商设置后重试。",
   "completions": "Completions",
-  "responses": "Responses"
+  "responses": "Responses",
+  "connectProvider": "连接 AI 提供商以开始聊天。",
+  "getProviderAPIKey": "获取 {provider} API 密钥 →",
+  "provider": "AI 提供商",
+  "modelsTitle": "模型"
 }
