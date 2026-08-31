@@ -6,7 +6,7 @@ import type { WorkspaceEntitlements } from '@open-pencil/cloud/contract'
 import { formatStorageBytes } from '@/app/storage/format-bytes'
 import AppBadge from '@/components/ui/AppBadge.vue'
 import AppProgress from '@/components/ui/AppProgress.vue'
-import AppTextButton from '@/components/ui/AppTextButton.vue'
+import AppButton from '@/components/ui/AppButton.vue'
 
 const { entitlements, loading, error } = defineProps<{
   entitlements: WorkspaceEntitlements | null
@@ -60,7 +60,7 @@ const features = computed(() =>
       <p class="text-[10px] text-danger">
         Workspace limits could not be loaded. Reconnect to the Cloud server and try again.
       </p>
-      <AppTextButton @click="emit('retry')">Retry</AppTextButton>
+      <AppButton color="neutral" variant="soft" size="sm" @click="emit('retry')">Retry</AppButton>
     </div>
 
     <template v-else-if="entitlements">

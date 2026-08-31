@@ -4,6 +4,8 @@ export type CloudBrowserStorageSettings = {
 }
 
 export function configureCloudBrowserStorage(settings: CloudBrowserStorageSettings): void {
+  localStorage.setItem('op-online-fonts-enabled', 'false')
+  localStorage.setItem('op-font-providers', JSON.stringify({}))
   localStorage.setItem(
     'open-pencil:cloud:connections',
     JSON.stringify([

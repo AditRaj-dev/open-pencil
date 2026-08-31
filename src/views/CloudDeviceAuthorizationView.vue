@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router'
 
 import { createCloudAuthClient, discoverCloud, signInToCloud } from '@open-pencil/cloud/client'
 
-import AppTextButton from '@/components/ui/AppTextButton.vue'
+import AppButton from '@/components/ui/AppButton.vue'
 
 const route = useRoute()
 const userCode = typeof route.query.user_code === 'string' ? route.query.user_code : ''
@@ -89,8 +89,22 @@ onMounted(load)
           <strong class="text-surface">{{ userCode }}</strong> may access this Cloud account.
         </p>
         <div class="mt-5 flex gap-2">
-          <AppTextButton class="flex-1 justify-center" @click="deny">Deny</AppTextButton>
-          <AppTextButton class="flex-1 justify-center" @click="approve">Authorize</AppTextButton>
+          <AppButton
+            color="neutral"
+            variant="soft"
+            size="sm"
+            class="flex-1 justify-center"
+            @click="deny"
+            >Deny</AppButton
+          >
+          <AppButton
+            color="neutral"
+            variant="soft"
+            size="sm"
+            class="flex-1 justify-center"
+            @click="approve"
+            >Authorize</AppButton
+          >
         </div>
       </template>
       <p v-else-if="status === 'approved'" class="mt-3 text-sm text-surface">

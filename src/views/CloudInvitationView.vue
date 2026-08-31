@@ -5,7 +5,7 @@ import { useRoute, useRouter } from 'vue-router'
 import type { InvitationPreview } from '@open-pencil/cloud/contract'
 import { createCloudAPIClient, discoverCloud, signInToCloud } from '@open-pencil/cloud/client'
 
-import AppTextButton from '@/components/ui/AppTextButton.vue'
+import AppButton from '@/components/ui/AppButton.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -118,9 +118,16 @@ onMounted(load)
         <p class="mt-2 text-xs text-muted">
           Expires {{ new Date(invitation.expiresAt).toLocaleString() }}
         </p>
-        <AppTextButton class="mt-5 w-full justify-center" :disabled="accepting" @click="accept">
+        <AppButton
+          color="neutral"
+          variant="soft"
+          size="sm"
+          class="mt-5 w-full justify-center"
+          :disabled="accepting"
+          @click="accept"
+        >
           {{ accepting ? 'Accepting…' : 'Accept invitation' }}
-        </AppTextButton>
+        </AppButton>
       </template>
     </section>
   </main>
