@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from '@open-pencil/vue'
 
 import { appRuntimeConfig } from '@/app/runtime/config'
@@ -7,16 +7,15 @@ import { appPreferences, updateCanvasRenderingMode } from '@/app/settings/prefer
 import AppSwitch from '@/components/ui/AppSwitch.vue'
 
 const { dialogs } = useI18n()
-const changed = ref(false)
-const hasURLOverride = new URLSearchParams(window.location.search).has('renderer')
+const hasURLOverride = appRuntimeConfig.sceneRendererOverride
+const tiledRendering = computed(() => appPreferences.value.rendering.canvasMode === 'tiled')
+const changed = computed(
+  () => appPreferences.value.rendering.canvasMode !== appRuntimeConfig.sceneRenderer
+)
 
-const tiledRendering = computed({
-  get: () => appPreferences.value.rendering.canvasMode === 'tiled',
-  set: (enabled: boolean) => {
-    updateCanvasRenderingMode(enabled ? 'tiled' : 'retained')
-    changed.value = appPreferences.value.rendering.canvasMode !== appRuntimeConfig.sceneRenderer
-  }
-})
+function setTiledRendering(enabled: boolean): void {
+  updateCanvasRenderingMode(enabled ? 'tiled' : 'retained')
+}
 </script>
 
 <template>
@@ -34,9 +33,10 @@ const tiledRendering = computed({
         }}</span>
       </span>
       <AppSwitch
-        v-model="tiledRendering"
+        :model-value="tiledRendering"
         :label="dialogs.progressiveTiledRendering"
         data-test-id="settings-progressive-tiled-rendering"
+        @update:model-value="setTiledRendering"
       />
     </label>
   </div>

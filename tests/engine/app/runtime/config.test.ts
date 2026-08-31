@@ -15,6 +15,7 @@ describe('app runtime configuration', () => {
       showChrome: false,
       showRulers: false,
       sceneRenderer: 'tiled',
+      sceneRendererOverride: true,
       collaborationTransport: 'test',
       collaborationRelayURL: 'ws://localhost:4000'
     })
@@ -38,6 +39,7 @@ describe('app runtime configuration', () => {
       showChrome: true,
       showRulers: true,
       sceneRenderer: 'retained',
+      sceneRendererOverride: false,
       collaborationTransport: 'default',
       collaborationRelayURL: null
     })

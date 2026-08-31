@@ -11,6 +11,7 @@ export interface AppRuntimeConfig {
   showChrome: boolean
   showRulers: boolean
   sceneRenderer: SceneRendererMode
+  sceneRendererOverride: boolean
   collaborationTransport: CollaborationTransportMode
   collaborationRelayURL: string | null
 }
@@ -30,6 +31,7 @@ export function parseAppRuntimeConfig(
     showChrome: !params.has('no-chrome'),
     showRulers: !params.has('no-rulers'),
     sceneRenderer,
+    sceneRendererOverride: renderer === 'tiled' || renderer === 'retained',
     collaborationTransport: params.get('collabTransport') === 'test' ? 'test' : 'default',
     collaborationRelayURL: params.get('collabRelay')
   }
