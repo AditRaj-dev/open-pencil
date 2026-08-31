@@ -4,7 +4,7 @@ export * from './components/properties'
 export * from './copy'
 export {
   copyInstanceComponentProps,
-  findInstanceAncestor,
+  hasInstanceOverride,
   INSTANCE_SYNC_PROPS,
   recordInstanceOverride
 } from './instances'
