@@ -66,7 +66,25 @@ export function createBetterAuthAdapter(
       casing: 'camel',
       transaction: true
     },
-    advanced: { database: { generateId: 'uuid' } },
+    advanced: {
+      database: { generateId: 'uuid' },
+      ipAddress: {
+        ipAddressHeaders: config.authTrustedIPHeaders,
+        trustedProxies: config.authTrustedProxies
+      }
+    },
+    rateLimit: {
+      enabled: true,
+      storage: 'database',
+      window: 60,
+      max: 100,
+      customRules: {
+        '/device/code': { window: 60, max: 10 },
+        '/device/token': { window: 60, max: 60 },
+        '/device/approve': { window: 60, max: 10 },
+        '/device/deny': { window: 60, max: 10 }
+      }
+    },
     plugins: [
       bearer({ requireSignature: true }),
       deviceAuthorization({

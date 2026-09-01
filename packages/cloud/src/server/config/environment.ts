@@ -49,6 +49,10 @@ export function cloudServerConfigFromEnvironment(environment: CloudEnvironment):
     authSecret: environment.BETTER_AUTH_SECRET,
     trustedOrigins:
       v.parse(originsEnvironmentSchema, environment.OPENPENCIL_CLOUD_TRUSTED_ORIGINS) ?? [],
+    authTrustedIPHeaders:
+      v.parse(originsEnvironmentSchema, environment.OPENPENCIL_CLOUD_AUTH_IP_HEADERS) ?? [],
+    authTrustedProxies:
+      v.parse(originsEnvironmentSchema, environment.OPENPENCIL_CLOUD_AUTH_TRUSTED_PROXIES) ?? [],
     googleClientId: environment.GOOGLE_CLIENT_ID,
     googleClientSecret: environment.GOOGLE_CLIENT_SECRET,
     appleClientId: environment.APPLE_CLIENT_ID,

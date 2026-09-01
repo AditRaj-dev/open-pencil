@@ -62,6 +62,16 @@ describe('Cloud authentication', () => {
     expect(configuredSocialProviders(config)).toEqual(['apple', 'google'])
   })
 
+  test('retains explicit trusted client IP configuration', () => {
+    const config = parseCloudServerConfig({
+      ...baseConfig,
+      authTrustedIPHeaders: ['cf-connecting-ip'],
+      authTrustedProxies: ['192.0.2.10', '10.0.0.0/24']
+    })
+    expect(config.authTrustedIPHeaders).toEqual(['cf-connecting-ip'])
+    expect(config.authTrustedProxies).toEqual(['192.0.2.10', '10.0.0.0/24'])
+  })
+
   test('uses Better Auth PostgreSQL configuration without exposing it in contracts', () => {
     const options = {
       database: { db: database(), type: 'postgres' }

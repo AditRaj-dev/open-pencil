@@ -61,6 +61,8 @@ const rawCloudServerConfigSchema = v.object({
   databaseURL: v.pipe(v.string(), v.url()),
   authSecret: v.pipe(v.string(), v.minLength(32)),
   trustedOrigins: v.optional(v.array(httpURLSchema), []),
+  authTrustedIPHeaders: v.optional(v.array(v.pipe(v.string(), v.trim(), v.minLength(1))), []),
+  authTrustedProxies: v.optional(v.array(v.pipe(v.string(), v.trim(), v.minLength(1))), []),
   googleClientId: optionalTextSchema,
   googleClientSecret: optionalTextSchema,
   appleClientId: optionalTextSchema,
