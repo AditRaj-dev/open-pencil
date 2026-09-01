@@ -56,12 +56,14 @@ export type AppMenuEntry = AppMenuActionItem | AppMenuSeparatorItem
 export interface AppMenuGroupSchema {
   label: string
   target?: AppMenuTarget
+  paletteIcon?: AppMenuIcon
   items: AppMenuEntry[]
 }
 
 export const APP_MENU_SCHEMA = [
   {
     label: 'File',
+    paletteIcon: 'file',
     items: [
       { id: 'new', label: 'New', shortcut: 'MOD+N' },
       { id: 'open', label: 'Open…', shortcut: 'MOD+O' },
@@ -106,6 +108,7 @@ export const APP_MENU_SCHEMA = [
   },
   {
     label: 'Edit',
+    paletteIcon: 'pencil',
     items: [
       {
         id: 'edit.undo',
@@ -148,6 +151,7 @@ export const APP_MENU_SCHEMA = [
   },
   {
     label: 'View',
+    paletteIcon: 'eye',
     items: [
       {
         id: 'view.zoom100',
@@ -230,6 +234,7 @@ export const APP_MENU_SCHEMA = [
   },
   {
     label: 'Object',
+    paletteIcon: 'layers',
     items: [
       {
         id: 'selection.group',
@@ -366,6 +371,7 @@ export const APP_MENU_SCHEMA = [
   },
   {
     label: 'Text',
+    paletteIcon: 'type',
     items: [
       { id: 'text.bold', label: 'Bold', shortcut: 'MOD+B' },
       { id: 'text.italic', label: 'Italic', shortcut: 'MOD+I' },
@@ -374,6 +380,7 @@ export const APP_MENU_SCHEMA = [
   },
   {
     label: 'Arrange',
+    paletteIcon: 'layers',
     items: [
       {
         id: 'selection.wrapInAutoLayout',

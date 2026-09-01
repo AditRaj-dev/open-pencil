@@ -38,6 +38,7 @@ import { closeTab, activeTab } from '@/app/tabs'
 
 export interface AppMenuGroup {
   label: string
+  paletteIcon?: Component
   items: MenuEntry[]
 }
 
@@ -308,18 +309,24 @@ export function useAppMenu() {
     if (!isVisible(group)) return null
     return {
       label: groupLabel(group),
+      paletteIcon: group.paletteIcon ? APP_MENU_ICONS[group.paletteIcon] : undefined,
       items: group.items.map(buildEntry).filter((item): item is MenuEntry => item !== null)
     }
   }
 
-  function paletteEntries(entry: MenuEntry, category: string): CommandPaletteItem[] {
+  function paletteEntries(
+    entry: MenuEntry,
+    category: string,
+    fallbackIcon?: Component
+  ): CommandPaletteItem[] {
     if ('separator' in entry) return []
-    if (!entry.menuId) return entry.sub?.flatMap((child) => paletteEntries(child, category)) ?? []
+    if (!entry.menuId)
+      return entry.sub?.flatMap((child) => paletteEntries(child, category, fallbackIcon)) ?? []
 
     const item: CommandPaletteItem = {
       id: entry.menuId,
       label: entry.palette?.label ?? entry.label,
-      icon: entry.palette?.icon ?? undefined,
+      icon: entry.palette?.icon ?? fallbackIcon,
       shortcut: entry.shortcut ? { keys: shortcutKeys(entry.shortcut) ?? [] } : undefined,
       description: entry.palette?.description,
       keywords: entry.palette?.keywords,
@@ -328,7 +335,8 @@ export function useAppMenu() {
         entry.action ??
         (entry.onCheckedChange ? () => entry.onCheckedChange?.(!entry.checked) : undefined)
     }
-    const children = entry.sub?.flatMap((child) => paletteEntries(child, category)) ?? []
+    const children =
+      entry.sub?.flatMap((child) => paletteEntries(child, category, fallbackIcon)) ?? []
     return [item, ...children]
   }
 
@@ -340,7 +348,7 @@ export function useAppMenu() {
     topMenus.value.map((group) => ({
       id: group.label.toLowerCase(),
       label: group.label,
-      items: group.items.flatMap((entry) => paletteEntries(entry, group.label))
+      items: group.items.flatMap((entry) => paletteEntries(entry, group.label, group.paletteIcon))
     }))
   )
 
