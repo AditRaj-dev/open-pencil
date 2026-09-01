@@ -36,5 +36,13 @@ export const Interaction: Story = {
     await expect(canvas.getByRole('status', { name: 'Last selection' })).toHaveTextContent(
       'Settings'
     )
+
+    await userEvent.clear(input)
+    await userEvent.keyboard('{ArrowDown}{ArrowDown}{Enter}')
+    await expect(canvas.getByRole('button', { name: 'Export selection' })).toBeVisible()
+    await userEvent.click(canvas.getByRole('button', { name: 'Export selection' }))
+    await expect(canvas.getByText('Export selection as PNG')).toBeVisible()
+    await userEvent.keyboard('{Backspace}')
+    await expect(canvas.getByRole('button', { name: 'Export selection' })).toBeVisible()
   }
 }

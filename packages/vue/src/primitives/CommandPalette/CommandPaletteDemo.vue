@@ -19,7 +19,15 @@ const groups: CommandPaletteGroup[] = [
     label: 'File',
     items: [
       { id: 'new', label: 'New document', shortcut: { keys: ['⌘', 'N'] } },
-      { id: 'settings', label: 'Settings', shortcut: { keys: ['⌘', ','] } }
+      { id: 'settings', label: 'Settings', shortcut: { keys: ['⌘', ','] } },
+      {
+        id: 'export',
+        label: 'Export selection',
+        children: [
+          { id: 'export-png', label: 'Export selection as PNG' },
+          { id: 'export-svg', label: 'Export selection as SVG' }
+        ]
+      }
     ]
   },
   {
