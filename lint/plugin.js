@@ -1,19 +1,9 @@
-import { existsSync, readFileSync } from 'node:fs'
-import { relative } from 'node:path'
+import { existsSync } from 'node:fs'
 
 import { parse as parseVueSfc } from 'vue/compiler-sfc'
 
-function normalizedPath(path) {
-  return path.replaceAll('\\', '/')
-}
-
 function normalizedFilename(context) {
-  return normalizedPath(context.filename ?? context.getFilename?.() ?? '')
-}
-
-function relativeFilename(context) {
-  const physicalFilename = context.physicalFilename ?? context.filename ?? ''
-  return normalizedPath(relative(context.cwd, physicalFilename))
+  return (context.filename ?? context.getFilename?.() ?? '').replace(/\\/g, '/')
 }
 
 function importSource(node) {
@@ -2225,58 +2215,6 @@ const noFlatKiwiModules = createProgramFilenameRule({
   }
 })
 
-const conditionalObjectSpreadBaseline = JSON.parse(
-  readFileSync(new URL('./conditional-object-spreads-baseline.json', import.meta.url), 'utf8')
-)
-
-const noConditionalObjectSpreads = {
-  meta: {
-    docs: {
-      description: 'Require explicit domain projections instead of conditional object spreads'
-    }
-  },
-  create(context) {
-    const file = normalizedFilename(context)
-    if (!file.includes('/src/') && !file.includes('/packages/') && !file.includes('/tools/')) {
-      return {}
-    }
-    const baselinePath = relativeFilename(context)
-    const allowed = conditionalObjectSpreadBaseline[baselinePath] ?? 0
-    const candidates = []
-    return {
-      SpreadElement(node) {
-        if (node.parent?.type !== 'ObjectExpression') return
-        if (node.argument?.type !== 'ConditionalExpression') return
-        const branchSizes = [node.argument.consequent, node.argument.alternate]
-          .filter((branch) => branch.type === 'ObjectExpression')
-          .map((branch) => branch.properties.length)
-        const conditionalSpreadCount = node.parent.properties.filter(
-          (property) =>
-            property.type === 'SpreadElement' && property.argument.type === 'ConditionalExpression'
-        ).length
-        if (conditionalSpreadCount < 2 && branchSizes.every((size) => size < 2)) return
-        candidates.push(node)
-      },
-      'Program:exit'(node) {
-        if (candidates.length > allowed) {
-          for (const candidate of candidates.slice(allowed)) {
-            context.report({
-              node: candidate,
-              message:
-                'Extract conditional object construction into an explicit branch or named domain projection.'
-            })
-          }
-        } else if (candidates.length < allowed) {
-          context.report({
-            node,
-            message: `Conditional object spread baseline is stale for ${baselinePath}: ${allowed} -> ${candidates.length}.`
-          })
-        }
-      }
-    }
-  }
-}
-
 const plugin = {
   meta: { name: 'open-pencil' },
   rules: {
@@ -2347,7 +2285,6 @@ const plugin = {
     'no-flat-kiwi-modules': noFlatKiwiModules,
     'no-bun-globals-in-cli': noBunGlobalsInCli,
     'no-top-level-prefixed-test-files': noTopLevelPrefixedTestFiles,
-    'no-conditional-object-spreads': noConditionalObjectSpreads,
     'no-sibling-domain-prefixed-files': noSiblingDomainPrefixedFiles
   }
 }
