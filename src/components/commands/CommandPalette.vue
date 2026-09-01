@@ -12,6 +12,7 @@ import { DialogDescription, DialogTitle, VisuallyHidden } from 'reka-ui'
 import Search from '~icons/lucide/search'
 import X from '~icons/lucide/x'
 
+import { IS_BROWSER } from '@/constants'
 import { useAppMenu } from '@/app/shell/menu/app-menu'
 import AppDialogRoot from '@/components/ui/dialog/AppDialogRoot.vue'
 import { useCommandPaletteUI } from './ui'
@@ -33,7 +34,7 @@ function close() {
   open.value = false
 }
 
-if (typeof window !== 'undefined') {
+if (IS_BROWSER) {
   const isMac = shortcutPlatform() === 'mac'
   useEventListener(window, 'keydown', (event) => {
     const hasPlatformModifier = isMac
