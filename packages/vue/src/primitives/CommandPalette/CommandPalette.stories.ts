@@ -24,25 +24,23 @@ export const Default: Story = {}
 export const Interaction: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    const input = canvas.getByRole('searchbox', { name: 'Command palette' })
+    const input = canvas.getByRole('searchbox', { name: 'Search commands' })
 
     await userEvent.click(input)
     await userEvent.type(input, 'setting')
     await expect(canvas.getByRole('option', { name: /Settings/ })).toBeVisible()
     await expect(canvas.queryByRole('option', { name: 'Undo' })).not.toBeInTheDocument()
 
-    await userEvent.clear(input)
-    await userEvent.keyboard('{ArrowDown}{Enter}')
+    await userEvent.click(canvas.getByRole('option', { name: /Settings/ }))
     await expect(canvas.getByRole('status', { name: 'Last selection' })).toHaveTextContent(
       'Settings'
     )
 
     await userEvent.clear(input)
-    await userEvent.keyboard('{ArrowDown}{ArrowDown}{Enter}')
-    await expect(canvas.getByRole('button', { name: 'Export selection' })).toBeVisible()
-    await userEvent.click(canvas.getByRole('button', { name: 'Export selection' }))
+    await userEvent.click(canvas.getByRole('option', { name: 'Export selection' }))
     await expect(canvas.getByText('Export selection as PNG')).toBeVisible()
+    await userEvent.click(input)
     await userEvent.keyboard('{Backspace}')
-    await expect(canvas.getByRole('button', { name: 'Export selection' })).toBeVisible()
+    await expect(canvas.getByRole('option', { name: 'Export selection' })).toBeVisible()
   }
 }
