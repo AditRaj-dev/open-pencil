@@ -1,6 +1,28 @@
 import type { EditorCommandId } from '@open-pencil/vue'
 
 export type AppMenuTarget = 'all' | 'browser' | 'native'
+
+export type AppMenuIcon =
+  | 'download'
+  | 'eye'
+  | 'file'
+  | 'folder-open'
+  | 'layers'
+  | 'pencil'
+  | 'redo'
+  | 'save'
+  | 'settings'
+  | 'type'
+  | 'undo'
+  | 'zoom-in'
+  | 'zoom-out'
+
+export interface AppMenuPaletteMetadata {
+  icon?: AppMenuIcon
+  description?: string
+  keywords?: string[]
+}
+
 export type AppMenuHandler = 'editor' | 'shell'
 
 export interface AppMenuActionItem {
@@ -13,6 +35,7 @@ export interface AppMenuActionItem {
   checkbox?: boolean
   target?: AppMenuTarget
   handler?: AppMenuHandler
+  palette?: AppMenuPaletteMetadata
   sub?: AppMenuEntry[]
 }
 
@@ -46,10 +69,10 @@ export const APP_MENU_SCHEMA = [
         label: 'Export Selection',
         shortcut: 'MOD+SHIFT+E',
         sub: [
-          { id: 'export-png', label: 'PNG' },
-          { id: 'export-svg', label: 'SVG' },
-          { id: 'export-pptx', label: 'PPTX' },
-          { id: 'export-fig', label: '.fig' }
+          { id: 'export-png', label: 'PNG', palette: { icon: 'download' } },
+          { id: 'export-svg', label: 'SVG', palette: { icon: 'download' } },
+          { id: 'export-pptx', label: 'PPTX', palette: { icon: 'download' } },
+          { id: 'export-fig', label: '.fig', palette: { icon: 'download' } }
         ]
       },
       { type: 'separator' },

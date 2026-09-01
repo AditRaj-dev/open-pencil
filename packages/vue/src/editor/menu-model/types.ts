@@ -14,6 +14,12 @@ export interface MenuActionNode {
   testId?: TestId
   checked?: boolean
   onCheckedChange?: (checked: boolean) => void
+  palette?: {
+    icon?: Component
+    label?: string
+    description?: string
+    keywords?: string[]
+  }
   sub?: MenuEntry[]
 }
 
