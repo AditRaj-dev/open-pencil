@@ -35,11 +35,12 @@ export { useEditorEvent } from '#vue/editor/events/use'
 export { useSelectionCapabilities } from '#vue/editor/selection-capabilities/use'
 
 /** Command palette primitives and search state. */
-export { CommandPaletteRoot, useCommandPalette } from '#vue/primitives/CommandPalette'
+export { CommandPaletteRoot, useCommandPaletteContext } from '#vue/primitives/CommandPalette'
 export type {
   CommandPaletteGroup,
   CommandPaletteItem,
   CommandPaletteShortcut,
+  CommandPaletteLabels,
   CommandPaletteUI,
   UseCommandPaletteOptions
 } from '#vue/primitives/CommandPalette'

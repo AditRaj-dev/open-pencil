@@ -6,6 +6,13 @@ import type { CommandPaletteGroup } from './types'
 
 const selected = ref('')
 const selectedLabels = ref<string[]>([])
+const labels = {
+  searchPlaceholder: 'Search commands…',
+  searchLabel: 'Search commands',
+  paletteLabel: 'Command palette',
+  empty: 'No commands found.',
+  back: 'Back'
+}
 const groups: CommandPaletteGroup[] = [
   {
     id: 'file',
@@ -28,6 +35,7 @@ const groups: CommandPaletteGroup[] = [
     <CommandPaletteRoot
       v-model="selected"
       :groups="groups"
+      :labels="labels"
       :ui="{
         root: 'w-[min(40rem,100%)] overflow-hidden rounded-xl border border-border bg-panel text-surface shadow-xl',
         search: 'h-12 w-full border-b border-border bg-transparent px-4 text-sm outline-none',

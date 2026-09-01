@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useEventListener } from '@vueuse/core'
 import { CommandPaletteRoot, useCommandMessages } from '@open-pencil/vue'
 import { DialogDescription, DialogTitle, VisuallyHidden } from 'reka-ui'
@@ -8,6 +9,13 @@ import AppDialogRoot from '@/components/ui/dialog/AppDialogRoot.vue'
 
 const { commandGroups: groups } = useAppMenu()
 const commands = useCommandMessages()
+const labels = computed(() => ({
+  searchPlaceholder: commands.value.paletteSearchPlaceholder,
+  searchLabel: commands.value.paletteSearchAriaLabel,
+  paletteLabel: commands.value.paletteAriaLabel,
+  empty: commands.value.paletteNoCommands,
+  back: commands.value.paletteBack
+}))
 const open = defineModel<boolean>('open', { default: false })
 
 function close() {
@@ -38,7 +46,7 @@ useEventListener(window, 'keydown', (event) => {
     </VisuallyHidden>
     <CommandPaletteRoot
       :groups="groups"
-      :aria-label="commands.paletteSearchAriaLabel"
+      :labels="labels"
       :ui="{
         root: 'flex max-h-[min(70vh,32rem)] flex-col overflow-hidden',
         search:

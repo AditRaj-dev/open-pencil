@@ -22,6 +22,14 @@ export interface CommandPaletteGroup {
   items: CommandPaletteItem[]
 }
 
+export interface CommandPaletteLabels {
+  searchPlaceholder: string
+  searchLabel: string
+  paletteLabel: string
+  empty: string
+  back: string
+}
+
 export interface CommandPaletteUI {
   root?: string
   search?: string
@@ -41,5 +49,6 @@ export interface CommandPaletteUI {
 
 export interface UseCommandPaletteOptions {
   groups: CommandPaletteGroup[]
+  labels: CommandPaletteLabels
   resultLimit?: number
 }

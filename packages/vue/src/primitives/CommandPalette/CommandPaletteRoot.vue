@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { provide, toRef } from 'vue'
 import {
   ListboxContent,
   ListboxFilter,
@@ -7,20 +8,43 @@ import {
   ListboxItem,
   ListboxRoot
 } from 'reka-ui'
-import { useCommandMessages } from '#vue/i18n'
-import { useCommandPalette } from './useCommandPalette'
-import type { CommandPaletteGroup, CommandPaletteItem, CommandPaletteUI } from './types'
 
-const { groups, ui, placeholder, resultLimit } = defineProps<{
+import { COMMAND_PALETTE_KEY } from './context'
+import { useCommandPalette } from './useCommandPalette'
+import type {
+  CommandPaletteGroup,
+  CommandPaletteItem,
+  CommandPaletteLabels,
+  CommandPaletteUI
+} from './types'
+
+const {
+  groups,
+  labels,
+  ui,
+  placeholder,
+  resultLimit = 12
+} = defineProps<{
   groups: CommandPaletteGroup[]
+  labels: CommandPaletteLabels
   ui?: CommandPaletteUI
   placeholder?: string
   resultLimit?: number
-  backLabel?: string
 }>()
+
 const emit = defineEmits<{ select: [item: CommandPaletteItem] }>()
-const commands = useCommandMessages()
-const palette = useCommandPalette(() => ({ groups, resultLimit }))
+const palette = useCommandPalette(() => ({ groups, labels, resultLimit }))
+
+provide(COMMAND_PALETTE_KEY, {
+  groups: toRef(() => groups),
+  searchTerm: palette.searchTerm,
+  isNested: palette.isNested,
+  labels,
+  ui,
+  navigate: palette.navigate,
+  navigateBack: palette.navigateBack,
+  select: palette.select
+})
 
 function select(item: CommandPaletteItem) {
   palette.select(item)
@@ -32,19 +56,17 @@ function select(item: CommandPaletteItem) {
   <ListboxRoot
     v-model="palette.selectedId.value"
     :class="ui?.root"
-    :aria-label="commands.paletteAriaLabel"
+    :aria-label="labels.paletteLabel"
   >
     <div v-if="palette.isNested.value" :class="ui?.back">
-      <button type="button" @click="palette.navigateBack()">
-        {{ backLabel ?? commands.paletteBack }}
-      </button>
+      <button type="button" @click="palette.navigateBack()">{{ labels.back }}</button>
     </div>
     <ListboxFilter v-model="palette.searchTerm.value" as-child>
       <input
         type="search"
         :value="palette.searchTerm.value"
-        :placeholder="placeholder ?? commands.paletteSearchPlaceholder"
-        :aria-label="commands.paletteSearchAriaLabel"
+        :placeholder="placeholder ?? labels.searchPlaceholder"
+        :aria-label="labels.searchLabel"
         :class="ui?.search"
         autocomplete="off"
         @input="palette.searchTerm.value = ($event.target as HTMLInputElement).value"
@@ -60,37 +82,24 @@ function select(item: CommandPaletteItem) {
           <ListboxGroupLabel v-if="group.label" :class="ui?.label">{{
             group.label
           }}</ListboxGroupLabel>
-          <template v-for="item in group.items" :key="item.id">
-            <button
-              v-if="item.children?.length"
-              type="button"
-              :class="ui?.item"
-              :disabled="item.disabled"
-              @click="palette.navigate(item)"
-            >
-              <span :class="ui?.itemIcon"><slot name="item-icon" :item="item" /></span>
-              <span :class="ui?.itemLabel">{{ item.label }}</span>
-            </button>
-            <ListboxItem
-              v-else
-              :value="item.id"
-              :disabled="item.disabled"
-              :class="ui?.item"
-              @select="select(item)"
-            >
-              <span :class="ui?.itemIcon"><slot name="item-icon" :item="item" /></span>
-              <span :class="ui?.itemLabel">{{ item.label }}</span>
-              <span v-if="item.description" :class="ui?.itemDescription">{{
-                item.description
-              }}</span>
-              <span v-if="item.shortcut" :class="ui?.shortcut">
-                <kbd v-for="key in item.shortcut.keys" :key="key" :class="ui?.key">{{ key }}</kbd>
-              </span>
-            </ListboxItem>
-          </template>
+          <ListboxItem
+            v-for="item in group.items"
+            :key="item.id"
+            :value="item.id"
+            :disabled="item.disabled"
+            :class="ui?.item"
+            @select="select(item)"
+          >
+            <span :class="ui?.itemIcon"><slot name="item-icon" :item="item" /></span>
+            <span :class="ui?.itemLabel">{{ item.label }}</span>
+            <span v-if="item.description" :class="ui?.itemDescription">{{ item.description }}</span>
+            <span v-if="item.shortcut" :class="ui?.shortcut">
+              <kbd v-for="key in item.shortcut.keys" :key="key" :class="ui?.key">{{ key }}</kbd>
+            </span>
+          </ListboxItem>
         </ListboxGroup>
       </template>
-      <slot v-else name="empty">{{ commands.paletteNoCommands }}</slot>
+      <slot v-else name="empty">{{ labels.empty }}</slot>
     </ListboxContent>
   </ListboxRoot>
 </template>
