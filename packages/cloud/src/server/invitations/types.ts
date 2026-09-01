@@ -1,4 +1,6 @@
 import type { DocumentPermission } from '#cloud/contract'
+import type { CloudDatabase } from '#cloud/server/db'
+import type { Transaction } from 'kysely'
 
 export type DocumentInvitationMessage = {
   deliveryId: string
@@ -12,6 +14,13 @@ export type DocumentInvitationMessage = {
 
 export type InvitationDelivery = {
   sendDocumentInvitation(message: DocumentInvitationMessage): Promise<void>
+}
+
+export type InvitationOutbox = {
+  enqueueDocumentInvitation(
+    message: DocumentInvitationMessage,
+    transaction?: Transaction<CloudDatabase>
+  ): Promise<string>
 }
 
 export const noOpInvitationDelivery: InvitationDelivery = {

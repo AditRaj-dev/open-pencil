@@ -6,6 +6,8 @@ import {
   CLOUD_FEATURE_KEYS,
   createDefaultCloudPolicy,
   createDocumentSharingService,
+  createInvitationOutbox,
+  createTransactionalEmailService,
   DocumentForbiddenError,
   DocumentShareInvalidError,
   EntitlementOpenFeatureProvider,
@@ -282,6 +284,58 @@ describe('document sharing service', () => {
         .where('id', '=', created.invitation.id)
         .executeTakeFirstOrThrow()
       expect(stored.tokenHash).not.toContain(created.token)
+    } finally {
+      await context.runtime.close()
+    }
+  })
+
+  test('stores invitation and encrypted outbox message atomically', async () => {
+    const context = await seed()
+    try {
+      await context.runtime.database
+        .insertInto('user')
+        .values({
+          id: '11111111-1111-4111-8111-111111111111',
+          name: 'Owner Name',
+          email: 'owner-outbox@example.com',
+          emailVerified: true,
+          image: null
+        })
+        .execute()
+      const workspace = await context.runtime.database
+        .selectFrom('document')
+        .select('workspaceId')
+        .where('id', '=', context.documentId)
+        .executeTakeFirstOrThrow()
+      await context.runtime.database
+        .updateTable('workspaceMember')
+        .set({ userId: '11111111-1111-4111-8111-111111111111' })
+        .where('workspaceId', '=', workspace.workspaceId)
+        .where('userId', '=', 'owner')
+        .execute()
+      const email = createTransactionalEmailService(context.runtime.database, {
+        encryptionSecret: 'outbox-test-secret-at-least-32-characters',
+        from: 'OpenPencil <cloud@example.com>'
+      })
+      const sharing = createDocumentSharingService(context.runtime.database, {
+        publicURL: 'https://cloud.example.com',
+        appURL: 'https://app.example.com',
+        outbox: createInvitationOutbox(email)
+      })
+      const created = await sharing.createInvitation(
+        '11111111-1111-4111-8111-111111111111',
+        context.documentId,
+        { email: 'person@example.com', permission: 'view' }
+      )
+      const outbox = await context.runtime.database
+        .selectFrom('transactionalEmail')
+        .select(['idempotencyKey', 'status', 'payloadEncrypted'])
+        .executeTakeFirstOrThrow()
+      expect(outbox).toMatchObject({
+        idempotencyKey: `document-invitation/${created.invitation.id}`,
+        status: 'pending',
+        payloadEncrypted: expect.not.stringContaining(created.token)
+      })
     } finally {
       await context.runtime.close()
     }

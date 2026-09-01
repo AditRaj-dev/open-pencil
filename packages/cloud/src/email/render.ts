@@ -1,32 +1,38 @@
-import type { DocumentInvitationMessage } from '#cloud/server/invitations'
 import { render } from '@vue-email/render'
 
 import { DocumentInvitationEmail } from './templates/document-invitation'
+import type {
+  DocumentInvitationEmailPayload,
+  RenderedTransactionalEmail,
+  TransactionalEmailKind,
+  TransactionalEmailPayloadByKind
+} from './types'
 
-export type RenderedInvitationEmail = {
-  subject: string
-  html: string
-  text: string
-}
-
-export async function renderDocumentInvitationEmail(
-  message: DocumentInvitationMessage
-): Promise<RenderedInvitationEmail> {
-  const permissionLabel = message.permission === 'edit' ? 'edit' : 'view'
+async function renderDocumentInvitation(
+  payload: DocumentInvitationEmailPayload
+): Promise<RenderedTransactionalEmail> {
+  const permissionLabel = payload.permission === 'edit' ? 'edit' : 'view'
   const props = {
-    inviterName: message.inviterName,
-    documentName: message.documentName,
+    inviterName: payload.inviterName,
+    documentName: payload.documentName,
     permissionLabel,
-    expiresAt: new Date(message.expiresAt).toUTCString(),
-    acceptanceURL: message.acceptanceURL
+    expiresAt: new Date(payload.expiresAt).toUTCString(),
+    acceptanceURL: payload.acceptanceURL
   }
   const [html, text] = await Promise.all([
     render(DocumentInvitationEmail, props),
     render(DocumentInvitationEmail, props, { plainText: true })
   ])
   return {
-    subject: `${message.inviterName} invited you to ${permissionLabel} ${message.documentName}`,
+    subject: `${payload.inviterName} invited you to ${permissionLabel} ${payload.documentName}`,
     html,
     text
   }
+}
+
+export async function renderTransactionalEmail(
+  _kind: TransactionalEmailKind,
+  payload: TransactionalEmailPayloadByKind['document-invitation']
+): Promise<RenderedTransactionalEmail> {
+  return renderDocumentInvitation(payload)
 }

@@ -239,6 +239,12 @@ This prevents concurrent uploads from independently passing the same usage check
 release abandoned reservations. Candidate resources include storage bytes, document count, active
 uploads, revisions, collaboration participants, editors, and anonymous guests.
 
+## Transactional email
+
+Transactional email uses Vue Email for HTML/plain-text rendering and PostgreSQL for the canonical encrypted outbox. `@open-pencil/cloud/server` owns idempotency, bounded claims, retry state, and transport-neutral errors. Node supplies the Nodemailer SMTP adapter; Cloudflare supplies the native Email Service binding adapter. Provider-specific credentials and event shapes do not enter public Cloud contracts.
+
+Document invitation creation and outbox insertion share one PostgreSQL transaction. Payloads containing invitation URLs are encrypted at rest and never written to logs. Node runs a named sequential email worker with explicit shutdown; Cloudflare scheduled handlers invoke the same bounded drain operation.
+
 ## Self-hosting
 
 Self-hosting does not require an external billing provider. A no-billing adapter can assign a default

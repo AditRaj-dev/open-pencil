@@ -10,11 +10,13 @@ import {
   createDocumentCleanupService,
   createUploadCleanupService,
   CLOUD_FEATURE_KEYS,
-  startCleanupWorker
+  startCleanupWorker,
+  startTransactionalEmailWorker
 } from '#cloud/server'
 
 import { createMigratedNodeCloudDatabase } from './bootstrap'
 import { createCloudCollaborationRelay } from './collaboration'
+import { createNodeTransactionalEmailRuntime } from './email-runtime'
 
 export type NodeCloudServerOptions = {
   environment?: Readonly<Record<string, string | undefined>>
@@ -25,6 +27,11 @@ export async function startNodeCloudServer(options: NodeCloudServerOptions = {})
   const environment = options.environment ?? process.env
   const { config, database, auth } = await createMigratedNodeCloudDatabase(environment)
   const objects = createS3ObjectStore(config)
+  const {
+    email,
+    invitationOutbox,
+    transport: emailTransport
+  } = createNodeTransactionalEmailRuntime(config, database)
   const cleanup = config.cleanupEnabled
     ? startCleanupWorker(
         {
@@ -44,8 +51,18 @@ export async function startNodeCloudServer(options: NodeCloudServerOptions = {})
     config,
     database,
     auth,
-    objects
+    objects,
+    invitationOutbox
   })
+  const emailWorker = emailTransport
+    ? startTransactionalEmailWorker(email, {
+        batchSize: config.emailBatchSize,
+        intervalMs: config.emailIntervalMs,
+        leaseDurationMs: config.emailLeaseDurationMs,
+        maximumAttempts: config.emailMaximumAttempts,
+        onError: (error) => console.error('[Cloud] Email worker failed:', error)
+      })
+    : undefined
   const relayEntitlementSource = config.staticEntitlements
     ? new StaticEntitlementSource(staticEntitlementValues(config.staticEntitlements))
     : new DatabaseEntitlementSource(database)
@@ -93,6 +110,7 @@ export async function startNodeCloudServer(options: NodeCloudServerOptions = {})
       await server.stop()
       await collaboration?.destroy()
       await cleanup?.stop()
+      await emailWorker?.stop()
       await database.destroy()
     }
   }

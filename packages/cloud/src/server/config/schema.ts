@@ -86,6 +86,14 @@ const rawCloudServerConfigSchema = v.object({
   smtpUser: optionalTextSchema,
   smtpPassword: optionalTextSchema,
   emailFrom: optionalTextSchema,
+  emailTransport: v.optional(v.picklist(['none', 'smtp', 'cloudflare']), 'none'),
+  emailBatchSize: v.optional(v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(1000)), 50),
+  emailIntervalMs: v.optional(v.pipe(v.number(), v.integer(), v.minValue(1000)), 30_000),
+  emailLeaseDurationMs: v.optional(v.pipe(v.number(), v.integer(), v.minValue(1000)), 5 * 60_000),
+  emailMaximumAttempts: v.optional(
+    v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(20)),
+    5
+  ),
   cleanupEnabled: v.optional(v.boolean(), true),
   cleanupBatchSize: v.optional(
     v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(1000)),
@@ -136,8 +144,17 @@ export function parseCloudServerConfig(input: unknown): CloudServerConfig {
     'appleKeyId',
     'applePrivateKey'
   ])
-  requireTogether(config, 'SMTP', ['smtpHost', 'smtpPort', 'emailFrom'])
+  requireTogether(config, 'SMTP', ['smtpHost', 'smtpPort'])
   requireTogether(config, 'SMTP authentication', ['smtpUser', 'smtpPassword'])
+  if (config.emailTransport === 'smtp' && !config.smtpHost) {
+    throw new CloudConfigError('SMTP email transport requires SMTP configuration')
+  }
+  if (config.smtpHost && config.emailTransport !== 'smtp') {
+    throw new CloudConfigError('SMTP configuration requires the smtp email transport')
+  }
+  if (config.emailTransport !== 'none' && !config.emailFrom) {
+    throw new CloudConfigError('Transactional email delivery requires an email from address')
+  }
   if (config.deployment === 'official' && config.smtpHost && config.smtpSecure === false) {
     throw new CloudConfigError('Official SMTP delivery must use a secure connection')
   }

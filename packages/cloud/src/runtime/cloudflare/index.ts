@@ -5,11 +5,17 @@ import {
   createBetterAuthAdapter,
   createCloudDatabase,
   createDocumentCleanupService,
+  createInvitationOutbox,
+  createTransactionalEmailService,
   createUploadCleanupService,
   type CloudEnvironment
 } from '#cloud/server'
 import { PostgresDialect } from 'kysely'
 import { Pool } from 'pg'
+
+import { createCloudflareEmailTransport, type CloudflareEmailBinding } from './email'
+
+export { createCloudflareEmailTransport, type CloudflareEmailBinding } from './email'
 
 export type CloudflareHyperdrive = {
   connectionString: string
@@ -17,6 +23,7 @@ export type CloudflareHyperdrive = {
 
 export type CloudflareCloudEnvironment = {
   HYPERDRIVE: CloudflareHyperdrive
+  EMAIL?: CloudflareEmailBinding
   OPENPENCIL_CLOUD_DEPLOYMENT?: string
   OPENPENCIL_CLOUD_URL?: string
   OPENPENCIL_CLOUD_APP_URL?: string
@@ -29,7 +36,7 @@ export type CloudflareCloudEnvironment = {
   S3_SECRET_ACCESS_KEY?: string
   S3_FORCE_PATH_STYLE?: string
   S3_CHECKSUM_VERIFICATION?: string
-  [key: string]: string | CloudflareHyperdrive | undefined
+  [key: string]: string | CloudflareEmailBinding | CloudflareHyperdrive | undefined
 }
 
 function stringEnvironment(environment: CloudflareCloudEnvironment): CloudEnvironment {
@@ -49,9 +56,28 @@ export function createCloudflareCloudRuntime(environment: CloudflareCloudEnviron
   })
   const objects = createS3ObjectStore(config)
   const auth = createBetterAuthAdapter(config, database)
+  const emailTransport =
+    config.emailTransport === 'cloudflare' && environment.EMAIL
+      ? createCloudflareEmailTransport(environment.EMAIL)
+      : undefined
+  if (config.emailTransport === 'cloudflare' && !emailTransport) {
+    throw new Error('Cloudflare email transport requires the EMAIL binding')
+  }
+  const email = createTransactionalEmailService(database, {
+    encryptionSecret: config.authSecret,
+    from: config.emailFrom ?? '',
+    transport: emailTransport
+  })
   return {
-    app: createCloudApp({ config, database, auth, objects }),
+    app: createCloudApp({
+      config,
+      database,
+      auth,
+      objects,
+      invitationOutbox: emailTransport ? createInvitationOutbox(email) : undefined
+    }),
     database,
+    email,
     cleanup: {
       documents: createDocumentCleanupService(database, objects),
       uploads: createUploadCleanupService(database, objects)
@@ -92,6 +118,11 @@ export function createCloudflareWorker() {
             batchSize: runtime.config.cleanupBatchSize,
             leaseDurationMs: runtime.config.cleanupLeaseDurationMs,
             retentionMs: runtime.config.documentRetentionMs
+          }),
+          runtime.email.deliverPending({
+            batchSize: runtime.config.emailBatchSize,
+            leaseDurationMs: runtime.config.emailLeaseDurationMs,
+            maximumAttempts: runtime.config.emailMaximumAttempts
           })
         ]).finally(() => {
           void runtime.database.destroy()

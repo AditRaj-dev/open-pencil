@@ -1,10 +1,10 @@
 import { createNodeCloudDatabase } from '#cloud/runtime/node/database'
-import { createSMTPInvitationDelivery } from '#cloud/runtime/node/email'
+import { createNodeTransactionalEmailRuntime } from '#cloud/runtime/node/email-runtime'
 import { createS3ObjectStore } from '#cloud/runtime/s3/objects'
 import {
   cloudServerConfigFromEnvironment,
-  createCloudApp,
   createBetterAuthAdapter,
+  createCloudApp,
   type CloudApp,
   type CloudEnvironment,
   type CloudServerConfig,
@@ -21,6 +21,7 @@ export function createNodeCloudApplication(options: NodeCloudApplicationOptions 
   config: CloudServerConfig
   database: ReturnType<typeof createNodeCloudDatabase>
   objects: ObjectStore
+  email: ReturnType<typeof createNodeTransactionalEmailRuntime>['email']
 } {
   const environment = options.environment ?? process.env
   const config = cloudServerConfigFromEnvironment(environment)
@@ -29,23 +30,13 @@ export function createNodeCloudApplication(options: NodeCloudApplicationOptions 
   })
   const auth = createBetterAuthAdapter(config, database)
   const objects = createS3ObjectStore(config)
-  const invitationDelivery =
-    config.smtpHost && config.smtpPort && config.emailFrom
-      ? createSMTPInvitationDelivery({
-          host: config.smtpHost,
-          port: config.smtpPort,
-          secure: config.smtpSecure ?? config.smtpPort === 465,
-          user: config.smtpUser,
-          password: config.smtpPassword,
-          from: config.emailFrom
-        })
-      : undefined
+  const { email, invitationOutbox } = createNodeTransactionalEmailRuntime(config, database)
   const app = createCloudApp({
     config,
     database,
     auth,
     objects,
-    invitationDelivery
+    invitationOutbox
   })
-  return { app, config, database, objects }
+  return { app, config, database, objects, email }
 }

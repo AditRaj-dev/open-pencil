@@ -1,11 +1,9 @@
 import { describe, expect, test } from 'bun:test'
 
-import { renderDocumentInvitationEmail } from '@open-pencil/cloud/email'
-import { createNodemailerInvitationDelivery } from '@open-pencil/cloud/runtime/node'
+import { renderTransactionalEmail } from '@open-pencil/cloud/email'
+import { createNodemailerTransactionalEmailTransport } from '@open-pencil/cloud/runtime/node'
 
-const message = {
-  deliveryId: 'delivery-id',
-  recipientEmail: 'recipient@example.com',
+const payload = {
   inviterName: 'Alice',
   documentName: 'Homepage',
   permission: 'edit' as const,
@@ -14,19 +12,18 @@ const message = {
     'https://app.example.com/cloud/invitations/invitation-id?server=https%3A%2F%2Fcloud.example.com#secret-token'
 }
 
-describe('invitation email delivery', () => {
+describe('transactional email delivery', () => {
   test('renders matching HTML and plain-text invitations', async () => {
-    const rendered = await renderDocumentInvitationEmail(message)
+    const rendered = await renderTransactionalEmail('document-invitation', payload)
     expect(rendered.subject).toContain('Alice invited you to edit Homepage')
     expect(rendered.html).toContain('OpenPencil invitation')
-    expect(rendered.html).toContain(message.acceptanceURL.replaceAll('&', '&amp;'))
-    expect(rendered.text).toContain(message.acceptanceURL)
+    expect(rendered.html).toContain(payload.acceptanceURL.replaceAll('&', '&amp;'))
+    expect(rendered.text).toContain(payload.acceptanceURL)
   })
 
-  test('sends rendered invitations through injected Nodemailer transports', async () => {
+  test('sends rendered messages through injected Nodemailer transports', async () => {
     const sent: unknown[] = []
-    const delivery = createNodemailerInvitationDelivery({
-      from: 'OpenPencil <cloud@example.com>',
+    const transport = createNodemailerTransactionalEmailTransport({
       transporter: {
         async sendMail(mail: unknown) {
           sent.push(mail)
@@ -34,7 +31,17 @@ describe('invitation email delivery', () => {
         }
       } as never
     })
-    await delivery.sendDocumentInvitation(message)
+    expect(
+      await transport.send({
+        deliveryId: 'delivery-id',
+        from: 'OpenPencil <cloud@example.com>',
+        to: 'recipient@example.com',
+        subject: 'Invitation',
+        html: '<p>Invitation</p>',
+        text: 'Invitation',
+        headers: { 'X-OpenPencil-Delivery-ID': 'delivery-id' }
+      })
+    ).toMatchObject({ transportMessageId: 'message-id' })
     expect(sent).toHaveLength(1)
     expect(sent[0]).toMatchObject({
       from: 'OpenPencil <cloud@example.com>',

@@ -1,3 +1,4 @@
+import { startPeriodicWorker } from '../worker/periodic'
 import type { DocumentCleanupResult, DocumentCleanupService } from './documents'
 import type { UploadCleanupResult, UploadCleanupService } from './uploads'
 
@@ -29,52 +30,21 @@ export function startCleanupWorker(
   cleanup: CleanupServices,
   options: CleanupWorkerOptions
 ): CleanupWorker {
-  const controller = new AbortController()
-  const abort = () => controller.abort()
-  options.signal?.addEventListener('abort', abort, { once: true })
-
-  async function runOnce(): Promise<CleanupResult> {
-    const uploads = await cleanup.uploads.cleanupExpiredUploads({
-      batchSize: options.batchSize,
-      leaseDurationMs: options.leaseDurationMs
-    })
-    const documents = await cleanup.documents.cleanupDeletedDocuments({
-      batchSize: options.batchSize,
-      leaseDurationMs: options.leaseDurationMs,
-      retentionMs: options.documentRetentionMs
-    })
-    return { uploads, documents }
-  }
-
-  async function loop(): Promise<void> {
-    while (!controller.signal.aborted) {
-      try {
-        await runOnce()
-      } catch (error) {
-        options.onError?.(error)
-      }
-      await waitForInterval(options.intervalMs, controller.signal)
+  return startPeriodicWorker({
+    intervalMs: options.intervalMs,
+    signal: options.signal,
+    onError: options.onError,
+    async run() {
+      const uploads = await cleanup.uploads.cleanupExpiredUploads({
+        batchSize: options.batchSize,
+        leaseDurationMs: options.leaseDurationMs
+      })
+      const documents = await cleanup.documents.cleanupDeletedDocuments({
+        batchSize: options.batchSize,
+        leaseDurationMs: options.leaseDurationMs,
+        retentionMs: options.documentRetentionMs
+      })
+      return { uploads, documents }
     }
-  }
-
-  const running = loop()
-  return {
-    runOnce,
-    async stop() {
-      controller.abort()
-      options.signal?.removeEventListener('abort', abort)
-      await running
-    }
-  }
-}
-
-function waitForInterval(milliseconds: number, signal: AbortSignal): Promise<void> {
-  if (signal.aborted) return Promise.resolve()
-  return new Promise((resolve) => {
-    AbortSignal.any([signal, AbortSignal.timeout(milliseconds)]).addEventListener(
-      'abort',
-      () => resolve(),
-      { once: true }
-    )
   })
 }

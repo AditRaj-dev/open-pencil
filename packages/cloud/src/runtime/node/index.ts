@@ -6,12 +6,20 @@ export {
   type CloudCollaborationRelayOptions
 } from './collaboration'
 export { loadNodeCloudServerConfig } from './config'
+export {
+  createNodeTransactionalEmailRuntime,
+  type NodeTransactionalEmailRuntime
+} from './email-runtime'
 export { createNodeCloudDatabase, type NodeCloudDatabaseOptions } from './database'
 export {
   createNodemailerInvitationDelivery,
   createSMTPInvitationDelivery,
+  createNodemailerTransactionalEmailTransport,
+  createSMTPTransactionalEmailTransport,
   type NodemailerInvitationDeliveryOptions,
-  type SMTPInvitationDeliveryOptions
+  type SMTPInvitationDeliveryOptions,
+  type NodemailerTransactionalEmailTransportOptions,
+  type SMTPTransactionalEmailTransportOptions
 } from './email'
 export { createS3ObjectStore } from '#cloud/runtime/s3/objects'
 export { startNodeCloudServer, type NodeCloudServerOptions } from './server'

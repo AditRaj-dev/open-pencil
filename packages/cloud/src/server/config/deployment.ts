@@ -40,6 +40,21 @@ const deploymentConfigSchema = v.object({
       v.object({ source: v.literal('database') })
     ])
   ),
+  email: v.optional(
+    v.variant('transport', [
+      v.object({ transport: v.literal('none') }),
+      v.object({
+        transport: v.literal('smtp'),
+        from: v.string(),
+        host: v.string(),
+        port: v.number(),
+        secure: v.optional(v.boolean()),
+        user: v.optional(secretReferenceSchema),
+        password: v.optional(secretReferenceSchema)
+      }),
+      v.object({ transport: v.literal('cloudflare'), from: v.string() })
+    ])
+  ),
   technical_limits: v.optional(
     v.object({
       maximum_upload_bytes: v.optional(v.number()),
@@ -53,6 +68,56 @@ function secret(environment: CloudEnvironment, reference: { from_env: string }):
   const value = environment[reference.from_env]
   if (!value) throw new Error(`Required secret binding is unavailable: ${reference.from_env}`)
   return value
+}
+
+type DeploymentConfig = v.InferOutput<typeof deploymentConfigSchema>
+
+function emailConfig(config: DeploymentConfig, environment: CloudEnvironment) {
+  if (!config.email || config.email.transport === 'none') {
+    return { emailTransport: config.email?.transport }
+  }
+  if (config.email.transport === 'cloudflare') {
+    return { emailTransport: 'cloudflare' as const, emailFrom: config.email.from }
+  }
+  return {
+    emailTransport: 'smtp' as const,
+    emailFrom: config.email.from,
+    smtpHost: config.email.host,
+    smtpPort: config.email.port,
+    smtpSecure: config.email.secure,
+    smtpUser: config.email.user ? secret(environment, config.email.user) : undefined,
+    smtpPassword: config.email.password ? secret(environment, config.email.password) : undefined
+  }
+}
+
+function entitlementConfig(config: DeploymentConfig) {
+  if (config.entitlements?.source !== 'static') return undefined
+  return {
+    documents: {
+      maximumFileBytes: config.entitlements.documents?.maximum_file_bytes,
+      revisionHistory: config.entitlements.documents?.revision_history
+    },
+    storage: { maximumBytes: config.entitlements.storage?.maximum_bytes },
+    sharing: {
+      capabilityLinks: config.entitlements.sharing?.capability_links,
+      anonymousView: config.entitlements.sharing?.anonymous_view,
+      anonymousEdit: config.entitlements.sharing?.anonymous_edit,
+      guestPresence: config.entitlements.sharing?.guest_presence
+    },
+    collaboration: {
+      enabled: config.entitlements.collaboration?.enabled,
+      maximumParticipants: config.entitlements.collaboration?.maximum_participants
+    }
+  }
+}
+
+function technicalLimits(config: DeploymentConfig) {
+  if (!config.technical_limits) return undefined
+  return {
+    maximumUploadBytes: config.technical_limits.maximum_upload_bytes,
+    maximumCollaborationMessageBytes: config.technical_limits.maximum_collaboration_message_bytes,
+    maximumConnectionsPerRoom: config.technical_limits.maximum_connections_per_room
+  }
 }
 
 export function parseCloudDeploymentTOML(
@@ -76,33 +141,8 @@ export function parseCloudDeploymentTOML(
     s3ChecksumVerification: config.object_storage.checksum_verification,
     collaborationURL: config.collaboration?.public_url,
     collaborationPort: config.collaboration?.port,
-    staticEntitlements:
-      config.entitlements?.source === 'static'
-        ? {
-            documents: {
-              maximumFileBytes: config.entitlements.documents?.maximum_file_bytes,
-              revisionHistory: config.entitlements.documents?.revision_history
-            },
-            storage: { maximumBytes: config.entitlements.storage?.maximum_bytes },
-            sharing: {
-              capabilityLinks: config.entitlements.sharing?.capability_links,
-              anonymousView: config.entitlements.sharing?.anonymous_view,
-              anonymousEdit: config.entitlements.sharing?.anonymous_edit,
-              guestPresence: config.entitlements.sharing?.guest_presence
-            },
-            collaboration: {
-              enabled: config.entitlements.collaboration?.enabled,
-              maximumParticipants: config.entitlements.collaboration?.maximum_participants
-            }
-          }
-        : undefined,
-    technicalLimits: config.technical_limits
-      ? {
-          maximumUploadBytes: config.technical_limits.maximum_upload_bytes,
-          maximumCollaborationMessageBytes:
-            config.technical_limits.maximum_collaboration_message_bytes,
-          maximumConnectionsPerRoom: config.technical_limits.maximum_connections_per_room
-        }
-      : undefined
+    staticEntitlements: entitlementConfig(config),
+    ...emailConfig(config, environment),
+    technicalLimits: technicalLimits(config)
   })
 }

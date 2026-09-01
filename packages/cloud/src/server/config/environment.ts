@@ -76,6 +76,23 @@ export function cloudServerConfigFromEnvironment(environment: CloudEnvironment):
     smtpUser: environment.OPENPENCIL_CLOUD_SMTP_USER,
     smtpPassword: environment.OPENPENCIL_CLOUD_SMTP_PASSWORD,
     emailFrom: environment.OPENPENCIL_CLOUD_EMAIL_FROM,
+    emailTransport: environment.OPENPENCIL_CLOUD_EMAIL_TRANSPORT,
+    emailBatchSize: v.parse(
+      integerEnvironmentSchema,
+      environment.OPENPENCIL_CLOUD_EMAIL_BATCH_SIZE
+    ),
+    emailIntervalMs: v.parse(
+      integerEnvironmentSchema,
+      environment.OPENPENCIL_CLOUD_EMAIL_INTERVAL_MS
+    ),
+    emailLeaseDurationMs: v.parse(
+      integerEnvironmentSchema,
+      environment.OPENPENCIL_CLOUD_EMAIL_LEASE_MS
+    ),
+    emailMaximumAttempts: v.parse(
+      integerEnvironmentSchema,
+      environment.OPENPENCIL_CLOUD_EMAIL_MAXIMUM_ATTEMPTS
+    ),
     cleanupEnabled: v.parse(booleanEnvironmentSchema, environment.OPENPENCIL_CLOUD_CLEANUP_ENABLED),
     cleanupBatchSize: v.parse(
       integerEnvironmentSchema,

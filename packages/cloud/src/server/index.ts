@@ -69,9 +69,12 @@ export {
   type NewDocument,
   type NewDocumentRevision,
   type NewStorageObject,
+  type NewTransactionalEmail,
   type NewUpload,
   type NewWorkspace,
   type StorageObject,
+  type TransactionalEmail,
+  type TransactionalEmailStatus,
   type Upload,
   type UploadStatus,
   type Workspace,
@@ -91,9 +94,27 @@ export {
   type DocumentService
 } from './documents'
 export {
+  createInvitationOutbox,
+  createTransactionalEmailService,
+  startTransactionalEmailWorker,
+  decryptTransactionalEmailPayload,
+  encryptTransactionalEmailPayload,
+  TransactionalEmailTransportError,
+  type EnqueueTransactionalEmailInput,
+  type TransactionalEmailDeliveryOptions,
+  type TransactionalEmailDeliveryResult,
+  type TransactionalEmailEnvelope,
+  type TransactionalEmailSendResult,
+  type TransactionalEmailService,
+  type TransactionalEmailTransport,
+  type TransactionalEmailWorker,
+  type TransactionalEmailWorkerOptions
+} from './email'
+export {
   noOpInvitationDelivery,
   type DocumentInvitationMessage,
-  type InvitationDelivery
+  type InvitationDelivery,
+  type InvitationOutbox
 } from './invitations'
 export type {
   AbortObjectUploadInput,

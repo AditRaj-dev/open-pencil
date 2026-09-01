@@ -9,7 +9,7 @@ import type {
 import type { CloudActor } from '#cloud/server/auth'
 import type { CloudDatabase } from '#cloud/server/db'
 import { DocumentNotFoundError } from '#cloud/server/documents/service'
-import type { InvitationDelivery } from '#cloud/server/invitations'
+import type { InvitationDelivery, InvitationOutbox } from '#cloud/server/invitations'
 import type { Kysely } from 'kysely'
 import { sql } from 'kysely'
 import { nanoid } from 'nanoid'
@@ -31,6 +31,7 @@ const INVITATION_LIFETIME_MS = 7 * 24 * 60 * 60_000
 export type InvitationServiceOptions = {
   continuationSecret?: string
   delivery?: InvitationDelivery
+  outbox?: InvitationOutbox
   publicURL?: string
   appURL?: string
 }
@@ -114,54 +115,74 @@ export function createInvitationService(
       const id = crypto.randomUUID()
       const token = nanoid(INVITATION_SECRET_SIZE)
       const expiresAt = new Date(Date.now() + INVITATION_LIFETIME_MS)
-      const row = await database
-        .insertInto('documentInvitation')
-        .values({
-          id,
-          documentId,
-          emailNormalized: input.email,
-          permission: input.permission,
-          tokenHash: hashCapability(token),
-          invitedBy: userId,
-          expiresAt,
-          acceptedAt: null,
-          revokedAt: null
-        })
-        .returning([
-          'id',
-          'documentId',
-          'emailNormalized',
-          'permission',
-          'invitedBy',
-          'invitedAt',
-          'expiresAt',
-          'acceptedAt'
-        ])
-        .executeTakeFirstOrThrow()
-      const invitation = invitationContract(row)
-      if (options.delivery && options.publicURL && options.appURL) {
-        const [inviter, document] = await Promise.all([
-          database.selectFrom('user').select('name').where('id', '=', userId).executeTakeFirst(),
-          database
-            .selectFrom('document')
-            .select('name')
-            .where('id', '=', documentId)
-            .executeTakeFirstOrThrow()
-        ])
-        const acceptanceURL = new URL(
-          `/cloud/invitations/${id}?server=${encodeURIComponent(options.publicURL)}#${token}`,
-          options.appURL
-        ).href
-        try {
-          await options.delivery.sendDocumentInvitation({
-            deliveryId: id,
-            recipientEmail: invitation.email,
-            inviterName: inviter?.name ?? 'An OpenPencil user',
-            documentName: document.name,
-            permission: invitation.permission,
-            expiresAt: invitation.expiresAt,
-            acceptanceURL
+      const deliveryContext =
+        (options.delivery || options.outbox) && options.publicURL && options.appURL
+          ? await Promise.all([
+              database
+                .selectFrom('user')
+                .select('name')
+                .where('id', '=', userId)
+                .executeTakeFirst(),
+              database
+                .selectFrom('document')
+                .select('name')
+                .where('id', '=', documentId)
+                .executeTakeFirstOrThrow()
+            ])
+          : null
+      const acceptanceURL =
+        deliveryContext && options.publicURL && options.appURL
+          ? new URL(
+              `/cloud/invitations/${id}?server=${encodeURIComponent(options.publicURL)}#${token}`,
+              options.appURL
+            ).href
+          : null
+      const message =
+        deliveryContext && acceptanceURL
+          ? {
+              deliveryId: id,
+              recipientEmail: input.email,
+              inviterName: deliveryContext[0]?.name ?? 'An OpenPencil user',
+              documentName: deliveryContext[1].name,
+              permission: input.permission,
+              expiresAt: expiresAt.toISOString(),
+              acceptanceURL
+            }
+          : null
+      const row = await database.transaction().execute(async (transaction) => {
+        const inserted = await transaction
+          .insertInto('documentInvitation')
+          .values({
+            id,
+            documentId,
+            emailNormalized: input.email,
+            permission: input.permission,
+            tokenHash: hashCapability(token),
+            invitedBy: userId,
+            expiresAt,
+            acceptedAt: null,
+            revokedAt: null
           })
+          .returning([
+            'id',
+            'documentId',
+            'emailNormalized',
+            'permission',
+            'invitedBy',
+            'invitedAt',
+            'expiresAt',
+            'acceptedAt'
+          ])
+          .executeTakeFirstOrThrow()
+        if (options.outbox && message) {
+          await options.outbox.enqueueDocumentInvitation(message, transaction)
+        }
+        return inserted
+      })
+      const invitation = invitationContract(row)
+      if (options.delivery && message && !options.outbox) {
+        try {
+          await options.delivery.sendDocumentInvitation(message)
         } catch (error) {
           await database
             .updateTable('documentInvitation')

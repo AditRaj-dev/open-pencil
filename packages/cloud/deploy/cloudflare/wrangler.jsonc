@@ -5,6 +5,14 @@
   "compatibility_date": "2026-08-14",
   "compatibility_flags": ["nodejs_compat"],
   "observability": { "enabled": true },
+  // Set OPENPENCIL_CLOUD_EMAIL_TRANSPORT=cloudflare and
+  // OPENPENCIL_CLOUD_EMAIL_FROM=notifications@mail.openpencil.dev as Worker variables.
+  "send_email": [
+    {
+      "name": "EMAIL",
+      "allowed_sender_addresses": ["notifications@mail.openpencil.dev"]
+    }
+  ],
   // Configure these as Worker secrets for R2's official S3-compatible presigned URL flow:
   // S3_ENDPOINT=https://<ACCOUNT_ID>.r2.cloudflarestorage.com
   // S3_REGION=auto, S3_FORCE_PATH_STYLE=false, S3_CHECKSUM_VERIFICATION=metadata

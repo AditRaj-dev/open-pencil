@@ -38,6 +38,29 @@ describe('Cloud server configuration', () => {
     )
   })
 
+  test('requires transport-specific transactional email configuration', () => {
+    expect(() =>
+      parseCloudServerConfig({
+        ...baseConfig,
+        emailTransport: 'cloudflare'
+      })
+    ).toThrow('requires an email from address')
+    expect(() =>
+      parseCloudServerConfig({
+        ...baseConfig,
+        emailTransport: 'smtp',
+        emailFrom: 'cloud@example.com'
+      })
+    ).toThrow('SMTP configuration')
+    expect(
+      parseCloudServerConfig({
+        ...baseConfig,
+        emailTransport: 'cloudflare',
+        emailFrom: 'notifications@mail.example.com'
+      }).emailTransport
+    ).toBe('cloudflare')
+  })
+
   test('requires Cloudflare R2 S3 compatibility settings', () => {
     const r2 = {
       ...baseConfig,

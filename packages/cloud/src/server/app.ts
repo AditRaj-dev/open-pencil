@@ -19,7 +19,7 @@ import { createCollaborationTicketService } from '#cloud/server/collaboration'
 import type { CloudServerConfig } from '#cloud/server/config'
 import type { CloudDatabase } from '#cloud/server/db'
 import { createDocumentService } from '#cloud/server/documents'
-import type { InvitationDelivery } from '#cloud/server/invitations'
+import type { InvitationDelivery, InvitationOutbox } from '#cloud/server/invitations'
 import type { ObjectStore } from '#cloud/server/objects'
 import {
   createDefaultCloudPolicy,
@@ -44,6 +44,7 @@ export type CloudServices = {
   objects: ObjectStore
   resolveSession?: CloudSessionResolver
   invitationDelivery?: InvitationDelivery
+  invitationOutbox?: InvitationOutbox
   entitlementSource?: EntitlementSource
   policy?: CloudPolicy
 }
@@ -105,6 +106,7 @@ export function createCloudApp(services: CloudServices) {
   )
   const sharing = createDocumentSharingService(services.database, {
     delivery: services.invitationDelivery,
+    outbox: services.invitationOutbox,
     continuationSecret: services.config.authSecret,
     publicURL: services.config.publicURL,
     appURL: services.config.appURL ?? services.config.publicURL,

@@ -1,4 +1,5 @@
 import type { DocumentPermission, WorkspaceRole } from '#cloud/contract'
+import type { TransactionalEmailKind, TransactionalEmailPayloadByKind } from '#cloud/email'
 import type { ColumnType, Generated, Insertable, Selectable, Updateable } from 'kysely'
 
 export type TimestampColumn = ColumnType<Date, Date | string | undefined, Date | string | null>
@@ -163,6 +164,29 @@ export interface UploadStorageReservationTable {
   createdAt: TimestampColumn
 }
 
+export type TransactionalEmailStatus = 'pending' | 'sending' | 'accepted' | 'failed' | 'suppressed'
+
+export interface TransactionalEmailTable {
+  id: string
+  idempotencyKey: string
+  kind: TransactionalEmailKind
+  recipientEmailNormalized: string
+  payloadEncrypted: string | null
+  status: TransactionalEmailStatus
+  attemptCount: Generated<number>
+  nextAttemptAt: TimestampColumn
+  claimId: string | null
+  claimedAt: TimestampColumn | null
+  transport: string | null
+  transportMessageId: string | null
+  lastErrorCode: string | null
+  createdAt: TimestampColumn
+  updatedAt: TimestampColumn
+  acceptedAt: TimestampColumn | null
+}
+
+export type TransactionalEmailPayload = TransactionalEmailPayloadByKind[TransactionalEmailKind]
+
 export interface CloudDatabase {
   user: AuthUserTable
   workspace: WorkspaceTable
@@ -177,10 +201,13 @@ export interface CloudDatabase {
   invitationContinuation: InvitationContinuationTable
   workspaceEntitlement: WorkspaceEntitlementTable
   workspaceStorageUsage: WorkspaceStorageUsageTable
+  transactionalEmail: TransactionalEmailTable
   uploadStorageReservation: UploadStorageReservationTable
   upload: UploadTable
 }
 
+export type NewTransactionalEmail = Insertable<TransactionalEmailTable>
+export type TransactionalEmail = Selectable<TransactionalEmailTable>
 export type Workspace = Selectable<WorkspaceTable>
 export type NewWorkspace = Insertable<WorkspaceTable>
 export type WorkspaceUpdate = Updateable<WorkspaceTable>

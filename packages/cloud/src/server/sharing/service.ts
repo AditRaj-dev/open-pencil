@@ -1,6 +1,6 @@
 import type { CloudUserProfile, LookupCloudUserInput } from '#cloud/contract'
 import type { CloudDatabase } from '#cloud/server/db'
-import type { InvitationDelivery } from '#cloud/server/invitations'
+import type { InvitationDelivery, InvitationOutbox } from '#cloud/server/invitations'
 import type { CloudPolicy } from '#cloud/server/policy/policy'
 import type { Kysely } from 'kysely'
 import { sql } from 'kysely'
@@ -20,6 +20,7 @@ export type { DocumentShareCapability, ResolvedDocumentShare, ResolvedSharePrinc
 export type DocumentSharingServiceOptions = {
   continuationSecret?: string
   delivery?: InvitationDelivery
+  outbox?: InvitationOutbox
   publicURL?: string
   appURL?: string
   policy?: CloudPolicy

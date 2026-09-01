@@ -66,17 +66,17 @@ Stop and remove the Garage profile with:
 docker compose -f compose.garage.yml down
 ```
 
-### Invitation email
+### Transactional email
 
 `OPENPENCIL_CLOUD_URL` configures the API origin. `OPENPENCIL_CLOUD_APP_URL` configures the browser editor origin used in emailed invitation links and must also appear in `OPENPENCIL_CLOUD_TRUSTED_ORIGINS`.
 
-The Node deployment can send document invitations through SMTP. Configure
-`OPENPENCIL_CLOUD_SMTP_HOST`, `OPENPENCIL_CLOUD_SMTP_PORT`,
-`OPENPENCIL_CLOUD_SMTP_SECURE`, and `OPENPENCIL_CLOUD_EMAIL_FROM`. Add
-`OPENPENCIL_CLOUD_SMTP_USER` and `OPENPENCIL_CLOUD_SMTP_PASSWORD` together when
-the server requires authentication. Vue Email renders matching HTML and plain-text bodies.
-Cloudflare deployments should inject an HTTP-based `InvitationDelivery` adapter instead of
-Nodemailer.
+Vue Email renders matching HTML and plain-text bodies. PostgreSQL owns an encrypted, idempotent outbox with bounded claims and retries; the transport records relay acceptance rather than claiming inbox delivery.
+
+Node deployments use `OPENPENCIL_CLOUD_EMAIL_TRANSPORT=smtp`. Configure `OPENPENCIL_CLOUD_SMTP_HOST`, `OPENPENCIL_CLOUD_SMTP_PORT`, `OPENPENCIL_CLOUD_SMTP_SECURE`, and `OPENPENCIL_CLOUD_EMAIL_FROM`. Add `OPENPENCIL_CLOUD_SMTP_USER` and `OPENPENCIL_CLOUD_SMTP_PASSWORD` together when authentication is required.
+
+Cloudflare deployments use `OPENPENCIL_CLOUD_EMAIL_TRANSPORT=cloudflare`, set `OPENPENCIL_CLOUD_EMAIL_FROM`, and configure the `EMAIL` `send_email` binding in `cloudflare/wrangler.jsonc`. The sending domain must be onboarded to Cloudflare Email Service. The scheduled Worker drains the same PostgreSQL outbox service used by Node; the binding is only a transport adapter.
+
+Set `OPENPENCIL_CLOUD_EMAIL_TRANSPORT=none` when delivery is intentionally disabled. In that mode document invitations remain token-based but no email outbox row is created. Delivery tuning uses `OPENPENCIL_CLOUD_EMAIL_BATCH_SIZE`, `OPENPENCIL_CLOUD_EMAIL_INTERVAL_MS`, `OPENPENCIL_CLOUD_EMAIL_LEASE_MS`, and `OPENPENCIL_CLOUD_EMAIL_MAXIMUM_ATTEMPTS`.
 
 ### Cloud collaboration relay
 

@@ -12,6 +12,7 @@ import * as storageReservations from './migrations/008_storage_reservations'
 import * as workspaceEntitlements from './migrations/009_workspace_entitlements'
 import * as uploadFinalization from './migrations/010_upload_finalization'
 import * as uploadFinalizationLease from './migrations/011_upload_finalization_lease'
+import * as transactionalEmail from './migrations/012_transactional_email'
 import type { CloudDatabase } from './schema'
 
 const migrations: Record<string, Migration> = {
@@ -25,7 +26,8 @@ const migrations: Record<string, Migration> = {
   '008_storage_reservations': storageReservations,
   '009_workspace_entitlements': workspaceEntitlements,
   '010_upload_finalization': uploadFinalization,
-  '011_upload_finalization_lease': uploadFinalizationLease
+  '011_upload_finalization_lease': uploadFinalizationLease,
+  '012_transactional_email': transactionalEmail
 }
 
 class CloudMigrationProvider implements MigrationProvider {
