@@ -57,6 +57,7 @@ function select(item: CommandPaletteItem) {
     v-model="palette.selectedId.value"
     :class="ui?.root"
     :aria-label="labels.paletteLabel"
+    :data-searching="palette.searchTerm.value ? '' : undefined"
   >
     <div v-if="palette.isNested.value" :class="ui?.back">
       <button type="button" @click="palette.navigateBack()">{{ labels.back }}</button>
@@ -103,7 +104,7 @@ function select(item: CommandPaletteItem) {
           </ListboxItem>
         </ListboxGroup>
       </template>
-      <slot v-else name="empty">{{ labels.empty }}</slot>
+      <slot v-else name="empty" :search-term="palette.searchTerm.value">{{ labels.empty }}</slot>
     </ListboxContent>
   </ListboxRoot>
 </template>

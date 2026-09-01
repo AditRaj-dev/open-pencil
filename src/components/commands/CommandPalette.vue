@@ -75,6 +75,11 @@ if (IS_BROWSER) {
           <X class="size-5" />
         </button>
       </template>
+      <template #empty>
+        <p class="px-4 py-8 text-center text-xs text-muted">
+          {{ commands.paletteNoCommands }}
+        </p>
+      </template>
       <template #item-icon="{ item }">
         <component :is="item.icon" v-if="item.icon" class="size-4" />
       </template>

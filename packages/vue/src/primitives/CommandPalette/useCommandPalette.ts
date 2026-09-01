@@ -13,7 +13,7 @@ function searchItems(
 
   return new Fuse(items, {
     keys: ['label', 'description', 'keywords'],
-    threshold: 0.35,
+    threshold: 0.2,
     ignoreLocation: true
   })
     .search(query)
@@ -25,14 +25,13 @@ function filterGroups(
   groups: CommandPaletteGroup[],
   results: CommandPaletteItem[]
 ): CommandPaletteGroup[] {
-  const resultSet = new Set(results)
-  const itemsWithGroups = groups.flatMap((group) =>
-    group.items.filter((item) => resultSet.has(item)).map((item) => ({ groupId: group.id, item }))
+  const groupByItem = new Map(
+    groups.flatMap((group) => group.items.map((item) => [item, group.id] as const))
   )
-  const groupedResults = groupBy(itemsWithGroups, ({ groupId }) => groupId)
+  const groupedResults = groupBy(results, (item) => groupByItem.get(item) ?? '')
 
   return groups
-    .map((group) => ({ ...group, items: groupedResults[group.id]?.map(({ item }) => item) ?? [] }))
+    .map((group) => ({ ...group, items: groupedResults[group.id] ?? [] }))
     .filter((group) => group.items.length > 0)
 }
 
