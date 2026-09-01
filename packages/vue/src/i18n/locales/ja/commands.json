@@ -44,5 +44,6 @@
   "paletteAriaLabel": "コマンドパレット",
   "paletteSearchAriaLabel": "コマンドを検索",
   "paletteDescription": "OpenPencil のコマンドを検索して実行します。",
-  "paletteNoCommands": "コマンドが見つかりません。"
+  "paletteNoCommands": "コマンドが見つかりません。",
+  "paletteBack": "戻る"
 }

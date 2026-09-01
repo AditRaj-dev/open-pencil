@@ -44,5 +44,6 @@
   "paletteAriaLabel": "Paleta poleceń",
   "paletteSearchAriaLabel": "Szukaj poleceń",
   "paletteDescription": "Wyszukuj i uruchamiaj polecenia OpenPencil.",
-  "paletteNoCommands": "Nie znaleziono poleceń."
+  "paletteNoCommands": "Nie znaleziono poleceń.",
+  "paletteBack": "Wstecz"
 }

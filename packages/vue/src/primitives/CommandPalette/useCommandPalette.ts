@@ -46,26 +46,55 @@ export function useCommandPalette(options: MaybeRefOrGetter<UseCommandPaletteOpt
 
   const groups = computed(() => toValue(options).groups)
   const resultLimit = computed(() => toValue(options).resultLimit ?? 12)
-  const items = computed(() => groups.value.flatMap((group) => group.items))
+  const navigation = ref<CommandPaletteGroup[]>()
+  const currentGroups = computed(() => navigation.value ?? groups.value)
+  const items = computed(() => currentGroups.value.flatMap((group) => group.items))
 
   const filteredGroups = computed<CommandPaletteGroup[]>(() => {
     const results = searchItems(items.value, searchTerm.value.trim(), resultLimit.value)
-    return filterGroups(groups.value, results)
+    return filterGroups(currentGroups.value, results)
   })
 
   function close() {
     open.value = false
     searchTerm.value = ''
+    navigation.value = undefined
     selectedId.value = undefined
+  }
+
+  function navigate(item: CommandPaletteItem) {
+    if (!item.children?.length) return false
+    navigation.value = [{ id: item.id, label: item.label, items: item.children }]
+    searchTerm.value = ''
+    selectedId.value = undefined
+    return true
+  }
+
+  function navigateBack() {
+    if (!navigation.value) return false
+    navigation.value = undefined
+    searchTerm.value = ''
+    selectedId.value = undefined
+    return true
   }
 
   function select(item: CommandPaletteItem) {
     if (item.disabled) return
-    if (item.children?.length) return
+    if (navigate(item)) return
     selectedId.value = item.id
     item.onSelect?.()
     close()
   }
 
-  return { open, searchTerm, selectedId, filteredGroups, close, select }
+  return {
+    open,
+    searchTerm,
+    selectedId,
+    filteredGroups,
+    isNested: computed(() => navigation.value !== undefined),
+    close,
+    navigate,
+    navigateBack,
+    select
+  }
 }

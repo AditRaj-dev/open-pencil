@@ -44,5 +44,6 @@
   "paletteAriaLabel": "Befehlspalette",
   "paletteSearchAriaLabel": "Befehle suchen",
   "paletteDescription": "OpenPencil-Befehle suchen und ausführen.",
-  "paletteNoCommands": "Keine Befehle gefunden."
+  "paletteNoCommands": "Keine Befehle gefunden.",
+  "paletteBack": "Zurück"
 }

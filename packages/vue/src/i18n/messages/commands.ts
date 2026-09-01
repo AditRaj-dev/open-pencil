@@ -46,7 +46,8 @@ export const commandMessageDefaults = {
   paletteAriaLabel: 'Command palette',
   paletteSearchAriaLabel: 'Search commands',
   paletteDescription: 'Search and run OpenPencil commands.',
-  paletteNoCommands: 'No commands found.'
+  paletteNoCommands: 'No commands found.',
+  paletteBack: 'Back'
 } as const
 
 export const commandMessages = i18n('commands', commandMessageDefaults)

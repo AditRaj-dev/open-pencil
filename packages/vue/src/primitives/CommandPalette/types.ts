@@ -25,6 +25,7 @@ export interface CommandPaletteGroup {
 export interface CommandPaletteUI {
   root?: string
   search?: string
+  back?: string
   content?: string
   viewport?: string
   group?: string

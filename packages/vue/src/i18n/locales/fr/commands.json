@@ -44,5 +44,6 @@
   "paletteAriaLabel": "Palette de commandes",
   "paletteSearchAriaLabel": "Rechercher des commandes",
   "paletteDescription": "Rechercher et exécuter des commandes OpenPencil.",
-  "paletteNoCommands": "Aucune commande trouvée."
+  "paletteNoCommands": "Aucune commande trouvée.",
+  "paletteBack": "Retour"
 }
