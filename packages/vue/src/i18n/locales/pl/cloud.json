@@ -99,5 +99,8 @@
   "shareDocument": "Udostępnij „{name}”",
   "disconnectPendingWork": "{documents} dokumentów zawiera niezsynchronizowane zmiany lokalne, a {jobs} zadań oczekuje w kolejce. Synchronizacja zostanie wstrzymana do czasu ponownego połączenia z tą instancją.",
   "protocolVersion": "Protokół {version}",
-  "signInWith": "Zaloguj się przez {provider}"
+  "signInWith": "Zaloguj się przez {provider}",
+  "enterInstanceURL": "Wprowadź adres URL instancji",
+  "instanceConnected": "Połączono z instancją",
+  "signInNext": "Zaloguj się, aby uzyskać dostęp do jej obszarów roboczych."
 }

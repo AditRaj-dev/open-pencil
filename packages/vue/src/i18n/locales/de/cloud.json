@@ -99,5 +99,8 @@
   "shareDocument": "Teilen Sie „{name}“",
   "disconnectPendingWork": "{documents} Dokumente enthalten nicht synchronisierte lokale Änderungen und {jobs} ausstehende Aufträge. Die Synchronisierung wird pausiert, bis diese Instanz erneut verbunden ist.",
   "protocolVersion": "Protokoll {version}",
-  "signInWith": "Mit {provider} anmelden"
+  "signInWith": "Mit {provider} anmelden",
+  "enterInstanceURL": "Instanz-URL eingeben",
+  "instanceConnected": "Instanz verbunden",
+  "signInNext": "Melde dich an, um auf ihre Arbeitsbereiche zuzugreifen."
 }

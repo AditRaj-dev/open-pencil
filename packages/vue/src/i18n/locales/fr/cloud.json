@@ -99,5 +99,8 @@
   "shareDocument": "Partager « {name} »",
   "disconnectPendingWork": "{documents} documents contiennent des modifications locales non synchronisées et {jobs} tâches en attente. La synchronisation sera suspendue jusqu’à la reconnexion de cette instance.",
   "protocolVersion": "Protocole {version}",
-  "signInWith": "Se connecter avec {provider}"
+  "signInWith": "Se connecter avec {provider}",
+  "enterInstanceURL": "Saisir l’URL de l’instance",
+  "instanceConnected": "Instance connectée",
+  "signInNext": "Connectez-vous pour accéder à ses espaces de travail."
 }

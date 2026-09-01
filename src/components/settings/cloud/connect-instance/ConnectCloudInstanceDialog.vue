@@ -2,6 +2,7 @@
 import { computed, watch } from 'vue'
 import { useCloudMessages, useCommonMessages } from '@open-pencil/vue'
 
+import { OFFICIAL_OPENPENCIL_CLOUD_URL } from '@/app/integrations/storage/cloud/profiles'
 import AppInput from '@/components/ui/AppInput.vue'
 import { useButtonUI } from '@/components/ui/button'
 import {
@@ -53,9 +54,10 @@ watch(open, (isOpen) => {
         <button
           type="button"
           class="w-full rounded border border-border p-3 text-left hover:bg-hover"
-          @click="finishOfficial"
+          @click="flow.selectOfficial"
         >
           <span class="block text-xs font-medium text-surface">OpenPencil Cloud</span>
+          <span class="mt-1 block text-[10px] text-muted">{{ OFFICIAL_OPENPENCIL_CLOUD_URL }}</span>
           <span class="mt-1 block text-[10px] text-muted">{{
             cloudMessages.officialHostedService
           }}</span>
@@ -63,10 +65,10 @@ watch(open, (isOpen) => {
         <button
           type="button"
           class="w-full rounded border border-border p-3 text-left hover:bg-hover"
-          @click="flow.step.value = 'enter-url'"
+          @click="flow.selectSelfHosted"
         >
           <span class="block text-xs font-medium text-surface">{{
-            cloudMessages.selfHostedInstance
+            cloudMessages.enterInstanceURL
           }}</span>
           <span class="mt-1 block text-[10px] text-muted">
             {{ cloudMessages.selfHostedDescription }}
@@ -100,9 +102,11 @@ watch(open, (isOpen) => {
 
       <template v-else-if="flow.discovery.value">
         <div class="rounded border border-border bg-panel-field p-3">
+          <p class="text-[10px] font-medium text-accent">{{ cloudMessages.instanceConnected }}</p>
           <p class="text-xs font-medium text-surface">
             {{ verifiedHostname }}
           </p>
+          <p class="mt-1 text-[10px] text-muted">{{ cloudMessages.signInNext }}</p>
           <p class="mt-1 text-[10px] text-muted">
             {{
               flow.discovery.value.deployment === 'official'
@@ -125,7 +129,7 @@ watch(open, (isOpen) => {
     </AppDialogBody>
     <AppDialogFooter>
       <button
-        v-if="flow.step.value !== 'choose-kind'"
+        v-if="flow.step.value !== 'choose-kind' && flow.kind.value !== 'official'"
         type="button"
         :class="secondary.base"
         @click="flow.step.value = 'choose-kind'"
@@ -142,11 +146,11 @@ watch(open, (isOpen) => {
         {{ cloudMessages.verify }}
       </button>
       <button
-        v-if="flow.step.value === 'verify'"
+        v-if="flow.step.value === 'ready'"
         type="button"
         :class="primary.base"
         :disabled="!flow.canConfirm.value"
-        @click="finishSelfHosted"
+        @click="flow.kind.value === 'official' ? finishOfficial() : finishSelfHosted()"
       >
         {{ cloudMessages.connect }}
       </button>

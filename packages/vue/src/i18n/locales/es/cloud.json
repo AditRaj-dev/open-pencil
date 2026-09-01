@@ -99,5 +99,8 @@
   "shareDocument": "Compartir “{name}”",
   "disconnectPendingWork": "{documents} documentos tienen cambios locales sin sincronizar y {jobs} tareas en cola. La sincronización se pausará hasta que se vuelva a conectar esta instancia.",
   "protocolVersion": "Protocolo {version}",
-  "signInWith": "Iniciar sesión con {provider}"
+  "signInWith": "Iniciar sesión con {provider}",
+  "enterInstanceURL": "Introducir URL de instancia",
+  "instanceConnected": "Instancia conectada",
+  "signInNext": "Inicia sesión para acceder a sus espacios de trabajo."
 }

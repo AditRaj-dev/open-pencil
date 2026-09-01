@@ -99,5 +99,8 @@
   "shareDocument": "Поделиться «{name}»",
   "disconnectPendingWork": "В {documents} документах есть несинхронизированные локальные изменения, а в очереди — {jobs} заданий. Синхронизация будет приостановлена до повторного подключения этого экземпляра.",
   "protocolVersion": "Протокол {version}",
-  "signInWith": "Войти через {provider}"
+  "signInWith": "Войти через {provider}",
+  "enterInstanceURL": "Введите URL экземпляра",
+  "instanceConnected": "Экземпляр подключён",
+  "signInNext": "Войдите, чтобы получить доступ к его рабочим областям."
 }

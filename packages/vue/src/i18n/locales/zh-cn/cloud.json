@@ -99,5 +99,8 @@
   "shareDocument": "分享“{name}”",
   "disconnectPendingWork": "{documents} 个文档存在未同步的本地更改，另有 {jobs} 个排队任务。重新连接此实例前，同步将暂停。",
   "protocolVersion": "协议 {version}",
-  "signInWith": "使用 {provider} 登录"
+  "signInWith": "使用 {provider} 登录",
+  "enterInstanceURL": "输入实例 URL",
+  "instanceConnected": "实例已连接",
+  "signInNext": "登录以访问其工作区。"
 }

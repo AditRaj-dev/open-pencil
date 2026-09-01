@@ -99,5 +99,8 @@
   "shareDocument": "「{name}」を共有する",
   "disconnectPendingWork": "{documents} 件のドキュメントに未同期のローカル変更があり、{jobs} 件のジョブが待機中です。このインスタンスを再接続するまで同期は一時停止されます。",
   "protocolVersion": "プロトコル {version}",
-  "signInWith": "{provider} でログイン"
+  "signInWith": "{provider} でログイン",
+  "enterInstanceURL": "インスタンス URL を入力",
+  "instanceConnected": "インスタンスに接続しました",
+  "signInNext": "ワークスペースにアクセスするにはログインしてください。"
 }

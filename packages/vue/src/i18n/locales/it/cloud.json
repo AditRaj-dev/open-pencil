@@ -99,5 +99,8 @@
   "shareDocument": "Condividi \"{name}\"",
   "disconnectPendingWork": "{documents} documenti contengono modifiche locali non sincronizzate e {jobs} attività in coda. La sincronizzazione verrà sospesa finché questa istanza non sarà riconnessa.",
   "protocolVersion": "Protocollo {version}",
-  "signInWith": "Accedi con {provider}"
+  "signInWith": "Accedi con {provider}",
+  "enterInstanceURL": "Inserisci l’URL dell’istanza",
+  "instanceConnected": "Istanza connessa",
+  "signInNext": "Accedi per utilizzare i suoi spazi di lavoro."
 }
