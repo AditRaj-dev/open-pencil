@@ -32,10 +32,7 @@ function filterGroups(
   const groupedResults = groupBy(itemsWithGroups, ({ groupId }) => groupId)
 
   return groups
-    .map((group) => ({
-      ...group,
-      items: groupedResults[group.id]?.map(({ item }) => item) ?? []
-    }))
+    .map((group) => ({ ...group, items: groupedResults[group.id]?.map(({ item }) => item) ?? [] }))
     .filter((group) => group.items.length > 0)
 }
 
@@ -43,44 +40,52 @@ export function useCommandPalette(options: MaybeRefOrGetter<UseCommandPaletteOpt
   const open = ref(false)
   const searchTerm = ref('')
   const selectedId = ref<string>()
+  const navigation = ref<CommandPaletteGroup[]>([])
 
   const groups = computed(() => toValue(options).groups)
   const resultLimit = computed(() => toValue(options).resultLimit ?? 12)
-  const navigation = ref<CommandPaletteGroup[]>()
-  const currentGroups = computed(() => navigation.value ?? groups.value)
-  const items = computed(() => currentGroups.value.flatMap((group) => group.items))
-
-  const filteredGroups = computed<CommandPaletteGroup[]>(() => {
-    const results = searchItems(items.value, searchTerm.value.trim(), resultLimit.value)
-    return filterGroups(currentGroups.value, results)
+  const currentGroups = computed(() => {
+    const current = navigation.value.at(-1)
+    return current ? [current] : groups.value
   })
+  const items = computed(() => currentGroups.value.flatMap((group) => group.items))
+  const filteredGroups = computed(() =>
+    filterGroups(
+      currentGroups.value,
+      searchItems(items.value, searchTerm.value.trim(), resultLimit.value)
+    )
+  )
+  const isNested = computed(() => navigation.value.length > 0)
 
-  function close() {
-    open.value = false
+  function resetNavigation() {
+    navigation.value = []
     searchTerm.value = ''
-    navigation.value = undefined
     selectedId.value = undefined
   }
 
-  function navigate(item: CommandPaletteItem) {
+  function close() {
+    open.value = false
+    resetNavigation()
+  }
+
+  function navigate(item: CommandPaletteItem): boolean {
     if (!item.children?.length) return false
-    navigation.value = [{ id: item.id, label: item.label, items: item.children }]
+    navigation.value.push({ id: item.id, label: item.label, items: item.children })
     searchTerm.value = ''
     selectedId.value = undefined
     return true
   }
 
-  function navigateBack() {
-    if (!navigation.value) return false
-    navigation.value = undefined
+  function navigateBack(): boolean {
+    if (navigation.value.length === 0) return false
+    navigation.value.pop()
     searchTerm.value = ''
     selectedId.value = undefined
     return true
   }
 
   function select(item: CommandPaletteItem) {
-    if (item.disabled) return
-    if (navigate(item)) return
+    if (item.disabled || navigate(item)) return
     selectedId.value = item.id
     item.onSelect?.()
     close()
@@ -91,7 +96,7 @@ export function useCommandPalette(options: MaybeRefOrGetter<UseCommandPaletteOpt
     searchTerm,
     selectedId,
     filteredGroups,
-    isNested: computed(() => navigation.value !== undefined),
+    isNested,
     close,
     navigate,
     navigateBack,

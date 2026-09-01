@@ -69,7 +69,7 @@ function select(item: CommandPaletteItem) {
         :aria-label="labels.searchLabel"
         :class="ui?.search"
         autocomplete="off"
-        @input="palette.searchTerm.value = ($event.target as HTMLInputElement).value"
+        @keydown.backspace="palette.searchTerm.value || palette.navigateBack()"
       />
     </ListboxFilter>
     <ListboxContent :class="ui?.content">
