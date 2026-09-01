@@ -33,22 +33,30 @@ async function generateAppleClientSecret(config: CloudServerConfig): Promise<str
 }
 
 function socialProviders(config: CloudServerConfig): BetterAuthOptions['socialProviders'] {
-  return {
-    ...(config.googleClientId && config.googleClientSecret
-      ? { google: { clientId: config.googleClientId, clientSecret: config.googleClientSecret } }
-      : {}),
-    ...(config.appleClientId
-      ? {
-          apple: async () => ({
-            clientId: config.appleClientId ?? '',
-            clientSecret: await generateAppleClientSecret(config),
-            ...(config.appleAppBundleIdentifier
-              ? { appBundleIdentifier: config.appleAppBundleIdentifier }
-              : {})
-          })
-        }
-      : {})
+  const providers: BetterAuthOptions['socialProviders'] = {}
+  if (config.googleClientId && config.googleClientSecret) {
+    providers.google = {
+      clientId: config.googleClientId,
+      clientSecret: config.googleClientSecret
+    }
   }
+  if (config.appleClientId) {
+    providers.apple = async () => {
+      const provider: {
+        clientId: string
+        clientSecret: string
+        appBundleIdentifier?: string
+      } = {
+        clientId: config.appleClientId ?? '',
+        clientSecret: await generateAppleClientSecret(config)
+      }
+      if (config.appleAppBundleIdentifier) {
+        provider.appBundleIdentifier = config.appleAppBundleIdentifier
+      }
+      return provider
+    }
+  }
+  return providers
 }
 
 export function createBetterAuthAdapter(

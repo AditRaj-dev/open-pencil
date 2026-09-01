@@ -53,14 +53,15 @@ const DEFAULT_FLAGS = {
 } as const
 
 function evaluationContext(context: CloudPolicyContext): EvaluationContext {
-  return {
+  const evaluation: EvaluationContext = {
     targetingKey: context.targetingKey,
-    ...(context.actorId ? { actorId: context.actorId } : {}),
-    ...(context.workspaceId ? { workspaceId: context.workspaceId } : {}),
-    ...(context.organizationId ? { organizationId: context.organizationId } : {}),
-    ...(context.documentId ? { documentId: context.documentId } : {}),
     deploymentMode: context.deploymentMode
   }
+  if (context.actorId) evaluation.actorId = context.actorId
+  if (context.workspaceId) evaluation.workspaceId = context.workspaceId
+  if (context.organizationId) evaluation.organizationId = context.organizationId
+  if (context.documentId) evaluation.documentId = context.documentId
+  return evaluation
 }
 
 export class CloudPolicy {

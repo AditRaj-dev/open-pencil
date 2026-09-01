@@ -138,13 +138,12 @@ export function createCapabilityService(
             .executeTakeFirstOrThrow()
         ).permission
       await sharingPolicy.requireCapabilityLink({ actorId: userId, documentId, permission })
-      const row = await updateActiveShare(userId, documentId, shareId, {
-        ...(input.permission ? { permission: input.permission } : {}),
-        ...(input.expiresAt !== undefined
-          ? { expiresAt: input.expiresAt ? new Date(input.expiresAt) : null }
-          : {}),
-        updatedAt: new Date()
-      })
+      const changes: UpdateObject<CloudDatabase, 'documentShare'> = { updatedAt: new Date() }
+      if (input.permission) changes.permission = input.permission
+      if (input.expiresAt !== undefined) {
+        changes.expiresAt = input.expiresAt ? new Date(input.expiresAt) : null
+      }
+      const row = await updateActiveShare(userId, documentId, shareId, changes)
       return shareContract(row)
     },
 

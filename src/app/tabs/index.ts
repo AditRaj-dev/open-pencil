@@ -35,7 +35,10 @@ import {
 import { toast } from '@/app/shell/ui'
 import { storageCanvasId } from '@/app/storage/id'
 import { getLocalCanvasStore } from '@/app/storage/local-store'
-import { seedStorageCanvasFromRemote } from '@/app/storage/sync/persist'
+import {
+  seedStorageCanvasFromRemote,
+  type SeedStorageCanvasOptions
+} from '@/app/storage/sync/persist'
 import { emitActiveDocumentOpened } from '@/app/tabs/events'
 import { createFileOpenCoordinator } from '@/app/tabs/open/coordinator'
 import { findTabByFileIdentity } from '@/app/tabs/open/identity'
@@ -380,20 +383,19 @@ export async function openStorageDocumentInNewTab(document: StorageDocument): Pr
           }),
         load.signal
       )
-      await seedStorageCanvasFromRemote({
+      const seedOptions: SeedStorageCanvasOptions = {
         providerId: identity.providerId,
         documentId: document.id,
-        ...(identity.binding.providerId === 'openpencil-cloud'
-          ? {
-              connectionId: identity.binding.connectionId,
-              workspaceId: identity.binding.workspaceId
-            }
-          : {}),
         canvasId: identity.canvasId,
         name: document.name,
         updatedAt: document.updatedAt,
         figBytes: bytes
-      })
+      }
+      if (identity.binding.providerId === 'openpencil-cloud') {
+        seedOptions.connectionId = identity.binding.connectionId
+        seedOptions.workspaceId = identity.binding.workspaceId
+      }
+      await seedStorageCanvasFromRemote(seedOptions)
       load.signal.throwIfAborted()
     }
 
