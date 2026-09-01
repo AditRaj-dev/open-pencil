@@ -2,7 +2,11 @@
 
 ## Unreleased
 
-### Added
+### Fixed
+
+- Preserve source text offsets when resolving fallback languages after text-case transformations.
+- Track character coverage restored from downloaded font cache entries.
+
 
 - Render triangle and line arrow stroke caps on lines and open vector paths, and choose them from the stroke cap picker.
 - Add a timestamp-faithful pan and zoom benchmark workflow with physical macOS trackpad recording, CDP and DOM replay, Chromium traces, frame-pacing and latency distributions, zoom-anchor drift and viewport-jump detection, retained-backing settlement metrics, and a documented native Instruments acceptance procedure.
