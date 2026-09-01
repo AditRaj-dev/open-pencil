@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useEventListener } from '@vueuse/core'
-import { CommandPaletteRoot, useCommandMessages, useI18n } from '@open-pencil/vue'
+import { CommandPaletteRoot, useCommandMessages, useCommonMessages } from '@open-pencil/vue'
 import { DialogDescription, DialogTitle, VisuallyHidden } from 'reka-ui'
 
 import Search from '~icons/lucide/search'
@@ -13,7 +13,7 @@ import { useCommandPaletteUI } from './ui'
 
 const { commandGroups: groups } = useAppMenu()
 const commands = useCommandMessages()
-const { dialogs } = useI18n()
+const common = useCommonMessages()
 const paletteUI = useCommandPaletteUI()
 const labels = computed(() => ({
   searchPlaceholder: commands.value.paletteSearchPlaceholder,
@@ -58,7 +58,7 @@ useEventListener(window, 'keydown', (event) => {
         <button
           type="button"
           class="ml-2 inline-flex size-8 shrink-0 items-center justify-center rounded text-muted hover:bg-hover hover:text-surface"
-          :aria-label="dialogs.close"
+          :aria-label="common.close"
           @click="close"
         >
           <X class="size-5" />

@@ -40,10 +40,10 @@
   "distributeVertical": "Распределить интервалы по вертикали",
   "selectInverse": "Инвертировать выделение",
   "sendBackward": "Переместить назад",
-  "paletteSearchPlaceholder": "Type a command or search…",
-  "paletteAriaLabel": "Command palette",
-  "paletteSearchAriaLabel": "Search commands",
-  "paletteDescription": "Search and run OpenPencil commands.",
-  "paletteNoCommands": "No commands found.",
+  "paletteSearchPlaceholder": "Введите команду или выполните поиск…",
+  "paletteAriaLabel": "Палитра команд",
+  "paletteSearchAriaLabel": "Поиск команд",
+  "paletteDescription": "Поиск и выполнение команд OpenPencil.",
+  "paletteNoCommands": "Команды не найдены.",
   "paletteBack": "Назад"
 }
