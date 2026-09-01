@@ -12,7 +12,7 @@ export default {
     item: 'mx-0 flex h-8 cursor-pointer items-center gap-2 rounded-md p-1 text-[13px] leading-6 text-surface outline-none data-[disabled]:cursor-not-allowed data-[disabled]:text-muted data-[disabled]:opacity-55 data-[highlighted]:bg-hover',
     itemIcon: 'flex size-6 shrink-0 items-center justify-center text-muted',
     itemLabel: 'min-w-0 flex-1 truncate',
-    shortcut: 'flex shrink-0 items-center gap-2 text-xs text-muted',
-    key: 'inline-flex min-w-7 items-center justify-center rounded-md border border-border bg-panel px-2.5 py-1.5 font-mono text-[11px] leading-none'
+    shortcut: 'flex shrink-0 items-center gap-1 text-xs text-muted',
+    key: 'inline-flex min-w-5 items-center justify-center rounded border border-border bg-panel px-1 py-0.5 font-mono text-[10px] leading-none'
   }
 } as const
