@@ -49,6 +49,5 @@ export interface CommandPaletteUI {
 
 export interface UseCommandPaletteOptions {
   groups: CommandPaletteGroup[]
-  labels: CommandPaletteLabels
   resultLimit?: number
 }

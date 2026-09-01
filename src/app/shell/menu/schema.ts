@@ -17,8 +17,15 @@ export type AppMenuIcon =
   | 'zoom-in'
   | 'zoom-out'
 
+export type AppMenuPaletteLabel =
+  | 'exportSelectionAsPNG'
+  | 'exportSelectionAsSVG'
+  | 'exportSelectionAsPPTX'
+  | 'exportSelectionAsFig'
+
 export interface AppMenuPaletteMetadata {
   icon?: AppMenuIcon
+  label?: AppMenuPaletteLabel
   description?: string
   keywords?: string[]
 }
@@ -70,10 +77,26 @@ export const APP_MENU_SCHEMA = [
         palette: { icon: 'download' },
         shortcut: 'MOD+SHIFT+E',
         sub: [
-          { id: 'export-png', label: 'Export selection as PNG', palette: { icon: 'download' } },
-          { id: 'export-svg', label: 'Export selection as SVG', palette: { icon: 'download' } },
-          { id: 'export-pptx', label: 'Export selection as PPTX', palette: { icon: 'download' } },
-          { id: 'export-fig', label: 'Export selection as .fig', palette: { icon: 'download' } }
+          {
+            id: 'export-png',
+            label: 'PNG',
+            palette: { icon: 'download', label: 'exportSelectionAsPNG' }
+          },
+          {
+            id: 'export-svg',
+            label: 'SVG',
+            palette: { icon: 'download', label: 'exportSelectionAsSVG' }
+          },
+          {
+            id: 'export-pptx',
+            label: 'PPTX',
+            palette: { icon: 'download', label: 'exportSelectionAsPPTX' }
+          },
+          {
+            id: 'export-fig',
+            label: '.fig',
+            palette: { icon: 'download', label: 'exportSelectionAsFig' }
+          }
         ]
       },
       { type: 'separator' },

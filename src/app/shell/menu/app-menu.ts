@@ -16,7 +16,7 @@ import IconZoomIn from '~icons/lucide/zoom-in'
 import IconZoomOut from '~icons/lucide/zoom-out'
 
 import type { CommandPaletteGroup, CommandPaletteItem, MenuEntry } from '@open-pencil/vue'
-import { useEditorCommands, useI18n } from '@open-pencil/vue'
+import { shortcutPlatform, useEditorCommands, useI18n } from '@open-pencil/vue'
 
 import { useEditorStore } from '@/app/editor/active-store'
 import { openSettingsDialog } from '@/app/settings/dialog'
@@ -59,10 +59,11 @@ const APP_MENU_ICONS: Record<AppMenuIcon, Component> = {
 
 function shortcutKeys(shortcut: string | undefined): string[] | undefined {
   if (!shortcut) return undefined
+  const platform = shortcutPlatform()
   return shortcut.split('+').map((key) => {
-    if (key === 'MOD') return '⌘'
-    if (key === 'SHIFT') return '⇧'
-    if (key === 'ALT') return '⌥'
+    if (key === 'MOD') return platform === 'mac' ? '⌘' : 'Ctrl'
+    if (key === 'SHIFT') return platform === 'mac' ? '⇧' : 'Shift'
+    if (key === 'ALT') return platform === 'mac' ? '⌥' : 'Alt'
     return key
   })
 }
@@ -274,6 +275,7 @@ export function useAppMenu() {
         palette: entry.palette
           ? {
               ...entry.palette,
+              label: entry.palette.label ? menu.value[entry.palette.label] : undefined,
               icon: entry.palette.icon ? APP_MENU_ICONS[entry.palette.icon] : undefined
             }
           : undefined
@@ -286,6 +288,7 @@ export function useAppMenu() {
       palette: entry.palette
         ? {
             ...entry.palette,
+            label: entry.palette.label ? menu.value[entry.palette.label] : undefined,
             icon: entry.palette.icon ? APP_MENU_ICONS[entry.palette.icon] : undefined
           }
         : undefined,
@@ -317,13 +320,15 @@ export function useAppMenu() {
 
     const item: CommandPaletteItem = {
       id: entry.menuId,
-      label: entry.label,
+      label: entry.palette?.label ?? entry.label,
       icon: entry.palette?.icon ?? undefined,
       shortcut: entry.shortcut ? { keys: shortcutKeys(entry.shortcut) ?? [] } : undefined,
       description: entry.palette?.description,
       keywords: entry.palette?.keywords,
       disabled: entry.disabled,
-      onSelect: entry.action
+      onSelect:
+        entry.action ??
+        (entry.onCheckedChange ? () => entry.onCheckedChange?.(!entry.checked) : undefined)
     }
     const children = entry.sub?.flatMap((child) => paletteEntries(child, category)) ?? []
     return [item, ...children]

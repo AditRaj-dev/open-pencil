@@ -33,14 +33,14 @@ const {
 }>()
 
 const emit = defineEmits<{ select: [item: CommandPaletteItem] }>()
-const palette = useCommandPalette(() => ({ groups, labels, resultLimit }))
+const palette = useCommandPalette(() => ({ groups, resultLimit }))
 
 provide(COMMAND_PALETTE_KEY, {
   groups: toRef(() => groups),
   searchTerm: palette.searchTerm,
   isNested: palette.isNested,
-  labels,
-  ui,
+  labels: toRef(() => labels),
+  ui: toRef(() => ui),
   navigate: palette.navigate,
   navigateBack: palette.navigateBack,
   select: palette.select

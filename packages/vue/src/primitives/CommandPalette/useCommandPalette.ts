@@ -37,7 +37,6 @@ function filterGroups(
 }
 
 export function useCommandPalette(options: MaybeRefOrGetter<UseCommandPaletteOptions>) {
-  const open = ref(false)
   const searchTerm = ref('')
   const selectedId = ref<string>()
   const navigation = ref<CommandPaletteGroup[]>([])
@@ -64,7 +63,6 @@ export function useCommandPalette(options: MaybeRefOrGetter<UseCommandPaletteOpt
   }
 
   function close() {
-    open.value = false
     resetNavigation()
   }
 
@@ -92,7 +90,6 @@ export function useCommandPalette(options: MaybeRefOrGetter<UseCommandPaletteOpt
   }
 
   return {
-    open,
     searchTerm,
     selectedId,
     filteredGroups,

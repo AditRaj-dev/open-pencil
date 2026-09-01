@@ -11,8 +11,8 @@ export interface CommandPaletteContext {
   groups: Ref<CommandPaletteGroup[]>
   searchTerm: Ref<string>
   isNested: Ref<boolean>
-  labels: CommandPaletteLabels
-  ui?: CommandPaletteUI
+  labels: Ref<CommandPaletteLabels>
+  ui: Ref<CommandPaletteUI | undefined>
   navigate: (item: CommandPaletteItem) => boolean
   navigateBack: () => boolean
   select: (item: CommandPaletteItem) => void
