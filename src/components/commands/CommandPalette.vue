@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useEventListener } from '@vueuse/core'
-import { CommandPaletteRoot, useCommandMessages, useCommonMessages } from '@open-pencil/vue'
+import {
+  CommandPaletteRoot,
+  shortcutPlatform,
+  useCommandMessages,
+  useCommonMessages
+} from '@open-pencil/vue'
 import { DialogDescription, DialogTitle, VisuallyHidden } from 'reka-ui'
 
 import Search from '~icons/lucide/search'
@@ -28,12 +33,17 @@ function close() {
   open.value = false
 }
 
-useEventListener(window, 'keydown', (event) => {
-  if (!(event.metaKey || event.ctrlKey) || event.altKey || event.shiftKey || event.code !== 'KeyK')
-    return
-  event.preventDefault()
-  open.value = true
-})
+if (typeof window !== 'undefined') {
+  const isMac = shortcutPlatform() === 'mac'
+  useEventListener(window, 'keydown', (event) => {
+    const hasPlatformModifier = isMac
+      ? event.metaKey && !event.ctrlKey
+      : event.ctrlKey && !event.metaKey
+    if (!hasPlatformModifier || event.altKey || event.shiftKey || event.code !== 'KeyK') return
+    event.preventDefault()
+    open.value = true
+  })
+}
 </script>
 
 <template>

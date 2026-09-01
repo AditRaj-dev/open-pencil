@@ -2,8 +2,12 @@ import { expect, test, useEditorSetup } from '#tests/e2e/fixtures'
 
 const editor = useEditorSetup()
 
+function commandPaletteShortcut() {
+  return process.platform === 'darwin' ? 'Meta+KeyK' : 'Control+KeyK'
+}
+
 test('command palette opens, searches, and closes', async () => {
-  await editor.page.keyboard.press('Control+KeyK')
+  await editor.page.keyboard.press(commandPaletteShortcut())
 
   const palette = editor.page.getByRole('dialog', { name: 'Command palette' })
   await expect(palette).toBeVisible()
@@ -19,7 +23,7 @@ test('command palette opens, searches, and closes', async () => {
 })
 
 test('command palette exposes contextual export labels', async () => {
-  await editor.page.keyboard.press('Control+KeyK')
+  await editor.page.keyboard.press(commandPaletteShortcut())
 
   const palette = editor.page.getByRole('dialog', { name: 'Command palette' })
   await palette.getByRole('searchbox', { name: 'Search commands' }).fill('export')
