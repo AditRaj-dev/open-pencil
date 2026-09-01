@@ -5,6 +5,7 @@ import type { TestId } from '#vue/testing/test-id'
 
 export interface MenuActionNode {
   separator?: false
+  menuId?: string
   id?: EditorCommandId
   label: string
   icon?: Component

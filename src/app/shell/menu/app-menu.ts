@@ -268,10 +268,20 @@ export function useAppMenu() {
     }
 
     if (entry.command) {
-      return commandMenuItem(entry.command, appMenuShortcutLabel(entry.id))
+      return {
+        ...commandMenuItem(entry.command, appMenuShortcutLabel(entry.id)),
+        menuId: entry.id,
+        palette: entry.palette
+          ? {
+              ...entry.palette,
+              icon: entry.palette.icon ? APP_MENU_ICONS[entry.palette.icon] : undefined
+            }
+          : undefined
+      }
     }
 
     return {
+      menuId: entry.id,
       label: menuLabel(entry),
       palette: entry.palette
         ? {
@@ -307,10 +317,11 @@ export function useAppMenu() {
     parentId?: string
   ): CommandPaletteItem[] {
     if ('separator' in entry) return []
-    const children = entry.sub?.flatMap((child) => paletteEntries(child, category, entry.id)) ?? []
-    if (!entry.id) return children
+    const children =
+      entry.sub?.flatMap((child) => paletteEntries(child, category, entry.menuId)) ?? []
+    if (!entry.menuId) return children
     const item: CommandPaletteItem = {
-      id: entry.id,
+      id: entry.menuId,
       label:
         entry.palette?.label ??
         (parentId === 'export-selection'
