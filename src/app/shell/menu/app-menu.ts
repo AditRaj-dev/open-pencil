@@ -246,6 +246,16 @@ export function useAppMenu() {
     return key ? menu.value[key] : entry.label
   }
 
+  function resolvePalette(entry: AppMenuActionItem) {
+    return entry.palette
+      ? {
+          ...entry.palette,
+          label: entry.palette.label ? menu.value[entry.palette.label] : undefined,
+          icon: entry.palette.icon ? APP_MENU_ICONS[entry.palette.icon] : undefined
+        }
+      : undefined
+  }
+
   function buildEntry(entry: AppMenuEntry): MenuEntry | null {
     if (!isVisible(entry)) return null
     if (isSeparator(entry)) return { separator: true }
@@ -272,26 +282,14 @@ export function useAppMenu() {
       return {
         ...commandMenuItem(entry.command, appMenuShortcutLabel(entry.id)),
         menuId: entry.id,
-        palette: entry.palette
-          ? {
-              ...entry.palette,
-              label: entry.palette.label ? menu.value[entry.palette.label] : undefined,
-              icon: entry.palette.icon ? APP_MENU_ICONS[entry.palette.icon] : undefined
-            }
-          : undefined
+        palette: resolvePalette(entry)
       }
     }
 
     return {
       menuId: entry.id,
       label: menuLabel(entry),
-      palette: entry.palette
-        ? {
-            ...entry.palette,
-            label: entry.palette.label ? menu.value[entry.palette.label] : undefined,
-            icon: entry.palette.icon ? APP_MENU_ICONS[entry.palette.icon] : undefined
-          }
-        : undefined,
+      palette: resolvePalette(entry),
       shortcut: appMenuShortcutLabel(entry.id),
       action: itemAction(entry),
       disabled: disabled(entry),
