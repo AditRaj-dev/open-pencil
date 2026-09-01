@@ -283,7 +283,8 @@ export function useAppMenu() {
       return {
         ...commandMenuItem(entry.command, appMenuShortcutLabel(entry.id)),
         menuId: entry.id,
-        palette: resolvePalette(entry)
+        palette: resolvePalette(entry),
+        paletteShortcut: entry.shortcut
       }
     }
 
@@ -291,6 +292,7 @@ export function useAppMenu() {
       menuId: entry.id,
       label: menuLabel(entry),
       palette: resolvePalette(entry),
+      paletteShortcut: entry.shortcut,
       shortcut: appMenuShortcutLabel(entry.id),
       action: itemAction(entry),
       disabled: disabled(entry),
@@ -327,7 +329,9 @@ export function useAppMenu() {
       id: entry.menuId,
       label: entry.palette?.label ?? entry.label,
       icon: entry.palette?.icon ?? fallbackIcon,
-      shortcut: entry.shortcut ? { keys: shortcutKeys(entry.shortcut) ?? [] } : undefined,
+      shortcut: entry.paletteShortcut
+        ? { keys: shortcutKeys(entry.paletteShortcut) ?? [] }
+        : undefined,
       description: entry.palette?.description,
       keywords: entry.palette?.keywords,
       disabled: entry.disabled,

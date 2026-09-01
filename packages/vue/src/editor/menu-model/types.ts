@@ -10,6 +10,7 @@ export interface MenuActionNode {
   label: string
   icon?: Component
   shortcut?: string
+  paletteShortcut?: string
   action?: () => void
   disabled?: boolean
   testId?: TestId
