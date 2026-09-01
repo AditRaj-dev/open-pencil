@@ -61,17 +61,21 @@ function select(item: CommandPaletteItem) {
     <div v-if="palette.isNested.value" :class="ui?.back">
       <button type="button" @click="palette.navigateBack()">{{ labels.back }}</button>
     </div>
-    <ListboxFilter v-model="palette.searchTerm.value" as-child>
-      <input
-        type="search"
-        :value="palette.searchTerm.value"
-        :placeholder="placeholder ?? labels.searchPlaceholder"
-        :aria-label="labels.searchLabel"
-        :class="ui?.search"
-        autocomplete="off"
-        @keydown.backspace="palette.searchTerm.value || palette.navigateBack()"
-      />
-    </ListboxFilter>
+    <div :class="ui?.searchWrapper">
+      <slot name="search-leading" />
+      <ListboxFilter v-model="palette.searchTerm.value" as-child>
+        <input
+          type="search"
+          :value="palette.searchTerm.value"
+          :placeholder="placeholder ?? labels.searchPlaceholder"
+          :aria-label="labels.searchLabel"
+          :class="ui?.search"
+          autocomplete="off"
+          @keydown.backspace="palette.searchTerm.value || palette.navigateBack()"
+        />
+      </ListboxFilter>
+      <slot name="search-trailing" />
+    </div>
     <ListboxContent :class="ui?.content">
       <template v-if="palette.filteredGroups.value.length">
         <ListboxGroup

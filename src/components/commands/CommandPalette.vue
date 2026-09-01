@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useEventListener } from '@vueuse/core'
-import { CommandPaletteRoot, useCommandMessages } from '@open-pencil/vue'
+import { CommandPaletteRoot, useCommandMessages, useI18n } from '@open-pencil/vue'
 import { DialogDescription, DialogTitle, VisuallyHidden } from 'reka-ui'
+
+import Search from '~icons/lucide/search'
+import X from '~icons/lucide/x'
 
 import { useAppMenu } from '@/app/shell/menu/app-menu'
 import AppDialogRoot from '@/components/ui/dialog/AppDialogRoot.vue'
@@ -10,6 +13,7 @@ import { useCommandPaletteUI } from './ui'
 
 const { commandGroups: groups } = useAppMenu()
 const commands = useCommandMessages()
+const { dialogs } = useI18n()
 const paletteUI = useCommandPaletteUI()
 const labels = computed(() => ({
   searchPlaceholder: commands.value.paletteSearchPlaceholder,
@@ -47,6 +51,19 @@ useEventListener(window, 'keydown', (event) => {
       <DialogDescription>{{ commands.paletteDescription }}</DialogDescription>
     </VisuallyHidden>
     <CommandPaletteRoot :groups="groups" :labels="labels" :ui="paletteUI" @select="open = false">
+      <template #search-leading>
+        <Search class="mx-2 size-5 shrink-0 text-muted" />
+      </template>
+      <template #search-trailing>
+        <button
+          type="button"
+          class="ml-2 inline-flex size-8 shrink-0 items-center justify-center rounded text-muted hover:bg-hover hover:text-surface"
+          :aria-label="dialogs.close"
+          @click="close"
+        >
+          <X class="size-5" />
+        </button>
+      </template>
       <template #item-icon="{ item }">
         <component :is="item.icon" v-if="item.icon" class="size-4" />
       </template>

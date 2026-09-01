@@ -1,6 +1,7 @@
 export default {
   slots: {
     root: 'flex max-h-[min(70vh,32rem)] flex-col overflow-hidden',
+    searchWrapper: 'flex h-14 shrink-0 items-center border-b border-border px-3',
     search:
       'h-8 flex-1 rounded-none border-0 bg-transparent px-0 text-[13px] outline-none placeholder:text-muted',
     back: 'px-2 pt-2 text-xs text-muted',

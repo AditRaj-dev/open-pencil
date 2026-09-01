@@ -32,6 +32,7 @@ export interface CommandPaletteLabels {
 
 export interface CommandPaletteUI {
   root?: string
+  searchWrapper?: string
   search?: string
   back?: string
   content?: string

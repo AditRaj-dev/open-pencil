@@ -8,6 +8,7 @@ export function useCommandPaletteUI() {
   const ui = commandPalette()
   return {
     root: ui.root(),
+    searchWrapper: ui.searchWrapper(),
     search: ui.search(),
     back: ui.back(),
     content: ui.content(),
