@@ -21,7 +21,11 @@ const deploymentConfigSchema = v.object({
     trusted_origins: v.optional(v.array(v.pipe(v.string(), v.url())), [])
   }),
   database: v.object({ url: secretReferenceSchema }),
-  authentication: v.object({ secret: secretReferenceSchema }),
+  authentication: v.object({
+    secret: secretReferenceSchema,
+    enrollment_mode: v.optional(v.picklist(['open', 'approval', 'closed']), 'open'),
+    admin_user_ids: v.optional(v.array(v.string()), [])
+  }),
   object_storage: v.object({
     endpoint: v.pipe(v.string(), v.url()),
     region: v.string(),
@@ -132,6 +136,8 @@ export function parseCloudDeploymentTOML(
     trustedOrigins: config.deployment.trusted_origins,
     databaseURL: secret(environment, config.database.url),
     authSecret: secret(environment, config.authentication.secret),
+    enrollmentMode: config.authentication.enrollment_mode,
+    deploymentAdminUserIds: config.authentication.admin_user_ids,
     s3Endpoint: config.object_storage.endpoint,
     s3Region: config.object_storage.region,
     s3Bucket: config.object_storage.bucket,

@@ -105,6 +105,70 @@ function services() {
 }
 
 describe('createCloudApp', () => {
+  test('accepts enrollment requests without authentication and protects admin routes', async () => {
+    const runtime = await createCloudTestDatabase()
+    try {
+      const app = createCloudApp({
+        ...services(),
+        database: runtime.database,
+        auth: createBetterAuthAdapter(config, runtime.database)
+      })
+      const requested = await app.request('/api/enrollment/request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'person@example.com', name: 'Person' })
+      })
+      expect(requested.status).toBe(202)
+      expect(await requested.json()).toEqual({ accepted: true })
+      expect(
+        await runtime.database
+          .selectFrom('cloudEnrollment')
+          .select(['emailNormalized', 'status'])
+          .executeTakeFirstOrThrow()
+      ).toEqual({ emailNormalized: 'person@example.com', status: 'pending' })
+      expect((await app.request('/api/admin/enrollments')).status).toBe(401)
+    } finally {
+      await runtime.close()
+    }
+  })
+
+  test('allows only deployment administrators to use admin routes', async () => {
+    const runtime = await createCloudTestDatabase()
+    try {
+      const adminApp = createCloudApp({
+        ...services(),
+        database: runtime.database,
+        auth: createBetterAuthAdapter(config, runtime.database),
+        resolveSession: async () => ({
+          userId: 'admin-user',
+          email: 'admin@example.com',
+          name: 'Admin',
+          deploymentRole: 'admin'
+        })
+      })
+      const userApp = createCloudApp({
+        ...services(),
+        database: runtime.database,
+        auth: createBetterAuthAdapter(config, runtime.database),
+        resolveSession: async () => ({
+          userId: 'ordinary-user',
+          email: 'user@example.com',
+          name: 'User',
+          deploymentRole: 'user'
+        })
+      })
+      expect((await userApp.request('/api/admin/operations')).status).toBe(403)
+      const response = await adminApp.request('/api/admin/operations')
+      expect(response.status).toBe(200)
+      expect(await response.json()).toMatchObject({
+        enrollmentMode: 'open',
+        pendingEnrollment: 0
+      })
+    } finally {
+      await runtime.close()
+    }
+  })
+
   test('serves a health response without starting a listener', async () => {
     const response = await createCloudApp(services()).request('/health')
 

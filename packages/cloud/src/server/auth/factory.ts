@@ -1,8 +1,9 @@
+import { createEnrollmentService } from '#cloud/admin/enrollment/service'
 import type { CloudServerConfig } from '#cloud/server/config'
 import type { CloudDatabase } from '#cloud/server/db'
 import { betterAuth, type BetterAuthOptions } from 'better-auth'
 import { getMigrations } from 'better-auth/db/migration'
-import { bearer, deviceAuthorization } from 'better-auth/plugins'
+import { admin, bearer, deviceAuthorization } from 'better-auth/plugins'
 import { importPKCS8, SignJWT } from 'jose'
 import type { Kysely } from 'kysely'
 
@@ -63,6 +64,7 @@ export function createBetterAuthAdapter(
   config: CloudServerConfig,
   database: Kysely<CloudDatabase>
 ): CloudAuthAdapter {
+  const enrollment = createEnrollmentService(database)
   const auth = betterAuth({
     appName: 'OpenPencil Cloud',
     baseURL: config.publicURL,
@@ -93,7 +95,39 @@ export function createBetterAuthAdapter(
         '/device/deny': { window: 60, max: 10 }
       }
     },
+    user: {
+      validateUserInfo: async ({ user, source }) => {
+        if (source.action !== 'create-user') return undefined
+        if (config.enrollmentMode === 'closed') {
+          return { error: 'enrollment_closed', errorDescription: 'Cloud enrollment is closed' }
+        }
+        if (
+          config.enrollmentMode === 'approval' &&
+          (!user.email || !(await enrollment.isApproved(user.email)))
+        ) {
+          return {
+            error: 'enrollment_approval_required',
+            errorDescription: 'Cloud enrollment approval is required'
+          }
+        }
+        return undefined
+      }
+    },
+    databaseHooks: {
+      user: {
+        create: {
+          after: async (user) => {
+            await enrollment.bindApprovedUser(user.email, user.id)
+          }
+        }
+      }
+    },
     plugins: [
+      admin(
+        config.deploymentAdminUserIds.length > 0
+          ? { adminUserIds: config.deploymentAdminUserIds }
+          : {}
+      ),
       bearer({ requireSignature: true }),
       deviceAuthorization({
         verificationUri: `${config.appURL ?? config.publicURL}/cloud/device`,
@@ -112,9 +146,44 @@ export function createBetterAuthAdapter(
     handler: auth.handler,
     async resolveSession(headers) {
       const session = await auth.api.getSession({ headers })
-      return session
-        ? { userId: session.user.id, email: session.user.email, name: session.user.name }
-        : null
+      if (!session) return null
+      if (
+        config.enrollmentMode === 'approval' &&
+        !(await enrollment.isApproved(session.user.email))
+      ) {
+        return null
+      }
+      if (config.enrollmentMode === 'closed') return null
+      return {
+        userId: session.user.id,
+        email: session.user.email,
+        name: session.user.name,
+        deploymentRole: session.user.role ?? undefined
+      }
+    },
+    async listUsers(headers, query) {
+      const listQuery = query?.searchValue
+        ? {
+            searchValue: query.searchValue,
+            searchField: 'email' as const,
+            limit: query.limit,
+            offset: query.offset
+          }
+        : { limit: query?.limit, offset: query?.offset }
+      const response = await auth.api.listUsers({ headers, query: listQuery })
+      return { users: response.users, total: response.total }
+    },
+    async banUser(headers, userId, reason) {
+      await auth.api.banUser({ headers, body: { userId, banReason: reason } })
+    },
+    async unbanUser(headers, userId) {
+      await auth.api.unbanUser({ headers, body: { userId } })
+    },
+    async revokeUserSessions(headers, userId) {
+      await auth.api.revokeUserSessions({ headers, body: { userId } })
+    },
+    async setRole(headers, userId, role) {
+      await auth.api.setRole({ headers, body: { userId, role } })
     },
     async migrate() {
       const migrations = await getMigrations(auth.options)

@@ -8,6 +8,7 @@ COPY package.json bun.lock ./
 COPY packages packages
 COPY tools/docs/package.json tools/docs/package.json
 RUN bun install --frozen-lockfile --filter @open-pencil/cloud \
+  && bun --filter @open-pencil/cloud build:admin \
   && chown -R openpencil:openpencil /app
 
 USER openpencil

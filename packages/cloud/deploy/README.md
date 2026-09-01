@@ -20,7 +20,23 @@ back to the legacy environment mapping when no path is configured. Start from
 [`openpencil-cloud.example.toml`](./openpencil-cloud.example.toml). TOML contains infrastructure and
 technical ceilings; production secrets are resolved through `from_env` references.
 
-The Cloud API is available at `http://localhost:8787`. PostgreSQL and SeaweedFS are also published on ports `54329`, `8333`, and `9333` for local inspection and smoke tests.
+The Cloud API is available at `http://localhost:8787`. The standalone Cloud pages are served at `/join` and `/admin`; they are built from `packages/cloud/admin` into the package's `dist/admin` artifact. PostgreSQL and SeaweedFS are also published on ports `54329`, `8333`, and `9333` for local inspection and smoke tests.
+
+### Enrollment and first administrator
+
+Set `OPENPENCIL_CLOUD_ENROLLMENT_MODE=approval` for a controlled deployment. Approve the first operator before social sign-in:
+
+```sh
+bun --filter @open-pencil/cloud admin approve owner@example.com
+```
+
+After that user signs in once and Better Auth creates the account, grant deployment administration:
+
+```sh
+bun --filter @open-pencil/cloud admin grant owner@example.com
+```
+
+Deployment administrators are distinct from workspace administrators. `OPENPENCIL_CLOUD_ADMIN_USER_IDS` is an optional immutable-ID bootstrap escape hatch; ordinary administration uses Better Auth's persisted `admin` role. Startup never grants roles or changes enrollment state.
 
 The Cloud container runs database migrations before accepting requests. Named volumes preserve PostgreSQL and SeaweedFS data across restarts.
 

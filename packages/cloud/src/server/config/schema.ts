@@ -63,6 +63,8 @@ const rawCloudServerConfigSchema = v.object({
   trustedOrigins: v.optional(v.array(httpURLSchema), []),
   authTrustedIPHeaders: v.optional(v.array(v.pipe(v.string(), v.trim(), v.minLength(1))), []),
   authTrustedProxies: v.optional(v.array(v.pipe(v.string(), v.trim(), v.minLength(1))), []),
+  enrollmentMode: v.optional(v.picklist(['open', 'approval', 'closed']), 'open'),
+  deploymentAdminUserIds: v.optional(v.array(v.pipe(v.string(), v.trim(), v.minLength(1))), []),
   googleClientId: optionalTextSchema,
   googleClientSecret: optionalTextSchema,
   appleClientId: optionalTextSchema,

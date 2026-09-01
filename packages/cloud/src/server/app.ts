@@ -1,4 +1,13 @@
 import {
+  createAdminAuditService,
+  createAdminEmailService,
+  createAdminOperationsService,
+  createAdminUserService,
+  createCloudAdminRoutes,
+  createEnrollmentService,
+  createPublicEnrollmentRoutes
+} from '#cloud/admin'
+import {
   CLOUD_DISCOVERY_PATH,
   CLOUD_PROTOCOL_VERSION,
   parseCloudDiscovery,
@@ -87,6 +96,14 @@ export function createCloudApp(services: CloudServices) {
     maxAge: 600
   })
   const workspaces = createWorkspaceService(services.database)
+  const enrollment = createEnrollmentService(services.database)
+  const admin = createCloudAdminRoutes({
+    email: createAdminEmailService(services.database),
+    enrollment,
+    users: createAdminUserService(services.database, services.auth),
+    audit: createAdminAuditService(services.database),
+    operations: createAdminOperationsService(services.database, services.config)
+  })
   const entitlementSource =
     services.entitlementSource ??
     (services.config.staticEntitlements
@@ -170,14 +187,16 @@ export function createCloudApp(services: CloudServices) {
       }
     })
     .get(CLOUD_DISCOVERY_PATH, (context) => context.json(discovery))
-    .route('/api', publicCloudAPI)
+    .route('/api', createPublicEnrollmentRoutes(enrollment))
     .on(['GET', 'POST'], '/api/auth/*', (context) => services.auth.handler(context.req.raw))
+    .route('/api', publicCloudAPI)
     .use('/api/*', async (context, next) => {
       const actor = await resolveSession(context.req.raw)
       if (!actor) return context.json({ error: { code: 'unauthorized' as const } }, 401)
       context.set('actor', actor)
       return next()
     })
+    .route('/api/admin', admin)
     .route('/api', cloudAPI)
 }
 

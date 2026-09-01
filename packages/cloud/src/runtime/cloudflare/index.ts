@@ -21,9 +21,14 @@ export type CloudflareHyperdrive = {
   connectionString: string
 }
 
+export type CloudflareAssetsBinding = {
+  fetch(request: Request): Promise<Response>
+}
+
 export type CloudflareCloudEnvironment = {
   HYPERDRIVE: CloudflareHyperdrive
   EMAIL?: CloudflareEmailBinding
+  ASSETS?: CloudflareAssetsBinding
   OPENPENCIL_CLOUD_DEPLOYMENT?: string
   OPENPENCIL_CLOUD_URL?: string
   OPENPENCIL_CLOUD_APP_URL?: string
@@ -36,7 +41,12 @@ export type CloudflareCloudEnvironment = {
   S3_SECRET_ACCESS_KEY?: string
   S3_FORCE_PATH_STYLE?: string
   S3_CHECKSUM_VERIFICATION?: string
-  [key: string]: string | CloudflareEmailBinding | CloudflareHyperdrive | undefined
+  [key: string]:
+    | string
+    | CloudflareAssetsBinding
+    | CloudflareEmailBinding
+    | CloudflareHyperdrive
+    | undefined
 }
 
 function stringEnvironment(environment: CloudflareCloudEnvironment): CloudEnvironment {
@@ -98,6 +108,20 @@ export function createCloudflareWorker() {
       context: CloudflareExecutionContext
     ): Promise<Response> {
       const runtime = createCloudflareCloudRuntime(environment)
+      const url = new URL(request.url)
+      if (
+        environment.ASSETS &&
+        (url.pathname === '/join' ||
+          url.pathname === '/admin' ||
+          url.pathname.startsWith('/admin/') ||
+          url.pathname.startsWith('/assets/'))
+      ) {
+        const assetURL = new URL(request.url)
+        if (!url.pathname.startsWith('/assets/')) assetURL.pathname = '/index.html'
+        const response = await environment.ASSETS.fetch(new Request(assetURL, request))
+        context.waitUntil(runtime.database.destroy())
+        return response
+      }
       const response = await runtime.app.fetch(request)
       context.waitUntil(runtime.database.destroy())
       return response

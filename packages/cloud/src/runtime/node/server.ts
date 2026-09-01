@@ -1,3 +1,6 @@
+import { existsSync } from 'node:fs'
+import { join } from 'node:path'
+
 import { createS3ObjectStore } from '#cloud/runtime/s3/objects'
 import {
   createCloudApp,
@@ -14,6 +17,7 @@ import {
   startTransactionalEmailWorker
 } from '#cloud/server'
 
+import { createNodeAdminAssetHandler } from './admin-assets'
 import { createMigratedNodeCloudDatabase } from './bootstrap'
 import { createCloudCollaborationRelay } from './collaboration'
 import { createNodeTransactionalEmailRuntime } from './email-runtime'
@@ -21,6 +25,12 @@ import { createNodeTransactionalEmailRuntime } from './email-runtime'
 export type NodeCloudServerOptions = {
   environment?: Readonly<Record<string, string | undefined>>
   port?: number
+}
+
+function adminAssetDirectory(): string {
+  const builtPackageAssets = join(import.meta.dir, 'admin')
+  if (existsSync(builtPackageAssets)) return builtPackageAssets
+  return join(import.meta.dir, '../../../dist/admin')
 }
 
 export async function startNodeCloudServer(options: NodeCloudServerOptions = {}) {
@@ -96,8 +106,11 @@ export async function startNodeCloudServer(options: NodeCloudServerOptions = {})
       })
     : undefined
   if (collaboration) await collaboration.listen(config.collaborationPort)
+  const adminAssets = createNodeAdminAssetHandler(adminAssetDirectory())
   const server = Bun.serve({
-    fetch: app.fetch,
+    async fetch(request) {
+      return (await adminAssets(request)) ?? app.fetch(request)
+    },
     hostname: '0.0.0.0',
     port: options.port ?? Number(environment.PORT ?? 8787)
   })

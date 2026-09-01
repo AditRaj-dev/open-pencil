@@ -9,6 +9,9 @@ trusted_origins = ["http://localhost:5173"]
 [database.url]
 from_env = "DATABASE_URL"
 
+[authentication]
+enrollment_mode = "open"
+
 [authentication.secret]
 from_env = "BETTER_AUTH_SECRET"
 

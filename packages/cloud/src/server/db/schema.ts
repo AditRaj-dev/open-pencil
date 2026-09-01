@@ -1,3 +1,4 @@
+import type { EnrollmentStatus } from '#cloud/admin/enrollment/service'
 import type { DocumentPermission, WorkspaceRole } from '#cloud/contract'
 import type { TransactionalEmailKind, TransactionalEmailPayloadByKind } from '#cloud/email'
 import type { ColumnType, Generated, Insertable, Selectable, Updateable } from 'kysely'
@@ -117,6 +118,10 @@ export interface AuthUserTable {
   email: string
   emailVerified: boolean
   image: string | null
+  role: Generated<string | null>
+  banned: Generated<boolean | null>
+  banReason: Generated<string | null>
+  banExpires: TimestampColumn | null
   createdAt: TimestampColumn
   updatedAt: TimestampColumn
 }
@@ -187,8 +192,33 @@ export interface TransactionalEmailTable {
 
 export type TransactionalEmailPayload = TransactionalEmailPayloadByKind[TransactionalEmailKind]
 
+export interface CloudEnrollmentTable {
+  id: string
+  emailNormalized: string
+  name: string | null
+  reason: string | null
+  status: EnrollmentStatus
+  requestedAt: TimestampColumn
+  reviewedAt: TimestampColumn | null
+  reviewedBy: string | null
+  reviewNote: string | null
+  approvedUserId: string | null
+}
+
+export interface CloudAdminAuditEventTable {
+  id: string
+  actorUserId: string
+  action: string
+  subjectType: string
+  subjectId: string
+  metadata: unknown
+  createdAt: TimestampColumn
+}
+
 export interface CloudDatabase {
   user: AuthUserTable
+  cloudEnrollment: CloudEnrollmentTable
+  cloudAdminAuditEvent: CloudAdminAuditEventTable
   workspace: WorkspaceTable
   workspaceMember: WorkspaceMemberTable
   document: DocumentTable

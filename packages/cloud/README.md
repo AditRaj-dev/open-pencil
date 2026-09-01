@@ -239,6 +239,14 @@ This prevents concurrent uploads from independently passing the same usage check
 release abandoned reservations. Candidate resources include storage bytes, document count, active
 uploads, revisions, collaboration participants, editors, and anonymous guests.
 
+## Cloud administration
+
+The standalone Vue control plane lives under `admin/` and builds to `dist/admin` without becoming another workspace package. `/join` is public; `/admin/**` uses same-origin Better Auth sessions and deployment-admin authorization. Workspace administrator roles never grant deployment administration.
+
+Enrollment policy is configured as `open`, `approval`, or `closed`. In approval mode, Better Auth provisioning and subsequent session resolution require an approved normalized email. Enrollment requests, reviews, account operations, email retries, and audit inspection use OpenPencil-owned APIs; the UI never accesses PostgreSQL or Better Auth plugin routes directly.
+
+Bootstrap is explicit through the Node CLI (`admin approve` followed by `admin grant` after first sign-in). Application startup does not seed enrollment or administrator policy.
+
 ## Tests
 
 Cloud tests are separated by level while preserving source-domain paths beneath each level:

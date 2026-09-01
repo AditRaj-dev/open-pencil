@@ -4,6 +4,7 @@ export type CloudActor = {
   userId: string
   email: string
   name: string
+  deploymentRole?: string
 }
 
 export type CloudSessionResolver = (request: Request) => Promise<CloudActor | null>

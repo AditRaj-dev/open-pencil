@@ -53,6 +53,9 @@ export function cloudServerConfigFromEnvironment(environment: CloudEnvironment):
       v.parse(originsEnvironmentSchema, environment.OPENPENCIL_CLOUD_AUTH_IP_HEADERS) ?? [],
     authTrustedProxies:
       v.parse(originsEnvironmentSchema, environment.OPENPENCIL_CLOUD_AUTH_TRUSTED_PROXIES) ?? [],
+    enrollmentMode: environment.OPENPENCIL_CLOUD_ENROLLMENT_MODE,
+    deploymentAdminUserIds:
+      v.parse(originsEnvironmentSchema, environment.OPENPENCIL_CLOUD_ADMIN_USER_IDS) ?? [],
     googleClientId: environment.GOOGLE_CLIENT_ID,
     googleClientSecret: environment.GOOGLE_CLIENT_SECRET,
     appleClientId: environment.APPLE_CLIENT_ID,

@@ -1,4 +1,23 @@
 export {
+  createAdminAuditService,
+  createAdminEmailService,
+  createAdminOperationsService,
+  createAdminUserService,
+  createCloudAdminRoutes,
+  createEnrollmentService,
+  createPublicEnrollmentRoutes,
+  normalizeEnrollmentEmail,
+  type AdminAuditService,
+  type AdminEmailService,
+  type AdminOperationsService,
+  type AdminUserService,
+  type CloudAdminServices,
+  type EnrollmentMode,
+  type EnrollmentRecord,
+  type EnrollmentService,
+  type EnrollmentStatus
+} from '#cloud/admin'
+export {
   configuredSocialProviders,
   createBetterAuthAdapter,
   createCloudSessionResolver,

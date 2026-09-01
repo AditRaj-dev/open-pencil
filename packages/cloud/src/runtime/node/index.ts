@@ -1,3 +1,4 @@
+export { createNodeAdminAssetHandler } from './admin-assets'
 export { createMigratedNodeCloudDatabase } from './bootstrap'
 export { createNodeCloudApplication, type NodeCloudApplicationOptions } from './application'
 export {
