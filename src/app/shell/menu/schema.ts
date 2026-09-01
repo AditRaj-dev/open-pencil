@@ -67,6 +67,7 @@ export const APP_MENU_SCHEMA = [
       {
         id: 'export-selection',
         label: 'Export Selection',
+        palette: { icon: 'download' },
         shortcut: 'MOD+SHIFT+E',
         sub: [
           { id: 'export-png', label: 'PNG', palette: { icon: 'download' } },

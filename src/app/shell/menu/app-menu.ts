@@ -311,22 +311,13 @@ export function useAppMenu() {
     }
   }
 
-  function paletteEntries(
-    entry: MenuEntry,
-    category: string,
-    parentId?: string
-  ): CommandPaletteItem[] {
+  function paletteEntries(entry: MenuEntry, category: string): CommandPaletteItem[] {
     if ('separator' in entry) return []
-    const children =
-      entry.sub?.flatMap((child) => paletteEntries(child, category, entry.menuId)) ?? []
+    const children = entry.sub?.flatMap((child) => paletteEntries(child, category)) ?? []
     if (!entry.menuId) return children
     const item: CommandPaletteItem = {
       id: entry.menuId,
-      label:
-        entry.palette?.label ??
-        (parentId === 'export-selection'
-          ? `${menu.value.exportSelection} ${entry.label}`
-          : entry.label),
+      label: entry.palette?.label ?? entry.label,
       icon: entry.palette?.icon ?? undefined,
       shortcut: entry.shortcut ? { keys: shortcutKeys(entry.shortcut) ?? [] } : undefined,
       description: entry.palette?.description,
