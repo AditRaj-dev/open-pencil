@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 
-import { remoteDocumentId, storageCanvasId } from '@/app/storage/id'
+import { localStorageIdentity, remoteDocumentId, storageCanvasId } from '@/app/storage/id'
 
 describe('storage canvas identity', () => {
   test('namespaces Cloud documents by connection', () => {
@@ -18,6 +18,30 @@ describe('storage canvas identity', () => {
         documentId: 'document-1'
       })
     ).not.toBe('openpencil-cloud:connection-a:document-1')
+  })
+
+  test('projects complete Cloud and direct-storage identities', () => {
+    expect(
+      localStorageIdentity({
+        providerId: 'openpencil-cloud',
+        connectionId: 'connection-a',
+        workspaceId: 'workspace-a',
+        documentId: 'document-1'
+      })
+    ).toEqual({
+      providerId: 'openpencil-cloud',
+      connectionId: 'connection-a',
+      workspaceId: 'workspace-a',
+      documentId: 'document-1',
+      canvasId: 'openpencil-cloud:connection-a:document-1'
+    })
+    expect(localStorageIdentity({ providerId: 's3-compatible', documentId: 'document-1' })).toEqual(
+      {
+        providerId: 's3-compatible',
+        documentId: 'document-1',
+        canvasId: 'document-1'
+      }
+    )
   })
 
   test('preserves non-Cloud IDs and rejects incomplete Cloud identities', () => {

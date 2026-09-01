@@ -1,4 +1,5 @@
 import { useClipboard } from '@vueuse/core'
+import { isNotNil } from 'es-toolkit/predicate'
 import { computed, ref, watch, type Ref } from 'vue'
 
 import type {
@@ -58,9 +59,7 @@ export function useCloudShareDialog(open: Ref<boolean>, store: EditorStore) {
           return profile ? ([grant.userId, profile] as const) : null
         })
       )
-      grantProfiles.value = Object.fromEntries(
-        profiles.filter((entry): entry is readonly [string, CloudUserProfile] => entry !== null)
-      )
+      grantProfiles.value = Object.fromEntries(profiles.filter(isNotNil))
       invitations.value = state.invitations
       if (state.shares[0]) linkPermission.value = state.shares[0].permission
     } catch (error) {

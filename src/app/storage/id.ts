@@ -1,3 +1,25 @@
+import type { StorageDocumentBinding } from '@/app/integrations/storage/types'
+
+export type LocalStorageIdentity =
+  | {
+      providerId: 'openpencil-cloud'
+      connectionId: string
+      workspaceId: string
+      documentId: string
+      canvasId: string
+    }
+  | {
+      providerId: string
+      documentId: string
+      canvasId: string
+    }
+
+export function isCloudStorageBinding(
+  binding: StorageDocumentBinding
+): binding is Extract<StorageDocumentBinding, { providerId: 'openpencil-cloud' }> {
+  return binding.providerId === 'openpencil-cloud'
+}
+
 export function storageCanvasId(input: {
   providerId: 'openpencil-cloud'
   documentId: string
@@ -14,6 +36,20 @@ export function storageCanvasId(input: {
     return `${input.providerId}:${input.connectionId}:${input.documentId}`
   }
   return input.documentId
+}
+
+export function localStorageIdentity(binding: StorageDocumentBinding): LocalStorageIdentity {
+  if (isCloudStorageBinding(binding)) {
+    return {
+      ...binding,
+      canvasId: storageCanvasId(binding)
+    }
+  }
+  return {
+    providerId: binding.providerId,
+    documentId: binding.documentId,
+    canvasId: storageCanvasId(binding)
+  }
 }
 
 export function remoteDocumentId(

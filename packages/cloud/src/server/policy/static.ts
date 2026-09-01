@@ -1,3 +1,5 @@
+import { pickBy } from 'es-toolkit/object'
+import { isNotNil } from 'es-toolkit/predicate'
 import * as v from 'valibot'
 
 import { CLOUD_FEATURE_KEYS } from './keys'
@@ -91,9 +93,5 @@ export function staticEntitlementValues(input: unknown): Record<string, boolean 
     [CLOUD_FEATURE_KEYS.collaboration]: entitlements.collaboration.enabled,
     [CLOUD_FEATURE_KEYS.maximumParticipants]: entitlements.collaboration.maximumParticipants
   }
-  return Object.fromEntries(
-    Object.entries(values).filter(
-      (entry): entry is [string, boolean | number] => entry[1] !== undefined
-    )
-  )
+  return pickBy(values, isNotNil) as Record<string, boolean | number>
 }

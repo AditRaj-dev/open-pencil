@@ -1,4 +1,4 @@
-import type { StorageDocument } from '@/app/integrations/storage'
+import type { StorageDocument, StorageDocumentBinding } from '@/app/integrations/storage'
 import {
   activeStorageProviderID,
   createActiveStorageAdapter,
@@ -7,7 +7,7 @@ import {
   storageProviderRegistry
 } from '@/app/integrations/storage'
 import { activeCloudConnectionProfile } from '@/app/integrations/storage/cloud/profiles'
-import { storageCanvasId } from '@/app/storage/id'
+import { localStorageIdentity } from '@/app/storage/id'
 import { getLocalCanvasStore } from '@/app/storage/local-store'
 import { reconcileStorageDocuments } from '@/app/storage/reconcile'
 import { onStorageWorkspaceEvent } from '@/app/storage/workspace/events'
@@ -59,26 +59,24 @@ export function createStorageWorkspaceSource(
       for (const id of reconciliation.localIdsToPurge) await localStore.remove(id)
       for (const document of reconciliation.remoteDocumentsToSeed) {
         const profile = providerID === 'openpencil-cloud' ? activeCloudConnectionProfile() : null
-        let canvasId: string
-        let cloudIdentity: { connectionId: string; workspaceId: string } | null = null
+        let binding: StorageDocumentBinding
         if (providerID === 'openpencil-cloud') {
           if (!profile?.selectedWorkspaceId) {
             throw new Error('OpenPencil Cloud connection and workspace are required')
           }
-          cloudIdentity = { connectionId: profile.id, workspaceId: profile.selectedWorkspaceId }
-          canvasId = storageCanvasId({
-            providerId: providerID,
+          binding = {
+            providerId: 'openpencil-cloud',
             connectionId: profile.id,
+            workspaceId: profile.selectedWorkspaceId,
             documentId: document.id
-          })
+          }
         } else {
-          canvasId = storageCanvasId({ providerId: providerID, documentId: document.id })
+          binding = { providerId: providerID, documentId: document.id }
         }
+        const identity = localStorageIdentity(binding)
         await localStore.upsertIndexMeta({
-          id: canvasId,
-          documentId: document.id,
-          providerId: providerID,
-          ...cloudIdentity,
+          id: identity.canvasId,
+          ...identity,
           name: document.name,
           updatedAt: document.updatedAt,
           syncStatus: 'synced',
