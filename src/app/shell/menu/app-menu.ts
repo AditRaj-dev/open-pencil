@@ -313,11 +313,11 @@ export function useAppMenu() {
 
   function paletteEntries(entry: MenuEntry, category: string): CommandPaletteItem[] {
     if ('separator' in entry) return []
-    const children = entry.sub?.flatMap((child) => paletteEntries(child, category)) ?? []
-    if (!entry.menuId) return children
+    if (!entry.menuId) return entry.sub?.flatMap((child) => paletteEntries(child, category)) ?? []
+
     const item: CommandPaletteItem = {
       id: entry.menuId,
-      label: entry.palette?.label ?? entry.label,
+      label: entry.label,
       icon: entry.palette?.icon ?? undefined,
       shortcut: entry.shortcut ? { keys: shortcutKeys(entry.shortcut) ?? [] } : undefined,
       description: entry.palette?.description,
@@ -325,6 +325,7 @@ export function useAppMenu() {
       disabled: entry.disabled,
       onSelect: entry.action
     }
+    const children = entry.sub?.flatMap((child) => paletteEntries(child, category)) ?? []
     return [item, ...children]
   }
 

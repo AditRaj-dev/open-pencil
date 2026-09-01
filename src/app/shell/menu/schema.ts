@@ -70,10 +70,10 @@ export const APP_MENU_SCHEMA = [
         palette: { icon: 'download' },
         shortcut: 'MOD+SHIFT+E',
         sub: [
-          { id: 'export-png', label: 'PNG', palette: { icon: 'download' } },
-          { id: 'export-svg', label: 'SVG', palette: { icon: 'download' } },
-          { id: 'export-pptx', label: 'PPTX', palette: { icon: 'download' } },
-          { id: 'export-fig', label: '.fig', palette: { icon: 'download' } }
+          { id: 'export-png', label: 'Export selection as PNG', palette: { icon: 'download' } },
+          { id: 'export-svg', label: 'Export selection as SVG', palette: { icon: 'download' } },
+          { id: 'export-pptx', label: 'Export selection as PPTX', palette: { icon: 'download' } },
+          { id: 'export-fig', label: 'Export selection as .fig', palette: { icon: 'download' } }
         ]
       },
       { type: 'separator' },
