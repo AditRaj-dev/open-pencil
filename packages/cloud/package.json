@@ -57,7 +57,9 @@
   "scripts": {
     "build": "bunx tsdown --config tsdown.config.ts",
     "check": "bun run typecheck && bun run test && bun run build",
-    "test": "bun test tests/client tests/contract tests/runtime tests/server",
+    "test": "bun run test:unit && bun run test:integration",
+    "test:unit": "bun test tests/client tests/contract tests/runtime tests/server",
+    "test:integration": "bun test tests/integration",
     "test:e2e": "bun tests/e2e/run.ts",
     "test:e2e:browser": "bun tests/e2e/browser-run.ts",
     "test:e2e:garage": "bun tests/e2e/garage.ts",

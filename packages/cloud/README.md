@@ -239,6 +239,17 @@ This prevents concurrent uploads from independently passing the same usage check
 release abandoned reservations. Candidate resources include storage bytes, document count, active
 uploads, revisions, collaboration participants, editors, and anonymous guests.
 
+## Tests
+
+Cloud tests are separated by level while preserving source-domain paths beneath each level:
+
+- `tests/client`, `tests/contract`, `tests/runtime`, and `tests/server` contain fast unit or adapter tests.
+- `tests/integration` contains PGlite/PostgreSQL integration tests and mirrors `src/server` or `src/runtime` below that namespace.
+- `tests/e2e` contains process and container orchestration for PostgreSQL, S3-compatible storage, and relay infrastructure.
+- Browser-visible Cloud behavior remains in the root Playwright suite under `tests/e2e/cloud`.
+
+Run levels independently with `test:unit`, `test:integration`, `test:e2e`, and `test:e2e:browser`. The package `test` command runs unit and integration tests but never process or browser E2E.
+
 ## Transactional email
 
 Transactional email uses Vue Email for HTML/plain-text rendering and PostgreSQL for the canonical encrypted outbox. `@open-pencil/cloud/server` owns idempotency, bounded claims, retry state, and transport-neutral errors. Node supplies the Nodemailer SMTP adapter; Cloudflare supplies the native Email Service binding adapter. Provider-specific credentials and event shapes do not enter public Cloud contracts.

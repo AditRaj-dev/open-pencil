@@ -175,6 +175,7 @@ Keep this section light; implementation details move often.
 - Do not place code or tests ad hoc. Before adding or moving files, inspect the existing folder structure and nearby patterns, then put changes in the established domain-specific location. If no proper location exists, create one deliberately and update docs/conventions as needed.
 - Architecture boundaries are enforced by `bun run check:arch` and related lint rules; keep app/package boundaries clean instead of relying on review to catch private imports. In practice: use public workspace exports across boundaries, keep core framework-agnostic, keep app services separate from component/view layers, keep shared UI free of app stores/services, and keep property-panel internals inside the property panel.
 - Test placement is strict: app E2E in `tests/e2e/**/*.spec.ts`, Figma automation in `tests/figma/**/*.spec.ts`, engine/unit tests in `tests/engine/**/*.test.ts`, shared test utilities in `tests/helpers/**`, and standalone package tests in their package `tests/**` when established. UI-visible behavior belongs in E2E; graph/internal-state assertions belong in engine/unit tests. Do not commit temporary/profile specs.
+- Keep Cloud package tests mirrored under `packages/cloud/tests/{server,runtime,client,contract}/**` for pure unit/adapter coverage and `packages/cloud/tests/integration/**` for PGlite/PostgreSQL integration coverage. Process/container orchestration stays in `packages/cloud/tests/e2e/**`; Playwright browser behavior stays in root `tests/e2e/cloud/**`.
 
 ### File and folder naming
 
