@@ -5,7 +5,7 @@ import { createCloudTestDatabase } from '#cloud-test/helpers/database'
 import {
   createEnrollmentService,
   createTransactionalEmailService,
-  consumeEnrollmentRateLimit
+  PostgresRateLimitStore
 } from '@open-pencil/cloud/server'
 
 describe('Cloud enrollment integration', () => {
@@ -83,39 +83,24 @@ describe('Cloud enrollment integration', () => {
     }
   })
 
-  test('persists rate limits without storing raw keys', async () => {
+  test('persists atomic rate limits without storing raw keys', async () => {
     const runtime = await createCloudTestDatabase()
     try {
-      const options = { windowMs: 60_000, maximumRequests: 2, now: new Date('2026-01-01') }
+      const store = new PostgresRateLimitStore(runtime.database, 'secret', 'enrollment-email')
+      store.init({ windowMs: 60_000 } as never)
+      const results = await Promise.all(
+        Array.from({ length: 20 }, () => store.increment('person@example.com'))
+      )
+      expect(Math.max(...results.map((result) => result.totalHits))).toBe(20)
       expect(
-        await consumeEnrollmentRateLimit(
-          runtime.database,
-          'secret',
-          'email:person@example.com',
-          options
-        )
-      ).toBe(true)
-      expect(
-        await consumeEnrollmentRateLimit(
-          runtime.database,
-          'secret',
-          'email:person@example.com',
-          options
-        )
-      ).toBe(true)
-      expect(
-        await consumeEnrollmentRateLimit(
-          runtime.database,
-          'secret',
-          'email:person@example.com',
-          options
-        )
-      ).toBe(false)
-      const row = await runtime.database
-        .selectFrom('cloudEnrollmentRateLimit')
-        .select('keyHash')
-        .executeTakeFirstOrThrow()
-      expect(row.keyHash).not.toContain('person@example.com')
+        await runtime.database
+          .selectFrom('cloudRateLimit')
+          .select(['keyHash', 'requestCount'])
+          .executeTakeFirstOrThrow()
+      ).toMatchObject({
+        requestCount: 20,
+        keyHash: expect.not.stringContaining('person@example.com')
+      })
     } finally {
       await runtime.close()
     }

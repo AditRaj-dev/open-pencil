@@ -5,7 +5,6 @@ export {
   createAdminUserService,
   createCloudAdminRoutes,
   createEnrollmentService,
-  consumeEnrollmentRateLimit,
   createPublicEnrollmentRoutes,
   normalizeEnrollmentEmail,
   type AdminAuditService,
@@ -194,6 +193,19 @@ export {
   type StorageQuotaSnapshot,
   type StorageReconciliation
 } from './quota'
+export {
+  CLOUD_RATE_LIMITS,
+  createActorRateLimiter,
+  createCloudRateLimiter,
+  createRateLimitCleanupService,
+  createTrustedIPRateLimiter,
+  PostgresRateLimitStore,
+  rateLimitKey,
+  trustedClientIP,
+  type ClientIdentityOptions,
+  type RateLimitCleanupService,
+  type RateLimitPolicy
+} from './rate-limit'
 export {
   createWorkspaceRoutes,
   createWorkspaceService,

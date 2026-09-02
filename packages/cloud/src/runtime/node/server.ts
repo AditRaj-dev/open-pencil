@@ -11,6 +11,7 @@ import {
   StaticEntitlementSource,
   staticEntitlementValues,
   createDocumentCleanupService,
+  createRateLimitCleanupService,
   createUploadCleanupService,
   CLOUD_FEATURE_KEYS,
   startCleanupWorker,
@@ -46,7 +47,8 @@ export async function startNodeCloudServer(options: NodeCloudServerOptions = {})
     ? startCleanupWorker(
         {
           documents: createDocumentCleanupService(database, objects),
-          uploads: createUploadCleanupService(database, objects)
+          uploads: createUploadCleanupService(database, objects),
+          rateLimits: createRateLimitCleanupService(database)
         },
         {
           batchSize: config.cleanupBatchSize,

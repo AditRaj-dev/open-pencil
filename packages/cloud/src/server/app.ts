@@ -41,6 +41,11 @@ import {
   type CloudPolicy,
   type EntitlementSource
 } from '#cloud/server/policy'
+import {
+  CLOUD_RATE_LIMITS,
+  createActorRateLimiter,
+  createTrustedIPRateLimiter
+} from '#cloud/server/rate-limit'
 import { createDocumentSharingService } from '#cloud/server/sharing'
 import { createWorkspaceService } from '#cloud/server/workspaces'
 import { Hono } from 'hono'
@@ -111,7 +116,8 @@ export function createCloudApp(services: CloudServices) {
       audit: createAdminAuditService(services.database),
       operations: createAdminOperationsService(services.database, services.config)
     },
-    allowedOrigins
+    allowedOrigins,
+    { database: services.database, secret: services.config.authSecret }
   )
   const entitlementSource =
     services.entitlementSource ??
@@ -147,6 +153,20 @@ export function createCloudApp(services: CloudServices) {
     policy,
     deploymentMode: services.config.deployment
   })
+
+  const publicRateLimiter = createTrustedIPRateLimiter(
+    services.database,
+    services.config.authSecret,
+    CLOUD_RATE_LIMITS.publicCapability,
+    { trustedHeaders: services.config.authTrustedIPHeaders },
+    (context) => context.json({ error: { code: 'not_found' as const } }, 404)
+  )
+  const authenticatedMutationLimiter = createActorRateLimiter(
+    services.database,
+    services.config.authSecret,
+    CLOUD_RATE_LIMITS.authenticatedMutation,
+    (method) => method === 'GET'
+  )
 
   const cloudAPI = createCloudAPIRouter({
     collaboration,
@@ -208,6 +228,9 @@ export function createCloudApp(services: CloudServices) {
       })
     )
     .on(['GET', 'POST'], '/api/auth/*', (context) => services.auth.handler(context.req.raw))
+    .use('/api/public/*', publicRateLimiter)
+    .use('/api/shares/*', publicRateLimiter)
+    .use('/api/invitations/*', publicRateLimiter)
     .route('/api', publicCloudAPI)
     .use('/api/*', async (context, next) => {
       const actor = await resolveSession(context.req.raw)
@@ -216,6 +239,7 @@ export function createCloudApp(services: CloudServices) {
       return next()
     })
     .route('/api/admin', admin)
+    .use('/api/*', authenticatedMutationLimiter)
     .route('/api', cloudAPI)
 }
 

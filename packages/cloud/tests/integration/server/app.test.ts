@@ -193,6 +193,72 @@ describe('createCloudApp', () => {
     }
   })
 
+  test('limits enrollment opaquely without limiting Better Auth routes', async () => {
+    const runtime = await createCloudTestDatabase()
+    try {
+      const limitedConfig = parseCloudServerConfig({
+        ...config,
+        enrollmentRateLimitMaximumRequests: 2,
+        enrollmentRateLimitWindowMs: 60_000,
+        authTrustedIPHeaders: ['cf-connecting-ip']
+      })
+      const app = createCloudApp({
+        ...services(),
+        config: limitedConfig,
+        database: runtime.database,
+        auth: createBetterAuthAdapter(limitedConfig, runtime.database)
+      })
+      for (let index = 0; index < 4; index++) {
+        const response = await app.request('/api/enrollment/request', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'cf-connecting-ip': '192.0.2.1' },
+          body: JSON.stringify({ email: `limited-${index}@example.com` })
+        })
+        expect(response.status).toBe(202)
+        expect(await response.json()).toEqual({ accepted: true })
+      }
+      expect(
+        await runtime.database
+          .selectFrom('cloudEnrollment')
+          .select(({ fn }) => fn.countAll<number>().as('count'))
+          .executeTakeFirstOrThrow()
+      ).toEqual({ count: 2 })
+    } finally {
+      await runtime.close()
+    }
+  })
+
+  test('keeps Better Auth routes outside the OpenPencil rate limiter', async () => {
+    const runtime = await createCloudTestDatabase()
+    let authCalls = 0
+    try {
+      const base = services()
+      const app = createCloudApp({
+        ...base,
+        database: runtime.database,
+        auth: {
+          ...base.auth,
+          async handler() {
+            authCalls++
+            return Response.json({ ok: true })
+          }
+        }
+      })
+      for (let index = 0; index < 8; index++) {
+        expect((await app.request('/api/auth/test', { method: 'POST' })).status).toBe(200)
+      }
+      expect(authCalls).toBe(8)
+      expect(
+        await runtime.database
+          .selectFrom('cloudRateLimit')
+          .select(({ fn }) => fn.countAll<number>().as('count'))
+          .executeTakeFirstOrThrow()
+      ).toEqual({ count: 0 })
+    } finally {
+      await runtime.close()
+    }
+  })
+
   test('serves a health response without starting a listener', async () => {
     const response = await createCloudApp(services()).request('/health')
 

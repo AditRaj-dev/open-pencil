@@ -14,11 +14,13 @@ export type CleanupWorkerOptions = {
 export type CleanupResult = {
   uploads: UploadCleanupResult
   documents: DocumentCleanupResult
+  rateLimits: number
 }
 
 export type CleanupServices = {
   documents: DocumentCleanupService
   uploads: UploadCleanupService
+  rateLimits?: { cleanupExpired(before: Date): Promise<number> }
 }
 
 export type CleanupWorker = {
@@ -44,7 +46,10 @@ export function startCleanupWorker(
         leaseDurationMs: options.leaseDurationMs,
         retentionMs: options.documentRetentionMs
       })
-      return { uploads, documents }
+      const rateLimits = cleanup.rateLimits
+        ? await cleanup.rateLimits.cleanupExpired(new Date(Date.now() - 24 * 60 * 60_000))
+        : 0
+      return { uploads, documents, rateLimits }
     }
   })
 }

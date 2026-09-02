@@ -15,7 +15,7 @@ import * as uploadFinalizationLease from './migrations/011_upload_finalization_l
 import * as transactionalEmail from './migrations/012_transactional_email'
 import * as adminEnrollment from './migrations/013_admin_enrollment'
 import * as enrollmentEmailKinds from './migrations/014_enrollment_email_kinds'
-import * as enrollmentRateLimit from './migrations/015_enrollment_rate_limit'
+import * as cloudRateLimit from './migrations/015_cloud_rate_limit'
 import type { CloudDatabase } from './schema'
 
 const migrations: Record<string, Migration> = {
@@ -33,7 +33,7 @@ const migrations: Record<string, Migration> = {
   '012_transactional_email': transactionalEmail,
   '013_admin_enrollment': adminEnrollment,
   '014_enrollment_email_kinds': enrollmentEmailKinds,
-  '015_enrollment_rate_limit': enrollmentRateLimit
+  '015_cloud_rate_limit': cloudRateLimit
 }
 
 class CloudMigrationProvider implements MigrationProvider {

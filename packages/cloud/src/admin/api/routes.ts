@@ -8,14 +8,20 @@ import {
   parseUserRoleMutation
 } from '#cloud/admin/contracts'
 import type { AdminEmailService } from '#cloud/admin/email/service'
-import { consumeEnrollmentRateLimit } from '#cloud/admin/enrollment/rate-limit'
 import type { EnrollmentMode, EnrollmentService } from '#cloud/admin/enrollment/service'
 import type { AdminOperationsService } from '#cloud/admin/operations/service'
 import type { AdminUserService } from '#cloud/admin/users/service'
 import type { CloudAPIEnvironment } from '#cloud/server/api'
 import type { CloudDatabase } from '#cloud/server/db'
+import {
+  CLOUD_RATE_LIMITS,
+  createActorRateLimiter,
+  createCloudRateLimiter,
+  createTrustedIPRateLimiter,
+  rateLimitKey
+} from '#cloud/server/rate-limit'
 import { validatedJSON } from '#cloud/server/validation'
-import { Hono } from 'hono'
+import { Hono, type Context } from 'hono'
 import type { Kysely } from 'kysely'
 import * as v from 'valibot'
 
@@ -38,34 +44,40 @@ export function createPublicEnrollmentRoutes(
     ipHeaders: string[]
   }
 ) {
+  const genericResponse = (context: Context) => context.json({ accepted: true as const }, 202)
+  const ipLimiter = createTrustedIPRateLimiter(
+    options.database,
+    options.secret,
+    {
+      ...CLOUD_RATE_LIMITS.enrollmentIP,
+      windowMs: options.windowMs,
+      limit: options.maximumRequests
+    },
+    { trustedHeaders: options.ipHeaders },
+    genericResponse
+  )
   return new Hono().post(
     '/enrollment/request',
     boundedEnrollmentBody,
     validatedJSON(parseEnrollmentRequest),
-    async (context) => {
-      if (options.mode === 'closed') return context.json({ accepted: true as const }, 202)
+    async (context, next) => {
       const input = context.req.valid('json')
-      const forwarded = options.ipHeaders.map((header) => context.req.header(header)).find(Boolean)
-      const limits = [
-        consumeEnrollmentRateLimit(
-          options.database,
-          options.secret,
-          `email:${input.email.toLowerCase()}`,
-          {
-            windowMs: options.windowMs,
-            maximumRequests: Math.max(2, Math.floor(options.maximumRequests / 2))
-          }
-        )
-      ]
-      if (forwarded) {
-        limits.push(
-          consumeEnrollmentRateLimit(options.database, options.secret, `ip:${forwarded}`, {
-            windowMs: options.windowMs,
-            maximumRequests: options.maximumRequests
-          })
-        )
-      }
-      if ((await Promise.all(limits)).every(Boolean)) await enrollment.request(input)
+      return createCloudRateLimiter({
+        database: options.database,
+        secret: options.secret,
+        policy: {
+          ...CLOUD_RATE_LIMITS.enrollmentEmail,
+          windowMs: options.windowMs,
+          limit: Math.max(2, Math.floor(options.maximumRequests / 2))
+        },
+        standardHeaders: false,
+        keyGenerator: () => rateLimitKey.email(input.email),
+        handler: genericResponse
+      })(context, next)
+    },
+    ipLimiter,
+    async (context) => {
+      if (options.mode !== 'closed') await enrollment.request(context.req.valid('json'))
       return context.json({ accepted: true as const }, 202)
     }
   )
@@ -73,8 +85,24 @@ export function createPublicEnrollmentRoutes(
 
 export function createCloudAdminRoutes(
   services: CloudAdminServices,
-  trustedOrigins: ReadonlySet<string>
+  trustedOrigins: ReadonlySet<string>,
+  rateLimit: {
+    database: Kysely<CloudDatabase>
+    secret: string
+  }
 ) {
+  const adminRead = createActorRateLimiter(
+    rateLimit.database,
+    rateLimit.secret,
+    CLOUD_RATE_LIMITS.adminRead,
+    (method) => method !== 'GET'
+  )
+  const adminMutation = createActorRateLimiter(
+    rateLimit.database,
+    rateLimit.secret,
+    CLOUD_RATE_LIMITS.adminMutation,
+    (method) => method === 'GET'
+  )
   return new Hono<CloudAPIEnvironment>()
     .use('*', requireTrustedMutationOrigin(trustedOrigins))
     .use('*', async (context, next) => {
@@ -83,6 +111,8 @@ export function createCloudAdminRoutes(
         return context.json({ error: { code: 'forbidden' as const } }, 403)
       return next()
     })
+    .use('*', adminRead)
+    .use('*', adminMutation)
     .get('/enrollments', async (context) => {
       const statusValue = context.req.query('status')
       const status = statusValue ? v.parse(enrollmentStatusSchema, statusValue) : undefined

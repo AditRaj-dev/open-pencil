@@ -5,6 +5,7 @@ import {
   createBetterAuthAdapter,
   createCloudDatabase,
   createDocumentCleanupService,
+  createRateLimitCleanupService,
   createInvitationOutbox,
   createTransactionalEmailService,
   createUploadCleanupService,
@@ -91,7 +92,8 @@ export function createCloudflareCloudRuntime(environment: CloudflareCloudEnviron
     email,
     cleanup: {
       documents: createDocumentCleanupService(database, objects),
-      uploads: createUploadCleanupService(database, objects)
+      uploads: createUploadCleanupService(database, objects),
+      rateLimits: createRateLimitCleanupService(database)
     },
     config
   }
@@ -144,6 +146,7 @@ export function createCloudflareWorker() {
             leaseDurationMs: runtime.config.cleanupLeaseDurationMs,
             retentionMs: runtime.config.documentRetentionMs
           }),
+          runtime.cleanup.rateLimits.cleanupExpired(new Date(Date.now() - 24 * 60 * 60_000)),
           runtime.email.deliverPending({
             batchSize: runtime.config.emailBatchSize,
             leaseDurationMs: runtime.config.emailLeaseDurationMs,

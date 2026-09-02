@@ -206,7 +206,7 @@ export interface CloudEnrollmentTable {
   approvedUserId: string | null
 }
 
-export interface CloudEnrollmentRateLimitTable {
+export interface CloudRateLimitTable {
   keyHash: string
   windowStartedAt: TimestampColumn
   requestCount: Generated<number>
@@ -226,7 +226,7 @@ export interface CloudAdminAuditEventTable {
 export interface CloudDatabase {
   user: AuthUserTable
   cloudEnrollment: CloudEnrollmentTable
-  cloudEnrollmentRateLimit: CloudEnrollmentRateLimitTable
+  cloudRateLimit: CloudRateLimitTable
   cloudAdminAuditEvent: CloudAdminAuditEventTable
   workspace: WorkspaceTable
   workspaceMember: WorkspaceMemberTable

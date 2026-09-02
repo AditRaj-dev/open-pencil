@@ -245,6 +245,10 @@ The standalone Vue control plane lives under `admin/` and builds to `dist/admin`
 
 Enrollment policy is configured as `open`, `approval`, or `closed`. In approval mode, Better Auth provisioning and subsequent session resolution require an approved normalized email. Enrollment requests, reviews, account operations, email retries, and audit inspection use OpenPencil-owned APIs; the UI never accesses PostgreSQL or Better Auth plugin routes directly.
 
+OpenPencil-owned HTTP routes use `hono-rate-limiter` with one shared PostgreSQL store under `src/server/rate-limit`. The store performs an atomic upsert/increment, hashes namespaced actor/email/IP/resource keys, and is safe across Node and Cloudflare instances. Better Auth retains its own database limiter and table exclusively for `/api/auth/**`; auth routes are mounted before OpenPencil middleware and are never double-counted.
+
+Named policy profiles cover opaque enrollment and capability limits, authenticated mutations, and admin reads/mutations. Health, readiness, and discovery avoid database-backed limiting. Expired OpenPencil counters are removed by the existing bounded cleanup lifecycle.
+
 Enrollment follows an explicit state machine: pending requests may be approved or rejected; rejected and revoked addresses may re-request; approved access may be revoked. `closed` blocks new requests and provisioning but does not invalidate existing sessions, while `approval` requires continued approval for session resolution. Public requests are non-enumerating and use PostgreSQL-backed hashed email limits plus trusted client-IP headers when configured.
 
 Enrollment requests and reviews enqueue requester/admin transactional email in the same PostgreSQL transaction as the state change. Configure administrator notifications with `OPENPENCIL_CLOUD_ENROLLMENT_ADMIN_EMAILS`; email rendering and delivery use the portable encrypted outbox described below.
