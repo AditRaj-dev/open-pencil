@@ -11,10 +11,12 @@ import {
 } from '@open-pencil/dom-css'
 import {
   jsxToHtmlDocument,
+  connectorClassFor,
   layoutFlow,
   promoteStateClasses,
   promoteStateCss,
   scanProject,
+  screenClassFor,
   UI_STATES,
   type ProjectIO,
   type UIState
@@ -52,7 +54,7 @@ function composeFlowHTML(
       const body = bodies.get(s.routePath) ?? ''
       const label = `${s.title}${s.dynamic ? ' (dynamic)' : ''} — ${s.routePath}`
       return `
-<div class="op-screen" data-op-route="${s.routePath}"
+<div class="${screenClassFor(s.routePath)}" data-op-route="${s.routePath}"
      style="position:absolute; left:${s.x}px; top:${s.y}px; width:${s.width}px; height:${s.height}px;">
   <div class="op-screen-label">${label}</div>
   <div class="op-screen-body">
@@ -65,7 +67,7 @@ ${body}
   const connectors = layout.connectors
     .map(
       (c) => `
-<div class="op-connector" data-op-from="${c.from}" data-op-to="${c.to}"
+<div class="${connectorClassFor(c.from, c.to)}" data-op-from="${c.from}" data-op-to="${c.to}"
      style="position:absolute; left:${Math.round(c.x1)}px; top:${Math.round(c.y1)}px;
             width:${Math.round(c.length)}px; height:2px;
             transform: rotate(${c.angle.toFixed(2)}deg); transform-origin: 0 50%;"></div>`

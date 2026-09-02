@@ -1,3 +1,4 @@
+import { wireConnectorReroute } from '@/app/document/io/connector-reroute'
 import { toast } from '@/app/shell/ui'
 
 /**
@@ -15,13 +16,18 @@ export interface ImportProjectResult {
   state: string
 }
 
+/** Detaches the previous document's reroute listener when a new one is imported. */
+let detachReroute: (() => void) | null = null
+
 export async function importProjectFromDisk(options: {
   dir: string
   css?: string
   state?: string
   importDOMText: (html: string, options?: { documentName?: string }) => Promise<unknown>
+  /** Graph to keep connectors attached in. Optional; without it they stay static. */
+  getGraph?: () => unknown
 }): Promise<ImportProjectResult | null> {
-  const { dir, css, state = 'default', importDOMText } = options
+  const { dir, css, state = 'default', importDOMText, getGraph } = options
 
   let payload: { ok: boolean; result?: ImportProjectResult & { html: string }; error?: string }
   try {
@@ -48,6 +54,20 @@ export async function importProjectFromDisk(options: {
   const { html, ...summary } = payload.result
   const name = dir.split(/[\/]/).filter(Boolean).pop() ?? 'project'
   await importDOMText(html, { documentName: `${name}${state === 'default' ? '' : ` (${state})`}` })
+
+  // Connectors are plain frames, so they need re-anchoring whenever a screen
+  // moves. Attach after the import, since the graph is replaced by it.
+  detachReroute?.()
+  detachReroute = null
+  const graph = getGraph?.()
+  if (graph) {
+    try {
+      detachReroute = wireConnectorReroute(graph as never)
+    } catch (error) {
+      // A stale connector is a cosmetic problem; it must not fail the import.
+      console.warn('[import-project] connector re-routing unavailable:', error)
+    }
+  }
 
   for (const warning of summary.warnings.slice(0, 3)) toast.warning(warning)
   toast.info(

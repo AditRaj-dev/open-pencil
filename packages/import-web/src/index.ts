@@ -12,6 +12,13 @@ export {
   type StateUsage
 } from './states'
 export { scanProject, type ProjectIO, type ProjectScan, type RouteScreen, type Framework } from './project'
+export {
+  routeSlug,
+  screenClassFor,
+  connectorClassFor,
+  screenSlugFromName,
+  connectorSlugsFromName
+} from './flow'
 export { recomputeConnectors, layoutFlow, type FlowLayout, type ScreenBox, type Connector, type FlowOptions } from './flow'
 export { jsxToHtml, jsxToHtmlDocument, parseSourceAttr, SOURCE_ATTR } from './to-html'
 export { joinGeometry, type MeasuredElement, type JoinResult } from './geometry'

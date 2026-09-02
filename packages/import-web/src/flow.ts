@@ -209,3 +209,36 @@ export function recomputeConnectors(
   }
   return out
 }
+
+/**
+ * Encode a route into something usable as a CSS class.
+ *
+ * Identity has to survive into the scene graph, and the DOM import carries an
+ * element's class through as the node name while dropping `data-*` attributes.
+ * So the class is the only channel available for saying which screen a frame is
+ * and which screens a connector joins.
+ */
+export function routeSlug(routePath: string): string {
+  if (routePath === '/') return 'root'
+  return routePath.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'root'
+}
+
+export function screenClassFor(routePath: string): string {
+  return `op-screen op-route_${routeSlug(routePath)}`
+}
+
+export function connectorClassFor(from: string, to: string): string {
+  return `op-connector op-link_${routeSlug(from)}__${routeSlug(to)}`
+}
+
+/** Read a screen's route slug back out of a node name. */
+export function screenSlugFromName(name: string): string | null {
+  const match = /op-route_([A-Za-z0-9-]+)/.exec(name)
+  return match?.[1] ?? null
+}
+
+/** Read a connector's endpoints back out of a node name. */
+export function connectorSlugsFromName(name: string): { from: string; to: string } | null {
+  const match = /op-link_([A-Za-z0-9-]+)__([A-Za-z0-9-]+)/.exec(name)
+  return match ? { from: match[1]!, to: match[2]! } : null
+}

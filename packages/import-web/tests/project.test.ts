@@ -1,6 +1,14 @@
 import { describe, expect, test } from 'bun:test'
 
-import { layoutFlow, recomputeConnectors } from '../src/flow'
+import {
+  connectorClassFor,
+  connectorSlugsFromName,
+  layoutFlow,
+  recomputeConnectors,
+  routeSlug,
+  screenClassFor,
+  screenSlugFromName
+} from '../src/flow'
 import { scanProject, type ProjectIO } from '../src/project'
 
 /** In-memory project tree, so these never touch disk. */
@@ -204,5 +212,33 @@ describe('recomputeConnectors', () => {
     const c = recomputeConnectors([screens[0]!], [{ from: '/', to: '/gone' }])[0]!
     expect(c.dangling).toBe(true)
     expect(c.length).toBe(0)
+  })
+})
+
+describe('identity encoding', () => {
+  test('routes round-trip through a class name', () => {
+    for (const route of ['/', '/pricing', '/blog/[slug]', '/a/b/c']) {
+      const cls = screenClassFor(route)
+      expect(cls).toContain('op-screen')
+      expect(screenSlugFromName(cls)).toBe(routeSlug(route))
+    }
+  })
+
+  test('connector endpoints round-trip', () => {
+    const cls = connectorClassFor('/', '/blog/[slug]')
+    const parsed = connectorSlugsFromName(cls)
+    expect(parsed).toEqual({ from: routeSlug('/'), to: routeSlug('/blog/[slug]') })
+  })
+
+  test('slugs are distinct for routes that differ', () => {
+    const slugs = ['/', '/blog', '/blog/[slug]', '/blog/archive'].map(routeSlug)
+    expect(new Set(slugs).size).toBe(slugs.length)
+  })
+
+  test('a name without identity yields null rather than a bogus match', () => {
+    expect(screenSlugFromName('op-screen')).toBe(null)
+    expect(connectorSlugsFromName('op-connector')).toBe(null)
+    // and a screen name is not misread as a connector
+    expect(connectorSlugsFromName(screenClassFor('/pricing'))).toBe(null)
   })
 })

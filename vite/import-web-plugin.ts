@@ -1,6 +1,7 @@
 import { readdir, readFile, writeFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 
+import { connectorClassFor, screenClassFor } from '@open-pencil/import-web'
 import type { Connect, Plugin } from 'vite'
 
 /**
@@ -154,7 +155,7 @@ function composeFlow(
   const screens = l.screens
     .map(
       (s) => `
-<div class="op-screen" data-op-route="${s.routePath}"
+<div class="${screenClassFor(s.routePath)}" data-op-route="${s.routePath}"
      style="position:absolute; left:${s.x}px; top:${s.y}px; width:${s.width}px; height:${s.height}px;">
   <div class="op-screen-label">${s.title}${s.dynamic ? ' (dynamic)' : ''} — ${s.routePath}</div>
   <div class="op-screen-body">
@@ -167,7 +168,7 @@ ${bodies.get(s.routePath) ?? ''}
   const connectors = l.connectors
     .map(
       (c) => `
-<div class="op-connector" data-op-from="${c.from}" data-op-to="${c.to}"
+<div class="${connectorClassFor(c.from, c.to)}" data-op-from="${c.from}" data-op-to="${c.to}"
      style="position:absolute; left:${Math.round(c.x1)}px; top:${Math.round(c.y1)}px;
             width:${Math.round(c.length)}px; height:2px;
             transform: rotate(${c.angle.toFixed(2)}deg); transform-origin: 0 50%;"></div>`
