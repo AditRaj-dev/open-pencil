@@ -6,7 +6,8 @@ export const cloudE2EActors = {
   owner: {
     userId: '11111111-1111-4111-8111-111111111111',
     email: 'owner@cloud-e2e.test',
-    name: 'Cloud Owner'
+    name: 'Cloud Owner',
+    deploymentRole: 'admin'
   },
   recipient: {
     userId: '22222222-2222-4222-8222-222222222222',

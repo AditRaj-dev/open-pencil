@@ -36,7 +36,8 @@ export function createNodeCloudApplication(options: NodeCloudApplicationOptions 
     database,
     auth,
     objects,
-    invitationOutbox
+    invitationOutbox,
+    transactionalEmail: email
   })
   return { app, config, database, objects, email }
 }

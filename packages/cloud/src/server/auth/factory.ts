@@ -153,7 +153,6 @@ export function createBetterAuthAdapter(
       ) {
         return null
       }
-      if (config.enrollmentMode === 'closed') return null
       return {
         userId: session.user.id,
         email: session.user.email,

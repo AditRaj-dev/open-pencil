@@ -9,17 +9,20 @@ const auth = createAuthClient({
 })
 
 export async function loadAdminSession(): Promise<boolean> {
-  const result = await auth.getSession()
-  if (!result.data?.user) {
+  const response = await fetch('/api/session', { credentials: 'include' })
+  if (!response.ok) {
     adminSession.value = null
     return false
   }
-  adminSession.value = {
-    id: result.data.user.id,
-    email: result.data.user.email,
-    name: result.data.user.name
+  const result = (await response.json()) as {
+    user: { userId: string; email: string; name: string; deploymentRole?: string }
   }
-  return true
+  adminSession.value = {
+    id: result.user.userId,
+    email: result.user.email,
+    name: result.user.name
+  }
+  return result.user.deploymentRole === 'admin'
 }
 
 export async function signIn(provider: 'google' | 'apple'): Promise<void> {

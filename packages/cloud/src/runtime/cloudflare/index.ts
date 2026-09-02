@@ -84,7 +84,8 @@ export function createCloudflareCloudRuntime(environment: CloudflareCloudEnviron
       database,
       auth,
       objects,
-      invitationOutbox: emailTransport ? createInvitationOutbox(email) : undefined
+      invitationOutbox: emailTransport ? createInvitationOutbox(email) : undefined,
+      transactionalEmail: email
     }),
     database,
     email,

@@ -1,6 +1,12 @@
 import type { DocumentPermission } from '#cloud/contract'
 
-export type TransactionalEmailKind = 'document-invitation'
+export type TransactionalEmailKind =
+  | 'document-invitation'
+  | 'enrollment-requested'
+  | 'admin-enrollment-notification'
+  | 'enrollment-approved'
+  | 'enrollment-rejected'
+  | 'enrollment-revoked'
 
 export type DocumentInvitationEmailPayload = {
   inviterName: string
@@ -10,8 +16,25 @@ export type DocumentInvitationEmailPayload = {
   acceptanceURL: string
 }
 
+export type EnrollmentEmailPayload = {
+  name: string
+  actionURL: string
+}
+
+export type AdminEnrollmentNotificationPayload = {
+  requesterEmail: string
+  requesterName: string
+  reason: string
+  actionURL: string
+}
+
 export type TransactionalEmailPayloadByKind = {
   'document-invitation': DocumentInvitationEmailPayload
+  'enrollment-requested': EnrollmentEmailPayload
+  'admin-enrollment-notification': AdminEnrollmentNotificationPayload
+  'enrollment-approved': EnrollmentEmailPayload
+  'enrollment-rejected': EnrollmentEmailPayload
+  'enrollment-revoked': EnrollmentEmailPayload
 }
 
 export type TransactionalEmailMessage<

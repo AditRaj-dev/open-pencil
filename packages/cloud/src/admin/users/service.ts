@@ -17,11 +17,35 @@ export function createAdminUserService(database: Kysely<CloudDatabase>, auth: Cl
       .execute()
   }
 
+  async function requireSafeTarget(
+    actorId: string,
+    userId: string,
+    action: 'ban' | 'demote'
+  ): Promise<void> {
+    if (actorId === userId) throw new Error(`Administrators cannot ${action} themselves`)
+    const target = await database
+      .selectFrom('user')
+      .select('role')
+      .where('id', '=', userId)
+      .executeTakeFirst()
+    if (target?.role !== 'admin') return
+    const count = await database
+      .selectFrom('user')
+      .select(({ fn }) => fn.countAll<number>().as('count'))
+      .where('role', '=', 'admin')
+      .where((expression) =>
+        expression.or([expression('banned', '=', false), expression('banned', 'is', null)])
+      )
+      .executeTakeFirstOrThrow()
+    if (Number(count.count) <= 1) throw new Error('Cannot remove the last deployment administrator')
+  }
+
   return {
     list(headers: Headers, query?: { searchValue?: string; limit?: number; offset?: number }) {
       return auth.listUsers(headers, query)
     },
     async ban(headers: Headers, actorId: string, userId: string, reason?: string): Promise<void> {
+      await requireSafeTarget(actorId, userId, 'ban')
       await auth.banUser(headers, userId, reason)
       await audit(actorId, 'user.banned', userId)
     },
@@ -39,6 +63,7 @@ export function createAdminUserService(database: Kysely<CloudDatabase>, auth: Cl
       userId: string,
       enabled: boolean
     ): Promise<void> {
+      if (!enabled) await requireSafeTarget(actorId, userId, 'demote')
       await auth.setRole(headers, userId, enabled ? 'admin' : 'user')
       await audit(actorId, enabled ? 'user.admin-granted' : 'user.admin-revoked', userId)
     }

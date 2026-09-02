@@ -64,6 +64,18 @@ const rawCloudServerConfigSchema = v.object({
   authTrustedIPHeaders: v.optional(v.array(v.pipe(v.string(), v.trim(), v.minLength(1))), []),
   authTrustedProxies: v.optional(v.array(v.pipe(v.string(), v.trim(), v.minLength(1))), []),
   enrollmentMode: v.optional(v.picklist(['open', 'approval', 'closed']), 'open'),
+  enrollmentAdminNotificationEmails: v.optional(
+    v.array(v.pipe(v.string(), v.trim(), v.email())),
+    []
+  ),
+  enrollmentRateLimitWindowMs: v.optional(
+    v.pipe(v.number(), v.integer(), v.minValue(1000)),
+    60 * 60_000
+  ),
+  enrollmentRateLimitMaximumRequests: v.optional(
+    v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(1000)),
+    10
+  ),
   deploymentAdminUserIds: v.optional(v.array(v.pipe(v.string(), v.trim(), v.minLength(1))), []),
   googleClientId: optionalTextSchema,
   googleClientSecret: optionalTextSchema,

@@ -126,6 +126,12 @@ describe('createCloudApp', () => {
           .select(['emailNormalized', 'status'])
           .executeTakeFirstOrThrow()
       ).toEqual({ emailNormalized: 'person@example.com', status: 'pending' })
+      const oversized = await app.request('/api/enrollment/request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Content-Length': '3000' },
+        body: JSON.stringify({ email: 'oversized@example.com' })
+      })
+      expect(oversized.status).toBe(413)
       expect((await app.request('/api/admin/enrollments')).status).toBe(401)
     } finally {
       await runtime.close()
@@ -157,7 +163,25 @@ describe('createCloudApp', () => {
           deploymentRole: 'user'
         })
       })
-      expect((await userApp.request('/api/admin/operations')).status).toBe(403)
+      expect(
+        (
+          await userApp.request('/api/admin/operations', {
+            headers: { Origin: 'https://pencil.example.com' }
+          })
+        ).status
+      ).toBe(403)
+      expect(
+        (
+          await adminApp.request('/api/admin/enrollments/missing/approve', {
+            method: 'POST',
+            headers: {
+              Origin: 'https://untrusted.example.com',
+              'Content-Type': 'application/json'
+            },
+            body: '{}'
+          })
+        ).status
+      ).toBe(403)
       const response = await adminApp.request('/api/admin/operations')
       expect(response.status).toBe(200)
       expect(await response.json()).toMatchObject({

@@ -5,6 +5,7 @@ export {
   createAdminUserService,
   createCloudAdminRoutes,
   createEnrollmentService,
+  consumeEnrollmentRateLimit,
   createPublicEnrollmentRoutes,
   normalizeEnrollmentEmail,
   type AdminAuditService,

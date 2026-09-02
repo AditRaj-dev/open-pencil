@@ -1,4 +1,4 @@
-FROM oven/bun:1.3.10-alpine
+FROM oven/bun:1.4.0-alpine
 
 RUN addgroup -S openpencil && adduser -S -G openpencil openpencil
 

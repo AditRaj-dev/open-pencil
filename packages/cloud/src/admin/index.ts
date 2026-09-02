@@ -5,6 +5,7 @@ export {
 } from './api/routes'
 export { createAdminAuditService, type AdminAuditService } from './audit/service'
 export { createAdminEmailService, type AdminEmailService } from './email/service'
+export { consumeEnrollmentRateLimit } from './enrollment/rate-limit'
 export {
   createEnrollmentService,
   normalizeEnrollmentEmail,

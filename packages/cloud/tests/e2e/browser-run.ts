@@ -132,7 +132,7 @@ try {
     }
   })
   const playwright = Bun.spawn(
-    ['bunx', 'playwright', 'test', 'tests/e2e/cloud/sharing.spec.ts', '--project=openpencil'],
+    ['bunx', 'playwright', 'test', 'tests/e2e/cloud', '--project=openpencil'],
     {
       cwd: repositoryDirectory,
       env: {

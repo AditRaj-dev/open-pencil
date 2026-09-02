@@ -24,6 +24,7 @@ const deploymentConfigSchema = v.object({
   authentication: v.object({
     secret: secretReferenceSchema,
     enrollment_mode: v.optional(v.picklist(['open', 'approval', 'closed']), 'open'),
+    admin_notification_emails: v.optional(v.array(v.pipe(v.string(), v.email())), []),
     admin_user_ids: v.optional(v.array(v.string()), [])
   }),
   object_storage: v.object({
@@ -137,6 +138,7 @@ export function parseCloudDeploymentTOML(
     databaseURL: secret(environment, config.database.url),
     authSecret: secret(environment, config.authentication.secret),
     enrollmentMode: config.authentication.enrollment_mode,
+    enrollmentAdminNotificationEmails: config.authentication.admin_notification_emails,
     deploymentAdminUserIds: config.authentication.admin_user_ids,
     s3Endpoint: config.object_storage.endpoint,
     s3Region: config.object_storage.region,

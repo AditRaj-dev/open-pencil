@@ -28,6 +28,7 @@ import { createCollaborationTicketService } from '#cloud/server/collaboration'
 import type { CloudServerConfig } from '#cloud/server/config'
 import type { CloudDatabase } from '#cloud/server/db'
 import { createDocumentService } from '#cloud/server/documents'
+import type { TransactionalEmailService } from '#cloud/server/email'
 import type { InvitationDelivery, InvitationOutbox } from '#cloud/server/invitations'
 import type { ObjectStore } from '#cloud/server/objects'
 import {
@@ -54,6 +55,7 @@ export type CloudServices = {
   resolveSession?: CloudSessionResolver
   invitationDelivery?: InvitationDelivery
   invitationOutbox?: InvitationOutbox
+  transactionalEmail?: TransactionalEmailService
   entitlementSource?: EntitlementSource
   policy?: CloudPolicy
 }
@@ -96,14 +98,21 @@ export function createCloudApp(services: CloudServices) {
     maxAge: 600
   })
   const workspaces = createWorkspaceService(services.database)
-  const enrollment = createEnrollmentService(services.database)
-  const admin = createCloudAdminRoutes({
-    email: createAdminEmailService(services.database),
-    enrollment,
-    users: createAdminUserService(services.database, services.auth),
-    audit: createAdminAuditService(services.database),
-    operations: createAdminOperationsService(services.database, services.config)
+  const enrollment = createEnrollmentService(services.database, {
+    appURL: services.config.appURL ?? services.config.publicURL,
+    adminRecipients: services.config.enrollmentAdminNotificationEmails,
+    email: services.transactionalEmail
   })
+  const admin = createCloudAdminRoutes(
+    {
+      email: createAdminEmailService(services.database),
+      enrollment,
+      users: createAdminUserService(services.database, services.auth),
+      audit: createAdminAuditService(services.database),
+      operations: createAdminOperationsService(services.database, services.config)
+    },
+    allowedOrigins
+  )
   const entitlementSource =
     services.entitlementSource ??
     (services.config.staticEntitlements
@@ -187,7 +196,17 @@ export function createCloudApp(services: CloudServices) {
       }
     })
     .get(CLOUD_DISCOVERY_PATH, (context) => context.json(discovery))
-    .route('/api', createPublicEnrollmentRoutes(enrollment))
+    .route(
+      '/api',
+      createPublicEnrollmentRoutes(enrollment, {
+        mode: services.config.enrollmentMode,
+        database: services.database,
+        secret: services.config.authSecret,
+        windowMs: services.config.enrollmentRateLimitWindowMs,
+        maximumRequests: services.config.enrollmentRateLimitMaximumRequests,
+        ipHeaders: services.config.authTrustedIPHeaders
+      })
+    )
     .on(['GET', 'POST'], '/api/auth/*', (context) => services.auth.handler(context.req.raw))
     .route('/api', publicCloudAPI)
     .use('/api/*', async (context, next) => {

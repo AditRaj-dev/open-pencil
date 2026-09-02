@@ -11,6 +11,7 @@ from_env = "DATABASE_URL"
 
 [authentication]
 enrollment_mode = "open"
+admin_notification_emails = []
 
 [authentication.secret]
 from_env = "BETTER_AUTH_SECRET"

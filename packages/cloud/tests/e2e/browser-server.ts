@@ -3,7 +3,11 @@ import { readFile } from 'node:fs/promises'
 
 import { repositoryPath } from '#cloud-test/helpers/paths'
 
-import { createNodeCloudDatabase, createS3ObjectStore } from '@open-pencil/cloud/runtime/node'
+import {
+  createNodeAdminAssetHandler,
+  createNodeCloudDatabase,
+  createS3ObjectStore
+} from '@open-pencil/cloud/runtime/node'
 import {
   createCloudApp,
   createBetterAuthAdapter,
@@ -18,6 +22,7 @@ const port = Number(process.env.OPENPENCIL_CLOUD_E2E_PORT ?? 8787)
 const appOrigin = process.env.OPENPENCIL_APP_ORIGIN ?? 'http://localhost:1420'
 const config = parseCloudServerConfig({
   deployment: 'self-hosted',
+  enrollmentMode: 'approval',
   publicURL: `http://127.0.0.1:${port}`,
   appURL: appOrigin,
   collaborationURL: `ws://127.0.0.1:${Number(process.env.OPENPENCIL_CLOUD_COLLABORATION_PORT ?? 12345)}`,
@@ -62,6 +67,22 @@ await database
       email: actor.email,
       emailVerified: true,
       image: null
+    }))
+  )
+  .execute()
+await database
+  .insertInto('cloudEnrollment')
+  .values(
+    Object.values(cloudE2EActors).map((actor) => ({
+      id: crypto.randomUUID(),
+      emailNormalized: actor.email,
+      name: actor.name,
+      reason: 'Browser E2E',
+      status: 'approved' as const,
+      reviewedAt: new Date(),
+      reviewedBy: cloudE2EActors.owner.userId,
+      reviewNote: null,
+      approvedUserId: actor.userId
     }))
   )
   .execute()
@@ -145,7 +166,14 @@ const app = createCloudApp({
   }),
   resolveSession: createCloudE2ESessionResolver()
 })
-const server = Bun.serve({ hostname: '127.0.0.1', port, fetch: app.fetch })
+const adminAssets = createNodeAdminAssetHandler(repositoryPath('packages/cloud/dist/admin'))
+const server = Bun.serve({
+  hostname: '127.0.0.1',
+  port,
+  async fetch(request) {
+    return (await adminAssets(request)) ?? app.fetch(request)
+  }
+})
 
 console.log(
   `OPENPENCIL_CLOUD_E2E_READY ${JSON.stringify({ serverURL: config.publicURL, workspaceId, documentId })}`

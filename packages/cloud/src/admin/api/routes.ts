@@ -1,17 +1,22 @@
+import { boundedEnrollmentBody, requireTrustedMutationOrigin } from '#cloud/admin/api/security'
 import type { AdminAuditService } from '#cloud/admin/audit/service'
 import {
   enrollmentStatusSchema,
   parseEnrollmentRequest,
   parseEnrollmentReview,
-  parseUserMutation
+  parseUserMutation,
+  parseUserRoleMutation
 } from '#cloud/admin/contracts'
 import type { AdminEmailService } from '#cloud/admin/email/service'
-import type { EnrollmentService } from '#cloud/admin/enrollment/service'
+import { consumeEnrollmentRateLimit } from '#cloud/admin/enrollment/rate-limit'
+import type { EnrollmentMode, EnrollmentService } from '#cloud/admin/enrollment/service'
 import type { AdminOperationsService } from '#cloud/admin/operations/service'
 import type { AdminUserService } from '#cloud/admin/users/service'
 import type { CloudAPIEnvironment } from '#cloud/server/api'
+import type { CloudDatabase } from '#cloud/server/db'
 import { validatedJSON } from '#cloud/server/validation'
 import { Hono } from 'hono'
+import type { Kysely } from 'kysely'
 import * as v from 'valibot'
 
 export type CloudAdminServices = {
@@ -22,19 +27,56 @@ export type CloudAdminServices = {
   operations: AdminOperationsService
 }
 
-export function createPublicEnrollmentRoutes(enrollment: EnrollmentService) {
+export function createPublicEnrollmentRoutes(
+  enrollment: EnrollmentService,
+  options: {
+    mode: EnrollmentMode
+    database: Kysely<CloudDatabase>
+    secret: string
+    windowMs: number
+    maximumRequests: number
+    ipHeaders: string[]
+  }
+) {
   return new Hono().post(
     '/enrollment/request',
+    boundedEnrollmentBody,
     validatedJSON(parseEnrollmentRequest),
     async (context) => {
-      await enrollment.request(context.req.valid('json'))
+      if (options.mode === 'closed') return context.json({ accepted: true as const }, 202)
+      const input = context.req.valid('json')
+      const forwarded = options.ipHeaders.map((header) => context.req.header(header)).find(Boolean)
+      const limits = [
+        consumeEnrollmentRateLimit(
+          options.database,
+          options.secret,
+          `email:${input.email.toLowerCase()}`,
+          {
+            windowMs: options.windowMs,
+            maximumRequests: Math.max(2, Math.floor(options.maximumRequests / 2))
+          }
+        )
+      ]
+      if (forwarded) {
+        limits.push(
+          consumeEnrollmentRateLimit(options.database, options.secret, `ip:${forwarded}`, {
+            windowMs: options.windowMs,
+            maximumRequests: options.maximumRequests
+          })
+        )
+      }
+      if ((await Promise.all(limits)).every(Boolean)) await enrollment.request(input)
       return context.json({ accepted: true as const }, 202)
     }
   )
 }
 
-export function createCloudAdminRoutes(services: CloudAdminServices) {
+export function createCloudAdminRoutes(
+  services: CloudAdminServices,
+  trustedOrigins: ReadonlySet<string>
+) {
   return new Hono<CloudAPIEnvironment>()
+    .use('*', requireTrustedMutationOrigin(trustedOrigins))
     .use('*', async (context, next) => {
       const actor = context.get('actor')
       if (actor.deploymentRole !== 'admin')
@@ -106,6 +148,16 @@ export function createCloudAdminRoutes(services: CloudAdminServices) {
         context.req.raw.headers,
         context.get('actor').userId,
         input.userId
+      )
+      return context.json({ ok: true as const })
+    })
+    .post('/users/set-admin', validatedJSON(parseUserRoleMutation), async (context) => {
+      const input = context.req.valid('json')
+      await services.users.setAdmin(
+        context.req.raw.headers,
+        context.get('actor').userId,
+        input.userId,
+        input.enabled
       )
       return context.json({ ok: true as const })
     })

@@ -62,7 +62,8 @@ export async function startNodeCloudServer(options: NodeCloudServerOptions = {})
     database,
     auth,
     objects,
-    invitationOutbox
+    invitationOutbox,
+    transactionalEmail: email
   })
   const emailWorker = emailTransport
     ? startTransactionalEmailWorker(email, {

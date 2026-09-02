@@ -6,6 +6,11 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     credentials: 'include',
     headers
   })
+  if (response.status === 401 && globalThis.location.pathname !== '/admin/sign-in') {
+    globalThis.location.assign('/admin/sign-in')
+    throw new Error('Authentication required')
+  }
+  if (response.status === 403) throw new Error('Deployment administrator access is required')
   if (!response.ok) throw new Error(`Cloud request failed: ${response.status}`)
   return response.json() as Promise<T>
 }
@@ -38,6 +43,12 @@ export const cloudAdminAPI = {
     return request<{ ok: true }>(`/admin/users/${action}`, {
       method: 'POST',
       body: JSON.stringify({ userId, reason })
+    })
+  },
+  setAdmin(userId: string, enabled: boolean) {
+    return request<{ ok: true }>('/admin/users/set-admin', {
+      method: 'POST',
+      body: JSON.stringify({ userId, enabled })
     })
   },
   email() {
