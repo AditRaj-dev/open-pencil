@@ -1,5 +1,6 @@
 import { parseCommitUpload, parseCreateDocument, parseCreateUpload } from '#cloud/contract'
 import type { CloudActor } from '#cloud/server/auth'
+import type { CloudDatabase } from '#cloud/server/db'
 import type { DocumentService } from '#cloud/server/documents/service'
 import {
   DocumentConflictError,
@@ -8,8 +9,10 @@ import {
   UploadInvalidError
 } from '#cloud/server/documents/service'
 import { StorageQuotaExceededError } from '#cloud/server/quota'
+import { CLOUD_RATE_LIMITS, createActorRateLimiter } from '#cloud/server/rate-limit'
 import { validatedJSON } from '#cloud/server/validation'
 import { Hono, type Context } from 'hono'
+import type { Kysely } from 'kysely'
 
 export type DocumentRouteEnvironment = {
   Variables: {
@@ -36,8 +39,34 @@ function domainError(context: Context, error: unknown): Response | null {
   return null
 }
 
-export function createDocumentRoutes(service: DocumentService) {
-  return new Hono<DocumentRouteEnvironment>()
+export function createDocumentRoutes(
+  service: DocumentService,
+  rateLimit?: { database: Kysely<CloudDatabase>; secret: string }
+) {
+  const router = new Hono<DocumentRouteEnvironment>()
+  if (rateLimit) {
+    router.use(
+      '/workspaces/:workspaceId/documents',
+      createActorRateLimiter(
+        rateLimit.database,
+        rateLimit.secret,
+        CLOUD_RATE_LIMITS.documentCreation,
+        (context) => context.req.method !== 'POST',
+        (context) => context.req.param('workspaceId') ?? 'unknown'
+      )
+    )
+    router.use(
+      '/documents/:documentId/uploads',
+      createActorRateLimiter(
+        rateLimit.database,
+        rateLimit.secret,
+        CLOUD_RATE_LIMITS.uploadCreation,
+        (context) => context.req.method !== 'POST',
+        (context) => context.req.param('documentId') ?? 'unknown'
+      )
+    )
+  }
+  return router
     .get('/workspaces/:workspaceId/documents', async (context) => {
       const documents = await service.list(
         context.get('actor').userId,

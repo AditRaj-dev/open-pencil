@@ -96,13 +96,13 @@ export function createCloudAdminRoutes(
     rateLimit.database,
     rateLimit.secret,
     CLOUD_RATE_LIMITS.adminRead,
-    (method) => method !== 'GET'
+    (context) => context.req.method !== 'GET'
   )
   const adminMutation = createActorRateLimiter(
     rateLimit.database,
     rateLimit.secret,
     CLOUD_RATE_LIMITS.adminMutation,
-    (method) => method === 'GET'
+    (context) => context.req.method === 'GET'
   )
   return new Hono<CloudAPIEnvironment>()
     .use('*', requireTrustedMutationOrigin(trustedOrigins))

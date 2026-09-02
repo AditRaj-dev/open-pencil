@@ -164,17 +164,33 @@ export function createCloudApp(services: CloudServices) {
     services.config.authSecret,
     CLOUD_RATE_LIMITS.publicCapability,
     { trustedHeaders: services.config.authTrustedIPHeaders },
-    (context) => context.json({ error: { code: 'not_found' as const } }, 404)
+    (context) => context.json({ error: { code: 'not_found' as const } }, 404),
+    { resource: (context) => context.req.path }
+  )
+  const publicCollaborationLimiter = createTrustedIPRateLimiter(
+    services.database,
+    services.config.authSecret,
+    CLOUD_RATE_LIMITS.collaborationTicket,
+    { trustedHeaders: services.config.authTrustedIPHeaders },
+    (context) => context.json({ error: { code: 'not_found' as const } }, 404),
+    { resource: (context) => context.req.path }
   )
   const authenticatedMutationLimiter = createActorRateLimiter(
     services.database,
     services.config.authSecret,
     CLOUD_RATE_LIMITS.authenticatedMutation,
-    (method) => method === 'GET'
+    (context) =>
+      context.req.method === 'GET' ||
+      context.req.path.endsWith('/collaboration-ticket') ||
+      context.req.path.endsWith('/invitations') ||
+      context.req.path.endsWith('/uploads') ||
+      /^\/api\/workspaces(?:\/[^/]+\/documents)?$/.test(context.req.path)
   )
 
   const cloudAPI = createCloudAPIRouter({
     collaboration,
+    database: services.database,
+    rateLimitSecret: services.config.authSecret,
     documents,
     entitlements,
     sharing,
@@ -233,6 +249,7 @@ export function createCloudApp(services: CloudServices) {
       })
     )
     .on(['GET', 'POST'], '/api/auth/*', (context) => services.auth.handler(context.req.raw))
+    .use('/api/public/shares/:shareId/collaboration-ticket', publicCollaborationLimiter)
     .use('/api/public/*', publicRateLimiter)
     .use('/api/shares/*', publicRateLimiter)
     .use('/api/invitations/*', publicRateLimiter)

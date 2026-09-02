@@ -1,10 +1,13 @@
 import { parseResolveDocumentShare } from '#cloud/contract'
 import type { CloudActor, CloudSessionResolver } from '#cloud/server/auth'
 import type { CollaborationTicketService } from '#cloud/server/collaboration/service'
+import type { CloudDatabase } from '#cloud/server/db'
 import { DocumentNotFoundError } from '#cloud/server/documents'
+import { CLOUD_RATE_LIMITS, createActorRateLimiter } from '#cloud/server/rate-limit'
 import { DocumentShareInvalidError } from '#cloud/server/sharing'
 import { validatedJSON } from '#cloud/server/validation'
 import { Hono, type Context } from 'hono'
+import type { Kysely } from 'kysely'
 
 export type CollaborationRouteEnvironment = { Variables: { actor: CloudActor } }
 
@@ -15,24 +18,34 @@ function notFound(context: Context, error: unknown): Response | null {
   return null
 }
 
-export function createCollaborationRoutes(service: CollaborationTicketService) {
-  return new Hono<CollaborationRouteEnvironment>().post(
-    '/documents/:documentId/collaboration-ticket',
-    async (context) => {
-      try {
-        return context.json({
-          ticket: await service.issueUserTicket(
-            context.get('actor'),
-            context.req.param('documentId')
-          )
-        })
-      } catch (error) {
-        const response = notFound(context, error)
-        if (response) return response
-        throw error
-      }
+export function createCollaborationRoutes(
+  service: CollaborationTicketService,
+  rateLimit?: { database: Kysely<CloudDatabase>; secret: string }
+) {
+  const router = new Hono<CollaborationRouteEnvironment>()
+  if (rateLimit) {
+    router.use(
+      '/documents/:documentId/collaboration-ticket',
+      createActorRateLimiter(
+        rateLimit.database,
+        rateLimit.secret,
+        CLOUD_RATE_LIMITS.collaborationTicket,
+        undefined,
+        (context) => context.req.param('documentId') ?? 'unknown-document'
+      )
+    )
+  }
+  return router.post('/documents/:documentId/collaboration-ticket', async (context) => {
+    try {
+      return context.json({
+        ticket: await service.issueUserTicket(context.get('actor'), context.req.param('documentId'))
+      })
+    } catch (error) {
+      const response = notFound(context, error)
+      if (response) return response
+      throw error
     }
-  )
+  })
 }
 
 export function createPublicCollaborationRoutes(

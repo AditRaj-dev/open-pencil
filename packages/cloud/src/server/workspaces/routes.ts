@@ -1,9 +1,12 @@
 import { parseCreateWorkspace } from '#cloud/contract'
 import type { CloudActor } from '#cloud/server/auth'
+import type { CloudDatabase } from '#cloud/server/db'
+import { CLOUD_RATE_LIMITS, createActorRateLimiter } from '#cloud/server/rate-limit'
 import { validatedJSON } from '#cloud/server/validation'
 import type { WorkspaceService } from '#cloud/server/workspaces/service'
 import { WorkspaceSlugConflictError } from '#cloud/server/workspaces/service'
 import { Hono } from 'hono'
+import type { Kysely } from 'kysely'
 
 export type WorkspaceRouteEnvironment = {
   Variables: {
@@ -11,8 +14,23 @@ export type WorkspaceRouteEnvironment = {
   }
 }
 
-export function createWorkspaceRoutes(service: WorkspaceService) {
-  return new Hono<WorkspaceRouteEnvironment>()
+export function createWorkspaceRoutes(
+  service: WorkspaceService,
+  rateLimit?: { database: Kysely<CloudDatabase>; secret: string }
+) {
+  const router = new Hono<WorkspaceRouteEnvironment>()
+  if (rateLimit) {
+    router.use(
+      '/',
+      createActorRateLimiter(
+        rateLimit.database,
+        rateLimit.secret,
+        CLOUD_RATE_LIMITS.workspaceCreation,
+        (context) => context.req.method !== 'POST'
+      )
+    )
+  }
+  return router
     .get('/', async (context) => {
       const workspaces = await service.list(context.get('actor').userId)
       return context.json({ workspaces })

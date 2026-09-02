@@ -1,14 +1,10 @@
 import type { Context, Next } from 'hono'
+import { bodyLimit } from 'hono/body-limit'
 
-const MAXIMUM_ENROLLMENT_BODY_BYTES = 2048
-
-export async function boundedEnrollmentBody(context: Context, next: Next) {
-  const contentLength = Number(context.req.header('content-length') ?? 0)
-  if (Number.isFinite(contentLength) && contentLength > MAXIMUM_ENROLLMENT_BODY_BYTES) {
-    return context.json({ error: { code: 'invalid_request' as const } }, 413)
-  }
-  return next()
-}
+export const boundedEnrollmentBody = bodyLimit({
+  maxSize: 2048,
+  onError: (context) => context.json({ error: { code: 'invalid_request' as const } }, 413)
+})
 
 export function requireTrustedMutationOrigin(trustedOrigins: ReadonlySet<string>) {
   return async (context: Context, next: Next) => {

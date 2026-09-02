@@ -5,6 +5,7 @@ import {
   createCollaborationRoutes,
   createPublicCollaborationRoutes
 } from '#cloud/server/collaboration'
+import type { CloudDatabase } from '#cloud/server/db'
 import type { DocumentService } from '#cloud/server/documents'
 import { createDocumentRoutes } from '#cloud/server/documents'
 import type { EntitlementService } from '#cloud/server/policy'
@@ -17,8 +18,11 @@ import {
 import type { WorkspaceService } from '#cloud/server/workspaces'
 import { createWorkspaceRoutes } from '#cloud/server/workspaces'
 import { Hono } from 'hono'
+import type { Kysely } from 'kysely'
 
 export type CloudAPIServices = {
+  database?: Kysely<CloudDatabase>
+  rateLimitSecret?: string
   collaboration: CollaborationTicketService
   documents: DocumentService
   sharing: DocumentSharingService
@@ -48,10 +52,42 @@ export function createCloudAPIRouter(services: CloudAPIServices) {
       })
     })
     .get('/session', (context) => context.json({ user: context.get('actor') }))
-    .route('/', createCollaborationRoutes(services.collaboration))
-    .route('/', createDocumentRoutes(services.documents))
-    .route('/', createDocumentSharingRoutes(services.sharing))
-    .route('/workspaces', createWorkspaceRoutes(services.workspaces))
+    .route(
+      '/',
+      createCollaborationRoutes(
+        services.collaboration,
+        services.database && services.rateLimitSecret
+          ? { database: services.database, secret: services.rateLimitSecret }
+          : undefined
+      )
+    )
+    .route(
+      '/',
+      createDocumentRoutes(
+        services.documents,
+        services.database && services.rateLimitSecret
+          ? { database: services.database, secret: services.rateLimitSecret }
+          : undefined
+      )
+    )
+    .route(
+      '/',
+      createDocumentSharingRoutes(
+        services.sharing,
+        services.database && services.rateLimitSecret
+          ? { database: services.database, secret: services.rateLimitSecret }
+          : undefined
+      )
+    )
+    .route(
+      '/workspaces',
+      createWorkspaceRoutes(
+        services.workspaces,
+        services.database && services.rateLimitSecret
+          ? { database: services.database, secret: services.rateLimitSecret }
+          : undefined
+      )
+    )
 }
 
 export type CloudAPI = ReturnType<typeof createCloudAPIRouter>

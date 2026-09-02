@@ -9,17 +9,36 @@ import {
   parseUpdateDocumentShare
 } from '#cloud/contract'
 import type { CloudActor } from '#cloud/server/auth'
+import type { CloudDatabase } from '#cloud/server/db'
+import { CLOUD_RATE_LIMITS, createActorRateLimiter } from '#cloud/server/rate-limit'
 import { sharingRoute } from '#cloud/server/sharing/http'
 import type { DocumentSharingService } from '#cloud/server/sharing/service'
 import { validatedJSON } from '#cloud/server/validation'
 import { Hono } from 'hono'
+import type { Kysely } from 'kysely'
 
 export type SharingRouteEnvironment = {
   Variables: { actor: CloudActor }
 }
 
-export function createDocumentSharingRoutes(service: DocumentSharingService) {
-  return new Hono<SharingRouteEnvironment>()
+export function createDocumentSharingRoutes(
+  service: DocumentSharingService,
+  rateLimit?: { database: Kysely<CloudDatabase>; secret: string }
+) {
+  const router = new Hono<SharingRouteEnvironment>()
+  if (rateLimit) {
+    router.use(
+      '/documents/:documentId/invitations',
+      createActorRateLimiter(
+        rateLimit.database,
+        rateLimit.secret,
+        CLOUD_RATE_LIMITS.invitationMutation,
+        (context) => context.req.method !== 'POST',
+        (context) => context.req.param('documentId') ?? 'unknown'
+      )
+    )
+  }
+  return router
     .post('/documents/:documentId/users/lookup', validatedJSON(parseLookupCloudUser), (context) =>
       sharingRoute(context, async () =>
         context.json({
