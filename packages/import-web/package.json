@@ -15,5 +15,9 @@
     "@open-pencil/scene-graph": "workspace:*",
     "parse5": "^7.2.1",
     "typescript": "^5.6.3"
+  },
+  "scripts": {
+    "build": "bunx tsdown --config tsdown.config.ts",
+    "test": "bun test tests"
   }
 }

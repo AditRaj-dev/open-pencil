@@ -1,4 +1,4 @@
-import { createDefaultNode } from '@open-pencil/scene-graph'
+import { createDefaultNode } from '@open-pencil/scene-graph/node-defaults'
 import type { NodeType, SceneNode } from '@open-pencil/scene-graph'
 
 import type { ImportOptions, ParseResult, WebElement } from './types'
