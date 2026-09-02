@@ -40,8 +40,13 @@ describe('cases a regex parser gets wrong', () => {
     const btn = find(parseJsx(src, 'A.tsx').roots, 'button')!
     expect(btn.text).toBe('Go')
     expect(src.slice(btn.span.start, btn.span.end).endsWith('</button>')).toBe(true)
+    // The handler's value is unknown...
     expect(btn.attributes['onClick']).toBe(null)
-    expect(btn.dynamic).toBe(true)
+    // ...but an event handler cannot change the class or the text, so the
+    // element stays editable. Only a spread or a computed className blocks a
+    // rewrite.
+    expect(btn.propsDynamic).toBe(false)
+    expect(btn.childrenDynamic).toBe(false)
   })
 
   test('a generic call is not mistaken for a tag', () => {

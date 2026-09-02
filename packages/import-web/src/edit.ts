@@ -8,6 +8,15 @@ export interface SourceEdit {
   text: string
   /** Human-readable reason, for history and diffs. */
   label: string
+  /**
+   * Text expected to be present at `start` when the edit is applied.
+   *
+   * Offsets are only valid for the file as it was parsed. Any earlier write
+   * shifts everything after it, so an edit built from a stale parse points at
+   * the wrong place — and a splice there silently corrupts the file. Checking
+   * this anchor first turns that into a refusal.
+   */
+  anchor?: string
 }
 
 export class WriteBackError extends Error {}
@@ -38,6 +47,8 @@ export function editClassName(web: WebSourcePayload, classes: string): SourceEdi
       start: web.classNameRange.start,
       end: web.classNameRange.end,
       text: classes,
+      // The class value we parsed must still be sitting here.
+      anchor: web.className ?? undefined,
       label: `set class on <${web.tagName}>`
     }
   }
@@ -114,6 +125,13 @@ export function applyEdits(source: string, edits: readonly SourceEdit[]): string
     if (edit.start < 0 || edit.end > out.length || edit.start > edit.end) {
       throw new WriteBackError(
         `edit "${edit.label}" range [${edit.start},${edit.end}) is outside the file`
+      )
+    }
+    if (edit.anchor !== undefined && !out.startsWith(edit.anchor, edit.start)) {
+      throw new WriteBackError(
+        `edit "${edit.label}" expected ${JSON.stringify(edit.anchor)} at ${edit.start} but found ` +
+          `${JSON.stringify(out.slice(edit.start, edit.start + edit.anchor.length))}; ` +
+          `the file changed since it was parsed — re-parse before editing`
       )
     }
     out = out.slice(0, edit.start) + edit.text + out.slice(edit.end)

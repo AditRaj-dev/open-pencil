@@ -206,3 +206,40 @@ describe('props vs children being dynamic', () => {
     expect(() => editClassName(nodes[0]!.source.web!, 'b')).toThrow(WriteBackError)
   })
 })
+
+describe('stale offsets', () => {
+  test('an edit built from an outdated parse is refused, not applied blindly', async () => {
+    // Two edits from ONE parse: the first shifts the file, so the second points
+    // at the wrong place. This is the realistic failure when a caller edits
+    // twice without re-parsing.
+    const src = `const A = () => (<div className="aaa"><span className="bbb">x</span></div>)`
+    const io = memoryIO({ 'A.tsx': src })
+    const { nodes } = toSceneNodes(parseJsx(src, 'A.tsx'), { filePath: 'A.tsx' })
+
+    await writeEdits([editClassName(nodes[0]!.source.web!, 'MUCH-LONGER-CLASS')], io)
+
+    // nodes[1] still holds offsets from the original text
+    await expect(
+      writeEdits([editClassName(nodes[1]!.source.web!, 'ccc')], io)
+    ).rejects.toThrow(/re-parse/)
+
+    // and the file keeps the first edit, uncorrupted
+    expect(io.files['A.tsx']).toBe(
+      `const A = () => (<div className="MUCH-LONGER-CLASS"><span className="bbb">x</span></div>)`
+    )
+  })
+
+  test('re-parsing after the first edit makes the second succeed', async () => {
+    const src = `const A = () => (<div className="aaa"><span className="bbb">x</span></div>)`
+    const io = memoryIO({ 'A.tsx': src })
+    const first = toSceneNodes(parseJsx(src, 'A.tsx'), { filePath: 'A.tsx' })
+    await writeEdits([editClassName(first.nodes[0]!.source.web!, 'MUCH-LONGER-CLASS')], io)
+
+    const reparsed = toSceneNodes(parseJsx(io.files['A.tsx']!, 'A.tsx'), { filePath: 'A.tsx' })
+    await writeEdits([editClassName(reparsed.nodes[1]!.source.web!, 'ccc')], io)
+
+    expect(io.files['A.tsx']).toBe(
+      `const A = () => (<div className="MUCH-LONGER-CLASS"><span className="ccc">x</span></div>)`
+    )
+  })
+})

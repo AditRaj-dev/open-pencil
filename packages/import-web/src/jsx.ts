@@ -77,6 +77,7 @@ export function parseJsx(source: string, filePath: string): ParseResult {
 
     for (const prop of opening.attributes.properties) {
       if (ts.isJsxSpreadAttribute(prop)) {
+        // A spread can carry className, so no attribute rewrite is safe.
         dynamic = true
         continue
       }
@@ -100,8 +101,11 @@ export function parseJsx(source: string, filePath: string): ParseResult {
           continue
         }
       }
+      // An expression value here (onClick={fn}, key={i}) is unknown, but it
+      // cannot change the class attribute. Only a spread or a computed
+      // className can, and those are the two that block a rewrite.
       attributes[name] = null
-      dynamic = true
+      if (name === 'className' || name === 'class') dynamic = true
     }
 
     return { attributes, dynamic, classNameNode }
