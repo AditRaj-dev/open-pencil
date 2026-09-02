@@ -37,6 +37,27 @@ export function useShellMenu() {
     'open-storage-workspace': () => {
       void import('@/router').then(({ default: router }) => openStorageWorkspace(router))
     },
+    'import-project': () => {
+      // A directory path rather than a file picker: the browser cannot hand a
+      // whole project to the page, and the scan happens on the server anyway.
+      const dir = window.prompt('Project folder to import (absolute path)')
+      if (!dir) return
+      const css = window.prompt('Stylesheet to apply (optional, absolute path)') ?? undefined
+      const state = window.prompt('State to render (default, hover, focus, active, disabled)', 'default') ?? 'default'
+      void (async () => {
+        const [{ importProjectFromDisk }, { useEditorStore }] = await Promise.all([
+          import('@/app/document/io/import-project'),
+          import('@/app/editor/active-store')
+        ])
+        const store = useEditorStore()
+        await importProjectFromDisk({
+          dir,
+          css: css || undefined,
+          state,
+          importDOMText: store.importDOMText
+        })
+      })()
+    },
     settings: openSettingsDialog,
     'snap-geometry': () => {
       const current = appPreferences.value.editing.snapping.geometry

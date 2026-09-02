@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 
-import { layoutFlow } from '../src/flow'
+import { layoutFlow, recomputeConnectors } from '../src/flow'
 import { scanProject, type ProjectIO } from '../src/project'
 
 /** In-memory project tree, so these never touch disk. */
@@ -168,5 +168,41 @@ describe('layoutFlow', () => {
       'proj/app/page.tsx': page('<main><a href="/">home</a></main>')
     })
     expect(layoutFlow(scan).connectors).toEqual([])
+  })
+})
+
+describe('recomputeConnectors', () => {
+  const screens = [
+    { routePath: '/', x: 0, y: 0, width: 100, height: 100 },
+    { routePath: '/next', x: 300, y: 0, width: 100, height: 100 }
+  ]
+
+  test('re-anchors a connector after a screen moves', () => {
+    const before = recomputeConnectors(screens, [{ from: '/', to: '/next' }])[0]!
+    expect([before.x1, before.x2]).toEqual([100, 300])
+
+    // drag the target down and to the left
+    const moved = screens.map((s) => (s.routePath === '/next' ? { ...s, x: 200, y: 400 } : s))
+    const after = recomputeConnectors(moved, [{ from: '/', to: '/next' }])[0]!
+    expect(after.x2).toBe(200)
+    expect(after.y2).toBe(450)
+    expect(after.angle).toBeGreaterThan(0)
+  })
+
+  test('leaving from the near side when the target sits to the left', () => {
+    const moved = [
+      { routePath: '/', x: 500, y: 0, width: 100, height: 100 },
+      { routePath: '/next', x: 0, y: 0, width: 100, height: 100 }
+    ]
+    const c = recomputeConnectors(moved, [{ from: '/', to: '/next' }])[0]!
+    // leaves the left edge of the source, lands on the right edge of the target
+    expect(c.x1).toBe(500)
+    expect(c.x2).toBe(100)
+  })
+
+  test('a removed screen leaves a dangling connector rather than a line to nowhere', () => {
+    const c = recomputeConnectors([screens[0]!], [{ from: '/', to: '/gone' }])[0]!
+    expect(c.dangling).toBe(true)
+    expect(c.length).toBe(0)
   })
 })

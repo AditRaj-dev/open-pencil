@@ -12,8 +12,12 @@ import {
 import {
   jsxToHtmlDocument,
   layoutFlow,
+  promoteStateClasses,
+  promoteStateCss,
   scanProject,
-  type ProjectIO
+  UI_STATES,
+  type ProjectIO,
+  type UIState
 } from '@open-pencil/import-web'
 
 import { fmtList, ok, printError } from '#cli/format'
@@ -102,6 +106,11 @@ export default defineCommand({
     output: { type: 'string', alias: 'o', description: 'Output file' },
     format: { type: 'string', alias: 'f', default: 'fig', description: 'fig, json or html' },
     css: { type: 'string', description: 'Stylesheet to apply to every screen' },
+    state: {
+      type: 'string',
+      default: 'default',
+      description: `Interaction state to render: ${UI_STATES.join(', ')}`
+    },
     columns: { type: 'string', description: 'Screens per row' },
     screenWidth: { type: 'string', default: '1440' },
     screenHeight: { type: 'string', default: '900' },
@@ -134,8 +143,18 @@ export default defineCommand({
         bodies.set(screen.routePath, body)
       }
 
-      const cssText = args.css ? await readFile(resolve(args.css as string), 'utf8') : undefined
-      const composed = composeFlowHTML(layout, bodies, cssText)
+      const state = String(args.state) as UIState
+      if (!UI_STATES.includes(state)) {
+        printError(`unknown state "${state}"; expected one of ${UI_STATES.join(', ')}`)
+        return
+      }
+
+      const rawCss = args.css ? await readFile(resolve(args.css as string), 'utf8') : undefined
+      // A canvas has no pointer, so a state is only visible if its rules are
+      // made to apply at rest.
+      const cssText = rawCss ? promoteStateCss(rawCss, state) : undefined
+      let composed = composeFlowHTML(layout, bodies, cssText)
+      if (state !== 'default') composed = promoteStateClasses(composed, state)
 
       // The same DOM/CSS pipeline the HTML import uses, so the screens get real
       // computed geometry rather than the nominal frame sizes.
@@ -178,6 +197,7 @@ export default defineCommand({
       ok(`Imported ${scan.screens.length} screen(s) from ${root} → ${outPath}`)
       fmtList([
         `framework: ${scan.framework}`,
+        `state: ${state}`,
         `screens: ${layout.screens.map((s) => s.routePath).join(', ')}`,
         `connectors: ${
           layout.connectors.length === 0

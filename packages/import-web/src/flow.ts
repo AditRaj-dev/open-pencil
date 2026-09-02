@@ -158,3 +158,54 @@ export function layoutFlow(scan: ProjectScan, options: FlowOptions = {}): FlowLa
     warnings: [...warnings]
   }
 }
+
+/**
+ * Recompute connector geometry for the current screen positions.
+ *
+ * Connectors are plain positioned lines, because `CONNECTOR` exists in the node
+ * types but has no renderer — so they do not re-route themselves when a frame
+ * moves. Calling this after a move and writing the results back restores the
+ * link; it is separated out as a pure function so the caller can hook whatever
+ * move event its editor exposes without this module knowing about any of it.
+ */
+export function recomputeConnectors(
+  screens: readonly Pick<ScreenBox, 'routePath' | 'x' | 'y' | 'width' | 'height'>[],
+  connectors: readonly Pick<Connector, 'from' | 'to'>[]
+): Connector[] {
+  const byRoute = new Map(screens.map((s) => [s.routePath, s]))
+  const out: Connector[] = []
+
+  for (const link of connectors) {
+    const from = byRoute.get(link.from)
+    const to = byRoute.get(link.to)
+    if (!from || !to) {
+      // The screen was removed; report it rather than drawing to nowhere.
+      out.push({
+        from: link.from,
+        to: link.to,
+        x1: 0, y1: 0, x2: 0, y2: 0,
+        length: 0, angle: 0,
+        dangling: true
+      })
+      continue
+    }
+
+    const goingRight = to.x >= from.x
+    const x1 = goingRight ? from.x + from.width : from.x
+    const y1 = from.y + from.height / 2
+    const x2 = goingRight ? to.x : to.x + to.width
+    const y2 = to.y + to.height / 2
+    const dx = x2 - x1
+    const dy = y2 - y1
+
+    out.push({
+      from: link.from,
+      to: link.to,
+      x1, y1, x2, y2,
+      length: Math.hypot(dx, dy),
+      angle: (Math.atan2(dy, dx) * 180) / Math.PI,
+      dangling: false
+    })
+  }
+  return out
+}

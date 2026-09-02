@@ -1,3 +1,4 @@
+import { importWebPlugin } from './vite/import-web-plugin'
 import process from 'node:process'
 
 import tailwindcss from '@tailwindcss/vite'
@@ -39,6 +40,7 @@ export default defineConfig(async ({ command }) => ({
     Icons({ compiler: 'vue3' }),
     Components({ resolvers: [IconsResolver({ prefix: 'icon' })] }),
     openPencilAutomationPlugin(command, host),
+    importWebPlugin(),
     vue(),
     openPencilPwaPlugin()
   ],
