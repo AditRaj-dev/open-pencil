@@ -91,8 +91,8 @@ export interface SourceMetadata {
   orderKey: string | null
   editedFields: string[]
   fig: FigmaSourcePayload
-  /** Present when `format` is 'jsx' or 'html'. */
-  web: WebSourcePayload | null
+  /** Present only when `format` is 'jsx' or 'html'; absent for Figma sources. */
+  web?: WebSourcePayload | null
 }
 
 export type HandleMirroring = 'NONE' | 'ANGLE' | 'ANGLE_AND_LENGTH'

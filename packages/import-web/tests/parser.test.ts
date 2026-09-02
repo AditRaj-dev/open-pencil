@@ -1,8 +1,8 @@
 import { describe, expect, test } from 'bun:test'
 
 import { applyEdits, editClassName, WriteBackError } from '../src/edit'
-import { parseHtml } from '../src/html'
-import { parseJsx } from '../src/jsx'
+import { parseHTML } from '../src/html'
+import { parseJSX } from '../src/jsx'
 import { toSceneNodes } from '../src/to-scene'
 import type { WebElement } from '../src/types'
 
@@ -25,7 +25,7 @@ describe('cases a regex parser gets wrong', () => {
     hello
   </div>
 )`
-    const div = find(parseJsx(src, 'A.tsx').roots, 'div')!
+    const div = find(parseJSX(src, 'A.tsx').roots, 'div')!
     expect(div.span.startLine).toBe(2)
     // The closing </div> is on line 7; a regex parser reports line 2, which is
     // the whole point of this case.
@@ -37,7 +37,7 @@ describe('cases a regex parser gets wrong', () => {
 
   test('a > inside a prop expression does not end the tag', () => {
     const src = `const A = () => <button onClick={() => count > 1 && next()}>Go</button>`
-    const btn = find(parseJsx(src, 'A.tsx').roots, 'button')!
+    const btn = find(parseJSX(src, 'A.tsx').roots, 'button')!
     expect(btn.text).toBe('Go')
     expect(src.slice(btn.span.start, btn.span.end).endsWith('</button>')).toBe(true)
     // The handler's value is unknown...
@@ -52,7 +52,7 @@ describe('cases a regex parser gets wrong', () => {
   test('a generic call is not mistaken for a tag', () => {
     const src = `const f = useMemo<Record<string, number>>(() => ({}), []);
 const A = () => <span className="only">x</span>`
-    const { roots } = parseJsx(src, 'A.tsx')
+    const { roots } = parseJSX(src, 'A.tsx')
     expect(roots.length).toBe(1)
     expect(roots[0]!.tagName).toBe('span')
   })
@@ -61,7 +61,7 @@ const A = () => <span className="only">x</span>`
     const src = `// <div fake="1">
 const msg = "<section>not markup</section>";
 const A = () => <p>real</p>`
-    const { roots } = parseJsx(src, 'A.tsx')
+    const { roots } = parseJSX(src, 'A.tsx')
     expect(roots.length).toBe(1)
     expect(roots[0]!.tagName).toBe('p')
   })
@@ -75,7 +75,7 @@ describe('structure', () => {
     <span>text</span>
   </div>
 )`
-    const { roots, components } = parseJsx(src, 'A.tsx')
+    const { roots, components } = parseJSX(src, 'A.tsx')
     const wrap = roots[0]!
     expect(wrap.children.length).toBe(2)
     expect(wrap.children[0]!.tagName).toBe('PricingCard')
@@ -87,10 +87,10 @@ describe('structure', () => {
 
   test('dynamic children mark the parent, and spreads mark the element', () => {
     const listSrc = `const A = () => <ul>{items.map(i => <li key={i}>{i}</li>)}</ul>`
-    expect(find(parseJsx(listSrc, 'A.tsx').roots, 'ul')!.dynamic).toBe(true)
+    expect(find(parseJSX(listSrc, 'A.tsx').roots, 'ul')!.dynamic).toBe(true)
 
     const spreadSrc = `const A = () => <div {...rest} className="c">x</div>`
-    expect(find(parseJsx(spreadSrc, 'A.tsx').roots, 'div')!.dynamic).toBe(true)
+    expect(find(parseJSX(spreadSrc, 'A.tsx').roots, 'div')!.dynamic).toBe(true)
   })
 
 
@@ -98,7 +98,7 @@ describe('structure', () => {
     // The <li> in a .map() renders N times, but it is written once — and
     // restyling that one place is a legitimate edit affecting every row.
     const src = `const A = () => <ul className="list">{items.map(i => <li className="row">{i}</li>)}</ul>`
-    const ul = find(parseJsx(src, 'A.tsx').roots, 'ul')!
+    const ul = find(parseJSX(src, 'A.tsx').roots, 'ul')!
     expect(ul.dynamic).toBe(true)
 
     const li = find(ul.children, 'li')!
@@ -109,13 +109,13 @@ describe('structure', () => {
 
   test('a conditional child is captured too', () => {
     const src = `const A = () => <div>{show && <b className="hi">yes</b>}</div>`
-    const b = find(parseJsx(src, 'A.tsx').roots, 'b')!
+    const b = find(parseJSX(src, 'A.tsx').roots, 'b')!
     expect(b.span.className).toBe('hi')
   })
 
   test('className range covers the value only', () => {
     const src = `const A = () => <div className="a b">x</div>`
-    const div = find(parseJsx(src, 'A.tsx').roots, 'div')!
+    const div = find(parseJSX(src, 'A.tsx').roots, 'div')!
     expect(div.span.className).toBe('a b')
     const range = div.span.classNameRange!
     expect(src.slice(range.start, range.end)).toBe('a b')
@@ -125,7 +125,7 @@ describe('structure', () => {
 describe('html', () => {
   test('parses with spans and is never dynamic', () => {
     const src = `<div class="page">\n  <p>hi</p>\n</div>`
-    const div = parseHtml(src, 'page.html').roots[0]!
+    const div = parseHTML(src, 'page.html').roots[0]!
     expect(div.tagName).toBe('div')
     expect(div.span.className).toBe('page')
     const range = div.span.classNameRange!
@@ -136,7 +136,7 @@ describe('html', () => {
 
   test('skips script and style', () => {
     const src = `<div><script>var a = 1</script><style>.x{}</style><b>keep</b></div>`
-    const div = parseHtml(src, 'p.html').roots[0]!
+    const div = parseHTML(src, 'p.html').roots[0]!
     expect(div.children.map((c) => c.tagName)).toEqual(['b'])
   })
 })
@@ -144,7 +144,7 @@ describe('html', () => {
 describe('scene nodes', () => {
   test('carry their source span and nesting', () => {
     const src = `const A = () => (<div className="wrap"><span>hi</span></div>)`
-    const { nodes, rootIds } = toSceneNodes(parseJsx(src, 'A.tsx'), { filePath: 'A.tsx' })
+    const { nodes, rootIds } = toSceneNodes(parseJSX(src, 'A.tsx'), { filePath: 'A.tsx' })
 
     expect(rootIds.length).toBe(1)
     const root = nodes.find((n) => n.id === rootIds[0])!
@@ -163,36 +163,36 @@ describe('scene nodes', () => {
 describe('write-back', () => {
   test('rewriting a class replaces only the value', () => {
     const src = `const A = () => <div id="k" className="a b" data-x="1">hi</div>`
-    const { nodes } = toSceneNodes(parseJsx(src, 'A.tsx'), { filePath: 'A.tsx' })
+    const { nodes } = toSceneNodes(parseJSX(src, 'A.tsx'), { filePath: 'A.tsx' })
     const out = applyEdits(src, [editClassName(nodes[0]!.source.web!, 'a c')])
     expect(out).toBe(`const A = () => <div id="k" className="a c" data-x="1">hi</div>`)
   })
 
   test('a missing class attribute is inserted after the tag name', () => {
     const src = `const A = () => <div id="k">hi</div>`
-    const { nodes } = toSceneNodes(parseJsx(src, 'A.tsx'), { filePath: 'A.tsx' })
+    const { nodes } = toSceneNodes(parseJSX(src, 'A.tsx'), { filePath: 'A.tsx' })
     const out = applyEdits(src, [editClassName(nodes[0]!.source.web!, 'new')])
     expect(out).toBe(`const A = () => <div className="new" id="k">hi</div>`)
     // and the result must still parse back to the same class
-    expect(parseJsx(out, 'A.tsx').roots[0]!.span.className).toBe('new')
+    expect(parseJSX(out, 'A.tsx').roots[0]!.span.className).toBe('new')
   })
 
   test('html uses class, not className', () => {
     const src = `<div id="k">hi</div>`
-    const { nodes } = toSceneNodes(parseHtml(src, 'p.html'), { filePath: 'p.html' })
+    const { nodes } = toSceneNodes(parseHTML(src, 'p.html'), { filePath: 'p.html' })
     const out = applyEdits(src, [editClassName(nodes[0]!.source.web!, 'z')])
     expect(out).toBe(`<div class="z" id="k">hi</div>`)
   })
 
   test('a dynamic element refuses to be rewritten', () => {
     const src = `const A = () => <div {...rest} className="a">hi</div>`
-    const { nodes } = toSceneNodes(parseJsx(src, 'A.tsx'), { filePath: 'A.tsx' })
+    const { nodes } = toSceneNodes(parseJSX(src, 'A.tsx'), { filePath: 'A.tsx' })
     expect(() => editClassName(nodes[0]!.source.web!, 'b')).toThrow(WriteBackError)
   })
 
   test('multiple edits apply last-first and stay correct', () => {
     const src = `const A = () => (<div className="one"><span className="two">x</span></div>)`
-    const { nodes } = toSceneNodes(parseJsx(src, 'A.tsx'), { filePath: 'A.tsx' })
+    const { nodes } = toSceneNodes(parseJSX(src, 'A.tsx'), { filePath: 'A.tsx' })
     const out = applyEdits(src, [
       editClassName(nodes[0]!.source.web!, 'ONE-LONGER'),
       editClassName(nodes[1]!.source.web!, 'TWO')

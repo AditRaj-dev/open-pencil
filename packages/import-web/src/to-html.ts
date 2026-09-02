@@ -44,7 +44,7 @@ function escapeText(value: string): string {
  * resolved without running the code. The result is the static skeleton of the
  * markup, which is what a design surface needs.
  */
-export function jsxToHtml(elements: readonly WebElement[]): string {
+export function jsxToHTML(elements: readonly WebElement[]): string {
   const render = (el: WebElement, depth: number): string => {
     const pad = '  '.repeat(depth)
 
@@ -78,7 +78,7 @@ export function jsxToHtml(elements: readonly WebElement[]): string {
 }
 
 /** Wrap rendered markup in a document, optionally with stylesheets inlined. */
-export function jsxToHtmlDocument(
+export function jsxToHTMLDocument(
   elements: readonly WebElement[],
   options: { css?: string; title?: string } = {}
 ): string {
@@ -91,7 +91,7 @@ export function jsxToHtmlDocument(
 ${style}
 </head>
 <body>
-${jsxToHtml(elements)}
+${jsxToHTML(elements)}
 </body>
 </html>`
 }
@@ -99,7 +99,9 @@ ${jsxToHtml(elements)}
 /** Read a `data-op-src` value back into a range. */
 export function parseSourceAttr(value: string | null | undefined): { start: number; end: number } | null {
   if (!value) return null
-  const [start, end] = value.split(':').map(Number)
+  const parts = value.split(':')
+  const start = Number(parts[0])
+  const end = Number(parts[1])
   if (!Number.isFinite(start) || !Number.isFinite(end)) return null
-  return { start: start!, end: end! }
+  return { start, end }
 }

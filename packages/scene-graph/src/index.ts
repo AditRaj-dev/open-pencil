@@ -49,6 +49,7 @@ import * as Variables from './variables'
 import { normalizeVectorNetwork } from './vector-network'
 
 export type { GUID, Color, Size, Vector } from './primitives'
+export type { WebSourcePayload } from './types'
 export * from './types'
 
 import type { Emitter } from 'nanoevents'
@@ -63,7 +64,6 @@ import type {
   SceneGraphEvents,
   SceneNode,
   SourceMetadata,
-  WebSourcePayload,
   Variable,
   VariableCollection,
   VariableType,

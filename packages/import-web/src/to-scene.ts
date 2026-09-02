@@ -46,7 +46,7 @@ export function toSceneNodes(result: ParseResult, options: ImportOptions): Scene
   const rootIds: string[] = []
   const byId = new Map<string, WebElement>()
 
-  const isJsx = /\.[jt]sx$/.test(options.filePath)
+  const isJSXFile = /\.[jt]sx$/.test(options.filePath)
 
   const build = (el: WebElement, parentId: string | null): string => {
     const node = createDefaultNode(generateId, nodeTypeFor(el), {
@@ -56,7 +56,7 @@ export function toSceneNodes(result: ParseResult, options: ImportOptions): Scene
       height: 0
     })
 
-    node.source.format = isJsx ? 'jsx' : 'html'
+    node.source.format = isJSXFile ? 'jsx' : 'html'
     node.source.id = `${el.span.filePath}:${el.span.start}`
     node.source.web = {
       filePath: el.span.filePath,

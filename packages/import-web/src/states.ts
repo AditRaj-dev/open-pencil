@@ -77,7 +77,7 @@ export function detectStates(className: string | null, css: string | undefined):
         // Only report it when it could apply to this element.
         const applies =
           classes.length === 0 ||
-          classes.some((c) => selector.includes(`.${c.split(':').pop()}`)) ||
+          classes.some((c) => selector.includes(`.${c.split(':').at(-1) ?? c}`)) ||
           !selector.includes('.')
         if (applies) record(state as UIState, undefined, selector)
       }
@@ -98,7 +98,7 @@ export function detectStates(className: string | null, css: string | undefined):
  * cascade. Rules for the other states are removed, so switching to `hover` does
  * not also show `:active`.
  */
-export function promoteStateCss(css: string, state: UIState): string {
+export function promoteStateCSS(css: string, state: UIState): string {
   if (state === 'default') return stripAllStates(css)
 
   const pseudo = PSEUDO[state]
@@ -137,7 +137,7 @@ export function promoteStateClasses(html: string, state: UIState): string {
         continue
       }
       const variants = segments.slice(0, -1)
-      const utility = segments[segments.length - 1]!
+      const utility = segments.at(-1) ?? cls
       const stateVariants = variants.filter((v) => v in PSEUDO)
 
       if (stateVariants.length === 0) {

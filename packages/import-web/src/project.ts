@@ -1,6 +1,6 @@
 import ts from 'typescript'
 
-import { parseJsx } from './jsx'
+import { parseJSX } from './jsx'
 import type { WebElement } from './types'
 
 /** Directory access, injected so this stays platform-neutral. */
@@ -52,8 +52,9 @@ function segmentsToRoute(segments: readonly string[]): string {
 
 function titleFor(routePath: string): string {
   if (routePath === '/') return 'Home'
-  const last = routePath.split('/').filter(Boolean).pop() ?? routePath
-  return last.replace(/^\[+|\]+$/g, '').replace(/[-_]/g, ' ').replace(/^\w/, (c) => c.toUpperCase())
+  const last = /([^/]+)\/*$/.exec(routePath)?.[1] ?? routePath
+  const cleaned = last.replace(/^\[+|\]+$/g, '').replace(/[-_]/g, ' ')
+  return cleaned.replace(/^\w/, (c) => c.toUpperCase())
 }
 
 /**
@@ -64,17 +65,24 @@ function titleFor(routePath: string): string {
  * calls a router exposes. Anything computed is skipped — a link built at run
  * time has no single destination to draw.
  */
+/** The plain name of whatever is being called, or '' when it is an expression. */
+function calleeName(expression: ts.Expression): string {
+  if (ts.isPropertyAccessExpression(expression)) return expression.name.text
+  if (ts.isIdentifier(expression)) return expression.text
+  return ''
+}
+
 function collectLinks(source: string, filePath: string, roots: readonly WebElement[]): string[] {
   const found = new Set<string>()
 
-  const fromJsx = (els: readonly WebElement[]): void => {
+  const fromJSX = (els: readonly WebElement[]): void => {
     for (const el of els) {
       const href = el.attributes['href'] ?? el.attributes['to']
-      if (href && href.startsWith('/')) found.add(href)
-      fromJsx(el.children)
+      if (typeof href === 'string' && href.startsWith('/')) found.add(href)
+      fromJSX(el.children)
     }
   }
-  fromJsx(roots)
+  fromJSX(roots)
 
   // router.push('/x'), navigate('/x'), redirect('/x')
   const sourceFile = ts.createSourceFile(
@@ -87,13 +95,9 @@ function collectLinks(source: string, filePath: string, roots: readonly WebEleme
   const NAV = new Set(['push', 'replace', 'navigate', 'redirect'])
   const visit = (node: ts.Node): void => {
     if (ts.isCallExpression(node)) {
-      const name = ts.isPropertyAccessExpression(node.expression)
-        ? node.expression.name.text
-        : ts.isIdentifier(node.expression)
-          ? node.expression.text
-          : ''
+      const name = calleeName(node.expression)
       if (NAV.has(name)) {
-        const arg = node.arguments[0]
+        const arg = node.arguments.at(0)
         if (arg && (ts.isStringLiteral(arg) || ts.isNoSubstitutionTemplateLiteral(arg))) {
           if (arg.text.startsWith('/')) found.add(arg.text)
         }
@@ -209,7 +213,7 @@ export async function scanProject(root: string, io: ProjectIO): Promise<ProjectS
       warnings.push(`could not read ${filePath}: ${String(error)}`)
       continue
     }
-    const parsed = parseJsx(source, filePath)
+    const parsed = parseJSX(source, filePath)
     const fatal = parsed.warnings.filter((w) => w.startsWith('parse error'))
     if (fatal.length > 0) {
       warnings.push(`${filePath}: ${fatal[0]}`)

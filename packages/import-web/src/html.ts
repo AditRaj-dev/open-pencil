@@ -12,7 +12,7 @@ interface P5Location {
   endCol: number
   startTag?: { startOffset: number; endOffset: number }
   endTag?: { startOffset: number; endOffset: number }
-  attrs?: Record<string, { startOffset: number; endOffset: number }>
+  attrs?: Record<string, { startOffset: number; endOffset: number } | undefined>
 }
 
 interface P5Node {
@@ -45,37 +45,74 @@ const SKIP = new Set([
  * HTML has no dynamic constructs, so every node here is statically known and
  * `dynamic` is always false — which makes HTML the safe case for write-back.
  */
-export function parseHtml(source: string, filePath: string): ParseResult {
-  const doc = parse(source, { sourceCodeLocationInfo: true }) as unknown as P5Node
+/**
+ * Positional fields with defaults, for a node parse5 gave no location.
+ *
+ * Extracted so `spanOf` stays a straight assembly rather than a chain of
+ * fallbacks.
+ */
+function offsetsOf(
+  loc: P5Location | null | undefined
+): Omit<WebSpan, 'filePath' | 'className' | 'classNameRange'> {
+  // One guard rather than a fallback per field: parse5 either located the node
+  // or it did not.
+  if (!loc) {
+    return {
+      start: 0,
+      end: 0,
+      tagEnd: 0,
+      closingTagStart: null,
+      startLine: 1,
+      startColumn: 1,
+      endLine: 1,
+      endColumn: 1
+    }
+  }
+  return {
+    start: loc.startOffset,
+    end: loc.endOffset,
+    tagEnd: loc.startTag?.endOffset ?? loc.startOffset,
+    // Absent for void elements (<img>, <br>) and unclosed tags.
+    closingTagStart: loc.endTag?.startOffset ?? null,
+    startLine: loc.startLine,
+    startColumn: loc.startCol,
+    endLine: loc.endLine,
+    endColumn: loc.endCol
+  }
+}
+
+/**
+ * Narrow parse5's attribute range to the class VALUE.
+ *
+ * parse5 reports the span of the whole `class="..."` attribute; a rewrite must
+ * replace only what is between the quotes, or it would eat the attribute name.
+ */
+function classRangeOf(
+  loc: P5Location | null | undefined,
+  className: string | null
+): { start: number; end: number } | null {
+  if (!loc?.attrs || className === null) return null
+  const classAttr = 'class' in loc.attrs ? loc.attrs['class'] : undefined
+  if (!classAttr) return null
+  return {
+    start: classAttr.endOffset - className.length - 1,
+    end: classAttr.endOffset - 1
+  }
+}
+
+export function parseHTML(source: string, filePath: string): ParseResult {
+  // parse5's Document already matches the subset this module reads.
+  const doc: P5Node = parse(source, { sourceCodeLocationInfo: true })
   const warnings: string[] = []
   const roots: WebElement[] = []
 
   const spanOf = (node: P5Node): WebSpan => {
-    const loc = node.sourceCodeLocation
-    const classAttr = loc?.attrs?.['class']
     const className = node.attrs?.find((a) => a.name === 'class')?.value ?? null
-
     return {
       filePath,
-      start: loc?.startOffset ?? 0,
-      end: loc?.endOffset ?? 0,
-      tagEnd: loc?.startTag?.endOffset ?? loc?.startOffset ?? 0,
-      // Absent for void elements (<img>, <br>) and unclosed tags.
-      closingTagStart: loc?.endTag?.startOffset ?? null,
-      startLine: loc?.startLine ?? 1,
-      startColumn: loc?.startCol ?? 1,
-      endLine: loc?.endLine ?? 1,
-      endColumn: loc?.endCol ?? 1,
+      ...offsetsOf(node.sourceCodeLocation),
       className,
-      // parse5 gives the whole `class="..."` attribute range; narrow it to the
-      // value so a rewrite replaces only the classes.
-      classNameRange:
-        classAttr && className !== null
-          ? {
-              start: classAttr.endOffset - className.length - 1,
-              end: classAttr.endOffset - 1
-            }
-          : null
+      classNameRange: classRangeOf(node.sourceCodeLocation, className)
     }
   }
 

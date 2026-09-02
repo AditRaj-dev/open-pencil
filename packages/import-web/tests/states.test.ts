@@ -1,17 +1,17 @@
 import { describe, expect, test } from 'bun:test'
 
 import { applyEdits, WriteBackError } from '../src/edit'
-import { parseJsx } from '../src/jsx'
+import { parseJSX } from '../src/jsx'
 import {
   detectStates,
   editStateClasses,
   promoteStateClasses,
-  promoteStateCss
+  promoteStateCSS
 } from '../src/states'
 import { toSceneNodes } from '../src/to-scene'
 
 const webOf = (src: string) =>
-  toSceneNodes(parseJsx(src, 'A.tsx'), { filePath: 'A.tsx' }).nodes[0]!.source.web!
+  toSceneNodes(parseJSX(src, 'A.tsx'), { filePath: 'A.tsx' }).nodes[0]!.source.web!
 
 describe('detectStates', () => {
   test('finds states from utility variants', () => {
@@ -37,13 +37,13 @@ describe('detectStates', () => {
   })
 })
 
-describe('promoteStateCss', () => {
+describe('promoteStateCSS', () => {
   const css = `.btn { color: blue; }
 .btn:hover { color: red; }
 .btn:active { color: green; }`
 
   test('makes the chosen state apply at rest', () => {
-    const out = promoteStateCss(css, 'hover')
+    const out = promoteStateCSS(css, 'hover')
     expect(out).toContain('color: red')
     // the pseudo-class itself is gone, so it applies without a pointer
     expect(out).not.toContain(':hover')
@@ -52,14 +52,14 @@ describe('promoteStateCss', () => {
   })
 
   test('default strips every state rule', () => {
-    const out = promoteStateCss(css, 'default')
+    const out = promoteStateCSS(css, 'default')
     expect(out).toContain('color: blue')
     expect(out).not.toContain('color: red')
     expect(out).not.toContain('color: green')
   })
 
   test('the promoted rule comes last, so it wins the cascade', () => {
-    const out = promoteStateCss(css, 'hover')
+    const out = promoteStateCSS(css, 'hover')
     expect(out.indexOf('color: red')).toBeGreaterThan(out.indexOf('color: blue'))
   })
 })
@@ -127,7 +127,7 @@ describe('editStateClasses', () => {
   test('round-trips: the written classes parse back and detect as that state', () => {
     const src = `const A = () => <button className="px-4">x</button>`
     const out = applyEdits(src, [editStateClasses(webOf(src), 'focus', ['ring-2'])])
-    const reparsed = parseJsx(out, 'A.tsx').roots[0]!
+    const reparsed = parseJSX(out, 'A.tsx').roots[0]!
     expect(detectStates(reparsed.span.className, undefined).map((s) => s.state)).toEqual(['focus'])
   })
 })

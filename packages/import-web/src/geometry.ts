@@ -58,13 +58,11 @@ export function joinGeometry(
       if (!node || !el) continue
 
       const candidate = measured[i]
-      const tagsAgree =
-        candidate !== undefined &&
-        candidate.tagName.toLowerCase() === el.tagName.toLowerCase()
+      const tagsAgree = candidate.tagName.toLowerCase() === el.tagName.toLowerCase()
 
       // A component renders to markup whose root tag is unknown from source, so
       // accept the positional candidate for it rather than requiring a name match.
-      const acceptable = tagsAgree || (el.isComponent && candidate !== undefined)
+      const acceptable = tagsAgree || el.isComponent
 
       if (!acceptable) {
         markUnmatched(id)

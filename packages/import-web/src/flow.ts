@@ -240,5 +240,7 @@ export function screenSlugFromName(name: string): string | null {
 /** Read a connector's endpoints back out of a node name. */
 export function connectorSlugsFromName(name: string): { from: string; to: string } | null {
   const match = /op-link_([A-Za-z0-9-]+)__([A-Za-z0-9-]+)/.exec(name)
-  return match ? { from: match[1]!, to: match[2]! } : null
+  if (!match) return null
+  const [, from, to] = match
+  return from && to ? { from, to } : null
 }

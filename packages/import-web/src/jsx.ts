@@ -1,6 +1,28 @@
+// The acronym-casing rule is disabled for this file in oxlint.json: TypeScript's
+// public API spells these `JsxElement`, and they are that project's names.
 import ts from 'typescript'
 
 import type { ParseResult, WebElement, WebSpan } from './types'
+
+/** `parseDiagnostics` is real but not part of the public SourceFile type. */
+interface SourceFileWithDiagnostics extends ts.SourceFile {
+  parseDiagnostics?: ts.Diagnostic[]
+}
+
+function scriptKindFor(filePath: string): ts.ScriptKind {
+  if (filePath.endsWith('.tsx')) return ts.ScriptKind.TSX
+  if (filePath.endsWith('.ts')) return ts.ScriptKind.TS
+  return ts.ScriptKind.JSX
+}
+
+function closingStartOf(
+  node: ts.JsxElement | ts.JsxSelfClosingElement | ts.JsxFragment,
+  sourceFile: ts.SourceFile
+): number | null {
+  if (ts.isJsxElement(node)) return node.closingElement.getStart(sourceFile)
+  if (ts.isJsxFragment(node)) return node.closingFragment.getStart(sourceFile)
+  return null
+}
 
 /**
  * Parse a .jsx/.tsx file into a source-exact element tree.
@@ -11,12 +33,8 @@ import type { ParseResult, WebElement, WebSpan } from './types'
  * angle brackets, or generics. Those are not edge cases in React source, they
  * are Tuesday — and a wrong span means a write-back corrupts the file.
  */
-export function parseJsx(source: string, filePath: string): ParseResult {
-  const scriptKind = filePath.endsWith('.tsx')
-    ? ts.ScriptKind.TSX
-    : filePath.endsWith('.ts')
-      ? ts.ScriptKind.TS
-      : ts.ScriptKind.JSX
+export function parseJSX(source: string, filePath: string): ParseResult {
+  const scriptKind = scriptKindFor(filePath)
 
   const sourceFile = ts.createSourceFile(
     filePath,
@@ -32,8 +50,7 @@ export function parseJsx(source: string, filePath: string): ParseResult {
 
   // Report the parser's own syntax errors rather than silently emitting a
   // partial tree — a caller must not write back to a file we misread.
-  const diagnostics = (sourceFile as unknown as { parseDiagnostics?: ts.Diagnostic[] })
-    .parseDiagnostics
+  const diagnostics = (sourceFile as SourceFileWithDiagnostics).parseDiagnostics
   if (diagnostics?.length) {
     for (const d of diagnostics.slice(0, 5)) {
       warnings.push(
@@ -50,8 +67,11 @@ export function parseJsx(source: string, filePath: string): ParseResult {
   /** The opening element carries the tag name and attributes. */
   const openingOf = (
     node: ts.JsxElement | ts.JsxSelfClosingElement | ts.JsxFragment
-  ): ts.JsxOpeningElement | ts.JsxSelfClosingElement | ts.JsxOpeningFragment =>
-    ts.isJsxElement(node) ? node.openingElement : ts.isJsxFragment(node) ? node.openingFragment : node
+  ): ts.JsxOpeningElement | ts.JsxSelfClosingElement | ts.JsxOpeningFragment => {
+    if (ts.isJsxElement(node)) return node.openingElement
+    if (ts.isJsxFragment(node)) return node.openingFragment
+    return node
+  }
 
   const tagNameOf = (node: ts.Node): string => {
     if (ts.isJsxFragment(node)) return 'Fragment'
@@ -119,11 +139,7 @@ export function parseJsx(source: string, filePath: string): ParseResult {
     const end = node.getEnd()
     const opening = openingOf(node)
     const tagEnd = ts.isJsxOpeningFragment(opening) ? start : opening.getEnd()
-    const closingTagStart = ts.isJsxElement(node)
-      ? node.closingElement.getStart(sourceFile)
-      : ts.isJsxFragment(node)
-        ? node.closingFragment.getStart(sourceFile)
-        : null
+    const closingTagStart = closingStartOf(node, sourceFile)
     const s = lineCol(start)
     const e = lineCol(end)
 
@@ -178,7 +194,7 @@ export function parseJsx(source: string, filePath: string): ParseResult {
           // legitimate edit that applies to every row. So capture the elements
           // and mark the parent dynamic, rather than dropping them entirely.
           childDynamic = true
-          for (const nested of collectJsx(child)) children.push(convert(nested))
+          for (const nested of collectJSX(child)) children.push(convert(nested))
           continue
         }
       }
@@ -236,7 +252,7 @@ export function parseJsx(source: string, filePath: string): ParseResult {
  * descending into ones already nested in another JSX element (those are
  * reached by the normal child walk).
  */
-function collectJsx(
+function collectJSX(
   root: ts.Node
 ): Array<ts.JsxElement | ts.JsxSelfClosingElement | ts.JsxFragment> {
   const found: Array<ts.JsxElement | ts.JsxSelfClosingElement | ts.JsxFragment> = []

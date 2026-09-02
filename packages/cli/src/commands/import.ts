@@ -13,7 +13,7 @@ import {
   type DesignDocument
 } from '@open-pencil/dom-css'
 
-import { jsxToHtmlDocument, parseJsx } from '@open-pencil/import-web'
+import { jsxToHTMLDocument, parseJSX } from '@open-pencil/import-web'
 
 import { requireFile } from '#cli/app-client'
 import { fmtList, ok, printError } from '#cli/format'
@@ -78,14 +78,14 @@ async function readAsHTML(file: string, args: ImportArgs): Promise<string> {
   const text = await readTextFile(file)
   if (!JSX_EXT.test(file)) return text
 
-  const parsed = parseJsx(text, file)
+  const parsed = parseJSX(text, file)
   if (parsed.roots.length === 0) {
     throw new Error(`no JSX elements found in ${file}`)
   }
   for (const warning of parsed.warnings) {
     if (warning.startsWith('parse error')) throw new Error(`${file}: ${warning}`)
   }
-  return jsxToHtmlDocument(parsed.roots, { css: await cssTextForArgs(args), title: file })
+  return jsxToHTMLDocument(parsed.roots, { css: await cssTextForArgs(args), title: file })
 }
 
 async function importHTML(args: ImportArgs) {

@@ -1,7 +1,7 @@
 import { readdir, readFile, writeFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 
-import { connectorClassFor, screenClassFor } from '@open-pencil/import-web'
+import { connectorClassFor, screenClassFor, type FlowLayout } from '@open-pencil/import-web'
 import type { Connect, Plugin } from 'vite'
 
 /**
@@ -20,11 +20,28 @@ export function importWebPlugin(): Plugin {
       server.middlewares.use('/__op/import-project', json(importProject))
       server.middlewares.use('/__op/write', json(writeEditsHandler))
       server.middlewares.use('/__op/read', json(readSource))
+      // Granular file access, so the browser can run the same scan the desktop
+      // app runs in-process rather than needing a parallel server-side path.
+      server.middlewares.use('/__op/read-dir', json(readDirHandler))
+      server.middlewares.use('/__op/read-file', json(readFileHandler))
+      server.middlewares.use('/__op/write-file', json(writeFileHandler))
     }
   }
 }
 
-type Handler = (body: Record<string, unknown>) => Promise<unknown>
+/** Fields any of these endpoints may receive. All optional; each handler validates. */
+interface RequestBody {
+  dir?: string
+  css?: string
+  state?: string
+  columns?: string | number
+  path?: string
+  contents?: string
+  filePath?: string
+  edits?: unknown
+}
+
+type Handler = (body: RequestBody) => Promise<unknown>
 
 function json(handler: Handler): Connect.NextHandleFunction {
   return (req, res, next) => {
@@ -40,7 +57,7 @@ function json(handler: Handler): Connect.NextHandleFunction {
       void (async () => {
         res.setHeader('content-type', 'application/json')
         try {
-          const body = raw ? (JSON.parse(raw) as Record<string, unknown>) : {}
+          const body: RequestBody = raw ? JSON.parse(raw) : {}
           res.end(JSON.stringify({ ok: true, result: await handler(body) }))
         } catch (error) {
           res.statusCode = 400
@@ -53,12 +70,12 @@ function json(handler: Handler): Connect.NextHandleFunction {
   }
 }
 
-async function importProject(body: Record<string, unknown>) {
+async function importProject(body: RequestBody) {
   const {
-    jsxToHtmlDocument,
+    jsxToHTMLDocument,
     layoutFlow,
     promoteStateClasses,
-    promoteStateCss,
+    promoteStateCSS,
     scanProject
   } = await import('@open-pencil/import-web')
 
@@ -85,15 +102,15 @@ async function importProject(body: Record<string, unknown>) {
 
   const bodies = new Map<string, string>()
   for (const screen of scan.screens) {
-    const html = jsxToHtmlDocument(screen.roots, {})
+    const html = jsxToHTMLDocument(screen.roots, {})
     bodies.set(
       screen.routePath,
       html.slice(html.indexOf('<body>') + 6, html.lastIndexOf('</body>'))
     )
   }
 
-  const rawCss = body.css ? await readFile(resolve(String(body.css)), 'utf8') : undefined
-  const css = rawCss ? promoteStateCss(rawCss, state as never) : undefined
+  const rawCSS = body.css ? await readFile(resolve(String(body.css)), 'utf8') : undefined
+  const css = rawCSS ? promoteStateCSS(rawCSS, state as never) : undefined
   let composed = composeFlow(layout, bodies, css)
   if (state !== 'default') composed = promoteStateClasses(composed, state as never)
 
@@ -107,7 +124,7 @@ async function importProject(body: Record<string, unknown>) {
   }
 }
 
-async function writeEditsHandler(body: Record<string, unknown>) {
+async function writeEditsHandler(body: RequestBody) {
   const { writeEdits } = await import('@open-pencil/import-web')
   const edits = body.edits as Parameters<typeof writeEdits>[0]
   if (!Array.isArray(edits) || edits.length === 0) throw new Error('edits are required')
@@ -122,7 +139,21 @@ async function writeEditsHandler(body: Record<string, unknown>) {
   return { written: results.map((r) => r.filePath), changed: results.length > 0 }
 }
 
-async function readSource(body: Record<string, unknown>) {
+async function readDirHandler(body: RequestBody) {
+  const entries = await readdir(resolve(String(body.path ?? '')), { withFileTypes: true })
+  return entries.map((e) => ({ name: e.name, isDirectory: e.isDirectory() }))
+}
+
+async function readFileHandler(body: RequestBody) {
+  return { text: await readFile(resolve(String(body.path ?? '')), 'utf8') }
+}
+
+async function writeFileHandler(body: RequestBody) {
+  await writeFile(resolve(String(body.path ?? '')), String(body.contents ?? ''), 'utf8')
+  return { written: true }
+}
+
+async function readSource(body: RequestBody) {
   const { parseWebSource } = await import('@open-pencil/import-web')
   const filePath = String(body.filePath ?? '')
   if (!filePath) throw new Error('filePath is required')
@@ -137,20 +168,7 @@ function composeFlow(
   bodies: Map<string, string>,
   css: string | undefined
 ): string {
-  const l = layout as unknown as {
-    screens: Array<{
-      routePath: string
-      title: string
-      x: number
-      y: number
-      width: number
-      height: number
-      dynamic: boolean
-    }>
-    connectors: Array<{ from: string; to: string; x1: number; y1: number; length: number; angle: number }>
-    width: number
-    height: number
-  }
+  const l = layout
 
   const screens = l.screens
     .map(
@@ -181,7 +199,7 @@ ${bodies.get(s.routePath) ?? ''}
   body { margin:0; background:#f1f5f9; position:relative;
          width:${Math.round(l.width)}px; height:${Math.round(l.height)}px; }
   .op-screen { background:#fff; border-radius:12px; overflow:hidden;
-               box-shadow:0 1px 3px rgba(15,23,42,0.18); }
+               box-shadow:0 1px 3px #0f172a2e; }
   .op-screen-label { font:600 20px system-ui,sans-serif; color:#0f172a;
                      padding:12px 16px; background:#e2e8f0; }
   .op-connector { background:#2563eb; border-radius:1px; }

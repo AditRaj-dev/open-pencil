@@ -2,9 +2,9 @@ import { describe, expect, test } from 'bun:test'
 
 import { applyEdits, editClassName, editText, WriteBackError } from '../src/edit'
 import { joinGeometry, type MeasuredElement } from '../src/geometry'
-import { parseHtml } from '../src/html'
-import { jsxToHtml } from '../src/to-html'
-import { parseJsx } from '../src/jsx'
+import { parseHTML } from '../src/html'
+import { jsxToHTML } from '../src/to-html'
+import { parseJSX } from '../src/jsx'
 import { parseWebSource } from '../src/parse'
 import { toSceneNodes } from '../src/to-scene'
 import { writeEdits, type FileIO } from '../src/write'
@@ -37,20 +37,20 @@ const measured = (
 describe('editText', () => {
   test('replaces the text between the tags and nothing else', () => {
     const src = `const A = () => <button className="b">Buy now</button>`
-    const { nodes } = toSceneNodes(parseJsx(src, 'A.tsx'), { filePath: 'A.tsx' })
+    const { nodes } = toSceneNodes(parseJSX(src, 'A.tsx'), { filePath: 'A.tsx' })
     const out = applyEdits(src, [editText(nodes[0]!.source.web!, 'Get started')])
     expect(out).toBe(`const A = () => <button className="b">Get started</button>`)
   })
 
   test('refuses a self-closing element, which has no text', () => {
     const src = `const A = () => <img src="a.png" />`
-    const { nodes } = toSceneNodes(parseJsx(src, 'A.tsx'), { filePath: 'A.tsx' })
+    const { nodes } = toSceneNodes(parseJSX(src, 'A.tsx'), { filePath: 'A.tsx' })
     expect(() => editText(nodes[0]!.source.web!, 'x')).toThrow(WriteBackError)
   })
 
   test('a text edit and a class edit on the same element compose', () => {
     const src = `const A = () => <p className="old">before</p>`
-    const { nodes } = toSceneNodes(parseJsx(src, 'A.tsx'), { filePath: 'A.tsx' })
+    const { nodes } = toSceneNodes(parseJSX(src, 'A.tsx'), { filePath: 'A.tsx' })
     const web = nodes[0]!.source.web!
     const out = applyEdits(src, [editClassName(web, 'new'), editText(web, 'after')])
     expect(out).toBe(`const A = () => <p className="new">after</p>`)
@@ -60,7 +60,7 @@ describe('editText', () => {
 describe('joinGeometry', () => {
   test('fills geometry from the rendered tree', () => {
     const src = `const A = () => (<div className="page"><span>hi</span></div>)`
-    const { nodes, byId } = toSceneNodes(parseJsx(src, 'A.tsx'), { filePath: 'A.tsx' })
+    const { nodes, byId } = toSceneNodes(parseJSX(src, 'A.tsx'), { filePath: 'A.tsx' })
     const rendered = [measured('div', 10, 20, 400, 300, [measured('span', 18, 28, 40, 16)])]
 
     const { matched, unmatched } = joinGeometry(nodes, byId, rendered)
@@ -77,7 +77,7 @@ describe('joinGeometry', () => {
     // The DOM has three <li>; the source has one inside a .map(). Pairing them
     // positionally would attach the wrong source range to two of them.
     const src = `const A = () => (<ul>{items.map(i => <li key={i}>{i}</li>)}</ul>)`
-    const { nodes, byId } = toSceneNodes(parseJsx(src, 'A.tsx'), { filePath: 'A.tsx' })
+    const { nodes, byId } = toSceneNodes(parseJSX(src, 'A.tsx'), { filePath: 'A.tsx' })
     const rendered = [
       measured('ul', 0, 0, 200, 90, [
         measured('li', 0, 0, 200, 30),
@@ -97,7 +97,7 @@ describe('joinGeometry', () => {
 
   test('a tag mismatch stops the pairing instead of sliding everything along', () => {
     const src = `const A = () => (<div><span>a</span></div>)`
-    const { nodes, byId } = toSceneNodes(parseJsx(src, 'A.tsx'), { filePath: 'A.tsx' })
+    const { nodes, byId } = toSceneNodes(parseJSX(src, 'A.tsx'), { filePath: 'A.tsx' })
     const rendered = [measured('section', 0, 0, 10, 10)]
     const { matched, unmatched } = joinGeometry(nodes, byId, rendered)
     expect(matched).toEqual([])
@@ -106,7 +106,7 @@ describe('joinGeometry', () => {
 
   test('a component matches positionally, since its rendered tag is unknown from source', () => {
     const src = `const A = () => (<div><PricingCard /></div>)`
-    const { nodes, byId } = toSceneNodes(parseJsx(src, 'A.tsx'), { filePath: 'A.tsx' })
+    const { nodes, byId } = toSceneNodes(parseJSX(src, 'A.tsx'), { filePath: 'A.tsx' })
     const rendered = [measured('div', 0, 0, 100, 100, [measured('article', 5, 5, 90, 90)])]
     const { unmatched } = joinGeometry(nodes, byId, rendered)
     expect(unmatched).toEqual([])
@@ -119,7 +119,7 @@ describe('writeEdits', () => {
   test('writes the spliced file to disk', async () => {
     const src = `const A = () => <div className="a">hi</div>`
     const io = memoryIO({ 'A.tsx': src })
-    const { nodes } = toSceneNodes(parseJsx(src, 'A.tsx'), { filePath: 'A.tsx' })
+    const { nodes } = toSceneNodes(parseJSX(src, 'A.tsx'), { filePath: 'A.tsx' })
 
     const results = await writeEdits([editClassName(nodes[0]!.source.web!, 'b')], io)
     expect(results.length).toBe(1)
@@ -131,7 +131,7 @@ describe('writeEdits', () => {
   test('a no-op edit does not rewrite the file', async () => {
     const src = `const A = () => <div className="a">hi</div>`
     const io = memoryIO({ 'A.tsx': src })
-    const { nodes } = toSceneNodes(parseJsx(src, 'A.tsx'), { filePath: 'A.tsx' })
+    const { nodes } = toSceneNodes(parseJSX(src, 'A.tsx'), { filePath: 'A.tsx' })
     const results = await writeEdits([editClassName(nodes[0]!.source.web!, 'a')], io)
     expect(results).toEqual([])
   })
@@ -160,7 +160,7 @@ describe('writeEdits', () => {
   test('a failure part-way through rolls back the files already written', async () => {
     const good = `const A = () => <div className="a">hi</div>`
     const io = memoryIO({ 'A.tsx': good, 'B.tsx': good })
-    const { nodes } = toSceneNodes(parseJsx(good, 'A.tsx'), { filePath: 'A.tsx' })
+    const { nodes } = toSceneNodes(parseJSX(good, 'A.tsx'), { filePath: 'A.tsx' })
     const ok = editClassName(nodes[0]!.source.web!, 'b')
     const broken = { filePath: 'B.tsx', start: 16, end: 30, text: '<<<', label: 'corrupt' }
 
@@ -183,7 +183,7 @@ describe('props vs children being dynamic', () => {
     // The common real case: restyle every row of a mapped list. The children
     // are unknown, the props are not, so the class edit is safe.
     const src = `const A = () => <ul>{items.map(i => <li className="row">{i}</li>)}</ul>`
-    const { nodes } = toSceneNodes(parseJsx(src, 'A.tsx'), { filePath: 'A.tsx' })
+    const { nodes } = toSceneNodes(parseJSX(src, 'A.tsx'), { filePath: 'A.tsx' })
     const li = nodes.find((n) => n.source.web!.tagName === 'li')!
 
     expect(li.source.web!.childrenDynamic).toBe(true)
@@ -197,14 +197,14 @@ describe('props vs children being dynamic', () => {
 
   test('but its text still cannot be replaced, because that would delete code', () => {
     const src = `const A = () => <ul>{items.map(i => <li className="row">{i}</li>)}</ul>`
-    const { nodes } = toSceneNodes(parseJsx(src, 'A.tsx'), { filePath: 'A.tsx' })
+    const { nodes } = toSceneNodes(parseJSX(src, 'A.tsx'), { filePath: 'A.tsx' })
     const li = nodes.find((n) => n.source.web!.tagName === 'li')!
     expect(() => editText(li.source.web!, 'static')).toThrow(WriteBackError)
   })
 
   test('a spread still blocks a class rewrite', () => {
     const src = `const A = () => <div {...rest} className="a">hi</div>`
-    const { nodes } = toSceneNodes(parseJsx(src, 'A.tsx'), { filePath: 'A.tsx' })
+    const { nodes } = toSceneNodes(parseJSX(src, 'A.tsx'), { filePath: 'A.tsx' })
     expect(() => editClassName(nodes[0]!.source.web!, 'b')).toThrow(WriteBackError)
   })
 })
@@ -216,7 +216,7 @@ describe('stale offsets', () => {
     // twice without re-parsing.
     const src = `const A = () => (<div className="aaa"><span className="bbb">x</span></div>)`
     const io = memoryIO({ 'A.tsx': src })
-    const { nodes } = toSceneNodes(parseJsx(src, 'A.tsx'), { filePath: 'A.tsx' })
+    const { nodes } = toSceneNodes(parseJSX(src, 'A.tsx'), { filePath: 'A.tsx' })
 
     await writeEdits([editClassName(nodes[0]!.source.web!, 'MUCH-LONGER-CLASS')], io)
 
@@ -234,10 +234,10 @@ describe('stale offsets', () => {
   test('re-parsing after the first edit makes the second succeed', async () => {
     const src = `const A = () => (<div className="aaa"><span className="bbb">x</span></div>)`
     const io = memoryIO({ 'A.tsx': src })
-    const first = toSceneNodes(parseJsx(src, 'A.tsx'), { filePath: 'A.tsx' })
+    const first = toSceneNodes(parseJSX(src, 'A.tsx'), { filePath: 'A.tsx' })
     await writeEdits([editClassName(first.nodes[0]!.source.web!, 'MUCH-LONGER-CLASS')], io)
 
-    const reparsed = toSceneNodes(parseJsx(io.files['A.tsx']!, 'A.tsx'), { filePath: 'A.tsx' })
+    const reparsed = toSceneNodes(parseJSX(io.files['A.tsx']!, 'A.tsx'), { filePath: 'A.tsx' })
     await writeEdits([editClassName(reparsed.nodes[1]!.source.web!, 'ccc')], io)
 
     expect(io.files['A.tsx']).toBe(
@@ -246,7 +246,7 @@ describe('stale offsets', () => {
   })
 })
 
-describe('jsxToHtml', () => {
+describe('jsxToHTML', () => {
   test('renders static markup and carries source ranges', () => {
     const src = `const A = () => (
   <div className="page" id="root">
@@ -254,8 +254,8 @@ describe('jsxToHtml', () => {
     <img src="a.png" />
   </div>
 )`
-    const { roots } = parseJsx(src, 'A.tsx')
-    const html = jsxToHtml(roots)
+    const { roots } = parseJSX(src, 'A.tsx')
+    const html = jsxToHTML(roots)
 
     // className became class, and the source range rides along
     expect(html).toContain('class="page"')
@@ -273,7 +273,7 @@ describe('jsxToHtml', () => {
 
   test('drops expression props and React-internal ones', () => {
     const src = `const A = () => <li className="row" key={k} onClick={go}>x</li>`
-    const html = jsxToHtml(parseJsx(src, 'A.tsx').roots)
+    const html = jsxToHTML(parseJSX(src, 'A.tsx').roots)
     expect(html).toContain('class="row"')
     expect(html).not.toContain('key=')
     expect(html).not.toContain('onClick')
@@ -281,16 +281,16 @@ describe('jsxToHtml', () => {
 
   test('a component keeps its name and children instead of disappearing', () => {
     const src = `const A = () => <div><Card title="Pro"><b>x</b></Card></div>`
-    const html = jsxToHtml(parseJsx(src, 'A.tsx').roots)
+    const html = jsxToHTML(parseJSX(src, 'A.tsx').roots)
     expect(html).toContain('data-op-component="Card"')
     expect(html).toContain('title="Pro"')
     expect(html).toContain('<b')
   })
 
-  test('round-trips through parseHtml, so the DOM pipeline can consume it', () => {
+  test('round-trips through parseHTML, so the DOM pipeline can consume it', () => {
     const src = `const A = () => (<div className="wrap"><span className="in">hi</span></div>)`
-    const html = jsxToHtml(parseJsx(src, 'A.tsx').roots)
-    const reparsed = parseHtml(html, 'out.html')
+    const html = jsxToHTML(parseJSX(src, 'A.tsx').roots)
+    const reparsed = parseHTML(html, 'out.html')
     expect(reparsed.roots[0]!.span.className).toBe('wrap')
     expect(reparsed.roots[0]!.children[0]!.text).toBe('hi')
   })

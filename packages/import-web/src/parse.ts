@@ -1,5 +1,5 @@
-import { parseHtml } from './html'
-import { parseJsx } from './jsx'
+import { parseHTML } from './html'
+import { parseJSX } from './jsx'
 import type { ParseResult } from './types'
 
 /**
@@ -9,7 +9,7 @@ import type { ParseResult } from './types'
  * importing the package's own entry point back into itself.
  */
 export function parseWebSource(source: string, filePath: string): ParseResult {
-  if (/\.html?$/i.test(filePath)) return parseHtml(source, filePath)
-  if (/\.[jt]sx?$/i.test(filePath)) return parseJsx(source, filePath)
+  if (/\.html?$/i.test(filePath)) return parseHTML(source, filePath)
+  if (/\.[jt]sx?$/i.test(filePath)) return parseJSX(source, filePath)
   throw new Error(`no parser for ${filePath}; expected .html, .jsx, .tsx, .js or .ts`)
 }

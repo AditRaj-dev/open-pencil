@@ -19,7 +19,10 @@ export interface SourceEdit {
   anchor?: string
 }
 
-export class WriteBackError extends Error {}
+export class WriteBackError extends Error {
+  // Named explicitly so it survives minification and reads correctly in logs.
+  override readonly name = 'WriteBackError'
+}
 
 /**
  * Rewrite an element's class list.
@@ -53,7 +56,7 @@ export function editClassName(web: WebSourcePayload, classes: string): SourceEdi
     }
   }
 
-  const attr = web.filePath.match(/\.[jt]sx$/) ? 'className' : 'class'
+  const attr = /\.[jt]sx$/.test(web.filePath) ? 'className' : 'class'
   const insertAt = web.start + 1 + web.tagName.length
   return {
     filePath: web.filePath,
@@ -109,9 +112,11 @@ export function applyEdits(source: string, edits: readonly SourceEdit[]): string
 
   const ordered = [...edits].sort((a, b) => b.start - a.start || b.end - a.end)
 
-  for (let i = 0; i < ordered.length - 1; i++) {
-    const later = ordered[i]!
-    const earlier = ordered[i + 1]!
+  // Compare each edit with the one that follows it in descending order; the
+  // final entry has no successor, hence the length - 1 bound.
+  for (let i = 0; i < ordered.length - 1; i += 1) {
+    const later = ordered[i]
+    const earlier = ordered[i + 1]
     if (earlier.end > later.start) {
       throw new WriteBackError(
         `overlapping edits: "${earlier.label}" [${earlier.start},${earlier.end}) ` +

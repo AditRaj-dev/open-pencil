@@ -517,6 +517,14 @@
       "rules": {
         "unicorn/require-post-message-target-origin": "off"
       }
+    },
+    {
+      "files": [
+        "packages/import-web/src/jsx.ts"
+      ],
+      "rules": {
+        "open-pencil/no-mixed-case-acronym-identifiers": "off"
+      }
     }
   ],
   "ignorePatterns": [

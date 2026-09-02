@@ -2,7 +2,9 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "Capability for the main window",
-  "windows": ["main"],
+  "windows": [
+    "main"
+  ],
   "permissions": [
     "core:default",
     "opener:default",
@@ -16,55 +18,116 @@
     "clipboard-manager:allow-write-text",
     {
       "identifier": "fs:allow-read-file",
-      "allow": [{ "path": "**" }]
+      "allow": [
+        {
+          "path": "**"
+        }
+      ]
     },
     {
       "identifier": "fs:allow-read-text-file",
       "allow": [
-        { "path": "$HOME/Library/Application Support/OpenPencil/mcp.json" },
-        { "path": "$LOCALDATA/OpenPencil/mcp.json" },
-        { "path": "$RUNTIME/openpencil/mcp.json" },
-        { "path": "$HOME/.openpencil/mcp.json" }
+        {
+          "path": "$HOME/Library/Application Support/OpenPencil/mcp.json"
+        },
+        {
+          "path": "$LOCALDATA/OpenPencil/mcp.json"
+        },
+        {
+          "path": "$RUNTIME/openpencil/mcp.json"
+        },
+        {
+          "path": "$HOME/.openpencil/mcp.json"
+        }
       ]
     },
     {
       "identifier": "fs:allow-write-file",
-      "allow": [{ "path": "**" }]
+      "allow": [
+        {
+          "path": "**"
+        }
+      ]
     },
     {
       "identifier": "fs:allow-exists",
       "allow": [
-        { "path": "$HOME/Library/Application Support/OpenPencil/mcp.json" },
-        { "path": "$LOCALDATA/OpenPencil/mcp.json" },
-        { "path": "$RUNTIME/openpencil/mcp.json" },
-        { "path": "$HOME/.openpencil/mcp.json" }
+        {
+          "path": "$HOME/Library/Application Support/OpenPencil/mcp.json"
+        },
+        {
+          "path": "$LOCALDATA/OpenPencil/mcp.json"
+        },
+        {
+          "path": "$RUNTIME/openpencil/mcp.json"
+        },
+        {
+          "path": "$HOME/.openpencil/mcp.json"
+        }
       ]
     },
     {
       "identifier": "fs:allow-mkdir",
-      "allow": [{ "path": "**" }]
+      "allow": [
+        {
+          "path": "**"
+        }
+      ]
     },
     {
       "identifier": "fs:allow-remove",
-      "allow": [{ "path": "**" }]
+      "allow": [
+        {
+          "path": "**"
+        }
+      ]
     },
     {
       "identifier": "fs:allow-watch",
-      "allow": [{ "path": "**" }]
+      "allow": [
+        {
+          "path": "**"
+        }
+      ]
     },
     "fs:allow-unwatch",
     {
       "identifier": "shell:allow-spawn",
       "allow": [
-        { "name": "claude-agent-acp", "cmd": "claude-agent-acp", "args": true },
-        { "name": "codex-acp", "cmd": "codex-acp", "args": true },
-        { "name": "gemini", "cmd": "gemini", "args": true },
-        { "name": "openpencil-mcp-http", "cmd": "openpencil-mcp-http", "args": true },
-        { "name": "openpencil-harness", "cmd": "openpencil-harness", "args": false },
-        { "name": "cmd", "cmd": "cmd", "args": true }
+        {
+          "name": "claude-agent-acp",
+          "cmd": "claude-agent-acp",
+          "args": true
+        },
+        {
+          "name": "codex-acp",
+          "cmd": "codex-acp",
+          "args": true
+        },
+        {
+          "name": "gemini",
+          "cmd": "gemini",
+          "args": true
+        },
+        {
+          "name": "openpencil-mcp-http",
+          "cmd": "openpencil-mcp-http",
+          "args": true
+        },
+        {
+          "name": "openpencil-harness",
+          "cmd": "openpencil-harness",
+          "args": false
+        },
+        {
+          "name": "cmd",
+          "cmd": "cmd",
+          "args": true
+        }
       ]
     },
     "shell:allow-stdin-write",
-    "shell:allow-kill"
+    "shell:allow-kill",
+    "fs:allow-read-dir"
   ]
 }

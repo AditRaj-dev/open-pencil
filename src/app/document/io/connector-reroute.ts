@@ -19,18 +19,9 @@ import type { SceneGraph, SceneNode } from '@open-pencil/scene-graph'
  */
 export function wireConnectorReroute(graph: SceneGraph): () => void {
   const isScreen = (node: SceneNode | undefined): boolean =>
-    !!node && screenSlugFromName(node.name ?? '') !== null
+    node !== undefined && screenSlugFromName(node.name) !== null
 
-  const allNodes = (): SceneNode[] => {
-    const g = graph as unknown as {
-      getAllNodes?: () => Iterable<SceneNode>
-      nodes?: Map<string, SceneNode> | Record<string, SceneNode>
-    }
-    if (typeof g.getAllNodes === 'function') return Array.from(g.getAllNodes())
-    // `nodes` is a Map on the real graph; the object form is only a fallback.
-    if (g.nodes instanceof Map) return Array.from(g.nodes.values())
-    return Object.values(g.nodes ?? {})
-  }
+  const allNodes = (): SceneNode[] => Array.from(graph.getAllNodes())
 
   /** Guards against reacting to our own writes and looping. */
   let applying = false
@@ -43,7 +34,7 @@ export function wireConnectorReroute(graph: SceneGraph): () => void {
     const connectors = []
 
     for (const node of nodes) {
-      const screenSlug = screenSlugFromName(node.name ?? '')
+      const screenSlug = screenSlugFromName(node.name)
       if (screenSlug) {
         screens.push({
           routePath: screenSlug,
@@ -54,7 +45,7 @@ export function wireConnectorReroute(graph: SceneGraph): () => void {
         })
         continue
       }
-      const link = connectorSlugsFromName(node.name ?? '')
+      const link = connectorSlugsFromName(node.name)
       if (link) connectors.push({ node, from: link.from, to: link.to })
     }
 
@@ -67,10 +58,8 @@ export function wireConnectorReroute(graph: SceneGraph): () => void {
 
     applying = true
     try {
-      for (let i = 0; i < connectors.length; i++) {
-        const target = connectors[i]!
+      for (const [i, target] of connectors.entries()) {
         const geometry = next[i]
-        if (!geometry) continue
 
         if (geometry.dangling) {
           // The screen it pointed at is gone. Hide it rather than drawing a
@@ -103,10 +92,10 @@ export function wireConnectorReroute(graph: SceneGraph): () => void {
   // snapping into place after the pointer is released.
   const unbind = graph.onNodeEvents({
     updated: (id: string) => {
-      if (isScreen(graph.getNode?.(id))) reroute()
+      if (isScreen(graph.getNode(id))) reroute()
     },
     previewUpdated: (id: string) => {
-      if (isScreen(graph.getNode?.(id))) reroute()
+      if (isScreen(graph.getNode(id))) reroute()
     },
     deleted: () => reroute()
   })
@@ -119,19 +108,5 @@ export function wireConnectorReroute(graph: SceneGraph): () => void {
 }
 
 function updateNode(graph: SceneGraph, node: SceneNode, changes: Partial<SceneNode>): void {
-  const api = graph as unknown as {
-    updateNode?: (id: string, changes: Partial<SceneNode>) => void
-    setNodeProps?: (id: string, changes: Partial<SceneNode>) => void
-  }
-  if (typeof api.updateNode === 'function') {
-    api.updateNode(node.id, changes)
-    return
-  }
-  if (typeof api.setNodeProps === 'function') {
-    api.setNodeProps(node.id, changes)
-    return
-  }
-  // Last resort: mutate in place. Loses the change event, but a connector that
-  // is visually correct beats one that is stale.
-  Object.assign(node, changes)
+  graph.updateNode(node.id, changes)
 }

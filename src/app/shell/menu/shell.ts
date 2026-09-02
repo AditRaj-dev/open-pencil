@@ -56,7 +56,7 @@ export function useShellMenu() {
           state,
           importDOMText: store.importDOMText,
           // The store exposes the live graph directly.
-          getGraph: () => (store as unknown as { graph?: unknown }).graph
+          getGraph: () => store.graph
         })
       })()
     },

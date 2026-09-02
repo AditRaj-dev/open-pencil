@@ -10,11 +10,11 @@ import {
   htmlToSceneGraph
 } from '@open-pencil/dom-css'
 import {
-  jsxToHtmlDocument,
+  jsxToHTMLDocument,
   connectorClassFor,
   layoutFlow,
   promoteStateClasses,
-  promoteStateCss,
+  promoteStateCSS,
   scanProject,
   screenClassFor,
   UI_STATES,
@@ -83,7 +83,7 @@ ${body}
   body { margin: 0; background: #f1f5f9; position: relative;
          width: ${Math.round(layout.width)}px; height: ${Math.round(layout.height)}px; }
   .op-screen { background: #ffffff; border-radius: 12px; overflow: hidden;
-               box-shadow: 0 1px 3px rgba(15,23,42,0.18); }
+               box-shadow: 0 1px 3px #0f172a2e; }
   .op-screen-label { font: 600 20px system-ui, sans-serif; color: #0f172a;
                      padding: 12px 16px; background: #e2e8f0; }
   .op-screen-body { padding: 0; }
@@ -120,7 +120,7 @@ export default defineCommand({
   },
   async run({ args }) {
     try {
-      const root = resolve(args.dir as string)
+      const root = resolve(args.dir)
       const scan = await scanProject(root, io)
 
       if (scan.screens.length === 0) {
@@ -140,7 +140,7 @@ export default defineCommand({
       // Each screen's markup, transpiled but not yet styled.
       const bodies = new Map<string, string>()
       for (const screen of scan.screens) {
-        const html = jsxToHtmlDocument(screen.roots, {})
+        const html = jsxToHTMLDocument(screen.roots, {})
         const body = html.slice(html.indexOf('<body>') + 6, html.lastIndexOf('</body>'))
         bodies.set(screen.routePath, body)
       }
@@ -151,10 +151,10 @@ export default defineCommand({
         return
       }
 
-      const rawCss = args.css ? await readFile(resolve(args.css as string), 'utf8') : undefined
+      const rawCSS = args.css ? await readFile(resolve(args.css), 'utf8') : undefined
       // A canvas has no pointer, so a state is only visible if its rules are
       // made to apply at rest.
-      const cssText = rawCss ? promoteStateCss(rawCss, state) : undefined
+      const cssText = rawCSS ? promoteStateCSS(rawCSS, state) : undefined
       let composed = composeFlowHTML(layout, bodies, cssText)
       if (state !== 'default') composed = promoteStateClasses(composed, state)
 
@@ -162,15 +162,15 @@ export default defineCommand({
       // computed geometry rather than the nominal frame sizes.
       const runtime = createHeadlessCSSRuntime()
       const format = String(args.format).toLowerCase()
-      const projectName = root.split(/[\\/]/).filter(Boolean).pop() ?? 'project'
-      const outPath = resolve((args.output as string) ?? `${projectName}-flow.${format}`)
+      const projectName = /([^\\/]+)[\\/]*$/.exec(root)?.[1] ?? 'project'
+      const outPath = resolve(args.output || `${projectName}-flow.${format}`)
 
       if (format === 'html') {
         // The composed page itself, for feeding straight into the editor's
         // DOM import at run time rather than through a file.
         await writeFile(outPath, composed, 'utf8')
       } else if (format === 'json') {
-        const document = await htmlToDesignDocument(composed, { runtime, pageName: 'Flow' })
+        const document = await htmlToDesignDocument(composed, { runtime })
         await writeFile(outPath, `${JSON.stringify(document, null, 2)}\n`)
       } else {
         // .fig is what the editor opens natively.
@@ -197,16 +197,22 @@ export default defineCommand({
       }
 
       ok(`Imported ${scan.screens.length} screen(s) from ${root} → ${outPath}`)
+      // fmtList takes structured entries, matching the shape the other import
+      // command emits.
       fmtList([
-        `framework: ${scan.framework}`,
-        `state: ${state}`,
-        `screens: ${layout.screens.map((s) => s.routePath).join(', ')}`,
-        `connectors: ${
-          layout.connectors.length === 0
-            ? 'none'
-            : layout.connectors.map((c) => `${c.from} → ${c.to}`).join(', ')
-        }`,
-        ...warnings.map((w) => `warning: ${w}`)
+        {
+          header: 'Project import',
+          details: {
+            framework: scan.framework,
+            state,
+            screens: layout.screens.map((s) => s.routePath).join(', '),
+            connectors:
+              layout.connectors.length === 0
+                ? 'none'
+                : layout.connectors.map((c) => `${c.from} → ${c.to}`).join(', '),
+            ...(warnings.length > 0 ? { warnings: warnings.join('; ') } : {})
+          }
+        }
       ])
     } catch (error) {
       printError(error instanceof Error ? error.message : String(error))

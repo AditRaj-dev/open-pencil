@@ -1,10 +1,10 @@
-export { parseJsx } from './jsx'
-export { parseHtml } from './html'
+export { parseJSX } from './jsx'
+export { parseHTML } from './html'
 export { parseWebSource } from './parse'
 export { toSceneNodes, type SceneImport } from './to-scene'
 export {
   detectStates,
-  promoteStateCss,
+  promoteStateCSS,
   promoteStateClasses,
   editStateClasses,
   UI_STATES,
@@ -20,7 +20,7 @@ export {
   connectorSlugsFromName
 } from './flow'
 export { recomputeConnectors, layoutFlow, type FlowLayout, type ScreenBox, type Connector, type FlowOptions } from './flow'
-export { jsxToHtml, jsxToHtmlDocument, parseSourceAttr, SOURCE_ATTR } from './to-html'
+export { jsxToHTML, jsxToHTMLDocument, parseSourceAttr, SOURCE_ATTR } from './to-html'
 export { joinGeometry, type MeasuredElement, type JoinResult } from './geometry'
 export {
   editClassName,
