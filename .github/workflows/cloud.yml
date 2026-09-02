@@ -1,6 +1,9 @@
 name: Deploy Cloud
 
 on:
+  pull_request:
+    types: [labeled]
+    branches: [master]
   workflow_dispatch:
     inputs:
       target:
@@ -17,15 +20,21 @@ on:
         type: boolean
 
 concurrency:
-  group: cloud-${{ inputs.target }}
+  group: cloud-${{ inputs.target || 'staging' }}
   cancel-in-progress: false
 
 env:
+  CLOUD_TARGET: ${{ inputs.target || 'staging' }}
   WRANGLER_CONFIG: packages/cloud/deploy/cloudflare/wrangler.jsonc
 
 jobs:
   validate:
     name: Validate Cloud artifact
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.label.name == 'deploy-cloud-staging' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'cloud-foundation')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -43,14 +52,17 @@ jobs:
         run: bun --filter @open-pencil/cloud build
 
       - name: Validate Cloudflare bundle
-        run: bunx wrangler deploy --config "$WRANGLER_CONFIG" --env "${{ inputs.target }}" --dry-run
+        run: bunx wrangler deploy --config "$WRANGLER_CONFIG" --env "$CLOUD_TARGET" --dry-run
 
   migrate:
     name: Migrate Cloud database
-    if: inputs.deploy
+    if: >-
+      inputs.deploy ||
+      (github.event_name == 'pull_request' &&
+      github.event.label.name == 'deploy-cloud-staging')
     needs: validate
     runs-on: ubuntu-latest
-    environment: cloud-${{ inputs.target }}
+    environment: cloud-${{ inputs.target || 'staging' }}
     permissions:
       contents: read
     steps:
@@ -84,10 +96,13 @@ jobs:
 
   deploy:
     name: Deploy Cloud Worker
-    if: inputs.deploy
+    if: >-
+      inputs.deploy ||
+      (github.event_name == 'pull_request' &&
+      github.event.label.name == 'deploy-cloud-staging')
     needs: migrate
     runs-on: ubuntu-latest
-    environment: cloud-${{ inputs.target }}
+    environment: cloud-${{ inputs.target || 'staging' }}
     permissions:
       contents: read
       deployments: write
@@ -132,15 +147,18 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: >-
-            deploy --config ${{ env.WRANGLER_CONFIG }} --env ${{ inputs.target }}
+            deploy --config ${{ env.WRANGLER_CONFIG }} --env ${{ env.CLOUD_TARGET }}
             --secrets-file ${{ runner.temp }}/cloud-secrets.json
 
   smoke:
     name: Smoke test Cloud
-    if: inputs.deploy
+    if: >-
+      inputs.deploy ||
+      (github.event_name == 'pull_request' &&
+      github.event.label.name == 'deploy-cloud-staging')
     needs: deploy
     runs-on: ubuntu-latest
-    environment: cloud-${{ inputs.target }}
+    environment: cloud-${{ inputs.target || 'staging' }}
     permissions:
       contents: read
     steps:
