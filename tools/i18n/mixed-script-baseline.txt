@@ -54,6 +54,7 @@ ja:code.copyJSXReference
 ja:collaboration.clickToFollowPeer
 ja:collaboration.followingPeerStop
 ja:collaboration.pasteRoomLinkOrId
+ja:commands.paletteDescription
 ja:credentials.getAPIKey
 ja:credentials.storage
 ja:diagnostics.acpFailed
@@ -98,6 +99,10 @@ ja:menu.copyAsPNG
 ja:menu.copyAsSVG
 ja:menu.copyNodeId
 ja:menu.copyXPath
+ja:menu.exportSelectionAsFig
+ja:menu.exportSelectionAsPNG
+ja:menu.exportSelectionAsPPTX
+ja:menu.exportSelectionAsSVG
 ja:menu.toggleUI
 ja:pages.pageName
 ja:panels.assetVariantSummary
@@ -189,6 +194,7 @@ zh-cn:code.copyJSXReference
 zh-cn:collaboration.clickToFollowPeer
 zh-cn:collaboration.followingPeerStop
 zh-cn:collaboration.pasteRoomLinkOrId
+zh-cn:commands.paletteDescription
 zh-cn:credentials.getAPIKey
 zh-cn:credentials.storage
 zh-cn:diagnostics.acpFailed
@@ -230,6 +236,10 @@ zh-cn:menu.copyAsPNG
 zh-cn:menu.copyAsSVG
 zh-cn:menu.copyNodeId
 zh-cn:menu.copyXPath
+zh-cn:menu.exportSelectionAsFig
+zh-cn:menu.exportSelectionAsPNG
+zh-cn:menu.exportSelectionAsPPTX
+zh-cn:menu.exportSelectionAsSVG
 zh-cn:pages.pageName
 zh-cn:panels.assetVariantSummary
 zh-cn:panels.colorHintHsb

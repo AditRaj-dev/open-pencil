@@ -173,7 +173,7 @@ export function createEditor(options?: EditorOptions) {
   }
 
   const graphReads = createGraphReadActions(() => _graph)
-  const { runLayoutForNode } = createLayoutRunner(() => _graph)
+  const { runLayoutForNode, runMutationWithLayout } = createLayoutRunner(() => _graph)
   const { scheduleComponentSync } = createComponentSyncScheduler(() => _graph, requestRender)
 
   const { subscribeToGraph, unsubscribeFromGraph } = createGraphEventSubscription({
@@ -213,6 +213,7 @@ export function createEditor(options?: EditorOptions) {
     canMutate,
     setAccessMode,
     runLayoutForNode,
+    runMutationWithLayout,
     subscribeToGraph
   }
 
@@ -305,6 +306,8 @@ export function createEditor(options?: EditorOptions) {
     state,
 
     // Graph reads
+    runLayoutForNode,
+    runMutationWithLayout,
     ...graphReads,
 
     // Lifecycle

@@ -182,5 +182,10 @@ export interface EditorContext {
   canMutate: () => boolean
   setAccessMode: (mode: EditorAccessMode) => void
   runLayoutForNode: (id: string) => void
+  runMutationWithLayout: <T>(
+    operation: () => T | Promise<T>,
+    fallbackId?: string,
+    beforeLayout?: (result: T) => Promise<void> | void
+  ) => Promise<T>
   subscribeToGraph: () => void
 }
