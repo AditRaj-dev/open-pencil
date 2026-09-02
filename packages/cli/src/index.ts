@@ -10,6 +10,7 @@ import find from './commands/find'
 import fonts from './commands/fonts'
 import formats from './commands/formats'
 import importCmd from './commands/import'
+import importProject from './commands/import-project'
 import info from './commands/info'
 import libraries from './commands/libraries'
 import lint from './commands/lint'
@@ -35,6 +36,7 @@ const main = defineCommand({
     eval: evalCmd,
     export: exportCmd,
     import: importCmd,
+    'import-project': importProject,
     find,
     formats,
     fonts,
