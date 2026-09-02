@@ -25,11 +25,11 @@ describe('transactional email delivery', () => {
     const sent: unknown[] = []
     const transport = createNodemailerTransactionalEmailTransport({
       transporter: {
-        async sendMail(mail: unknown) {
+        async sendMail(mail) {
           sent.push(mail)
           return { messageId: 'message-id' }
         }
-      } as never
+      }
     })
     expect(
       await transport.send({

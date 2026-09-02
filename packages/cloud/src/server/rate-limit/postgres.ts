@@ -13,9 +13,11 @@ export class PostgresRateLimitStore implements Store {
   constructor(
     private readonly database: Kysely<CloudDatabase>,
     private readonly secret: string,
-    namespace: string
+    namespace: string,
+    options: { windowMs?: number } = {}
   ) {
     this.prefix = `${namespace}:`
+    this.windowMs = options.windowMs ?? this.windowMs
   }
 
   init(options: { windowMs: number }): void {

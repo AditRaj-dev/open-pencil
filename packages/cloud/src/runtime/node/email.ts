@@ -2,9 +2,14 @@ import { renderTransactionalEmail } from '#cloud/email'
 import type { TransactionalEmailTransport } from '#cloud/server/email'
 import type { DocumentInvitationMessage, InvitationDelivery } from '#cloud/server/invitations'
 import nodemailer, { type Transporter } from 'nodemailer'
+import type Mail from 'nodemailer/lib/mailer/index.js'
+
+export type NodemailerTransporter = {
+  sendMail(mail: Mail.Options): Promise<unknown>
+}
 
 export type NodemailerTransactionalEmailTransportOptions = {
-  transporter: Transporter
+  transporter: NodemailerTransporter
 }
 
 export function createNodemailerTransactionalEmailTransport(

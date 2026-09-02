@@ -86,8 +86,9 @@ describe('Cloud enrollment integration', () => {
   test('persists atomic rate limits without storing raw keys', async () => {
     const runtime = await createCloudTestDatabase()
     try {
-      const store = new PostgresRateLimitStore(runtime.database, 'secret', 'enrollment-email')
-      store.init({ windowMs: 60_000 } as never)
+      const store = new PostgresRateLimitStore(runtime.database, 'secret', 'enrollment-email', {
+        windowMs: 60_000
+      })
       const results = await Promise.all(
         Array.from({ length: 20 }, () => store.increment('person@example.com'))
       )

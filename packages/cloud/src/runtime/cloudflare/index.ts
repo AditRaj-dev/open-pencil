@@ -51,11 +51,13 @@ export type CloudflareCloudEnvironment = {
 }
 
 function stringEnvironment(environment: CloudflareCloudEnvironment): CloudEnvironment {
-  return Object.fromEntries(
+  const values: Record<string, string> = Object.fromEntries(
     Object.entries(environment).filter(
       (entry): entry is [string, string] => typeof entry[1] === 'string'
     )
   )
+  values.DATABASE_URL = environment.HYPERDRIVE.connectionString
+  return values
 }
 
 export function createCloudflareCloudRuntime(environment: CloudflareCloudEnvironment) {

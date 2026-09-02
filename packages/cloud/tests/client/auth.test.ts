@@ -1,6 +1,6 @@
-import { afterEach, describe, expect, mock, test } from 'bun:test'
+import { describe, expect, mock, test } from 'bun:test'
 
-import { signInToCloud, signOutFromCloud } from '@open-pencil/cloud/client'
+import { signInToCloud, signOutFromCloud, type CloudFetch } from '@open-pencil/cloud/client'
 import { parseCloudDiscovery } from '@open-pencil/cloud/contract'
 
 const discovery = parseCloudDiscovery({
@@ -12,40 +12,29 @@ const discovery = parseCloudDiscovery({
   capabilities: { documents: true, workspaces: true, collaboration: true }
 })
 
-const originalFetch = globalThis.fetch
-const originalLocation = globalThis.location
-
-afterEach(() => {
-  globalThis.fetch = originalFetch
-  Object.defineProperty(globalThis, 'location', { configurable: true, value: originalLocation })
-})
-
 describe('Cloud Better Auth client', () => {
   test('starts social sign-in and signs out through Better Auth client actions', async () => {
     const requests: Request[] = []
-    globalThis.fetch = Object.assign(
-      mock(async (input, init) => {
-        const request = new Request(input, init)
-        requests.push(request)
-        return request.url.endsWith('/sign-in/social')
-          ? Response.json({ url: 'https://accounts.example.com/authorize' })
-          : Response.json({ success: true })
-      }),
-      { preconnect: originalFetch.preconnect }
-    )
-    const assign = mock(() => undefined)
-    Object.defineProperty(globalThis, 'location', {
-      configurable: true,
-      value: { href: 'https://app.example.com/settings#cloud', assign }
+    const fetch: CloudFetch = mock(async (input, init) => {
+      const request = new Request(input, init)
+      requests.push(request)
+      return request.url.endsWith('/sign-in/social')
+        ? Response.json({ url: 'https://accounts.example.com/authorize' })
+        : Response.json({ success: true })
     })
+    const navigate = mock(() => undefined)
 
-    await signInToCloud(discovery, 'google')
-    await signOutFromCloud(discovery)
+    await signInToCloud(discovery, 'google', {
+      callbackURL: 'https://app.example.com/settings',
+      fetch,
+      navigate
+    })
+    await signOutFromCloud(discovery, { fetch })
 
     expect(requests.map((request) => request.url)).toEqual([
       'https://cloud.example.com/api/auth/sign-in/social',
       'https://cloud.example.com/api/auth/sign-out'
     ])
-    expect(assign).toHaveBeenCalledWith('https://accounts.example.com/authorize')
+    expect(navigate).toHaveBeenCalledWith('https://accounts.example.com/authorize')
   })
 })

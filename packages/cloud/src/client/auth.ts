@@ -2,6 +2,8 @@ import type { CloudDiscovery } from '#cloud/contract'
 import { createAuthClient } from 'better-auth/client'
 import { deviceAuthorizationClient } from 'better-auth/client/plugins'
 
+import type { CloudFetch } from './discovery'
+
 export type CloudSocialProvider = CloudDiscovery['authentication']['socialProviders'][number]
 
 function returnURL(): string {
@@ -29,29 +31,44 @@ export type CloudAuthClient = {
   }
 }
 
+export type CloudAuthClientOptions = {
+  accessToken?: string
+  fetch?: CloudFetch
+}
+
 export function createCloudAuthClient(
   discovery: CloudDiscovery,
-  accessToken?: string
+  options: CloudAuthClientOptions = {}
 ): CloudAuthClient {
   return createAuthClient({
     baseURL: discovery.authURL,
     plugins: [deviceAuthorizationClient()],
     fetchOptions: {
       credentials: 'include',
-      ...(accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {})
+      customFetchImpl: options.fetch,
+      ...(options.accessToken
+        ? { headers: { Authorization: `Bearer ${options.accessToken}` } }
+        : {})
     }
   }) as CloudAuthClient
+}
+
+export type CloudSignInOptions = {
+  callbackURL?: string
+  fetch?: CloudFetch
+  navigate?: (url: string) => void
 }
 
 export async function signInToCloud(
   discovery: CloudDiscovery,
   provider: CloudSocialProvider,
-  callbackURL = returnURL()
+  options: CloudSignInOptions = {}
 ): Promise<void> {
+  const callbackURL = options.callbackURL ?? returnURL()
   if (!discovery.authentication.socialProviders.includes(provider)) {
     throw new Error(`Cloud sign-in provider is unavailable: ${provider}`)
   }
-  const result = await createCloudAuthClient(discovery).signIn.social({
+  const result = await createCloudAuthClient(discovery, { fetch: options.fetch }).signIn.social({
     provider,
     callbackURL,
     errorCallbackURL: callbackURL,
@@ -61,10 +78,14 @@ export async function signInToCloud(
   if (typeof result.data.url !== 'string') {
     throw new TypeError('Cloud sign-in response did not include a URL')
   }
-  globalThis.location.assign(result.data.url)
+  const navigate = options.navigate ?? ((url: string) => globalThis.location.assign(url))
+  navigate(result.data.url)
 }
 
-export async function signOutFromCloud(discovery: CloudDiscovery): Promise<void> {
-  const result = await createCloudAuthClient(discovery).signOut()
+export async function signOutFromCloud(
+  discovery: CloudDiscovery,
+  options: Pick<CloudAuthClientOptions, 'fetch'> = {}
+): Promise<void> {
+  const result = await createCloudAuthClient(discovery, options).signOut()
   if (result.error) throw new Error(result.error.message ?? 'Cloud sign-out failed')
 }

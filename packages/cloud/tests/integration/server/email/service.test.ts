@@ -35,8 +35,10 @@ describe('transactional email outbox', () => {
       const rows = await runtime.database.selectFrom('transactionalEmail').selectAll().execute()
       expect(rows).toHaveLength(1)
       expect(rows[0]?.recipientEmailNormalized).toBe('person@example.com')
-      expect(rows[0]?.payloadEncrypted).not.toContain('secret-token')
-      expect(rows[0]?.payloadEncrypted.split('.')).toHaveLength(5)
+      const encryptedPayload = rows[0]?.payloadEncrypted
+      if (!encryptedPayload) throw new Error('Expected an encrypted transactional email payload')
+      expect(encryptedPayload).not.toContain('secret-token')
+      expect(encryptedPayload.split('.')).toHaveLength(5)
     } finally {
       await runtime.close()
     }

@@ -1,6 +1,8 @@
 import type { CloudDiscovery } from '#cloud/contract'
 import * as v from 'valibot'
 
+import type { CloudFetch } from './discovery'
+
 const deviceCodeSchema = v.object({
   device_code: v.string(),
   user_code: v.string(),
@@ -22,7 +24,7 @@ export type CloudDeviceToken = v.InferOutput<typeof deviceTokenSchema>
 
 export type CloudDevicePollingOptions = {
   signal?: AbortSignal
-  fetch?: typeof globalThis.fetch
+  fetch?: CloudFetch
   now?: () => number
   sleep?: (milliseconds: number, signal?: AbortSignal) => Promise<void>
 }
@@ -49,11 +51,17 @@ function authEndpoint(discovery: CloudDiscovery, path: string): string {
   return new URL(path, `${discovery.authURL.replace(/\/$/, '')}/`).href
 }
 
+export type CloudDeviceAuthorizationOptions = {
+  fetch?: CloudFetch
+}
+
 export async function requestCloudDeviceAuthorization(
   discovery: CloudDiscovery,
-  connectionId: string
+  connectionId: string,
+  options: CloudDeviceAuthorizationOptions = {}
 ): Promise<CloudDeviceAuthorization> {
-  const response = await fetch(authEndpoint(discovery, 'device/code'), {
+  const request = options.fetch ?? globalThis.fetch
+  const response = await request(authEndpoint(discovery, 'device/code'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({

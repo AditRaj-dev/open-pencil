@@ -4,8 +4,9 @@ import type {
   StorageProviderRuntime,
   StorageTransferProgress
 } from '../types'
+import type { CloudConnectionService } from './connection'
 import { cloudConnectionService } from './service'
-import { createCloudTransport } from './transport'
+import { createCloudTransport, type CloudTransport } from './transport'
 import { uploadCloudObject } from './upload'
 
 const SERVER_URL_FIELD = 'server-url'
@@ -32,13 +33,22 @@ function reportProgress(
   onProgress?.({ transferredBytes, totalBytes })
 }
 
-export function createCloudStorageAdapter(runtime: StorageProviderRuntime): StorageAdapter {
-  const transport = createCloudTransport()
+export type CloudStorageAdapterDependencies = {
+  connectionService?: CloudConnectionService
+  transport?: CloudTransport
+}
+
+export function createCloudStorageAdapter(
+  runtime: StorageProviderRuntime,
+  dependencies: CloudStorageAdapterDependencies = {}
+): StorageAdapter {
+  const transport = dependencies.transport ?? createCloudTransport()
+  const connectionService = dependencies.connectionService ?? cloudConnectionService
   const serverURL = requiredPreference(runtime, SERVER_URL_FIELD)
   const workspaceId = requiredPreference(runtime, WORKSPACE_ID_FIELD)
 
   async function client() {
-    const connection = await cloudConnectionService.connect(serverURL)
+    const connection = await connectionService.connect(serverURL)
     if (!connection.discovery?.capabilities.documents) {
       throw new Error('This OpenPencil Cloud server does not support document storage')
     }

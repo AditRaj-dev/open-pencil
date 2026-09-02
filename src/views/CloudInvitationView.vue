@@ -84,7 +84,7 @@ async function accept() {
       const callback = new URL(window.location.href)
       callback.hash = ''
       callback.searchParams.set('continuation', continuation.id)
-      await signInToCloud(cloud.discovery, provider, callback.href)
+      await signInToCloud(cloud.discovery, provider, { callbackURL: callback.href })
       return
     }
     await cloud.client.acceptDocumentInvitation(invitationId, { token: token.value })

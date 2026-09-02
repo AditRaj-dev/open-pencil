@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 
 import { pollCloudDeviceToken, requestCloudDeviceAuthorization } from '@open-pencil/cloud/client'
-import type { CloudDeviceAuthorization } from '@open-pencil/cloud/client'
+import type { CloudDeviceAuthorization, CloudFetch } from '@open-pencil/cloud/client'
 import type { CloudDiscovery } from '@open-pencil/cloud/contract'
 
 const discovery: CloudDiscovery = {
@@ -9,7 +9,7 @@ const discovery: CloudDiscovery = {
   deployment: 'self-hosted',
   apiURL: 'https://cloud.example.com/api',
   authURL: 'https://cloud.example.com/api/auth',
-  authentication: { socialProviders: [], enterpriseSSO: false },
+  authentication: { socialProviders: [], enterpriseSSO: false, enrollmentMode: 'open' },
   capabilities: { documents: true, workspaces: true, collaboration: true }
 }
 
@@ -28,19 +28,16 @@ const immediateSleep = async (): Promise<void> => undefined
 
 describe('Cloud device authorization client', () => {
   test('requests a connection-scoped device code', async () => {
-    const originalFetch = globalThis.fetch
     let requestBody: unknown
-    globalThis.fetch = async (_input, init) => {
+    const request: CloudFetch = async (_input, init) => {
       requestBody = JSON.parse(String(init?.body))
       return Response.json(authorization())
     }
-    try {
-      const result = await requestCloudDeviceAuthorization(discovery, 'connection-id')
-      expect(result.device_code).toBe('device-code')
-      expect(requestBody).toMatchObject({ client_id: 'openpencil-desktop:connection-id' })
-    } finally {
-      globalThis.fetch = originalFetch
-    }
+    const result = await requestCloudDeviceAuthorization(discovery, 'connection-id', {
+      fetch: request
+    })
+    expect(result.device_code).toBe('device-code')
+    expect(requestBody).toMatchObject({ client_id: 'openpencil-desktop:connection-id' })
   })
 
   test('polls pending authorization until a bearer token is available', async () => {

@@ -50,7 +50,7 @@ async function approve() {
       error.value = 'No sign-in provider is configured.'
       return
     }
-    await signInToCloud(discovery.value, provider, window.location.href)
+    await signInToCloud(discovery.value, provider, { callbackURL: window.location.href })
     return
   }
   const result = await client.device.approve({ userCode })
