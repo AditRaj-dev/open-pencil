@@ -11,6 +11,7 @@ interface P5Location {
   endLine: number
   endCol: number
   startTag?: { startOffset: number; endOffset: number }
+  endTag?: { startOffset: number; endOffset: number }
   attrs?: Record<string, { startOffset: number; endOffset: number }>
 }
 
@@ -46,6 +47,8 @@ export function parseHtml(source: string, filePath: string): ParseResult {
       start: loc?.startOffset ?? 0,
       end: loc?.endOffset ?? 0,
       tagEnd: loc?.startTag?.endOffset ?? loc?.startOffset ?? 0,
+      // Absent for void elements (<img>, <br>) and unclosed tags.
+      closingTagStart: loc?.endTag?.startOffset ?? null,
       startLine: loc?.startLine ?? 1,
       startColumn: loc?.startCol ?? 1,
       endLine: loc?.endLine ?? 1,
@@ -90,6 +93,8 @@ export function parseHtml(source: string, filePath: string): ParseResult {
       text: children.length === 0 && staticText.length > 0 ? staticText.join(' ') : null,
       children,
       span: spanOf(node),
+      propsDynamic: false,
+      childrenDynamic: false,
       dynamic: false
     }
   }

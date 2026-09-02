@@ -88,6 +88,26 @@ describe('structure', () => {
     expect(find(parseJsx(spreadSrc, 'A.tsx').roots, 'div')!.dynamic).toBe(true)
   })
 
+
+  test('JSX inside an expression is captured as an editable template', () => {
+    // The <li> in a .map() renders N times, but it is written once — and
+    // restyling that one place is a legitimate edit affecting every row.
+    const src = `const A = () => <ul className="list">{items.map(i => <li className="row">{i}</li>)}</ul>`
+    const ul = find(parseJsx(src, 'A.tsx').roots, 'ul')!
+    expect(ul.dynamic).toBe(true)
+
+    const li = find(ul.children, 'li')!
+    expect(li.span.className).toBe('row')
+    const range = li.span.classNameRange!
+    expect(src.slice(range.start, range.end)).toBe('row')
+  })
+
+  test('a conditional child is captured too', () => {
+    const src = `const A = () => <div>{show && <b className="hi">yes</b>}</div>`
+    const b = find(parseJsx(src, 'A.tsx').roots, 'b')!
+    expect(b.span.className).toBe('hi')
+  })
+
   test('className range covers the value only', () => {
     const src = `const A = () => <div className="a b">x</div>`
     const div = find(parseJsx(src, 'A.tsx').roots, 'div')!

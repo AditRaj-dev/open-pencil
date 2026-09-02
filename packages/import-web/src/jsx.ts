@@ -115,6 +115,11 @@ export function parseJsx(source: string, filePath: string): ParseResult {
     const end = node.getEnd()
     const opening = openingOf(node)
     const tagEnd = ts.isJsxOpeningFragment(opening) ? start : opening.getEnd()
+    const closingTagStart = ts.isJsxElement(node)
+      ? node.closingElement.getStart(sourceFile)
+      : ts.isJsxFragment(node)
+        ? node.closingFragment.getStart(sourceFile)
+        : null
     const s = lineCol(start)
     const e = lineCol(end)
 
@@ -123,6 +128,7 @@ export function parseJsx(source: string, filePath: string): ParseResult {
       start,
       end,
       tagEnd,
+      closingTagStart,
       startLine: s.line,
       startColumn: s.column,
       endLine: e.line,
@@ -162,9 +168,13 @@ export function parseJsx(source: string, filePath: string): ParseResult {
           continue
         }
         if (ts.isJsxExpression(child)) {
-          // {someVar}, {list.map(...)}, {cond && <X/>} — the rendered shape is
-          // not knowable from source alone.
+          // {someVar}, {list.map(...)}, {cond && <X/>} — how many of these end
+          // up rendered is not knowable from source. But any JSX written inside
+          // is a real, editable template: restyling the <li> in a .map() is a
+          // legitimate edit that applies to every row. So capture the elements
+          // and mark the parent dynamic, rather than dropping them entirely.
           childDynamic = true
+          for (const nested of collectJsx(child)) children.push(convert(nested))
           continue
         }
       }
@@ -180,6 +190,8 @@ export function parseJsx(source: string, filePath: string): ParseResult {
       text,
       children,
       span: spanOf(node, classNameNode),
+      propsDynamic: dynamic,
+      childrenDynamic: childDynamic,
       dynamic: dynamic || childDynamic
     }
   }
@@ -213,6 +225,26 @@ export function parseJsx(source: string, filePath: string): ParseResult {
   }
 
   return { roots, components, warnings }
+}
+
+/**
+ * Find the JSX elements written inside an expression container, without
+ * descending into ones already nested in another JSX element (those are
+ * reached by the normal child walk).
+ */
+function collectJsx(
+  root: ts.Node
+): Array<ts.JsxElement | ts.JsxSelfClosingElement | ts.JsxFragment> {
+  const found: Array<ts.JsxElement | ts.JsxSelfClosingElement | ts.JsxFragment> = []
+  const visit = (node: ts.Node): void => {
+    if (ts.isJsxElement(node) || ts.isJsxSelfClosingElement(node) || ts.isJsxFragment(node)) {
+      found.push(node)
+      return
+    }
+    ts.forEachChild(node, visit)
+  }
+  ts.forEachChild(root, visit)
+  return found
 }
 
 function countDynamic(elements: WebElement[]): number {

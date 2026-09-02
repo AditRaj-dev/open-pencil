@@ -65,6 +65,8 @@ export interface WebSourcePayload {
   end: number
   /** End of the opening tag, for attribute-only rewrites. */
   tagEnd: number
+  /** Start of the closing tag; null when self-closing or void. */
+  closingTagStart: number | null
   startLine: number
   startColumn: number
   endLine: number
@@ -75,7 +77,11 @@ export interface WebSourcePayload {
   classNameRange: { start: number; end: number } | null
   /** Static attributes as written. Expressions are recorded as null. */
   attributes: Record<string, string | null>
-  /** True when the element's children or props are not statically analysable. */
+  /** Props are not fully knowable (spread or computed); blocks attribute rewrites. */
+  propsDynamic: boolean
+  /** Children are not knowable (expression, list, conditional); blocks text rewrites. */
+  childrenDynamic: boolean
+  /** Either of the above. */
   dynamic: boolean
 }
 

@@ -65,6 +65,7 @@ export function toSceneNodes(result: ParseResult, options: ImportOptions): Scene
       start: el.span.start,
       end: el.span.end,
       tagEnd: el.span.tagEnd,
+      closingTagStart: el.span.closingTagStart,
       startLine: el.span.startLine,
       startColumn: el.span.startColumn,
       endLine: el.span.endLine,
@@ -72,6 +73,8 @@ export function toSceneNodes(result: ParseResult, options: ImportOptions): Scene
       className: el.span.className,
       classNameRange: el.span.classNameRange,
       attributes: el.attributes,
+      propsDynamic: el.propsDynamic,
+      childrenDynamic: el.childrenDynamic,
       dynamic: el.dynamic
     }
 

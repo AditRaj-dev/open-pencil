@@ -11,9 +11,18 @@ export interface WebElement {
   children: WebElement[]
   span: WebSpan
   /**
-   * True when the element's shape depends on runtime values — a `{cond && ...}`
-   * child, a spread prop, or a mapped list. Such nodes can be shown and
-   * inspected, but writing back to them is unsafe without more analysis.
+   * True when the element's PROPS are not fully knowable — a spread, or a
+   * computed className. Blocks attribute rewrites.
+   */
+  propsDynamic: boolean
+  /**
+   * True when the element's CHILDREN are not knowable — an expression child, a
+   * mapped list, a conditional. Blocks text rewrites and geometry alignment.
+   */
+  childrenDynamic: boolean
+  /**
+   * Either kind. Kept because geometry matching cares only that something below
+   * or within this element may differ from source.
    */
   dynamic: boolean
 }
@@ -24,6 +33,12 @@ export interface WebSpan {
   end: number
   /** End of the opening tag, so attribute edits do not touch children. */
   tagEnd: number
+  /**
+   * Offset where the closing tag begins, so the text between the tags can be
+   * replaced without re-printing either. Null for self-closing elements and
+   * voids, which have no text to replace.
+   */
+  closingTagStart: number | null
   startLine: number
   startColumn: number
   endLine: number
