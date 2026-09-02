@@ -2,6 +2,7 @@ export { parseJsx } from './jsx'
 export { parseHtml } from './html'
 export { parseWebSource } from './parse'
 export { toSceneNodes, type SceneImport } from './to-scene'
+export { jsxToHtml, jsxToHtmlDocument, parseSourceAttr, SOURCE_ATTR } from './to-html'
 export { joinGeometry, type MeasuredElement, type JoinResult } from './geometry'
 export {
   editClassName,

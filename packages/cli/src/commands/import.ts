@@ -13,6 +13,8 @@ import {
   type DesignDocument
 } from '@open-pencil/dom-css'
 
+import { jsxToHtmlDocument, parseJsx } from '@open-pencil/import-web'
+
 import { requireFile } from '#cli/app-client'
 import { fmtList, ok, printError } from '#cli/format'
 
@@ -61,9 +63,34 @@ function childCount(document: DesignDocument): number {
   return document.children.length
 }
 
+const JSX_EXT = /\.[jt]sx?$/i
+
+/**
+ * Read the input as HTML, transpiling JSX first when needed.
+ *
+ * JSX reuses the DOM/CSS pipeline rather than growing a parallel one: that
+ * pipeline already resolves the cascade and computes layout through a headless
+ * CSS runtime, and none of that depends on the input syntax. Each element keeps
+ * its source range in `data-op-src`, so a node in the editor can still be
+ * traced back to the bytes it was written as.
+ */
+async function readAsHTML(file: string, args: ImportArgs): Promise<string> {
+  const text = await readTextFile(file)
+  if (!JSX_EXT.test(file)) return text
+
+  const parsed = parseJsx(text, file)
+  if (parsed.roots.length === 0) {
+    throw new Error(`no JSX elements found in ${file}`)
+  }
+  for (const warning of parsed.warnings) {
+    if (warning.startsWith('parse error')) throw new Error(`${file}: ${warning}`)
+  }
+  return jsxToHtmlDocument(parsed.roots, { css: await cssTextForArgs(args), title: file })
+}
+
 async function importHTML(args: ImportArgs) {
   const file = requireFile(args.file)
-  const html = await readTextFile(file)
+  const html = await readAsHTML(file, args)
   const runtime = createHeadlessCSSRuntime()
   const tailwind = await tailwindCandidatesForArgs(args)
   const cssText = await cssTextForArgs(args)

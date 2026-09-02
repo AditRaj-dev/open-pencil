@@ -2,6 +2,8 @@ import { describe, expect, test } from 'bun:test'
 
 import { applyEdits, editClassName, editText, WriteBackError } from '../src/edit'
 import { joinGeometry, type MeasuredElement } from '../src/geometry'
+import { parseHtml } from '../src/html'
+import { jsxToHtml } from '../src/to-html'
 import { parseJsx } from '../src/jsx'
 import { parseWebSource } from '../src/parse'
 import { toSceneNodes } from '../src/to-scene'
@@ -241,5 +243,55 @@ describe('stale offsets', () => {
     expect(io.files['A.tsx']).toBe(
       `const A = () => (<div className="MUCH-LONGER-CLASS"><span className="ccc">x</span></div>)`
     )
+  })
+})
+
+describe('jsxToHtml', () => {
+  test('renders static markup and carries source ranges', () => {
+    const src = `const A = () => (
+  <div className="page" id="root">
+    <h1 className="title">Hello</h1>
+    <img src="a.png" />
+  </div>
+)`
+    const { roots } = parseJsx(src, 'A.tsx')
+    const html = jsxToHtml(roots)
+
+    // className became class, and the source range rides along
+    expect(html).toContain('class="page"')
+    expect(html).toContain('id="root"')
+    expect(html).toMatch(/data-op-src="\d+:\d+"/)
+    expect(html).toContain('>Hello</h1>')
+    // void elements self-close rather than emitting a bogus closing tag
+    expect(html).toContain('<img')
+    expect(html).not.toContain('</img>')
+
+    // and the range points at the real bytes
+    const m = html.match(/data-op-src="(\d+):(\d+)"/)!
+    expect(src.slice(Number(m[1]), Number(m[2])).startsWith('<div')).toBe(true)
+  })
+
+  test('drops expression props and React-internal ones', () => {
+    const src = `const A = () => <li className="row" key={k} onClick={go}>x</li>`
+    const html = jsxToHtml(parseJsx(src, 'A.tsx').roots)
+    expect(html).toContain('class="row"')
+    expect(html).not.toContain('key=')
+    expect(html).not.toContain('onClick')
+  })
+
+  test('a component keeps its name and children instead of disappearing', () => {
+    const src = `const A = () => <div><Card title="Pro"><b>x</b></Card></div>`
+    const html = jsxToHtml(parseJsx(src, 'A.tsx').roots)
+    expect(html).toContain('data-op-component="Card"')
+    expect(html).toContain('title="Pro"')
+    expect(html).toContain('<b')
+  })
+
+  test('round-trips through parseHtml, so the DOM pipeline can consume it', () => {
+    const src = `const A = () => (<div className="wrap"><span className="in">hi</span></div>)`
+    const html = jsxToHtml(parseJsx(src, 'A.tsx').roots)
+    const reparsed = parseHtml(html, 'out.html')
+    expect(reparsed.roots[0]!.span.className).toBe('wrap')
+    expect(reparsed.roots[0]!.children[0]!.text).toBe('hi')
   })
 })

@@ -24,7 +24,20 @@ interface P5Node {
   sourceCodeLocation?: P5Location | null
 }
 
-const SKIP = new Set(['#comment', '#documentType', 'script', 'style', 'head', 'meta', 'link', 'title'])
+// '#text' matters: parse5 reports whitespace between tags as text nodes, and
+// letting them through would add phantom elements that shift the structural
+// match against the DOM.
+const SKIP = new Set([
+  '#text',
+  '#comment',
+  '#documentType',
+  'script',
+  'style',
+  'head',
+  'meta',
+  'link',
+  'title'
+])
 
 /**
  * Parse HTML into the same element tree the JSX parser produces.
