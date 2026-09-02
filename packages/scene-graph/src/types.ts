@@ -46,12 +46,47 @@ export interface FigmaSourcePayload {
   uniformScaleFactor: number | null
 }
 
+/**
+ * Where a node came from in a source file, when it was imported from code
+ * rather than a design file.
+ *
+ * Spans are byte offsets plus 1-based line/column, both kept because writing
+ * back to source wants offsets while reporting to a human wants line numbers.
+ * `tagEnd` covers only the opening tag, so an attribute edit can rewrite that
+ * range without touching children.
+ */
+export interface WebSourcePayload {
+  filePath: string
+  /** Tag or component name exactly as written, e.g. 'div' or 'PricingCard'. */
+  tagName: string
+  /** True when the tag is a component reference rather than an intrinsic element. */
+  isComponent: boolean
+  start: number
+  end: number
+  /** End of the opening tag, for attribute-only rewrites. */
+  tagEnd: number
+  startLine: number
+  startColumn: number
+  endLine: number
+  endColumn: number
+  /** Literal class/className value, when it is a plain string. */
+  className: string | null
+  /** Byte range of the class value itself, so it can be rewritten in place. */
+  classNameRange: { start: number; end: number } | null
+  /** Static attributes as written. Expressions are recorded as null. */
+  attributes: Record<string, string | null>
+  /** True when the element's children or props are not statically analysable. */
+  dynamic: boolean
+}
+
 export interface SourceMetadata {
-  format: 'fig' | null
+  format: 'fig' | 'jsx' | 'html' | null
   id: string | null
   orderKey: string | null
   editedFields: string[]
   fig: FigmaSourcePayload
+  /** Present when `format` is 'jsx' or 'html'. */
+  web: WebSourcePayload | null
 }
 
 export type HandleMirroring = 'NONE' | 'ANGLE' | 'ANGLE_AND_LENGTH'

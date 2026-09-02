@@ -63,6 +63,7 @@ import type {
   SceneGraphEvents,
   SceneNode,
   SourceMetadata,
+  WebSourcePayload,
   Variable,
   VariableCollection,
   VariableType,

@@ -1,0 +1,19 @@
+{
+  "name": "@open-pencil/import-web",
+  "version": "0.14.0",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "bun": "./src/index.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@open-pencil/scene-graph": "workspace:*",
+    "parse5": "^7.2.1",
+    "typescript": "^5.6.3"
+  }
+}

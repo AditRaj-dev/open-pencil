@@ -18,7 +18,8 @@ export function createDefaultSourceMetadata(): SourceMetadata {
       derivedSymbolData: [],
       derivedSymbolDataLayoutVersion: null,
       uniformScaleFactor: null
-    }
+    },
+    web: null
   }
 }
 
