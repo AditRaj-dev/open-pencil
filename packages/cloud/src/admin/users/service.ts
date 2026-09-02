@@ -1,3 +1,4 @@
+import { AdminDomainError } from '#cloud/admin/errors'
 import type { CloudAuthAdapter } from '#cloud/server/auth'
 import type { CloudDatabase } from '#cloud/server/db'
 import type { Kysely } from 'kysely'
@@ -22,7 +23,12 @@ export function createAdminUserService(database: Kysely<CloudDatabase>, auth: Cl
     userId: string,
     action: 'ban' | 'demote'
   ): Promise<void> {
-    if (actorId === userId) throw new Error(`Administrators cannot ${action} themselves`)
+    if (actorId === userId) {
+      throw new AdminDomainError(
+        'self_admin_action_forbidden',
+        `Administrators cannot ${action} themselves`
+      )
+    }
     const target = await database
       .selectFrom('user')
       .select('role')
@@ -37,7 +43,12 @@ export function createAdminUserService(database: Kysely<CloudDatabase>, auth: Cl
         expression.or([expression('banned', '=', false), expression('banned', 'is', null)])
       )
       .executeTakeFirstOrThrow()
-    if (Number(count.count) <= 1) throw new Error('Cannot remove the last deployment administrator')
+    if (Number(count.count) <= 1) {
+      throw new AdminDomainError(
+        'last_admin_required',
+        'Cannot remove the last deployment administrator'
+      )
+    }
   }
 
   return {

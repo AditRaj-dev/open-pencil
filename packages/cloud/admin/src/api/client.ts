@@ -11,7 +11,17 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     throw new Error('Authentication required')
   }
   if (response.status === 403) throw new Error('Deployment administrator access is required')
-  if (!response.ok) throw new Error(`Cloud request failed: ${response.status}`)
+  if (!response.ok) {
+    const body = (await response.json().catch(() => null)) as { error?: { code?: string } } | null
+    const code = body?.error?.code
+    const messages: Record<string, string> = {
+      invalid_enrollment_transition: 'This enrollment state changed. Refresh and try again.',
+      last_admin_required: 'At least one active deployment administrator is required.',
+      self_admin_action_forbidden: 'You cannot perform that action on your own account.',
+      email_regeneration_unavailable: 'This email cannot be regenerated from current records.'
+    }
+    throw new Error((code && messages[code]) || `Cloud request failed: ${response.status}`)
+  }
   return response.json() as Promise<T>
 }
 
@@ -54,8 +64,8 @@ export const cloudAdminAPI = {
   email() {
     return request<{ messages: EmailMessage[] }>('/admin/email')
   },
-  retryEmail(id: string) {
-    return request<{ ok: true }>(`/admin/email/${id}/retry`, { method: 'POST' })
+  regenerateEmail(id: string) {
+    return request<{ ok: true }>(`/admin/email/${id}/regenerate`, { method: 'POST' })
   },
   audit() {
     return request<{ events: AuditEvent[] }>('/admin/audit')
@@ -89,6 +99,7 @@ export type EmailMessage = {
   status: string
   attemptCount: number
   lastErrorCode: string | null
+  regeneratable: boolean
   createdAt: string
 }
 export type AuditEvent = {

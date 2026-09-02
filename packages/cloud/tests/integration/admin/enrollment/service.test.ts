@@ -65,7 +65,7 @@ describe('Cloud enrollment integration', () => {
       ).toEqual({ count: 2 })
       await enrollment.review('admin-user', record.id, 'rejected', {})
       await expect(enrollment.review('admin-user', record.id, 'revoked', {})).rejects.toThrow(
-        'Invalid enrollment transition'
+        'Enrollment cannot transition'
       )
       await enrollment.request({ email: 'person@example.com', reason: 'Try again' })
       ;[record] = await enrollment.list()

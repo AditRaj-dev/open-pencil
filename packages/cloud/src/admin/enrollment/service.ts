@@ -1,3 +1,4 @@
+import { AdminDomainError } from '#cloud/admin/errors'
 import type { CloudDatabase } from '#cloud/server/db'
 import { type Kysely, sql } from 'kysely'
 
@@ -151,8 +152,12 @@ export function createEnrollmentService(
           .where('id', '=', enrollmentId)
           .forUpdate()
           .executeTakeFirstOrThrow()
-        if (!ALLOWED_TRANSITIONS[current.status].has(status))
-          throw new Error('Invalid enrollment transition')
+        if (!ALLOWED_TRANSITIONS[current.status].has(status)) {
+          throw new AdminDomainError(
+            'invalid_enrollment_transition',
+            `Enrollment cannot transition from ${current.status} to ${status}`
+          )
+        }
         const now = new Date()
         const row = await transaction
           .updateTable('cloudEnrollment')

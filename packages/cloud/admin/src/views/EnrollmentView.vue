@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { cloudAdminAPI, type Enrollment } from '#admin/api/client'
+import ConfirmDialog from '#admin/components/ConfirmDialog.vue'
+
 const records = ref<Enrollment[]>([])
 const loading = ref(true)
 const error = ref('')
 const busy = ref('')
 const status = ref('')
+const selected = ref<{ record: Enrollment; action: 'reject' | 'revoke' } | null>(null)
+
 async function load() {
   loading.value = true
   error.value = ''
@@ -17,11 +21,22 @@ async function load() {
     loading.value = false
   }
 }
-async function review(record: Enrollment, action: 'approve' | 'reject' | 'revoke') {
-  const note =
-    action === 'approve'
-      ? undefined
-      : (globalThis.prompt('Internal review note (optional)') ?? undefined)
+
+async function approve(record: Enrollment) {
+  busy.value = record.id
+  try {
+    await cloudAdminAPI.reviewEnrollment(record.id, 'approve')
+    await load()
+  } catch (caught) {
+    error.value = caught instanceof Error ? caught.message : 'Review failed'
+  } finally {
+    busy.value = ''
+  }
+}
+
+async function confirmReview(note: string | undefined) {
+  if (!selected.value) return
+  const { record, action } = selected.value
   busy.value = record.id
   try {
     await cloudAdminAPI.reviewEnrollment(record.id, action, note)
@@ -30,8 +45,10 @@ async function review(record: Enrollment, action: 'approve' | 'reject' | 'revoke
     error.value = caught instanceof Error ? caught.message : 'Review failed'
   } finally {
     busy.value = ''
+    selected.value = null
   }
 }
+
 onMounted(load)
 </script>
 <template>
@@ -88,21 +105,23 @@ onMounted(load)
                 v-if="record.status !== 'approved'"
                 :disabled="busy === record.id"
                 class="rounded bg-cloud-brand px-2 py-1"
-                @click="review(record, 'approve')"
+                @click="approve(record)"
               >
-                Approve</button
-              ><button
+                Approve
+              </button>
+              <button
                 v-if="record.status === 'pending'"
                 :disabled="busy === record.id"
                 class="rounded bg-white/10 px-2 py-1"
-                @click="review(record, 'reject')"
+                @click="selected = { record, action: 'reject' }"
               >
-                Reject</button
-              ><button
+                Reject
+              </button>
+              <button
                 v-if="record.status === 'approved'"
                 :disabled="busy === record.id"
                 class="rounded bg-cloud-danger/20 px-2 py-1 text-cloud-danger"
-                @click="review(record, 'revoke')"
+                @click="selected = { record, action: 'revoke' }"
               >
                 Revoke
               </button>
@@ -111,5 +130,18 @@ onMounted(load)
         </tbody>
       </table>
     </div>
+    <ConfirmDialog
+      :open="Boolean(selected)"
+      :title="selected?.action === 'revoke' ? 'Revoke Cloud access?' : 'Reject access request?'"
+      :description="selected?.record.email ?? ''"
+      :confirm-label="selected?.action === 'revoke' ? 'Revoke' : 'Reject'"
+      require-reason
+      @update:open="
+        (open) => {
+          if (!open) selected = null
+        }
+      "
+      @confirm="confirmReview"
+    />
   </section>
 </template>

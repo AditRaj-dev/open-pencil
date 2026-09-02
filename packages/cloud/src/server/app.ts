@@ -77,7 +77,8 @@ function discoveryFromServices(services: CloudServices): CloudDiscovery {
     authURL,
     authentication: {
       socialProviders: configuredSocialProviders(services.config),
-      enterpriseSSO: false
+      enterpriseSSO: false,
+      enrollmentMode: services.config.enrollmentMode
     },
     capabilities: {
       documents: true,
@@ -110,7 +111,11 @@ export function createCloudApp(services: CloudServices) {
   })
   const admin = createCloudAdminRoutes(
     {
-      email: createAdminEmailService(services.database),
+      email: createAdminEmailService(
+        services.database,
+        services.transactionalEmail,
+        services.config.appURL ?? services.config.publicURL
+      ),
       enrollment,
       users: createAdminUserService(services.database, services.auth),
       audit: createAdminAuditService(services.database),

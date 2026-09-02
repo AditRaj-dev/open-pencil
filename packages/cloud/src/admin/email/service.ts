@@ -1,10 +1,16 @@
+import { AdminDomainError } from '#cloud/admin/errors'
 import type { CloudDatabase } from '#cloud/server/db'
+import type { TransactionalEmailService } from '#cloud/server/email'
 import type { Kysely } from 'kysely'
 
-export function createAdminEmailService(database: Kysely<CloudDatabase>) {
+export function createAdminEmailService(
+  database: Kysely<CloudDatabase>,
+  email?: TransactionalEmailService,
+  appURL = ''
+) {
   return {
     async list(limit = 100) {
-      return database
+      const rows = await database
         .selectFrom('transactionalEmail')
         .select([
           'id',
@@ -22,25 +28,55 @@ export function createAdminEmailService(database: Kysely<CloudDatabase>) {
         .orderBy('createdAt', 'desc')
         .limit(Math.min(Math.max(limit, 1), 500))
         .execute()
+      return rows.map((row) => ({ ...row, regeneratable: row.kind.startsWith('enrollment-') }))
     },
-    async retry(actorId: string, messageId: string): Promise<void> {
+    async regenerate(actorId: string, messageId: string): Promise<void> {
+      if (!email)
+        throw new AdminDomainError('email_regeneration_unavailable', 'Email delivery is disabled')
       await database.transaction().execute(async (transaction) => {
-        const result = await transaction
-          .updateTable('transactionalEmail')
-          .set({ status: 'pending', nextAttemptAt: new Date(), lastErrorCode: null })
+        const original = await transaction
+          .selectFrom('transactionalEmail')
+          .select(['id', 'kind', 'recipientEmailNormalized'])
           .where('id', '=', messageId)
-          .where('payloadEncrypted', 'is not', null)
+          .executeTakeFirstOrThrow()
+        if (
+          !original.kind.startsWith('enrollment-') ||
+          original.kind === 'admin-enrollment-notification'
+        ) {
+          throw new AdminDomainError(
+            'email_regeneration_unavailable',
+            'This message cannot be regenerated'
+          )
+        }
+        const kind = original.kind
+        const enrollment = await transaction
+          .selectFrom('cloudEnrollment')
+          .selectAll()
+          .where('emailNormalized', '=', original.recipientEmailNormalized)
           .executeTakeFirst()
-        if (Number(result.numUpdatedRows) === 0) throw new Error('Email message cannot be retried')
+        if (!enrollment)
+          throw new AdminDomainError('email_regeneration_unavailable', 'Enrollment is unavailable')
+        await email.enqueue(
+          {
+            idempotencyKey: `admin-regeneration/${messageId}/${crypto.randomUUID()}`,
+            kind,
+            recipientEmail: enrollment.emailNormalized,
+            payload: {
+              name: enrollment.name ?? 'there',
+              actionURL: kind === 'enrollment-approved' ? appURL : `${appURL}/join`
+            }
+          },
+          transaction
+        )
         await transaction
           .insertInto('cloudAdminAuditEvent')
           .values({
             id: crypto.randomUUID(),
             actorUserId: actorId,
-            action: 'email.retry-requested',
+            action: 'email.regenerated',
             subjectType: 'transactional-email',
             subjectId: messageId,
-            metadata: {}
+            metadata: { replacementKind: kind }
           })
           .execute()
       })

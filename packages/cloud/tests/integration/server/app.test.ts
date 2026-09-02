@@ -280,7 +280,8 @@ describe('createCloudApp', () => {
       authURL: 'https://pencil.example.com/api/auth',
       authentication: {
         socialProviders: ['google'],
-        enterpriseSSO: false
+        enterpriseSSO: false,
+        enrollmentMode: 'open'
       },
       capabilities: {
         documents: true,

@@ -1,4 +1,6 @@
 export {
+  adminErrorStatus,
+  AdminDomainError,
   createAdminAuditService,
   createAdminEmailService,
   createAdminOperationsService,
@@ -8,6 +10,7 @@ export {
   createPublicEnrollmentRoutes,
   normalizeEnrollmentEmail,
   type AdminAuditService,
+  type AdminErrorCode,
   type AdminEmailService,
   type AdminOperationsService,
   type AdminUserService,

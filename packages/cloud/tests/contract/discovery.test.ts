@@ -13,7 +13,8 @@ const discovery = {
   authURL: 'https://pencil.example.com/api/auth',
   authentication: {
     socialProviders: ['google' as const],
-    enterpriseSSO: true
+    enterpriseSSO: true,
+    enrollmentMode: 'open' as const
   },
   capabilities: {
     documents: true,

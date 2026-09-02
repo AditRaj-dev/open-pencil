@@ -5,8 +5,8 @@ const messages = ref<EmailMessage[]>([])
 async function load() {
   messages.value = (await cloudAdminAPI.email()).messages
 }
-async function retry(message: EmailMessage) {
-  await cloudAdminAPI.retryEmail(message.id)
+async function regenerate(message: EmailMessage) {
+  await cloudAdminAPI.regenerateEmail(message.id)
   await load()
 }
 onMounted(load)
@@ -32,11 +32,11 @@ onMounted(load)
           {{ message.lastErrorCode ?? 'no error' }}
         </div>
         <button
-          v-if="message.status === 'failed'"
+          v-if="message.status === 'failed' && message.regeneratable"
           class="mt-3 rounded bg-white/10 px-2 py-1 text-sm"
-          @click="retry(message)"
+          @click="regenerate(message)"
         >
-          Retry
+          Regenerate
         </button>
       </article>
     </div>

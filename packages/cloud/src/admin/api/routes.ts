@@ -9,6 +9,7 @@ import {
 } from '#cloud/admin/contracts'
 import type { AdminEmailService } from '#cloud/admin/email/service'
 import type { EnrollmentMode, EnrollmentService } from '#cloud/admin/enrollment/service'
+import { adminErrorStatus, AdminDomainError } from '#cloud/admin/errors'
 import type { AdminOperationsService } from '#cloud/admin/operations/service'
 import type { AdminUserService } from '#cloud/admin/users/service'
 import type { CloudAPIEnvironment } from '#cloud/server/api'
@@ -113,6 +114,12 @@ export function createCloudAdminRoutes(
     })
     .use('*', adminRead)
     .use('*', adminMutation)
+    .onError((error, context) => {
+      if (error instanceof AdminDomainError) {
+        return context.json({ error: { code: error.code } }, adminErrorStatus(error))
+      }
+      throw error
+    })
     .get('/enrollments', async (context) => {
       const statusValue = context.req.query('status')
       const status = statusValue ? v.parse(enrollmentStatusSchema, statusValue) : undefined
@@ -196,8 +203,8 @@ export function createCloudAdminRoutes(
         messages: await services.email.list(Number(context.req.query('limit') ?? 100))
       })
     )
-    .post('/email/:id/retry', async (context) => {
-      await services.email.retry(context.get('actor').userId, context.req.param('id'))
+    .post('/email/:id/regenerate', async (context) => {
+      await services.email.regenerate(context.get('actor').userId, context.req.param('id'))
       return context.json({ ok: true as const })
     })
     .get('/audit', async (context) =>

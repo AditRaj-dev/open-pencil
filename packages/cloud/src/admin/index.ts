@@ -1,3 +1,4 @@
+export { adminErrorStatus, AdminDomainError, type AdminErrorCode } from './errors'
 export {
   createCloudAdminRoutes,
   createPublicEnrollmentRoutes,

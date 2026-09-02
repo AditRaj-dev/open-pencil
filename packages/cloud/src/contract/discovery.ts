@@ -8,7 +8,8 @@ export type CloudDeployment = v.InferOutput<typeof cloudDeploymentSchema>
 
 export const cloudAuthenticationSchema = v.object({
   socialProviders: v.array(v.picklist(['apple', 'google'])),
-  enterpriseSSO: v.boolean()
+  enterpriseSSO: v.boolean(),
+  enrollmentMode: v.optional(v.picklist(['open', 'approval', 'closed']), 'open')
 })
 export type CloudAuthentication = v.InferOutput<typeof cloudAuthenticationSchema>
 

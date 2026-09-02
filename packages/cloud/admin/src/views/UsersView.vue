@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { cloudAdminAPI, type CloudUser } from '#admin/api/client'
+import ConfirmDialog from '#admin/components/ConfirmDialog.vue'
 const users = ref<CloudUser[]>([])
 const search = ref('')
 const error = ref('')
 const busy = ref('')
+const selected = ref<{ user: CloudUser; action: 'ban' | 'remove-admin' } | null>(null)
 async function load() {
   error.value = ''
   try {
@@ -13,7 +15,7 @@ async function load() {
     error.value = caught instanceof Error ? caught.message : 'Unable to load users'
   }
 }
-async function action(user: CloudUser, name: 'ban' | 'unban' | 'revoke-sessions') {
+async function action(user: CloudUser, name: 'unban' | 'revoke-sessions') {
   busy.value = user.id
   try {
     await cloudAdminAPI.userAction(name, user.id)
@@ -24,15 +26,30 @@ async function action(user: CloudUser, name: 'ban' | 'unban' | 'revoke-sessions'
     busy.value = ''
   }
 }
-async function setAdmin(user: CloudUser, enabled: boolean) {
+async function makeAdmin(user: CloudUser) {
   busy.value = user.id
   try {
-    await cloudAdminAPI.setAdmin(user.id, enabled)
+    await cloudAdminAPI.setAdmin(user.id, true)
     await load()
   } catch (caught) {
     error.value = caught instanceof Error ? caught.message : 'Action failed'
   } finally {
     busy.value = ''
+  }
+}
+async function confirm(reason: string | undefined) {
+  if (!selected.value) return
+  const { user, action: name } = selected.value
+  busy.value = user.id
+  try {
+    if (name === 'ban') await cloudAdminAPI.userAction('ban', user.id, reason)
+    else await cloudAdminAPI.setAdmin(user.id, false)
+    await load()
+  } catch (caught) {
+    error.value = caught instanceof Error ? caught.message : 'Action failed'
+  } finally {
+    busy.value = ''
+    selected.value = null
   }
 }
 onMounted(load)
@@ -63,7 +80,11 @@ onMounted(load)
           <button
             :disabled="busy === user.id"
             class="rounded bg-white/10 px-2 py-1"
-            @click="setAdmin(user, user.role !== 'admin')"
+            @click="
+              user.role === 'admin'
+                ? (selected = { user, action: 'remove-admin' })
+                : makeAdmin(user)
+            "
           >
             {{ user.role === 'admin' ? 'Remove admin' : 'Make admin' }}</button
           ><button
@@ -83,12 +104,25 @@ onMounted(load)
             v-else
             :disabled="busy === user.id"
             class="rounded bg-cloud-danger/20 px-2 py-1 text-cloud-danger"
-            @click="action(user, 'ban')"
+            @click="selected = { user, action: 'ban' }"
           >
             Ban
           </button>
         </div>
       </article>
     </div>
+    <ConfirmDialog
+      :open="Boolean(selected)"
+      :title="selected?.action === 'ban' ? 'Ban user?' : 'Remove deployment admin?'"
+      :description="selected?.user.email ?? ''"
+      :confirm-label="selected?.action === 'ban' ? 'Ban' : 'Remove admin'"
+      :require-reason="selected?.action === 'ban'"
+      @update:open="
+        (open) => {
+          if (!open) selected = null
+        }
+      "
+      @confirm="confirm"
+    />
   </section>
 </template>

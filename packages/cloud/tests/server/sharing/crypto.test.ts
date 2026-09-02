@@ -23,8 +23,9 @@ describe('sharing crypto', () => {
     expect(encrypted.split('.')).toHaveLength(5)
     expect(await decryptContinuationToken(secret, encrypted)).toBe('invitation-token')
     const parts = encrypted.split('.')
-    const cipherText = parts[3] ?? ''
-    parts[3] = `${cipherText.slice(0, -2)}AA`
+    const tag = parts[4] ?? ''
+    const replacement = tag.startsWith('A') ? 'B' : 'A'
+    parts[4] = `${replacement}${tag.slice(1)}`
     await expect(decryptContinuationToken(secret, parts.join('.'))).rejects.toThrow()
   })
 })

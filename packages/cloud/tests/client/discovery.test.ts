@@ -10,7 +10,8 @@ const discovery = {
   authURL: 'https://cloud.openpencil.dev/api/auth',
   authentication: {
     socialProviders: ['apple' as const, 'google' as const],
-    enterpriseSSO: false
+    enterpriseSSO: false,
+    enrollmentMode: 'open' as const
   },
   capabilities: {
     documents: true,
